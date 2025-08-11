@@ -1,0 +1,775 @@
+// Dashboard数据和功能
+let currentDate = new Date();
+let studyData = {};
+let progressData = [];
+let planData = [];
+let notesData = [];
+let achievementsData = [];
+let recommendedData = [];
+
+// 页面加载完成后初始化
+document.addEventListener('DOMContentLoaded', function() {
+    initializeDashboard();
+    loadUserData();
+    setupEventListeners();
+    animateStats();
+    renderCalendar();
+    initializeCharts();
+});
+
+// 初始化仪表板
+function initializeDashboard() {
+    // 检查用户登录状态
+    checkAuthenticationStatus();
+    
+    // 初始化模拟数据
+    initializeMockData();
+}
+
+// 检查用户认证状态
+function checkAuthenticationStatus() {
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+    
+    if (!token || !user) {
+        // 未登录，重定向到首页
+        showNotification('请先登录以访问学习中心', 'error');
+        setTimeout(() => {
+            window.location.href = '../../index.html';
+        }, 2000);
+        return;
+    }
+    
+    try {
+        const userData = JSON.parse(user);
+        updateUserWelcome(userData.username);
+    } catch (error) {
+        console.error('用户数据解析错误:', error);
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '../../index.html';
+    }
+}
+
+// 更新用户欢迎信息
+function updateUserWelcome(username) {
+    const welcomeText = document.querySelector('.welcome-text');
+    if (welcomeText) {
+        welcomeText.textContent = `欢迎，${username}`;
+    }
+}
+
+// 初始化模拟数据
+function initializeMockData() {
+    // 学习进度数据
+    progressData = [
+        {
+            id: 1,
+            title: '深度学习基础与实践',
+            progress: 75,
+            totalChapters: 10,
+            completedChapters: 8,
+            lastStudied: '2小时前',
+            category: 'dl'
+        },
+        {
+            id: 2,
+            title: '自然语言处理进阶',
+            progress: 45,
+            totalChapters: 12,
+            completedChapters: 5,
+            lastStudied: '1天前',
+            category: 'nlp'
+        },
+        {
+            id: 3,
+            title: '计算机视觉实战',
+            progress: 30,
+            totalChapters: 15,
+            completedChapters: 4,
+            lastStudied: '3天前',
+            category: 'cv'
+        }
+    ];
+
+    // 学习计划数据
+    planData = [
+        {
+            id: 1,
+            title: '完成深度学习第9章',
+            course: '深度学习基础与实践',
+            time: '60',
+            date: '2024-08-10',
+            status: 'pending'
+        },
+        {
+            id: 2,
+            title: '复习CNN卷积神经网络',
+            course: '计算机视觉实战',
+            time: '45',
+            date: '2024-08-10',
+            status: 'completed'
+        },
+        {
+            id: 3,
+            title: '练习Transformer编码器',
+            course: '自然语言处理进阶',
+            time: '90',
+            date: '2024-08-11',
+            status: 'pending'
+        }
+    ];
+
+    // 学习笔记数据
+    notesData = [
+        {
+            id: 1,
+            title: '卷积神经网络工作原理',
+            content: '卷积神经网络(CNN)是一种深度学习模型，特别适用于图像识别任务。它通过卷积层、池化层和全连接层的组合来提取图像特征...',
+            tags: ['CNN', '深度学习', '计算机视觉'],
+            date: '2024-08-08',
+            course: '深度学习基础'
+        },
+        {
+            id: 2,
+            title: 'Transformer注意力机制',
+            content: '注意力机制是Transformer架构的核心，它允许模型在处理序列时关注不同位置的重要信息。自注意力机制通过查询、键和值矩阵实现...',
+            tags: ['Transformer', 'Attention', 'NLP'],
+            date: '2024-08-07',
+            course: '自然语言处理'
+        },
+        {
+            id: 3,
+            title: '梯度下降优化算法',
+            content: '梯度下降是机器学习中最基本的优化算法。通过计算损失函数相对于参数的梯度，沿着梯度相反方向更新参数，以最小化损失函数...',
+            tags: ['优化算法', '梯度下降', '机器学习'],
+            date: '2024-08-06',
+            course: '机器学习基础'
+        }
+    ];
+
+    // 成就数据
+    achievementsData = [
+        {
+            id: 1,
+            title: '初学者',
+            description: '完成第一门课程',
+            icon: '🎓',
+            unlocked: true
+        },
+        {
+            id: 2,
+            title: '坚持不懈',
+            description: '连续学习7天',
+            icon: '🔥',
+            unlocked: true
+        },
+        {
+            id: 3,
+            title: '笔记达人',
+            description: '记录50条学习笔记',
+            icon: '📝',
+            unlocked: false
+        },
+        {
+            id: 4,
+            title: '课程专家',
+            description: '完成10门课程',
+            icon: '🏆',
+            unlocked: false
+        },
+        {
+            id: 5,
+            title: '学习之星',
+            description: '累计学习100小时',
+            icon: '⭐',
+            unlocked: true
+        },
+        {
+            id: 6,
+            title: '问答高手',
+            description: '回答50个问题',
+            icon: '💡',
+            unlocked: false
+        }
+    ];
+
+    // 推荐课程数据
+    recommendedData = [
+        {
+            id: 1,
+            title: '强化学习入门',
+            level: '中级',
+            duration: '25小时',
+            price: 799,
+            rating: 4.6
+        },
+        {
+            id: 2,
+            title: 'Python数据科学',
+            level: '初级',
+            duration: '30小时',
+            price: 599,
+            rating: 4.8
+        },
+        {
+            id: 3,
+            title: 'AI项目实战',
+            level: '高级',
+            duration: '40小时',
+            price: 1299,
+            rating: 4.9
+        }
+    ];
+
+    // 学习日历数据
+    studyData = generateStudyCalendarData();
+}
+
+// 生成学习日历数据
+function generateStudyCalendarData() {
+    const data = {};
+    const today = new Date();
+    
+    // 生成过去30天的学习数据
+    for (let i = 0; i < 30; i++) {
+        const date = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
+        const dateStr = formatDateKey(date);
+        
+        // 随机生成学习状态
+        const hasStudy = Math.random() > 0.3;
+        const completedGoal = hasStudy && Math.random() > 0.5;
+        
+        if (hasStudy) {
+            data[dateStr] = {
+                hasStudy: true,
+                completedGoal: completedGoal,
+                studyTime: Math.floor(Math.random() * 180) + 30, // 30-210分钟
+                coursesStudied: Math.floor(Math.random() * 3) + 1
+            };
+        }
+    }
+    
+    return data;
+}
+
+// 加载用户数据
+async function loadUserData() {
+    try {
+        // 在真实环境中，这里会调用API获取用户数据
+        // const userData = await window.apiRequest('/dashboard/data');
+        
+        // 现在使用模拟数据
+        renderProgressList();
+        renderPlanList();
+        renderNotesGrid();
+        renderAchievements();
+        renderRecommendedCourses();
+        
+    } catch (error) {
+        console.error('加载用户数据失败:', error);
+        showNotification('数据加载失败，请刷新页面重试', 'error');
+    }
+}
+
+// 设置事件监听器
+function setupEventListeners() {
+    // 学习计划表单
+    const addPlanForm = document.getElementById('addPlanForm');
+    if (addPlanForm) {
+        addPlanForm.addEventListener('submit', handleAddPlan);
+    }
+    
+    // 笔记表单
+    const noteForm = document.getElementById('noteForm');
+    if (noteForm) {
+        noteForm.addEventListener('submit', handleSaveNote);
+    }
+    
+    // 图表周期选择
+    const chartPeriod = document.getElementById('chartPeriod');
+    if (chartPeriod) {
+        chartPeriod.addEventListener('change', updateCharts);
+    }
+    
+    // 点击弹窗外部关闭
+    window.addEventListener('click', function(event) {
+        const addPlanModal = document.getElementById('addPlanModal');
+        const noteModal = document.getElementById('noteModal');
+        
+        if (event.target === addPlanModal) {
+            hideAddPlan();
+        }
+        if (event.target === noteModal) {
+            hideNoteModal();
+        }
+    });
+}
+
+// 统计数字动画
+function animateStats() {
+    const statNumbers = document.querySelectorAll('.stat-number');
+    
+    const observerOptions = {
+        threshold: 0.5
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const statElement = entry.target;
+                const targetValue = parseInt(statElement.dataset.target);
+                animateNumber(statElement, targetValue);
+                observer.unobserve(statElement);
+            }
+        });
+    }, observerOptions);
+    
+    statNumbers.forEach(stat => {
+        observer.observe(stat);
+    });
+}
+
+// 数字动画
+function animateNumber(element, target) {
+    let current = 0;
+    const increment = target / 60;
+    const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+            current = target;
+            clearInterval(timer);
+        }
+        element.textContent = Math.floor(current);
+    }, 16);
+}
+
+// 渲染学习进度列表
+function renderProgressList() {
+    const progressList = document.getElementById('progressList');
+    if (!progressList) return;
+    
+    progressList.innerHTML = progressData.map(progress => `
+        <div class="progress-item" onclick="openCourse(${progress.id})">
+            <div class="progress-icon">📚</div>
+            <div class="progress-info">
+                <div class="progress-title">${progress.title}</div>
+                <div class="progress-meta">${progress.completedChapters}/${progress.totalChapters}章节 • 最后学习: ${progress.lastStudied}</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${progress.progress}%"></div>
+                </div>
+            </div>
+            <div class="progress-percent">${progress.progress}%</div>
+        </div>
+    `).join('');
+}
+
+// 渲染学习计划列表
+function renderPlanList() {
+    const planList = document.getElementById('planList');
+    if (!planList) return;
+    
+    const todayPlans = planData.filter(plan => {
+        const planDate = new Date(plan.date);
+        const today = new Date();
+        return planDate.toDateString() === today.toDateString();
+    });
+    
+    if (todayPlans.length === 0) {
+        planList.innerHTML = `
+            <div style="text-align: center; color: #94a3b8; padding: 2rem;">
+                今天还没有学习计划，<a href="#" onclick="showAddPlan()" style="color: #3b82f6;">添加一个</a>？
+            </div>
+        `;
+        return;
+    }
+    
+    planList.innerHTML = todayPlans.map(plan => `
+        <div class="plan-item">
+            <div class="plan-time">${plan.time}m</div>
+            <div class="plan-content">
+                <div class="plan-title">${plan.title}</div>
+                <div class="plan-course">${plan.course}</div>
+            </div>
+            <div class="plan-status ${plan.status}">${plan.status === 'completed' ? '已完成' : '待完成'}</div>
+        </div>
+    `).join('');
+}
+
+// 渲染笔记网格
+function renderNotesGrid() {
+    const notesGrid = document.getElementById('notesGrid');
+    if (!notesGrid) return;
+    
+    notesGrid.innerHTML = notesData.slice(0, 3).map(note => `
+        <div class="note-card" onclick="editNote(${note.id})">
+            <div class="note-title">${note.title}</div>
+            <div class="note-content">${note.content}</div>
+            <div class="note-meta">
+                <div class="note-tags">
+                    ${note.tags.map(tag => `<span class="note-tag">${tag}</span>`).join('')}
+                </div>
+                <div class="note-date">${note.date}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// 渲染成就系统
+function renderAchievements() {
+    const achievementsGrid = document.getElementById('achievementsGrid');
+    if (!achievementsGrid) return;
+    
+    achievementsGrid.innerHTML = achievementsData.slice(0, 6).map(achievement => `
+        <div class="achievement-item ${achievement.unlocked ? 'unlocked' : 'locked'}" 
+             onclick="showAchievementDetail(${achievement.id})">
+            <div class="achievement-icon">${achievement.icon}</div>
+            <div class="achievement-title">${achievement.title}</div>
+            <div class="achievement-desc">${achievement.description}</div>
+        </div>
+    `).join('');
+}
+
+// 渲染推荐课程
+function renderRecommendedCourses() {
+    const recommendedList = document.getElementById('recommendedList');
+    if (!recommendedList) return;
+    
+    recommendedList.innerHTML = recommendedData.map(course => `
+        <div class="recommended-item" onclick="viewCourse(${course.id})">
+            <div class="recommended-image">🎓</div>
+            <div class="recommended-info">
+                <div class="recommended-title">${course.title}</div>
+                <div class="recommended-meta">${course.level} • ${course.duration} • ⭐${course.rating}</div>
+                <div class="recommended-price">¥${course.price}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// 渲染日历
+function renderCalendar() {
+    const calendarGrid = document.getElementById('calendarGrid');
+    const currentMonthSpan = document.getElementById('currentMonth');
+    
+    if (!calendarGrid || !currentMonthSpan) return;
+    
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    
+    // 更新月份显示
+    currentMonthSpan.textContent = `${year}年${month + 1}月`;
+    
+    // 获取当月第一天和最后一天
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startDayOfWeek = firstDay.getDay();
+    
+    // 清空日历
+    calendarGrid.innerHTML = '';
+    
+    // 添加星期头
+    const weekHeaders = ['日', '一', '二', '三', '四', '五', '六'];
+    weekHeaders.forEach(day => {
+        const dayElement = document.createElement('div');
+        dayElement.className = 'calendar-day header';
+        dayElement.textContent = day;
+        calendarGrid.appendChild(dayElement);
+    });
+    
+    // 添加上月末尾几天（占位）
+    for (let i = 0; i < startDayOfWeek; i++) {
+        const dayElement = document.createElement('div');
+        dayElement.className = 'calendar-day other-month';
+        const prevDate = new Date(year, month, -startDayOfWeek + i + 1);
+        dayElement.textContent = prevDate.getDate();
+        calendarGrid.appendChild(dayElement);
+    }
+    
+    // 添加当月所有天
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dayElement = document.createElement('div');
+        dayElement.className = 'calendar-day';
+        dayElement.textContent = day;
+        
+        const currentDayDate = new Date(year, month, day);
+        const today = new Date();
+        const dateKey = formatDateKey(currentDayDate);
+        
+        // 检查是否是今天
+        if (currentDayDate.toDateString() === today.toDateString()) {
+            dayElement.classList.add('today');
+        }
+        
+        // 检查是否有学习记录
+        if (studyData[dateKey]) {
+            if (studyData[dateKey].completedGoal) {
+                dayElement.classList.add('completed-goal');
+            } else if (studyData[dateKey].hasStudy) {
+                dayElement.classList.add('has-study');
+            }
+        }
+        
+        calendarGrid.appendChild(dayElement);
+    }
+}
+
+// 格式化日期为键值
+function formatDateKey(date) {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+// 上一个月
+function previousMonth() {
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    renderCalendar();
+}
+
+// 下一个月
+function nextMonth() {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    renderCalendar();
+}
+
+// 初始化图表
+function initializeCharts() {
+    initializeTimeChart();
+    initializeProgressChart();
+}
+
+// 初始化学习时长图表
+function initializeTimeChart() {
+    const ctx = document.getElementById('timeChart');
+    if (!ctx) return;
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+            datasets: [{
+                label: '学习时长(小时)',
+                data: [2.5, 3.2, 1.8, 4.1, 2.9, 5.2, 3.7],
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#e2e8f0'
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#94a3b8'
+                    },
+                    grid: {
+                        color: 'rgba(148, 163, 184, 0.1)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#94a3b8'
+                    },
+                    grid: {
+                        color: 'rgba(148, 163, 184, 0.1)'
+                    }
+                }
+            }
+        }
+    });
+}
+
+// 初始化课程进度图表
+function initializeProgressChart() {
+    const ctx = document.getElementById('progressChart');
+    if (!ctx) return;
+    
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['已完成', '进行中', '未开始'],
+            datasets: [{
+                data: [45, 12, 8],
+                backgroundColor: [
+                    '#10b981',
+                    '#3b82f6',
+                    '#64748b'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#e2e8f0',
+                        padding: 20
+                    }
+                }
+            }
+        }
+    });
+}
+
+// 显示添加计划弹窗
+function showAddPlan() {
+    const modal = document.getElementById('addPlanModal');
+    const courseSelect = document.getElementById('planCourse');
+    
+    // 填充课程选项
+    courseSelect.innerHTML = '<option value="">请选择课程</option>' +
+        progressData.map(course => `<option value="${course.id}">${course.title}</option>`).join('');
+    
+    // 设置默认日期为今天
+    document.getElementById('planDate').value = formatDateForInput(new Date());
+    
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+
+// 隐藏添加计划弹窗
+function hideAddPlan() {
+    document.getElementById('addPlanModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    document.getElementById('addPlanForm').reset();
+}
+
+// 处理添加学习计划
+function handleAddPlan(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const planData = {
+        title: document.getElementById('planTitle').value,
+        courseId: document.getElementById('planCourse').value,
+        time: document.getElementById('planTime').value,
+        date: document.getElementById('planDate').value
+    };
+    
+    // 在真实环境中，这里会调用API保存计划
+    // await window.apiRequest('/study-plans', { method: 'POST', body: JSON.stringify(planData) });
+    
+    hideAddPlan();
+    showNotification('学习计划添加成功！', 'success');
+    
+    // 重新渲染计划列表
+    setTimeout(() => {
+        renderPlanList();
+    }, 500);
+}
+
+// 显示笔记弹窗
+function createNote() {
+    document.getElementById('noteModalTitle').textContent = '新建笔记';
+    document.getElementById('noteModal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    document.getElementById('noteForm').reset();
+}
+
+// 编辑笔记
+function editNote(noteId) {
+    const note = notesData.find(n => n.id === noteId);
+    if (!note) return;
+    
+    document.getElementById('noteModalTitle').textContent = '编辑笔记';
+    document.getElementById('noteTitle').value = note.title;
+    document.getElementById('noteContent').value = note.content;
+    document.getElementById('noteTag').value = note.tags.join(', ');
+    
+    document.getElementById('noteModal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+
+// 隐藏笔记弹窗
+function hideNoteModal() {
+    document.getElementById('noteModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    document.getElementById('noteForm').reset();
+}
+
+// 处理保存笔记
+function handleSaveNote(e) {
+    e.preventDefault();
+    
+    const noteData = {
+        title: document.getElementById('noteTitle').value,
+        content: document.getElementById('noteContent').value,
+        tags: document.getElementById('noteTag').value.split(',').map(tag => tag.trim()).filter(tag => tag)
+    };
+    
+    // 在真实环境中，这里会调用API保存笔记
+    // await window.apiRequest('/notes', { method: 'POST', body: JSON.stringify(noteData) });
+    
+    hideNoteModal();
+    showNotification('笔记保存成功！', 'success');
+    
+    // 重新渲染笔记网格
+    setTimeout(() => {
+        renderNotesGrid();
+    }, 500);
+}
+
+// 格式化日期为输入框格式
+function formatDateForInput(date) {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+// 更新图表
+function updateCharts() {
+    // 根据选择的时间周期更新图表数据
+    // 在真实环境中，这里会重新获取数据并更新图表
+    showNotification('图表数据已更新', 'info');
+}
+
+// 其他功能函数
+function showAllProgress() {
+    // 跳转到完整的学习进度页面
+    showNotification('跳转到学习进度页面', 'info');
+}
+
+function showAllAchievements() {
+    showNotification('查看全部成就', 'info');
+}
+
+function showAchievementDetail(achievementId) {
+    const achievement = achievementsData.find(a => a.id === achievementId);
+    if (achievement) {
+        showNotification(`${achievement.title}: ${achievement.description}`, 'info');
+    }
+}
+
+function openCourse(courseId) {
+    // 跳转到课程学习页面
+    window.location.href = `study.html?courseId=${courseId}`;
+}
+
+function viewCourse(courseId) {
+    // 跳转到课程详情页面
+    window.location.href = `courses.html#course-${courseId}`;
+}
+
+// 导出函数供全局使用
+window.showAddPlan = showAddPlan;
+window.hideAddPlan = hideAddPlan;
+window.createNote = createNote;
+window.hideNoteModal = hideNoteModal;
+window.previousMonth = previousMonth;
+window.nextMonth = nextMonth;
+window.showAllProgress = showAllProgress;
+window.showAllAchievements = showAllAchievements;
+window.showAchievementDetail = showAchievementDetail;
+window.openCourse = openCourse;
+window.viewCourse = viewCourse;
+window.editNote = editNote;

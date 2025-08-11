@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>安全支付 - AI学习平台</title>
+    <meta name="description" content="安全便捷的支付体验，多种支付方式">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/payment.css">
+</head>
+<body class="payment-theme">
+    <!-- 安全背景 -->
+    <div class="security-bg">
+        <div class="security-grid"></div>
+        <div class="floating-locks">
+            <div class="lock-icon">🔒</div>
+            <div class="lock-icon">🛡️</div>
+            <div class="lock-icon">🔐</div>
+        </div>
+    </div>
+
+    <!-- 导航栏 -->
+    <nav class="navbar payment-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>AI学习平台</h1>
+            </div>
+            <div class="nav-security">
+                <div class="security-badge">
+                    <span class="security-icon">🔒</span>
+                    <span>安全支付</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main class="payment-main">
+        <div class="container">
+            <!-- 支付头部 -->
+            <section class="payment-header">
+                <div class="payment-steps">
+                    <div class="step active">
+                        <div class="step-number">1</div>
+                        <div class="step-label">确认订单</div>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step current">
+                        <div class="step-number">2</div>
+                        <div class="step-label">选择支付</div>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-label">支付完成</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 支付内容网格 -->
+            <div class="payment-grid">
+                <!-- 左侧：支付方式 -->
+                <div class="payment-left">
+                    <section class="payment-methods">
+                        <div class="section-header">
+                            <h2>选择支付方式</h2>
+                            <div class="security-tip">
+                                <span class="tip-icon">🔒</span>
+                                <span>256位SSL加密保护</span>
+                            </div>
+                        </div>
+
+                        <div class="methods-list">
+                            <!-- 支付宝 -->
+                            <div class="payment-method active" data-method="alipay">
+                                <div class="method-icon alipay">
+                                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAyNCIgaGVpZ2h0PSIxMDI0IiB2aWV3Qm94PSIwIDAgMTAyNCAxMDI0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNNTEyIDBDMjI4LjQgMCAwIDIyOC40IDAgNTEyUzIyOC40IDEwMjQgNTEyIDEwMjRTMTAyNCA3OTUuNiAxMDI0IDUxMlM3OTUuNiAwIDUxMiAwWiIgZmlsbD0iIzAwOUZFOCIvPgo8cGF0aCBkPSJNNzgwLjggNjEyLjhDNzY4IDYyMC44IDYyNCA2ODAgNDg4IDY4MEM0MDcuMiA2ODAgMzQ0IDY0NC44IDMzNiA1ODRDMzM2IDUyNi40IDQwMCA0ODAgNTEyIDQ4MEM2MTYgNDgwIDcxMiA1MzYgNzEyIDU4NEw3MTIgNTkySDMzNkMzNDQgNjU2IDQxNiA3MDQgNTEyIDcwNEM2MTYgNzA0IDcwNCA2NTYgNzEyIDU5MkM3MjAgNTYwIDc0NCA1MzYgNzgwLjggNjEyLjhaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K" alt="支付宝">
+                                </div>
+                                <div class="method-info">
+                                    <div class="method-name">支付宝</div>
+                                    <div class="method-desc">安全快捷，支持余额、余额宝、银行卡支付</div>
+                                </div>
+                                <div class="method-check">✓</div>
+                            </div>
+
+                            <!-- 微信支付 -->
+                            <div class="payment-method" data-method="wechat">
+                                <div class="method-icon wechat">💬</div>
+                                <div class="method-info">
+                                    <div class="method-name">微信支付</div>
+                                    <div class="method-desc">微信安全支付，支持零钱、银行卡</div>
+                                </div>
+                                <div class="method-check"></div>
+                            </div>
+
+                            <!-- 银行卡 -->
+                            <div class="payment-method" data-method="card">
+                                <div class="method-icon card">💳</div>
+                                <div class="method-info">
+                                    <div class="method-name">银行卡支付</div>
+                                    <div class="method-desc">支持储蓄卡、信用卡直接支付</div>
+                                </div>
+                                <div class="method-check"></div>
+                            </div>
+
+                            <!-- 余额支付 -->
+                            <div class="payment-method" data-method="balance">
+                                <div class="method-icon balance">💰</div>
+                                <div class="method-info">
+                                    <div class="method-name">账户余额</div>
+                                    <div class="method-desc">当前余额: ¥1,258.00</div>
+                                </div>
+                                <div class="method-check"></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 优惠券 -->
+                    <section class="coupons-section">
+                        <div class="section-header">
+                            <h3>优惠券</h3>
+                            <button class="btn-view-coupons" onclick="showAllCoupons()">查看全部</button>
+                        </div>
+                        <div class="coupon-selector">
+                            <select id="couponSelect">
+                                <option value="">请选择优惠券</option>
+                                <option value="1" data-discount="100">新用户专享券 - 减¥100</option>
+                                <option value="2" data-discount="50">学习进步券 - 减¥50</option>
+                                <option value="3" data-discount="20">限时优惠券 - 减¥20</option>
+                            </select>
+                        </div>
+                    </section>
+
+                    <!-- 支付按钮 -->
+                    <section class="payment-action">
+                        <button class="btn-pay" id="payButton" onclick="processPay()">
+                            <span class="pay-text">立即支付</span>
+                            <span class="pay-amount">¥899.00</span>
+                            <div class="pay-loading">
+                                <div class="loading-spinner"></div>
+                                <span>处理中...</span>
+                            </div>
+                        </button>
+                        <div class="payment-security">
+                            <div class="security-items">
+                                <div class="security-item">
+                                    <span class="security-icon">🔐</span>
+                                    <span>银行级加密</span>
+                                </div>
+                                <div class="security-item">
+                                    <span class="security-icon">🛡️</span>
+                                    <span>实时风控</span>
+                                </div>
+                                <div class="security-item">
+                                    <span class="security-icon">✅</span>
+                                    <span>资金保障</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- 右侧：订单详情 -->
+                <div class="payment-right">
+                    <section class="order-summary">
+                        <div class="section-header">
+                            <h3>订单详情</h3>
+                            <div class="order-number">订单号: <span id="orderNumber">202408101234567</span></div>
+                        </div>
+
+                        <div class="order-items">
+                            <div class="order-item">
+                                <div class="item-image">
+                                    <div class="course-icon">📚</div>
+                                </div>
+                                <div class="item-info">
+                                    <div class="item-title" id="courseName">深度学习基础与实践</div>
+                                    <div class="item-meta">
+                                        <span class="item-level">中级</span>
+                                        <span class="item-duration">40小时</span>
+                                        <span class="item-instructor">Dr. AI</span>
+                                    </div>
+                                </div>
+                                <div class="item-price">
+                                    <div class="original-price">¥1,299</div>
+                                    <div class="current-price" id="coursePrice">¥899</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="price-breakdown">
+                            <div class="price-item">
+                                <span class="price-label">课程原价</span>
+                                <span class="price-value">¥1,299.00</span>
+                            </div>
+                            <div class="price-item discount">
+                                <span class="price-label">平台优惠</span>
+                                <span class="price-value">-¥400.00</span>
+                            </div>
+                            <div class="price-item coupon" id="couponDiscount" style="display: none;">
+                                <span class="price-label">优惠券优惠</span>
+                                <span class="price-value">-¥0.00</span>
+                            </div>
+                            <div class="price-divider"></div>
+                            <div class="price-item total">
+                                <span class="price-label">实付金额</span>
+                                <span class="price-value" id="totalAmount">¥899.00</span>
+                            </div>
+                        </div>
+
+                        <div class="payment-benefits">
+                            <div class="benefit-title">购买后您将获得</div>
+                            <div class="benefits-list">
+                                <div class="benefit-item">
+                                    <span class="benefit-icon">🎓</span>
+                                    <span>永久访问权限</span>
+                                </div>
+                                <div class="benefit-item">
+                                    <span class="benefit-icon">📱</span>
+                                    <span>多端同步学习</span>
+                                </div>
+                                <div class="benefit-item">
+                                    <span class="benefit-icon">🏆</span>
+                                    <span>结业认证证书</span>
+                                </div>
+                                <div class="benefit-item">
+                                    <span class="benefit-icon">💬</span>
+                                    <span>专属学习群</span>
+                                </div>
+                                <div class="benefit-item">
+                                    <span class="benefit-icon">📞</span>
+                                    <span>7×24小时客服</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 安全保障 -->
+                    <section class="security-guarantee">
+                        <div class="guarantee-header">
+                            <h4>安全保障</h4>
+                            <div class="guarantee-badge">🛡️ 支付安全</div>
+                        </div>
+                        <div class="guarantee-list">
+                            <div class="guarantee-item">
+                                <span class="guarantee-icon">🔒</span>
+                                <span>SSL安全传输</span>
+                            </div>
+                            <div class="guarantee-item">
+                                <span class="guarantee-icon">🏦</span>
+                                <span>银行级风控</span>
+                            </div>
+                            <div class="guarantee-item">
+                                <span class="guarantee-icon">⚡</span>
+                                <span>极速到账</span>
+                            </div>
+                            <div class="guarantee-item">
+                                <span class="guarantee-icon">🎯</span>
+                                <span>7天退款保障</span>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 支付确认弹窗 -->
+    <div id="paymentModal" class="modal payment-modal">
+        <div class="modal-content payment-confirm">
+            <div class="confirm-header">
+                <div class="confirm-icon">💳</div>
+                <h2>确认支付</h2>
+            </div>
+            <div class="confirm-details">
+                <div class="confirm-item">
+                    <span class="confirm-label">支付方式</span>
+                    <span class="confirm-value" id="confirmMethod">支付宝</span>
+                </div>
+                <div class="confirm-item">
+                    <span class="confirm-label">支付金额</span>
+                    <span class="confirm-value amount" id="confirmAmount">¥899.00</span>
+                </div>
+                <div class="confirm-item">
+                    <span class="confirm-label">课程名称</span>
+                    <span class="confirm-value" id="confirmCourse">深度学习基础与实践</span>
+                </div>
+            </div>
+            <div class="confirm-actions">
+                <button class="btn-cancel" onclick="hidePaymentModal()">取消</button>
+                <button class="btn-confirm" onclick="confirmPayment()">确认支付</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 支付成功弹窗 -->
+    <div id="successModal" class="modal success-modal">
+        <div class="modal-content success-content">
+            <div class="success-animation">
+                <div class="success-icon">✅</div>
+                <div class="success-ripple"></div>
+            </div>
+            <h2>支付成功！</h2>
+            <p>恭喜您成功购买课程，现在就开始学习吧！</p>
+            <div class="success-actions">
+                <button class="btn-start-learn" onclick="startLearning()">立即学习</button>
+                <button class="btn-view-order" onclick="viewOrder()">查看订单</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../utils/main.js"></script>
+    <script src="../utils/payment.js"></script>
+</body>
+</html>

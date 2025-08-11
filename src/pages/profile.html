@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心 - 信息革命AI学习平台</title>
+    <meta name="description" content="管理您的学习进度，查看成就和数据分析">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/profile.css">
+</head>
+<body class="profile-theme">
+    <!-- 深色背景效果 -->
+    <div class="profile-bg">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+        <canvas id="particleCanvas"></canvas>
+    </div>
+
+    <!-- 导航栏 -->
+    <nav class="profile-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <div class="logo">信息革命</div>
+            </div>
+            <div class="nav-menu">
+                <a href="/index.html" class="nav-link">首页</a>
+                <a href="/src/pages/courses.html" class="nav-link">课程</a>
+                <a href="/src/pages/dashboard.html" class="nav-link">学习中心</a>
+                <a href="/src/pages/profile.html" class="nav-link active">个人中心</a>
+            </div>
+            <div class="nav-actions">
+                <button class="btn-notifications">
+                    <span class="notification-icon">🔔</span>
+                    <span class="notification-badge">3</span>
+                </button>
+                <button class="btn-settings">⚙️</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容 -->
+    <main class="profile-main">
+        <div class="profile-container">
+            <!-- 个人信息卡片 -->
+            <section class="profile-header">
+                <div class="profile-cover">
+                    <div class="cover-pattern"></div>
+                    <button class="btn-change-cover">更换封面</button>
+                </div>
+                <div class="profile-info">
+                    <div class="avatar-section">
+                        <div class="avatar-wrapper">
+                            <img src="/assets/avatar-default.png" alt="用户头像" class="user-avatar">
+                            <div class="avatar-status online"></div>
+                            <button class="btn-change-avatar">📷</button>
+                        </div>
+                    </div>
+                    <div class="user-details">
+                        <h1 class="user-name">张三</h1>
+                        <p class="user-title">AI学习者 · 深度学习方向</p>
+                        <div class="user-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">156</span>
+                                <span class="stat-label">学习天数</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">42</span>
+                                <span class="stat-label">完成课程</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">8.5</span>
+                                <span class="stat-label">平均评分</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">12</span>
+                                <span class="stat-label">获得证书</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-actions">
+                        <button class="btn-edit-profile">
+                            <span class="edit-icon">✏️</span>
+                            <span>编辑资料</span>
+                        </button>
+                        <button class="btn-share-profile">
+                            <span class="share-icon">🔗</span>
+                            <span>分享主页</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 标签页导航 -->
+            <div class="profile-tabs">
+                <button class="tab-btn active" data-tab="overview">
+                    <span class="tab-icon">📊</span>
+                    <span>学习概览</span>
+                </button>
+                <button class="tab-btn" data-tab="achievements">
+                    <span class="tab-icon">🏆</span>
+                    <span>成就勋章</span>
+                </button>
+                <button class="tab-btn" data-tab="certificates">
+                    <span class="tab-icon">📜</span>
+                    <span>证书管理</span>
+                </button>
+                <button class="tab-btn" data-tab="skills">
+                    <span class="tab-icon">💡</span>
+                    <span>技能图谱</span>
+                </button>
+                <button class="tab-btn" data-tab="settings">
+                    <span class="tab-icon">⚙️</span>
+                    <span>账号设置</span>
+                </button>
+            </div>
+
+            <!-- 标签页内容 -->
+            <div class="profile-content">
+                <!-- 学习概览 -->
+                <div class="content-panel active" id="overviewPanel">
+                    <div class="overview-grid">
+                        <!-- 学习进度 -->
+                        <div class="overview-card">
+                            <h3 class="card-title">本周学习进度</h3>
+                            <div class="weekly-progress">
+                                <div class="progress-chart">
+                                    <canvas id="weeklyChart"></canvas>
+                                </div>
+                                <div class="progress-stats">
+                                    <div class="progress-item">
+                                        <span class="progress-label">总学习时长</span>
+                                        <span class="progress-value">24.5小时</span>
+                                    </div>
+                                    <div class="progress-item">
+                                        <span class="progress-label">完成课时</span>
+                                        <span class="progress-value">12节</span>
+                                    </div>
+                                    <div class="progress-item">
+                                        <span class="progress-label">提交作业</span>
+                                        <span class="progress-value">8份</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 学习路径 -->
+                        <div class="overview-card">
+                            <h3 class="card-title">我的学习路径</h3>
+                            <div class="learning-paths">
+                                <div class="path-item active">
+                                    <div class="path-icon">🧠</div>
+                                    <div class="path-info">
+                                        <h4>深度学习工程师</h4>
+                                        <p>已完成 65%</p>
+                                        <div class="path-progress">
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" style="width: 65%;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="path-item">
+                                    <div class="path-icon">🤖</div>
+                                    <div class="path-info">
+                                        <h4>计算机视觉专家</h4>
+                                        <p>已完成 32%</p>
+                                        <div class="path-progress">
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" style="width: 32%;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 最近学习 -->
+                        <div class="overview-card">
+                            <h3 class="card-title">最近学习</h3>
+                            <div class="recent-courses">
+                                <div class="course-item">
+                                    <div class="course-thumb">
+                                        <div class="thumb-placeholder">CNN</div>
+                                    </div>
+                                    <div class="course-info">
+                                        <h4>卷积神经网络详解</h4>
+                                        <p>上次学习：2小时前</p>
+                                        <div class="course-progress">
+                                            <span>进度 75%</span>
+                                        </div>
+                                    </div>
+                                    <button class="btn-continue">继续学习</button>
+                                </div>
+                                <div class="course-item">
+                                    <div class="course-thumb">
+                                        <div class="thumb-placeholder">NLP</div>
+                                    </div>
+                                    <div class="course-info">
+                                        <h4>自然语言处理入门</h4>
+                                        <p>上次学习：昨天</p>
+                                        <div class="course-progress">
+                                            <span>进度 45%</span>
+                                        </div>
+                                    </div>
+                                    <button class="btn-continue">继续学习</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 学习日历 -->
+                        <div class="overview-card full-width">
+                            <h3 class="card-title">学习日历</h3>
+                            <div class="learning-calendar">
+                                <div class="calendar-header">
+                                    <button class="btn-prev-month">←</button>
+                                    <h4>2024年3月</h4>
+                                    <button class="btn-next-month">→</button>
+                                </div>
+                                <div class="calendar-grid">
+                                    <!-- 日历会通过JS生成 -->
+                                </div>
+                                <div class="calendar-legend">
+                                    <div class="legend-item">
+                                        <span class="legend-color low"></span>
+                                        <span>少量学习</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-color medium"></span>
+                                        <span>中等学习</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-color high"></span>
+                                        <span>大量学习</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 成就勋章 -->
+                <div class="content-panel" id="achievementsPanel">
+                    <div class="achievements-section">
+                        <div class="achievement-categories">
+                            <button class="category-btn active">全部成就</button>
+                            <button class="category-btn">学习成就</button>
+                            <button class="category-btn">社区成就</button>
+                            <button class="category-btn">特殊成就</button>
+                        </div>
+                        <div class="achievements-grid">
+                            <div class="achievement-card unlocked">
+                                <div class="achievement-icon">🌟</div>
+                                <div class="achievement-info">
+                                    <h4>初学者</h4>
+                                    <p>完成第一门课程</p>
+                                    <span class="unlock-date">2024.01.15 解锁</span>
+                                </div>
+                            </div>
+                            <div class="achievement-card unlocked rare">
+                                <div class="achievement-icon">🔥</div>
+                                <div class="achievement-info">
+                                    <h4>连续学习30天</h4>
+                                    <p>保持30天学习打卡</p>
+                                    <span class="unlock-date">2024.02.20 解锁</span>
+                                </div>
+                            </div>
+                            <div class="achievement-card unlocked epic">
+                                <div class="achievement-icon">💎</div>
+                                <div class="achievement-info">
+                                    <h4>深度学习大师</h4>
+                                    <p>完成深度学习全部课程</p>
+                                    <span class="unlock-date">2024.03.10 解锁</span>
+                                </div>
+                            </div>
+                            <div class="achievement-card locked">
+                                <div class="achievement-icon">🏆</div>
+                                <div class="achievement-info">
+                                    <h4>全栈AI工程师</h4>
+                                    <p>完成所有AI课程路径</p>
+                                    <span class="unlock-progress">进度: 45%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 证书管理 -->
+                <div class="content-panel" id="certificatesPanel">
+                    <div class="certificates-section">
+                        <div class="certificates-header">
+                            <h3>我的证书</h3>
+                            <button class="btn-verify-all">批量验证</button>
+                        </div>
+                        <div class="certificates-grid">
+                            <div class="certificate-card">
+                                <div class="certificate-preview">
+                                    <div class="cert-logo">信息革命</div>
+                                    <h4>深度学习基础认证</h4>
+                                    <p>Certificate of Completion</p>
+                                    <div class="cert-details">
+                                        <span>颁发日期：2024.02.28</span>
+                                        <span>证书编号：DL2024022801</span>
+                                    </div>
+                                </div>
+                                <div class="certificate-actions">
+                                    <button class="btn-view-cert">查看</button>
+                                    <button class="btn-download-cert">下载</button>
+                                    <button class="btn-share-cert">分享</button>
+                                </div>
+                            </div>
+                            <div class="certificate-card">
+                                <div class="certificate-preview">
+                                    <div class="cert-logo">信息革命</div>
+                                    <h4>计算机视觉实战</h4>
+                                    <p>Certificate of Excellence</p>
+                                    <div class="cert-details">
+                                        <span>颁发日期：2024.03.15</span>
+                                        <span>证书编号：CV2024031501</span>
+                                    </div>
+                                </div>
+                                <div class="certificate-actions">
+                                    <button class="btn-view-cert">查看</button>
+                                    <button class="btn-download-cert">下载</button>
+                                    <button class="btn-share-cert">分享</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 技能图谱 -->
+                <div class="content-panel" id="skillsPanel">
+                    <div class="skills-section">
+                        <div class="skills-overview">
+                            <h3>技能雷达图</h3>
+                            <div class="radar-chart">
+                                <canvas id="skillsRadar"></canvas>
+                            </div>
+                        </div>
+                        <div class="skills-detail">
+                            <h3>技能详情</h3>
+                            <div class="skills-list">
+                                <div class="skill-item">
+                                    <div class="skill-header">
+                                        <span class="skill-name">Python编程</span>
+                                        <span class="skill-level">高级</span>
+                                    </div>
+                                    <div class="skill-progress">
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" style="width: 85%;"></div>
+                                        </div>
+                                        <span class="skill-score">85/100</span>
+                                    </div>
+                                    <div class="skill-tags">
+                                        <span class="tag">NumPy</span>
+                                        <span class="tag">Pandas</span>
+                                        <span class="tag">Scikit-learn</span>
+                                    </div>
+                                </div>
+                                <div class="skill-item">
+                                    <div class="skill-header">
+                                        <span class="skill-name">深度学习框架</span>
+                                        <span class="skill-level">中级</span>
+                                    </div>
+                                    <div class="skill-progress">
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" style="width: 70%;"></div>
+                                        </div>
+                                        <span class="skill-score">70/100</span>
+                                    </div>
+                                    <div class="skill-tags">
+                                        <span class="tag">PyTorch</span>
+                                        <span class="tag">TensorFlow</span>
+                                        <span class="tag">Keras</span>
+                                    </div>
+                                </div>
+                                <div class="skill-item">
+                                    <div class="skill-header">
+                                        <span class="skill-name">机器学习算法</span>
+                                        <span class="skill-level">高级</span>
+                                    </div>
+                                    <div class="skill-progress">
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" style="width: 80%;"></div>
+                                        </div>
+                                        <span class="skill-score">80/100</span>
+                                    </div>
+                                    <div class="skill-tags">
+                                        <span class="tag">监督学习</span>
+                                        <span class="tag">无监督学习</span>
+                                        <span class="tag">强化学习</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 账号设置 -->
+                <div class="content-panel" id="settingsPanel">
+                    <div class="settings-section">
+                        <div class="settings-sidebar">
+                            <button class="setting-nav-btn active" data-section="basic">基本信息</button>
+                            <button class="setting-nav-btn" data-section="security">账号安全</button>
+                            <button class="setting-nav-btn" data-section="privacy">隐私设置</button>
+                            <button class="setting-nav-btn" data-section="notifications">通知设置</button>
+                            <button class="setting-nav-btn" data-section="preferences">学习偏好</button>
+                        </div>
+                        <div class="settings-content">
+                            <!-- 基本信息 -->
+                            <div class="setting-panel active" id="basicSettings">
+                                <h3>基本信息</h3>
+                                <form class="settings-form">
+                                    <div class="form-group">
+                                        <label>用户名</label>
+                                        <input type="text" value="zhangsan123" class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>显示昵称</label>
+                                        <input type="text" value="张三" class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>个人简介</label>
+                                        <textarea class="form-textarea" rows="3">热爱AI技术，专注深度学习研究</textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>邮箱</label>
+                                        <input type="email" value="zhangsan@example.com" class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>手机号</label>
+                                        <input type="tel" value="138****5678" class="form-input">
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn-save">保存修改</button>
+                                        <button type="button" class="btn-cancel">取消</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="../utils/main.js"></script>
+    <script src="../utils/profile.js"></script>
+</body>
+</html>

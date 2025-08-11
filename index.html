@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>信息革命 - 专业AI学习平台</title>
+    <meta name="description" content="专业的人工智能学习平台，系统掌握机器学习、深度学习与前沿AI技术">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="src/styles/homepage.css">
+</head>
+<body>
+    <!-- 背景系统 -->
+    <div class="background-wrapper">
+        <div class="gradient-bg"></div>
+        <div class="grid-pattern"></div>
+        <div class="perspective-grid"></div>
+        <div class="glow-effect"></div>
+        <div class="glow-effect"></div>
+        <div class="glow-effect"></div>
+        <div class="flow-lines" id="flowLines"></div>
+        <div class="tech-shapes">
+            <div class="tech-shape"></div>
+            <div class="tech-shape"></div>
+            <div class="tech-shape"></div>
+        </div>
+        <div class="stars" id="stars"></div>
+    </div>
+
+    <!-- 导航栏 -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="logo">信息革命</div>
+            <ul class="nav-menu">
+                <!-- 移除首页导航文字，保持简洁 -->
+            </ul>
+            <div class="nav-actions">
+                <!-- 登录状态 -->
+                <div class="auth-container" id="authContainer">
+                    <a href="src/pages/login.html" class="btn btn-outline login-btn" id="loginBtn">登录</a>
+                    <a href="src/pages/register.html" class="btn btn-primary register-btn" id="registerBtn">注册</a>
+                </div>
+                <!-- 用户头像 (登录后显示) -->
+                <div class="user-profile" id="userProfile" style="display: none;">
+                    <div class="user-avatar" onclick="toggleUserMenu()">
+                        <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><circle cx='20' cy='20' r='18' fill='%234a9eff'/><circle cx='20' cy='16' r='6' fill='white'/><path d='M8 32c0-6.6 5.4-12 12-12s12 5.4 12 12' fill='white'/></svg>" alt="用户头像" id="userAvatar">
+                    </div>
+                    <div class="user-menu" id="userMenu">
+                        <div class="user-info">
+                            <div class="user-name" id="userName">用户名</div>
+                            <div class="user-email" id="userEmail">user@example.com</div>
+                        </div>
+                        <div class="menu-divider"></div>
+                        <a href="src/pages/profile.html" class="menu-item">个人资料</a>
+                        <a href="src/pages/courses.html" class="menu-item">我的课程</a>
+                        <a href="src/pages/dashboard.html" class="menu-item">学习中心</a>
+                        <a href="src/pages/profile.html#settings" class="menu-item">设置</a>
+                        <div class="menu-divider"></div>
+                        <div class="menu-item avatar-selector" onclick="showAvatarSelector()">更换头像</div>
+                        <div class="menu-divider"></div>
+                        <a href="#" class="menu-item" onclick="logout()">退出登录</a>
+                    </div>
+                </div>
+
+                <!-- 头像选择器 -->
+                <div class="avatar-selector-modal" id="avatarSelector" style="display: none;">
+                    <div class="avatar-selector-content">
+                        <div class="avatar-selector-header">
+                            <h3>选择头像</h3>
+                            <button class="close-btn" onclick="hideAvatarSelector()">&times;</button>
+                        </div>
+                        <div class="avatar-options">
+                            <div class="avatar-option" onclick="selectAvatar('default')">
+                                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><circle cx='20' cy='20' r='18' fill='%234a9eff'/><circle cx='20' cy='16' r='6' fill='white'/><path d='M8 32c0-6.6 5.4-12 12-12s12 5.4 12 12' fill='white'/></svg>" alt="默认头像">
+                            </div>
+                            <div class="avatar-option" onclick="selectAvatar('tech')">
+                                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><circle cx='20' cy='20' r='18' fill='%23ff6b6b'/><rect x='15' y='12' width='10' height='8' fill='white' rx='2'/><rect x='12' y='22' width='16' height='10' fill='white' rx='3'/><circle cx='16' cy='26' r='1.5' fill='%23ff6b6b'/><circle cx='20' cy='26' r='1.5' fill='%23ff6b6b'/><circle cx='24' cy='26' r='1.5' fill='%23ff6b6b'/></svg>" alt="科技头像">
+                            </div>
+                            <div class="avatar-option" onclick="selectAvatar('ai')">
+                                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><circle cx='20' cy='20' r='18' fill='%2310b981'/><circle cx='20' cy='20' r='12' fill='none' stroke='white' stroke-width='2'/><circle cx='20' cy='20' r='6' fill='white'/><circle cx='20' cy='20' r='2' fill='%2310b981'/><path d='M20 8 L22 14 L20 20 L18 14 Z' fill='white'/><path d='M32 20 L26 22 L20 20 L26 18 Z' fill='white'/><path d='M20 32 L18 26 L20 20 L22 26 Z' fill='white'/><path d='M8 20 L14 18 L20 20 L14 22 Z' fill='white'/></svg>" alt="AI头像">
+                            </div>
+                            <div class="avatar-option" onclick="selectAvatar('robot')">
+                                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><circle cx='20' cy='20' r='18' fill='%23f59e0b'/><rect x='12' y='14' width='16' height='12' fill='white' rx='2'/><circle cx='16' cy='18' r='2' fill='%23f59e0b'/><circle cx='24' cy='18' r='2' fill='%23f59e0b'/><rect x='18' y='22' width='4' height='2' fill='%23f59e0b' rx='1'/><circle cx='20' cy='10' r='2' fill='white'/></svg>" alt="机器人头像">
+                            </div>
+                            <div class="avatar-option" onclick="selectAvatar('student')">
+                                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><circle cx='20' cy='20' r='18' fill='%237c3aed'/><circle cx='20' cy='16' r='6' fill='white'/><path d='M8 32c0-6.6 5.4-12 12-12s12 5.4 12 12' fill='white'/><rect x='15' y='8' width='10' height='4' fill='%237c3aed' rx='2'/><rect x='18' y='6' width='4' height='2' fill='white' rx='1'/></svg>" alt="学生头像">
+                            </div>
+                            <div class="avatar-option" onclick="selectAvatar('expert')">
+                                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><circle cx='20' cy='20' r='18' fill='%23dc2626'/><circle cx='20' cy='16' r='6' fill='white'/><path d='M8 32c0-6.6 5.4-12 12-12s12 5.4 12 12' fill='white'/><rect x='14' y='10' width='12' height='6' fill='%23dc2626' rx='3'/><circle cx='17' cy='13' r='1' fill='white'/><circle cx='20' cy='13' r='1' fill='white'/><circle cx='23' cy='13' r='1' fill='white'/></svg>" alt="专家头像">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero区域 -->
+    <section class="hero" id="home">
+        <div class="decoration-line left"></div>
+        <div class="decoration-line right"></div>
+
+        <!-- AI科技图片展示 -->
+        <div class="tech-showcase">
+            <!-- 高级神经网络可视化 -->
+            <div class="tech-image brain" style="background: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 200 150\"><defs><linearGradient id=\"brainGrad\" x1=\"0%25\" y1=\"0%25\" x2=\"100%25\" y2=\"100%25\"><stop offset=\"0%25\" style=\"stop-color:%23001133;stop-opacity:1\" /><stop offset=\"100%25\" style=\"stop-color:%23151a3d;stop-opacity:1\" /></linearGradient><filter id=\"glow\"><feGaussianBlur stdDeviation=\"3\" result=\"coloredBlur\"/><feMerge><feMergeNode in=\"coloredBlur\"/><feMergeNode in=\"SourceGraphic\"/></feMerge></filter></defs><rect width=\"200\" height=\"150\" fill=\"url(%23brainGrad)\" rx=\"12\"/><g filter=\"url(%23glow)\"><circle cx=\"30\" cy=\"30\" r=\"6\" fill=\"%234a9eff\" opacity=\"0.9\"><animate attributeName=\"opacity\" values=\"0.9;0.4;0.9\" dur=\"2s\" repeatCount=\"indefinite\"/></circle><circle cx=\"70\" cy=\"25\" r=\"8\" fill=\"%234a9eff\" opacity=\"0.7\"><animate attributeName=\"opacity\" values=\"0.7;1;0.7\" dur=\"2.5s\" repeatCount=\"indefinite\"/></circle><circle cx=\"120\" cy=\"35\" r=\"5\" fill=\"%234a9eff\" opacity=\"0.8\"><animate attributeName=\"opacity\" values=\"0.8;0.3;0.8\" dur=\"1.8s\" repeatCount=\"indefinite\"/></circle><circle cx=\"170\" cy=\"30\" r=\"7\" fill=\"%234a9eff\" opacity=\"0.6\"><animate attributeName=\"opacity\" values=\"0.6;1;0.6\" dur=\"2.2s\" repeatCount=\"indefinite\"/></circle><circle cx=\"50\" cy=\"70\" r=\"9\" fill=\"%234a9eff\" opacity=\"0.8\"><animate attributeName=\"opacity\" values=\"0.8;0.4;0.8\" dur=\"2.8s\" repeatCount=\"indefinite\"/></circle><circle cx=\"100\" cy=\"65\" r=\"6\" fill=\"%234a9eff\" opacity=\"0.9\"><animate attributeName=\"opacity\" values=\"0.9;0.5;0.9\" dur=\"2.1s\" repeatCount=\"indefinite\"/></circle><circle cx=\"150\" cy=\"75\" r=\"8\" fill=\"%234a9eff\" opacity=\"0.7\"><animate attributeName=\"opacity\" values=\"0.7;1;0.7\" dur=\"2.6s\" repeatCount=\"indefinite\"/></circle><circle cx=\"80\" cy=\"110\" r=\"7\" fill=\"%234a9eff\" opacity=\"0.8\"><animate attributeName=\"opacity\" values=\"0.8;0.3;0.8\" dur=\"2.3s\" repeatCount=\"indefinite\"/></circle><circle cx=\"130\" cy=\"105\" r=\"6\" fill=\"%234a9eff\" opacity=\"0.9\"><animate attributeName=\"opacity\" values=\"0.9;0.6;0.9\" dur=\"1.9s\" repeatCount=\"indefinite\"/></circle><path d=\"M30 30 L70 25 L120 35 L170 30\" stroke=\"%234a9eff\" stroke-width=\"1.5\" opacity=\"0.6\" fill=\"none\"><animate attributeName=\"opacity\" values=\"0.6;0.2;0.6\" dur=\"3s\" repeatCount=\"indefinite\"/></path><path d=\"M70 25 L50 70 L100 65\" stroke=\"%234a9eff\" stroke-width=\"1.5\" opacity=\"0.7\" fill=\"none\"><animate attributeName=\"opacity\" values=\"0.7;0.3;0.7\" dur=\"3.2s\" repeatCount=\"indefinite\"/></path><path d=\"M120 35 L150 75 L130 105\" stroke=\"%234a9eff\" stroke-width=\"1.5\" opacity=\"0.5\" fill=\"none\"><animate attributeName=\"opacity\" values=\"0.5;0.1;0.5\" dur=\"2.7s\" repeatCount=\"indefinite\"/></path><path d=\"M100 65 L80 110\" stroke=\"%234a9eff\" stroke-width=\"1.5\" opacity=\"0.8\" fill=\"none\"><animate attributeName=\"opacity\" values=\"0.8;0.4;0.8\" dur=\"2.4s\" repeatCount=\"indefinite\"/></path></g><text x=\"100\" y=\"135\" text-anchor=\"middle\" fill=\"%23b8c1ec\" font-size=\"11\" font-family=\"Arial,sans-serif\" font-weight=\"500\">Deep Neural Network</text></svg>') center/cover;"></div>
+
+            <!-- 高级电路板设计 -->
+            <div class="tech-image circuit" style="background: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 180 120\"><defs><linearGradient id=\"circuitGrad\" x1=\"0%25\" y1=\"0%25\" x2=\"100%25\" y2=\"100%25\"><stop offset=\"0%25\" style=\"stop-color:%23001133;stop-opacity:1\" /><stop offset=\"100%25\" style=\"stop-color:%23151a3d;stop-opacity:1\" /></linearGradient><filter id=\"circuitGlow\"><feGaussianBlur stdDeviation=\"2\" result=\"coloredBlur\"/><feMerge><feMergeNode in=\"coloredBlur\"/><feMergeNode in=\"SourceGraphic\"/></feMerge></filter></defs><rect width=\"180\" height=\"120\" fill=\"url(%23circuitGrad)\" rx=\"12\"/><g filter=\"url(%23circuitGlow)\"><rect x=\"15\" y=\"15\" width=\"35\" height=\"25\" fill=\"%234a9eff\" opacity=\"0.8\" rx=\"4\"><animate attributeName=\"opacity\" values=\"0.8;0.4;0.8\" dur=\"2s\" repeatCount=\"indefinite\"/></rect><rect x=\"65\" y=\"20\" width=\"40\" height=\"20\" fill=\"%234a9eff\" opacity=\"0.7\" rx=\"4\"><animate attributeName=\"opacity\" values=\"0.7;1;0.7\" dur=\"2.3s\" repeatCount=\"indefinite\"/></rect><rect x=\"120\" y=\"18\" width=\"30\" height=\"24\" fill=\"%234a9eff\" opacity=\"0.9\" rx=\"4\"><animate attributeName=\"opacity\" values=\"0.9;0.5;0.9\" dur=\"1.8s\" repeatCount=\"indefinite\"/></rect><rect x=\"25\" y=\"60\" width=\"28\" height=\"22\" fill=\"%234a9eff\" opacity=\"0.6\" rx=\"4\"><animate attributeName=\"opacity\" values=\"0.6;0.9;0.6\" dur=\"2.5s\" repeatCount=\"indefinite\"/></rect><rect x=\"75\" y=\"65\" width=\"35\" height=\"18\" fill=\"%234a9eff\" opacity=\"0.8\" rx=\"4\"><animate attributeName=\"opacity\" values=\"0.8;0.3;0.8\" dur=\"2.1s\" repeatCount=\"indefinite\"/></rect><rect x=\"130\" y=\"62\" width=\"25\" height=\"25\" fill=\"%234a9eff\" opacity=\"0.7\" rx=\"4\"><animate attributeName=\"opacity\" values=\"0.7;1;0.7\" dur=\"2.4s\" repeatCount=\"indefinite\"/></rect><path d=\"M50 27 L65 30 M105 30 L120 30\" stroke=\"%234a9eff\" stroke-width=\"2\" opacity=\"0.8\"><animate attributeName=\"opacity\" values=\"0.8;0.3;0.8\" dur=\"3s\" repeatCount=\"indefinite\"/></path><path d=\"M39 60 L75 74 M110 74 L130 74\" stroke=\"%234a9eff\" stroke-width=\"2\" opacity=\"0.7\"><animate attributeName=\"opacity\" values=\"0.7;1;0.7\" dur=\"3.2s\" repeatCount=\"indefinite\"/></path><path d=\"M32 40 L32 60 M85 42 L85 65 M135 42 L135 62\" stroke=\"%234a9eff\" stroke-width=\"2\" opacity=\"0.6\"><animate attributeName=\"opacity\" values=\"0.6;0.2;0.6\" dur=\"2.8s\" repeatCount=\"indefinite\"/></path><circle cx=\"57\" cy=\"50\" r=\"3\" fill=\"%23ffffff\" opacity=\"0.9\"/><circle cx=\"95\" cy=\"48\" r=\"3\" fill=\"%23ffffff\" opacity=\"0.9\"/><circle cx=\"142\" cy=\"51\" r=\"3\" fill=\"%23ffffff\" opacity=\"0.9\"/></g><text x=\"90\" y=\"105\" text-anchor=\"middle\" fill=\"%23b8c1ec\" font-size=\"10\" font-family=\"Arial,sans-serif\" font-weight=\"500\">AI Processing Unit</text></svg>') center/cover;"></div>
+
+            <!-- 高级AI芯片设计 -->
+            <div class="tech-image ai-chip" style="background: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 160 160\"><defs><radialGradient id=\"chipGrad\" cx=\"50%25\" cy=\"50%25\" r=\"50%25\"><stop offset=\"0%25\" style=\"stop-color:%23151a3d;stop-opacity:1\" /><stop offset=\"100%25\" style=\"stop-color:%23001133;stop-opacity:1\" /></radialGradient><filter id=\"chipGlow\"><feGaussianBlur stdDeviation=\"3\" result=\"coloredBlur\"/><feMerge><feMergeNode in=\"coloredBlur\"/><feMergeNode in=\"SourceGraphic\"/></feMerge></filter></defs><rect width=\"160\" height=\"160\" fill=\"url(%23chipGrad)\" rx=\"12\"/><g filter=\"url(%23chipGlow)\"><rect x=\"30\" y=\"30\" width=\"100\" height=\"100\" fill=\"none\" stroke=\"%234a9eff\" stroke-width=\"2\" opacity=\"0.6\" rx=\"10\"><animate attributeName=\"opacity\" values=\"0.6;1;0.6\" dur=\"3s\" repeatCount=\"indefinite\"/></rect><circle cx=\"80\" cy=\"80\" r=\"35\" fill=\"none\" stroke=\"%234a9eff\" stroke-width=\"1.5\" opacity=\"0.8\"><animate attributeName=\"opacity\" values=\"0.8;0.4;0.8\" dur=\"2.5s\" repeatCount=\"indefinite\"/></circle><circle cx=\"80\" cy=\"80\" r=\"25\" fill=\"none\" stroke=\"%234a9eff\" stroke-width=\"1.5\" opacity=\"0.9\"><animate attributeName=\"opacity\" values=\"0.9;0.5;0.9\" dur=\"2s\" repeatCount=\"indefinite\"/></circle><circle cx=\"80\" cy=\"80\" r=\"15\" fill=\"%234a9eff\" opacity=\"0.7\"><animate attributeName=\"opacity\" values=\"0.7;1;0.7\" dur=\"1.8s\" repeatCount=\"indefinite\"/></circle><circle cx=\"80\" cy=\"80\" r=\"8\" fill=\"%23ffffff\" opacity=\"1\"><animate attributeName=\"opacity\" values=\"1;0.6;1\" dur=\"1.5s\" repeatCount=\"indefinite\"/></circle><rect x=\"5\" y=\"70\" width=\"20\" height=\"20\" fill=\"%234a9eff\" opacity=\"0.7\" rx=\"2\"/><rect x=\"135\" y=\"70\" width=\"20\" height=\"20\" fill=\"%234a9eff\" opacity=\"0.7\" rx=\"2\"/><rect x=\"70\" y=\"5\" width=\"20\" height=\"20\" fill=\"%234a9eff\" opacity=\"0.7\" rx=\"2\"/><rect x=\"70\" y=\"135\" width=\"20\" height=\"20\" fill=\"%234a9eff\" opacity=\"0.7\" rx=\"2\"/><path d=\"M25 80 L30 80 M130 80 L135 80 M80 25 L80 30 M80 130 L80 135\" stroke=\"%234a9eff\" stroke-width=\"3\" opacity=\"0.8\"/><g transform=\"translate(80,80)\"><path d=\"M-10,-10 L10,-10 L10,10 L-10,10 Z\" fill=\"%234a9eff\" opacity=\"0.3\"><animateTransform attributeName=\"transform\" attributeType=\"XML\" type=\"rotate\" from=\"0\" to=\"360\" dur=\"10s\" repeatCount=\"indefinite\"/></path></g></g><text x=\"80\" y=\"145\" text-anchor=\"middle\" fill=\"%23b8c1ec\" font-size=\"10\" font-family=\"Arial,sans-serif\" font-weight=\"500\">Neural Processing Unit</text></svg>') center/cover;"></div>
+        </div>
+
+        <div class="hero-content">
+            <div class="hero-badge">
+                <div class="badge-dot"></div>
+                <span style="color: var(--text-secondary); font-size: 0.875rem;">全新AI学习体验 · 现已上线</span>
+            </div>
+            <h1 class="hero-title">信息革命</h1>
+            <p class="hero-subtitle">掌握人工智能核心技术，引领未来科技变革</p>
+            <div class="hero-actions">
+                <a href="src/pages/courses.html" class="btn btn-primary hero-btn">开始学习</a>
+                <a href="#features" class="btn btn-outline hero-btn">了解详情</a>
+            </div>
+        </div>
+        <div class="float-element" style="top: 20%; left: 5%; width: 80px; height: 80px;"></div>
+        <div class="float-element" style="bottom: 20%; right: 5%; width: 120px; height: 120px; animation-delay: -10s;"></div>
+    </section>
+
+    <!-- AI技术展示区 -->
+    <section class="ai-showcase">
+        <div class="showcase-container">
+            <div class="showcase-content">
+                <h2>为什么选择我们</h2>
+                <p>我们的核心优势是算法全程可视化，让您深入理解各个算法的每个步骤。通过直观的图形化展示，复杂的数学公式和抽象概念变得清晰易懂。</p>
+                <p>从实验遇到问题，到如何解决，我们采用层层递进式的讲解方式，把原本复杂的原理拆解成独立模块，各个击破。让学习不再是枯燥的理论堆砌，而是充满探索乐趣的发现之旅。</p>
+
+                <div class="algorithm-showcase">
+                    <div class="algo-demo">
+                        <div class="algo-title">K-Means聚类算法</div>
+                        <div class="kmeans-viz">
+                            <div class="cluster-group cluster-1">
+                                <div class="centroid k1"></div>
+                                <div class="data-point p1"></div>
+                                <div class="data-point p2"></div>
+                                <div class="data-point p3"></div>
+                            </div>
+                            <div class="cluster-group cluster-2">
+                                <div class="centroid k2"></div>
+                                <div class="data-point p4"></div>
+                                <div class="data-point p5"></div>
+                                <div class="data-point p6"></div>
+                            </div>
+                            <div class="iteration-counter">迭代: <span class="iter-num">1</span></div>
+                        </div>
+                    </div>
+                    <div class="algo-demo">
+                        <div class="algo-title">线性回归拟合</div>
+                        <div class="linear-regression-viz">
+                            <div class="coordinate-system">
+                                <div class="axis x-axis"></div>
+                                <div class="axis y-axis"></div>
+                                <div class="data-scatter">
+                                    <div class="scatter-point" style="left: 15%; top: 70%;"></div>
+                                    <div class="scatter-point" style="left: 30%; top: 60%;"></div>
+                                    <div class="scatter-point" style="left: 45%; top: 45%;"></div>
+                                    <div class="scatter-point" style="left: 60%; top: 35%;"></div>
+                                    <div class="scatter-point" style="left: 75%; top: 25%;"></div>
+                                </div>
+                                <div class="regression-line"></div>
+                                <div class="formula">y = ax + b</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="algo-demo">
+                        <div class="algo-title">卷积神经网络</div>
+                        <div class="cnn-viz">
+                            <div class="input-image">
+                                <div class="pixel-grid">
+                                    <div class="pixel active"></div>
+                                    <div class="pixel"></div>
+                                    <div class="pixel active"></div>
+                                    <div class="pixel active"></div>
+                                    <div class="pixel active"></div>
+                                    <div class="pixel"></div>
+                                    <div class="pixel active"></div>
+                                    <div class="pixel active"></div>
+                                    <div class="pixel"></div>
+                                </div>
+                            </div>
+                            <div class="conv-filter">
+                                <div class="filter-kernel"></div>
+                                <div class="arrow">→</div>
+                            </div>
+                            <div class="feature-map">
+                                <div class="feature-cell active"></div>
+                                <div class="feature-cell"></div>
+                                <div class="feature-cell active"></div>
+                                <div class="feature-cell active"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="algo-demo">
+                        <div class="algo-title">随机森林决策</div>
+                        <div class="random-forest-viz">
+                            <div class="forest-container">
+                                <div class="decision-tree tree-1">
+                                    <div class="tree-root">根</div>
+                                    <div class="tree-branches">
+                                        <div class="branch-left">是</div>
+                                        <div class="branch-right">否</div>
+                                    </div>
+                                    <div class="tree-leaves">
+                                        <div class="leaf leaf-a">A</div>
+                                        <div class="leaf leaf-b">B</div>
+                                    </div>
+                                </div>
+                                <div class="decision-tree tree-2">
+                                    <div class="tree-root">根</div>
+                                    <div class="tree-branches">
+                                        <div class="branch-left">是</div>
+                                        <div class="branch-right">否</div>
+                                    </div>
+                                    <div class="tree-leaves">
+                                        <div class="leaf leaf-a">A</div>
+                                        <div class="leaf leaf-b">B</div>
+                                    </div>
+                                </div>
+                                <div class="decision-tree tree-3">
+                                    <div class="tree-root">根</div>
+                                    <div class="tree-branches">
+                                        <div class="branch-left">是</div>
+                                        <div class="branch-right">否</div>
+                                    </div>
+                                    <div class="tree-leaves">
+                                        <div class="leaf leaf-a">A</div>
+                                        <div class="leaf leaf-b">B</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="voting-result">投票: A</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="showcase-visual">
+                <div class="ai-brain-container">
+                    <div class="neural-network" id="neuralNetwork">
+                        <!-- 神经网络节点将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 课程特色 -->
+    <section class="features" id="features">
+        <div class="section-header">
+            <div class="section-tag">核心课程</div>
+            <h2 class="section-title">构建完整的AI知识体系</h2>
+            <p class="section-subtitle">从基础理论到前沿应用，循序渐进掌握人工智能技术</p>
+        </div>
+
+        <div class="features-grid">
+            <a href="src/pages/courses.html#all" class="feature-card featured-bundle" style="grid-column: span 2;">
+                <div class="bundle-badge">🎆 超值全套</div>
+                <div class="feature-icon" style="font-size: 2.5rem;"><i class="fas fa-robot" style="color: #4a9eff;"></i></div>
+                <h3 class="feature-title" style="color: var(--accent-light);">AI全套专栏</h3>
+                <p class="feature-description">
+                    <strong>🔥 一次订阅，全部解锁</strong>：包含机器学习、深度学习、Transformer、NLP 全部内容<br>
+                    <strong>💰 超级优惠</strong>：原价￥456，现价仅需<span style="color: #e74c3c; font-size: 1.3em; font-weight: bold;">￥299</span>，节省157元<br>
+                    <strong>🎯 从入门到专家</strong>：系统学习路径，38个章节全面覆盖AI核心技术
+                </p>
+            </a>
+
+            <a href="src/pages/courses.html#dl" class="feature-card">
+                <div class="feature-icon"><i class="fas fa-brain" style="color: #ff6b6b;"></i></div>
+                <h3 class="feature-title">深度学习进阶</h3>
+                <p class="feature-description">
+                    <strong>🎯 神经网络可视化</strong>：前向传播、反向传播全流程动画展示<br>
+                    <strong>📐 数学推导详解</strong>：激活函数、权重更新公式逐行解析<br>
+                    从CNN到RNN，从理论基础到PyTorch实战，精通深度学习核心技术
+                </p>
+            </a>
+
+            <a href="src/pages/courses.html#transformer" class="feature-card">
+                <div class="feature-icon"><i class="fas fa-bolt" style="color: #ffd93d;"></i></div>
+                <h3 class="feature-title">Transformer架构</h3>
+                <p class="feature-description">
+                    <strong>🎯 从可视化全过程到手撕源码</strong>：注意力机制动态图解，逐行代码实现<br>
+                    <strong>📐 数学公式拆解</strong>：Self-Attention、Position Encoding公式推导<br>
+                    深度掌握BERT、GPT核心原理，构建自己的大语言模型
+                </p>
+            </a>
+
+            <a href="src/pages/courses.html#ml" class="feature-card">
+                <div class="feature-icon"><i class="fas fa-chart-line" style="color: #4ecdc4;"></i></div>
+                <h3 class="feature-title">机器学习基础</h3>
+                <p class="feature-description">
+                    <strong>🎯 可视化算法过程</strong>：线性回归、K-Means聚类、决策树等核心算法动态演示<br>
+                    <strong>📐 公式拆解分析</strong>：梯度下降、损失函数逐步推导，数学原理清晰呈现<br>
+                    从线性回归到集成学习，全面掌握机器学习核心算法
+                </p>
+            </a>
+
+            <a href="src/pages/courses.html#nlp" class="feature-card">
+                <div class="feature-icon"><i class="fas fa-comments" style="color: #9b59b6;"></i></div>
+                <h3 class="feature-title">自然语言处理</h3>
+                <p class="feature-description">
+                    <strong>🎯 文本处理可视化</strong>：词向量空间、语义相似度计算过程展示<br>
+                    <strong>📐 NLP算法拆解</strong>：TF-IDF、Word2Vec、BERT原理公式推导<br>
+                    从文本分析到对话系统，构建智能NLP应用
+                </p>
+            </a>
+
+            <div class="feature-card">
+                <div class="feature-icon">🚀</div>
+                <h3 class="feature-title">项目实战</h3>
+                <p class="feature-description">
+                    <strong>🎯 端到端可视化</strong>：从数据预处理到模型部署全流程图示<br>
+                    <strong>📐 工程化实践</strong>：模型优化、性能调优、生产环境部署<br>
+                    真实企业级项目案例，完整的AI项目开发体验
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 数据展示 -->
+    <section class="stats" id="stats">
+        <div class="stats-container">
+            <div class="stat-item">
+                <span class="stat-number">10,000+</span>
+                <span class="stat-label">活跃学员</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">200+</span>
+                <span class="stat-label">精品课程</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">50+</span>
+                <span class="stat-label">行业专家</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">98%</span>
+                <span class="stat-label">就业率</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta" id="cta">
+        <div class="cta-content">
+            <h2 class="cta-title">开启你的AI学习之旅</h2>
+            <p class="cta-description">
+                加入信息革命，与全球优秀的AI工程师一起学习成长
+            </p>
+            <a href="src/pages/courses.html" class="btn btn-primary hero-btn">立即加入</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>信息革命</h3>
+                <p>专业的人工智能学习平台，致力于培养新一代AI技术人才，推动科技创新与产业发展。</p>
+            </div>
+
+            <div class="footer-section">
+                <h4>学习资源</h4>
+                <div class="footer-links">
+                    <a href="src/pages/courses.html">课程体系</a>
+                    <a href="src/pages/dashboard.html">学习路线</a>
+                    <a href="src/pages/study.html">项目实战</a>
+                    <a href="#">技术文档</a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h4>社区支持</h4>
+                <div class="footer-links">
+                    <a href="src/pages/qa.html">技术论坛</a>
+                    <a href="src/pages/study.html">学习小组</a>
+                    <a href="src/pages/qa.html">专家答疑</a>
+                    <a href="#">职业指导</a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h4>关于我们</h4>
+                <div class="footer-links">
+                    <a href="#">公司介绍</a>
+                    <a href="#">联系方式</a>
+                    <a href="#">加入我们</a>
+                    <a href="#">合作伙伴</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2025 信息革命 AI Learning Platform. All rights reserved. | 隐私政策 | 服务条款</p>
+        </div>
+    </footer>
+
+    <script src="src/utils/homepage.js"></script>
+</body>
+</html>

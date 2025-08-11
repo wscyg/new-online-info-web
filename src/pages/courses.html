@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI课程中心 - 探索未来科技</title>
+    <meta name="description" content="最前沿的AI课程，科技感十足的学习体验">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/courses.css">
+</head>
+<body class="tech-theme">
+    <!-- 背景动画 -->
+    <div id="particles-js"></div>
+    <div class="matrix-bg"></div>
+    
+    <!-- 导航栏 -->
+    <nav class="navbar tech-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>AI学习平台</h1>
+            </div>
+            <div class="nav-menu">
+                <a href="../../index.html" class="nav-link">首页</a>
+                <a href="courses.html" class="nav-link active">课程</a>
+                <a href="dashboard.html" class="nav-link">学习中心</a>
+                <a href="qa.html" class="nav-link">问答</a>
+                <a href="profile.html" class="nav-link">个人中心</a>
+                <div class="nav-auth">
+                    <button class="btn-login" onclick="showLogin()">登录</button>
+                    <button class="btn-register" onclick="showRegister()">注册</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero区域 -->
+    <section class="courses-hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title glitch-text" data-text="AI课程中心">AI课程中心</h1>
+                <p class="hero-subtitle typewriter">探索人工智能的无限可能，掌握未来科技核心</p>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">150+</div>
+                        <div class="stat-label">专业课程</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">10K+</div>
+                        <div class="stat-label">学习用户</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">95%</div>
+                        <div class="stat-label">完课率</div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="tech-cube">
+                    <div class="cube-face front"></div>
+                    <div class="cube-face back"></div>
+                    <div class="cube-face right"></div>
+                    <div class="cube-face left"></div>
+                    <div class="cube-face top"></div>
+                    <div class="cube-face bottom"></div>
+                </div>
+                <div class="algorithm-visuals">
+                    <div class="algorithm-matrix neural-network">
+                        <svg viewBox="0 0 100 100">
+                            <circle cx="20" cy="20" r="3" fill="#4a9eff"/>
+                            <circle cx="50" cy="20" r="3" fill="#4a9eff"/>
+                            <circle cx="80" cy="20" r="3" fill="#4a9eff"/>
+                            <circle cx="20" cy="50" r="3" fill="#64b5f6"/>
+                            <circle cx="50" cy="50" r="3" fill="#64b5f6"/>
+                            <circle cx="80" cy="50" r="3" fill="#64b5f6"/>
+                            <circle cx="20" cy="80" r="3" fill="#7c4dff"/>
+                            <circle cx="50" cy="80" r="3" fill="#7c4dff"/>
+                            <circle cx="80" cy="80" r="3" fill="#7c4dff"/>
+                            <line x1="20" y1="20" x2="20" y2="50" stroke="#4a9eff" stroke-width="0.5" opacity="0.5"/>
+                            <line x1="50" y1="20" x2="50" y2="50" stroke="#4a9eff" stroke-width="0.5" opacity="0.5"/>
+                            <line x1="80" y1="20" x2="80" y2="50" stroke="#4a9eff" stroke-width="0.5" opacity="0.5"/>
+                            <line x1="20" y1="50" x2="20" y2="80" stroke="#64b5f6" stroke-width="0.5" opacity="0.5"/>
+                            <line x1="50" y1="50" x2="50" y2="80" stroke="#64b5f6" stroke-width="0.5" opacity="0.5"/>
+                            <line x1="80" y1="50" x2="80" y2="80" stroke="#64b5f6" stroke-width="0.5" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="algorithm-matrix decision-tree">
+                        <svg viewBox="0 0 100 100">
+                            <rect x="40" y="10" width="20" height="10" fill="#4a9eff" rx="2"/>
+                            <rect x="20" y="35" width="15" height="10" fill="#64b5f6" rx="2"/>
+                            <rect x="65" y="35" width="15" height="10" fill="#64b5f6" rx="2"/>
+                            <rect x="10" y="60" width="10" height="10" fill="#7c4dff" rx="2"/>
+                            <rect x="30" y="60" width="10" height="10" fill="#7c4dff" rx="2"/>
+                            <rect x="60" y="60" width="10" height="10" fill="#7c4dff" rx="2"/>
+                            <rect x="80" y="60" width="10" height="10" fill="#7c4dff" rx="2"/>
+                            <line x1="50" y1="20" x2="27.5" y2="35" stroke="#4a9eff" stroke-width="1"/>
+                            <line x1="50" y1="20" x2="72.5" y2="35" stroke="#4a9eff" stroke-width="1"/>
+                            <line x1="27.5" y1="45" x2="15" y2="60" stroke="#64b5f6" stroke-width="1"/>
+                            <line x1="27.5" y1="45" x2="35" y2="60" stroke="#64b5f6" stroke-width="1"/>
+                            <line x1="72.5" y1="45" x2="65" y2="60" stroke="#64b5f6" stroke-width="1"/>
+                            <line x1="72.5" y1="45" x2="85" y2="60" stroke="#64b5f6" stroke-width="1"/>
+                        </svg>
+                    </div>
+                    <div class="algorithm-matrix clustering">
+                        <svg viewBox="0 0 100 100">
+                            <g class="cluster-1">
+                                <circle cx="25" cy="25" r="2" fill="#4a9eff"/>
+                                <circle cx="30" cy="20" r="2" fill="#4a9eff"/>
+                                <circle cx="20" cy="30" r="2" fill="#4a9eff"/>
+                                <circle cx="28" cy="28" r="2" fill="#4a9eff"/>
+                                <circle cx="25" cy="25" r="12" fill="none" stroke="#4a9eff" stroke-width="0.5" opacity="0.3"/>
+                            </g>
+                            <g class="cluster-2">
+                                <circle cx="70" cy="30" r="2" fill="#64b5f6"/>
+                                <circle cx="75" cy="25" r="2" fill="#64b5f6"/>
+                                <circle cx="65" cy="35" r="2" fill="#64b5f6"/>
+                                <circle cx="72" cy="32" r="2" fill="#64b5f6"/>
+                                <circle cx="70" cy="30" r="12" fill="none" stroke="#64b5f6" stroke-width="0.5" opacity="0.3"/>
+                            </g>
+                            <g class="cluster-3">
+                                <circle cx="50" cy="70" r="2" fill="#7c4dff"/>
+                                <circle cx="45" cy="65" r="2" fill="#7c4dff"/>
+                                <circle cx="55" cy="75" r="2" fill="#7c4dff"/>
+                                <circle cx="52" cy="68" r="2" fill="#7c4dff"/>
+                                <circle cx="50" cy="70" r="12" fill="none" stroke="#7c4dff" stroke-width="0.5" opacity="0.3"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="algorithm-matrix conv-matrix">
+                        <svg viewBox="0 0 100 100">
+                            <g class="matrix-grid">
+                                <rect x="10" y="10" width="15" height="15" fill="#4a9eff" opacity="0.3"/>
+                                <rect x="25" y="10" width="15" height="15" fill="#4a9eff" opacity="0.5"/>
+                                <rect x="40" y="10" width="15" height="15" fill="#4a9eff" opacity="0.7"/>
+                                <rect x="10" y="25" width="15" height="15" fill="#4a9eff" opacity="0.5"/>
+                                <rect x="25" y="25" width="15" height="15" fill="#64b5f6" opacity="0.9"/>
+                                <rect x="40" y="25" width="15" height="15" fill="#64b5f6" opacity="0.5"/>
+                                <rect x="10" y="40" width="15" height="15" fill="#4a9eff" opacity="0.7"/>
+                                <rect x="25" y="40" width="15" height="15" fill="#4a9eff" opacity="0.5"/>
+                                <rect x="40" y="40" width="15" height="15" fill="#4a9eff" opacity="0.3"/>
+                            </g>
+                            <g class="kernel">
+                                <rect x="60" y="25" width="8" height="8" fill="#7c4dff" opacity="0.8"/>
+                                <rect x="68" y="25" width="8" height="8" fill="#7c4dff" opacity="0.6"/>
+                                <rect x="60" y="33" width="8" height="8" fill="#7c4dff" opacity="0.6"/>
+                                <rect x="68" y="33" width="8" height="8" fill="#7c4dff" opacity="0.8"/>
+                            </g>
+                            <path d="M 55 33 L 60 33" stroke="#64b5f6" stroke-width="1" marker-end="url(#arrow)"/>
+                            <defs>
+                                <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+                                    <path d="M0,0 L0,6 L9,3 z" fill="#64b5f6"/>
+                                </marker>
+                            </defs>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 课程筛选 -->
+    <section class="course-filters">
+        <div class="container">
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-filter="all">全部课程</button>
+                <button class="filter-tab" data-filter="ml">机器学习</button>
+                <button class="filter-tab" data-filter="dl">深度学习</button>
+                <button class="filter-tab" data-filter="nlp">自然语言处理</button>
+                <button class="filter-tab" data-filter="cv">计算机视觉</button>
+                <button class="filter-tab" data-filter="rl">强化学习</button>
+            </div>
+            <div class="filter-controls">
+                <div class="search-box">
+                    <input type="text" id="courseSearch" placeholder="搜索课程...">
+                    <button class="search-btn">🔍</button>
+                </div>
+                <select class="sort-select" id="sortSelect">
+                    <option value="popular">最受欢迎</option>
+                    <option value="newest">最新发布</option>
+                    <option value="rating">评分最高</option>
+                    <option value="price-low">价格从低到高</option>
+                    <option value="price-high">价格从高到低</option>
+                </select>
+            </div>
+        </div>
+    </section>
+
+    <!-- 课程列表 -->
+    <section class="courses-section">
+        <div class="container">
+            <div class="courses-grid" id="coursesGrid">
+                <!-- 课程卡片将通过JavaScript动态加载 -->
+            </div>
+            <div class="load-more">
+                <button class="btn-load-more" onclick="loadMoreCourses()">
+                    <span>加载更多</span>
+                    <div class="loading-spinner"></div>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 课程详情弹窗 -->
+    <div id="courseModal" class="modal tech-modal">
+        <div class="modal-content course-modal-content">
+            <span class="close" onclick="hideCourseModal()">&times;</span>
+            <div class="course-detail">
+                <div class="course-header">
+                    <div class="course-image">
+                        <div class="course-badge" id="courseBadge">热门</div>
+                    </div>
+                    <div class="course-info">
+                        <h2 id="courseTitle">课程标题</h2>
+                        <p id="courseDescription">课程描述</p>
+                        <div class="course-meta">
+                            <span class="course-level" id="courseLevel">中级</span>
+                            <span class="course-duration" id="courseDuration">40小时</span>
+                            <span class="course-rating">
+                                <span class="stars">⭐⭐⭐⭐⭐</span>
+                                <span id="courseRating">4.8</span>
+                            </span>
+                        </div>
+                        <div class="course-price">
+                            <span class="original-price" id="originalPrice">¥1299</span>
+                            <span class="current-price" id="currentPrice">¥899</span>
+                        </div>
+                        <button class="btn-enroll" onclick="enrollCourse()">
+                            立即报名
+                        </button>
+                    </div>
+                </div>
+                <div class="course-chapters" id="courseChapters">
+                    <!-- 章节列表将通过JavaScript加载 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer tech-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>AI学习平台</h3>
+                    <p>引领AI教育未来，科技改变学习</p>
+                </div>
+                <div class="footer-section">
+                    <h4>技术栈</h4>
+                    <ul>
+                        <li><a href="#">TensorFlow</a></li>
+                        <li><a href="#">PyTorch</a></li>
+                        <li><a href="#">Scikit-learn</a></li>
+                        <li><a href="#">OpenCV</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>学习路径</h4>
+                    <ul>
+                        <li><a href="#">入门到精通</a></li>
+                        <li><a href="#">工程师进阶</a></li>
+                        <li><a href="#">算法专家</a></li>
+                        <li><a href="#">研究方向</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>联系方式</h4>
+                    <ul>
+                        <li>Tech@ailearn.com</li>
+                        <li>AI技术群：tech-ai-2024</li>
+                        <li>GitHub: @ailearn-platform</li>
+                        <li>Discord: AI Learning Hub</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="../utils/main.js"></script>
+    <script src="../utils/courses.js"></script>
+</body>
+</html>

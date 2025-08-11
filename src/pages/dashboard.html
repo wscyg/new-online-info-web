@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习中心 - AI智能学习平台</title>
+    <meta name="description" content="个性化学习中心，追踪学习进度，管理课程">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/dashboard.css">
+</head>
+<body class="dashboard-theme">
+    <!-- 动态背景 -->
+    <div class="dynamic-bg">
+        <div class="grid-pattern"></div>
+        <div class="floating-particles"></div>
+    </div>
+
+    <!-- 导航栏 -->
+    <nav class="navbar dashboard-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>AI学习平台</h1>
+            </div>
+            <div class="nav-menu">
+                <a href="../../index.html" class="nav-link">首页</a>
+                <a href="courses.html" class="nav-link">课程</a>
+                <a href="dashboard.html" class="nav-link active">学习中心</a>
+                <a href="qa.html" class="nav-link">问答</a>
+                <a href="profile.html" class="nav-link">个人中心</a>
+                <div class="nav-auth">
+                    <div class="user-menu">
+                        <span class="welcome-text">欢迎，学习者</span>
+                        <button class="btn-logout" onclick="handleLogout()">退出</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区 -->
+    <main class="dashboard-main">
+        <div class="container">
+            <!-- 顶部统计卡片 -->
+            <section class="stats-overview">
+                <div class="stats-grid">
+                    <div class="stat-card learning">
+                        <div class="stat-icon">📚</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" data-target="12">0</h3>
+                            <p class="stat-label">正在学习</p>
+                        </div>
+                        <div class="stat-trend up">+2</div>
+                    </div>
+                    <div class="stat-card completed">
+                        <div class="stat-icon">🏆</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" data-target="45">0</h3>
+                            <p class="stat-label">已完成</p>
+                        </div>
+                        <div class="stat-trend up">+5</div>
+                    </div>
+                    <div class="stat-card hours">
+                        <div class="stat-icon">⏰</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" data-target="128">0</h3>
+                            <p class="stat-label">学习时长(小时)</p>
+                        </div>
+                        <div class="stat-trend up">+8</div>
+                    </div>
+                    <div class="stat-card points">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" data-target="2580">0</h3>
+                            <p class="stat-label">学习积分</p>
+                        </div>
+                        <div class="stat-trend up">+150</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 主要内容网格 -->
+            <div class="dashboard-grid">
+                <!-- 左侧内容 -->
+                <div class="dashboard-left">
+                    <!-- 学习进度 -->
+                    <section class="progress-section">
+                        <div class="section-header">
+                            <h2>学习进度</h2>
+                            <button class="btn-view-all" onclick="showAllProgress()">查看全部</button>
+                        </div>
+                        <div class="progress-list" id="progressList">
+                            <!-- 动态加载进度内容 -->
+                        </div>
+                    </section>
+
+                    <!-- 学习计划 -->
+                    <section class="study-plan">
+                        <div class="section-header">
+                            <h2>今日学习计划</h2>
+                            <button class="btn-add-plan" onclick="showAddPlan()">添加计划</button>
+                        </div>
+                        <div class="plan-list" id="planList">
+                            <!-- 动态加载计划内容 -->
+                        </div>
+                    </section>
+
+                    <!-- 学习笔记 -->
+                    <section class="notes-section">
+                        <div class="section-header">
+                            <h2>最近笔记</h2>
+                            <button class="btn-create-note" onclick="createNote()">新建笔记</button>
+                        </div>
+                        <div class="notes-grid" id="notesGrid">
+                            <!-- 动态加载笔记内容 -->
+                        </div>
+                    </section>
+                </div>
+
+                <!-- 右侧内容 -->
+                <div class="dashboard-right">
+                    <!-- 学习日历 -->
+                    <section class="calendar-widget">
+                        <div class="section-header">
+                            <h2>学习日历</h2>
+                            <div class="calendar-nav">
+                                <button onclick="previousMonth()">&lt;</button>
+                                <span class="current-month" id="currentMonth">2024年8月</span>
+                                <button onclick="nextMonth()">&gt;</button>
+                            </div>
+                        </div>
+                        <div class="calendar-grid" id="calendarGrid">
+                            <!-- 动态生成日历 -->
+                        </div>
+                        <div class="calendar-legend">
+                            <div class="legend-item">
+                                <div class="legend-color study"></div>
+                                <span>有学习</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color complete"></div>
+                                <span>完成目标</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 成就系统 -->
+                    <section class="achievements">
+                        <div class="section-header">
+                            <h2>成就徽章</h2>
+                            <button class="btn-view-all" onclick="showAllAchievements()">查看全部</button>
+                        </div>
+                        <div class="achievements-grid" id="achievementsGrid">
+                            <!-- 动态加载成就 -->
+                        </div>
+                    </section>
+
+                    <!-- 推荐课程 -->
+                    <section class="recommended-courses">
+                        <div class="section-header">
+                            <h2>推荐课程</h2>
+                        </div>
+                        <div class="recommended-list" id="recommendedList">
+                            <!-- 动态加载推荐课程 -->
+                        </div>
+                    </section>
+
+                    <!-- 学习统计图表 -->
+                    <section class="study-charts">
+                        <div class="section-header">
+                            <h2>学习统计</h2>
+                            <select class="chart-period" id="chartPeriod">
+                                <option value="week">本周</option>
+                                <option value="month">本月</option>
+                                <option value="year">本年</option>
+                            </select>
+                        </div>
+                        <div class="charts-container">
+                            <div class="chart-item">
+                                <h4>学习时长趋势</h4>
+                                <canvas id="timeChart" width="300" height="150"></canvas>
+                            </div>
+                            <div class="chart-item">
+                                <h4>课程完成情况</h4>
+                                <canvas id="progressChart" width="300" height="150"></canvas>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 添加学习计划弹窗 -->
+    <div id="addPlanModal" class="modal dashboard-modal">
+        <div class="modal-content plan-modal">
+            <span class="close" onclick="hideAddPlan()">&times;</span>
+            <h2>添加学习计划</h2>
+            <form id="addPlanForm">
+                <div class="form-group">
+                    <label for="planTitle">计划标题</label>
+                    <input type="text" id="planTitle" required placeholder="输入学习计划标题">
+                </div>
+                <div class="form-group">
+                    <label for="planCourse">选择课程</label>
+                    <select id="planCourse" required>
+                        <option value="">请选择课程</option>
+                        <!-- 动态加载课程选项 -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="planTime">预计时长</label>
+                    <input type="number" id="planTime" min="15" max="480" step="15" placeholder="分钟">
+                </div>
+                <div class="form-group">
+                    <label for="planDate">计划日期</label>
+                    <input type="date" id="planDate" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" onclick="hideAddPlan()">取消</button>
+                    <button type="submit">添加计划</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 笔记编辑弹窗 -->
+    <div id="noteModal" class="modal dashboard-modal">
+        <div class="modal-content note-modal">
+            <span class="close" onclick="hideNoteModal()">&times;</span>
+            <h2 id="noteModalTitle">新建笔记</h2>
+            <form id="noteForm">
+                <div class="form-group">
+                    <label for="noteTitle">笔记标题</label>
+                    <input type="text" id="noteTitle" required placeholder="输入笔记标题">
+                </div>
+                <div class="form-group">
+                    <label for="noteContent">笔记内容</label>
+                    <textarea id="noteContent" rows="10" placeholder="在这里输入你的学习笔记..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="noteTag">标签</label>
+                    <input type="text" id="noteTag" placeholder="添加标签，用逗号分隔">
+                </div>
+                <div class="form-actions">
+                    <button type="button" onclick="hideNoteModal()">取消</button>
+                    <button type="submit">保存笔记</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../utils/main.js"></script>
+    <script src="../utils/dashboard.js"></script>
+</body>
+</html>
