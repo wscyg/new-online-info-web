@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的订单 - AI学习平台</title>
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/theme.css">
+    <style>
+        .orders-page {
+            background: var(--light);
+            min-height: 100vh;
+            color: var(--dark);
+            transition: all 0.3s ease;
+        }
+        
+        [data-theme="dark"] .orders-page {
+            background: linear-gradient(135deg, #0a0e27 0%, #151a3d 100%);
+            color: #e0e6ff;
+        }
+        
+        .orders-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .orders-header {
+            margin-bottom: 2rem;
+        }
+        
+        .orders-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .orders-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--gray-100);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        [data-theme="dark"] .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: var(--gray-500);
+            font-size: 0.9rem;
+        }
+        
+        .orders-list {
+            background: var(--gray-100);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        [data-theme="dark"] .orders-list {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background: var(--light);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+        
+        [data-theme="dark"] .order-item {
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .order-info h3 {
+            margin: 0 0 0.5rem 0;
+            color: var(--dark);
+        }
+        
+        [data-theme="dark"] .order-info h3 {
+            color: #e0e6ff;
+        }
+        
+        .order-meta {
+            color: var(--gray-500);
+            font-size: 0.9rem;
+        }
+        
+        .order-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .status-pending {
+            background: #ff9800;
+            color: white;
+        }
+        
+        .status-expired {
+            background: #f44336;
+            color: white;
+        }
+        
+        .loading, .error {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray-500);
+        }
+    </style>
+</head>
+<body class="orders-page">
+    <!-- 导航栏 -->
+    <nav class="nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="/index.html" class="logo">信息革命</a>
+            </div>
+            <div class="nav-menu">
+                <a href="/index.html" class="nav-link">首页</a>
+                <a href="/src/pages/courses.html" class="nav-link">课程</a>
+                <a href="/src/pages/dashboard.html" class="nav-link">学习中心</a>
+                <a href="/src/pages/profile.html" class="nav-link">个人中心</a>
+            </div>
+            <div class="nav-auth">
+                <div class="auth-container" id="authContainer">
+                    <a href="/src/pages/login.html" class="btn-login">登录</a>
+                    <a href="/src/pages/register.html" class="btn-register">注册</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="orders-container">
+        <header class="orders-header">
+            <h1 class="orders-title">我的订单</h1>
+            <p>管理您的课程订阅和购买记录</p>
+        </header>
+
+        <!-- 订单统计 -->
+        <div id="ordersStats" class="orders-stats">
+            <div class="stat-card">
+                <span class="stat-number" id="totalOrders">-</span>
+                <span class="stat-label">全部订单</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="activeOrders">-</span>
+                <span class="stat-label">已支付</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="pendingOrders">-</span>
+                <span class="stat-label">待支付</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="expiredOrders">-</span>
+                <span class="stat-label">已过期</span>
+            </div>
+        </div>
+
+        <!-- 订单列表 -->
+        <div class="orders-list">
+            <div id="loadingState" class="loading">
+                正在加载订单信息...
+            </div>
+            
+            <div id="errorState" class="error" style="display: none;">
+                <h3>加载失败</h3>
+                <p>无法获取订单信息，请稍后重试</p>
+                <button onclick="loadOrders()" class="btn-secondary">重新加载</button>
+            </div>
+            
+            <div id="ordersContent" style="display: none;">
+                <!-- 订单列表将在这里动态生成 -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            loadOrderStats();
+            loadOrders();
+        });
+        
+        // 检查登录状态
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/src/pages/login.html?returnUrl=' + encodeURIComponent(location.pathname);
+                return;
+            }
+        }
+        
+        // 加载订单统计
+        async function loadOrderStats() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/subscriptions/stats', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                if (data.code === 200) {
+                    const stats = data.data;
+                    document.getElementById('totalOrders').textContent = stats.total || 0;
+                    document.getElementById('activeOrders').textContent = stats.active || 0;
+                    document.getElementById('pendingOrders').textContent = stats.pending || 0;
+                    document.getElementById('expiredOrders').textContent = stats.expired || 0;
+                }
+            } catch (error) {
+                console.error('加载统计失败:', error);
+            }
+        }
+        
+        // 加载订单列表
+        async function loadOrders() {
+            try {
+                showLoading();
+                
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/subscriptions/my', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                if (data.code === 200) {
+                    displayOrders(data.data.subscriptions || []);
+                    showContent();
+                } else {
+                    showError('获取订单失败: ' + data.message);
+                }
+            } catch (error) {
+                console.error('加载订单失败:', error);
+                showError('网络连接失败，请检查网络后重试');
+            }
+        }
+        
+        // 显示订单列表
+        function displayOrders(orders) {
+            const container = document.getElementById('ordersContent');
+            
+            if (orders.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="text-align: center; padding: 3rem;">
+                        <h3>暂无订单</h3>
+                        <p>您还没有购买任何课程</p>
+                        <a href="/src/pages/courses.html" class="btn-primary">去选购课程</a>
+                    </div>
+                `;
+                return;
+            }
+            
+            const ordersHTML = orders.map(order => {
+                const statusClass = getStatusClass(order.status);
+                const statusText = getStatusText(order.status);
+                
+                return `
+                    <div class="order-item">
+                        <div class="order-info">
+                            <h3>${order.courseName || '未知课程'}</h3>
+                            <div class="order-meta">
+                                订单号: ${order.orderNo} | 创建时间: ${formatDate(order.createdAt)}
+                            </div>
+                            <div class="order-meta">
+                                支付方式: ${getPaymentMethodText(order.paymentMethod)} | 金额: ¥${order.amount}
+                            </div>
+                        </div>
+                        <div class="order-actions">
+                            <span class="order-status ${statusClass}">${statusText}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            container.innerHTML = ordersHTML;
+        }
+        
+        // 获取状态样式类
+        function getStatusClass(status) {
+            const classes = {
+                'active': 'status-active',
+                'pending': 'status-pending',
+                'expired': 'status-expired',
+                'cancelled': 'status-expired'
+            };
+            return classes[status] || 'status-pending';
+        }
+        
+        // 获取状态文本
+        function getStatusText(status) {
+            const texts = {
+                'active': '已支付',
+                'pending': '待支付',
+                'expired': '已过期',
+                'cancelled': '已取消'
+            };
+            return texts[status] || '未知状态';
+        }
+        
+        // 获取支付方式文本
+        function getPaymentMethodText(method) {
+            const methods = {
+                'alipay': '支付宝',
+                'wechat': '微信支付',
+                'card': '银行卡',
+                'balance': '账户余额',
+                'free': '免费'
+            };
+            return methods[method] || '未知';
+        }
+        
+        // 格式化日期
+        function formatDate(dateString) {
+            if (!dateString) return '未知时间';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('zh-CN') + ' ' + date.toLocaleTimeString('zh-CN');
+        }
+        
+        // 显示加载状态
+        function showLoading() {
+            document.getElementById('loadingState').style.display = 'block';
+            document.getElementById('errorState').style.display = 'none';
+            document.getElementById('ordersContent').style.display = 'none';
+        }
+        
+        // 显示错误状态
+        function showError(message) {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('errorState').style.display = 'block';
+            document.getElementById('ordersContent').style.display = 'none';
+            document.querySelector('#errorState p').textContent = message;
+        }
+        
+        // 显示内容
+        function showContent() {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('errorState').style.display = 'none';
+            document.getElementById('ordersContent').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

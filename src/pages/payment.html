@@ -10,6 +10,51 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles/main.css">
     <link rel="stylesheet" href="../styles/payment.css">
+    <style>
+        /* 禁用的支付方式样式 */
+        .payment-method.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background: #f5f5f5;
+        }
+        
+        .payment-method.disabled .method-info,
+        .payment-method.disabled .method-name,
+        .payment-method.disabled .method-desc {
+            color: #999;
+        }
+        
+        .coming-soon {
+            font-size: 0.8em;
+            color: #ff6b6b;
+            font-weight: normal;
+        }
+        
+        /* 免费课程提示 */
+        .free-course-notice {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .free-course-notice h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.5em;
+        }
+        
+        .free-course-notice p {
+            margin: 0;
+            font-size: 1.1em;
+        }
+        
+        /* 隐藏支付相关元素 */
+        .hide-for-free {
+            display: none;
+        }
+    </style>
 </head>
 <body class="payment-theme">
     <!-- 安全背景 -->
@@ -86,31 +131,31 @@
                                 <div class="method-check">✓</div>
                             </div>
 
-                            <!-- 微信支付 -->
-                            <div class="payment-method" data-method="wechat">
+                            <!-- 微信支付 - 暂时不可用 -->
+                            <div class="payment-method disabled" data-method="wechat">
                                 <div class="method-icon wechat">💬</div>
                                 <div class="method-info">
-                                    <div class="method-name">微信支付</div>
+                                    <div class="method-name">微信支付 <span class="coming-soon">（即将开通）</span></div>
                                     <div class="method-desc">微信安全支付，支持零钱、银行卡</div>
                                 </div>
                                 <div class="method-check"></div>
                             </div>
 
-                            <!-- 银行卡 -->
-                            <div class="payment-method" data-method="card">
+                            <!-- 银行卡 - 暂时不可用 -->
+                            <div class="payment-method disabled" data-method="card">
                                 <div class="method-icon card">💳</div>
                                 <div class="method-info">
-                                    <div class="method-name">银行卡支付</div>
+                                    <div class="method-name">银行卡支付 <span class="coming-soon">（即将开通）</span></div>
                                     <div class="method-desc">支持储蓄卡、信用卡直接支付</div>
                                 </div>
                                 <div class="method-check"></div>
                             </div>
 
-                            <!-- 余额支付 -->
-                            <div class="payment-method" data-method="balance">
+                            <!-- 余额支付 - 暂时不可用 -->
+                            <div class="payment-method disabled" data-method="balance">
                                 <div class="method-icon balance">💰</div>
                                 <div class="method-info">
-                                    <div class="method-name">账户余额</div>
+                                    <div class="method-name">账户余额 <span class="coming-soon">（即将开通）</span></div>
                                     <div class="method-desc">当前余额: ¥1,258.00</div>
                                 </div>
                                 <div class="method-check"></div>

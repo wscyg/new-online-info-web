@@ -38,6 +38,10 @@ class ApiService {
 
             if (!response.ok) {
                 if (response.status === 401) {
+                    console.error('=== API 401错误 ===');
+                    console.error('请求URL:', `${API_BASE_URL}${url}`);
+                    console.error('Token存在:', !!this.token);
+                    console.error('即将清除token并跳转到登录页');
                     this.clearToken();
                     window.location.href = '/src/pages/login.html';
                 }
@@ -121,7 +125,14 @@ class AuthAPI {
     }
 
     async login(credentials) {
-        const response = await this.api.post('/auth/login', credentials);
+        // 适配后端接口，将username转换为loginAccount
+        const loginData = {
+            loginAccount: credentials.username || credentials.loginAccount,
+            password: credentials.password,
+            loginType: credentials.loginType || 'password',
+            deviceType: 'web'
+        };
+        const response = await this.api.post('/auth/login', loginData);
         if (response.data && response.data.token) {
             this.api.setToken(response.data.token);
             localStorage.setItem('user', JSON.stringify(response.data.user));

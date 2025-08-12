@@ -239,19 +239,30 @@ async function handleRegister(e) {
 
 // 检查认证状态
 function checkAuthStatus() {
+    console.log('=== main.js 认证状态检查 ===');
     const token = localStorage.getItem('token');
     const user = localStorage.getItem('user');
     
+    console.log('Token:', token ? `存在 (长度: ${token.length})` : '不存在');
+    console.log('User:', user ? `存在 (长度: ${user.length})` : '不存在');
+    
     if (token && user) {
         try {
+            console.log('尝试解析用户数据:', user);
             currentUser = JSON.parse(user);
             isAuthenticated = true;
+            console.log('用户数据解析成功:', currentUser.username);
             updateAuthUI();
         } catch (error) {
             console.error('用户信息解析错误:', error);
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
+            console.error('原始用户数据:', user);
+            console.warn('即将清除localStorage - 这可能是导致登录状态丢失的原因');
+            // 暂时注释掉自动清除，用于调试
+            // localStorage.removeItem('token');
+            // localStorage.removeItem('user');
         }
+    } else {
+        console.log('Token或User数据缺失，未执行认证');
     }
 }
 

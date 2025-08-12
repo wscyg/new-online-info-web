@@ -15,58 +15,23 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #0a0e27 0%, #151a3d 100%);
+            background: #f8fafc;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
-        }
-
-        .background-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            opacity: 0.3;
-        }
-
-        .particle {
-            position: absolute;
-            background: linear-gradient(135deg, #4a9eff, #00d4ff);
-            border-radius: 50%;
-            animation: float 20s infinite;
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0) translateX(0) scale(1);
-                opacity: 0;
-            }
-            10% {
-                opacity: 0.4;
-            }
-            90% {
-                opacity: 0.4;
-            }
-            50% {
-                transform: translateY(-500px) translateX(100px) scale(1.5);
-            }
+            margin: 0;
+            color: #1a202c;
         }
 
         .login-container {
-            position: relative;
-            z-index: 1;
-            background: rgba(17, 24, 39, 0.8);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 48px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 32px;
             width: 100%;
-            max-width: 480px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            max-width: 400px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             animation: slideUp 0.6s ease-out;
         }
 
@@ -83,98 +48,68 @@
 
         .logo-section {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 32px;
         }
 
         .logo {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #4a9eff, #00d4ff);
-            border-radius: 20px;
-            margin-bottom: 24px;
-            box-shadow: 0 10px 30px rgba(74, 158, 255, 0.3);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
+            width: 60px;
+            height: 60px;
+            background: #4f46e5;
+            border-radius: 12px;
+            margin-bottom: 16px;
         }
 
         .logo i {
-            font-size: 36px;
+            font-size: 24px;
             color: white;
         }
 
         h1 {
-            color: #ffffff;
-            font-size: 32px;
-            font-weight: 700;
+            color: #1a202c;
+            font-size: 24px;
+            font-weight: 600;
             margin-bottom: 8px;
         }
 
         .subtitle {
-            color: #9ca3af;
-            font-size: 16px;
+            color: #64748b;
+            font-size: 14px;
         }
 
         .form-group {
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         .form-label {
             display: block;
-            color: #d1d5db;
+            color: #374151;
             font-size: 14px;
             font-weight: 500;
-            margin-bottom: 8px;
-        }
-
-        .input-wrapper {
-            position: relative;
-        }
-
-        .input-icon {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #6b7280;
-            font-size: 18px;
-            transition: color 0.3s;
+            margin-bottom: 6px;
         }
 
         .form-input {
             width: 100%;
-            padding: 14px 16px 14px 48px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            color: #ffffff;
+            padding: 12px 16px;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            color: #1a202c;
             font-size: 16px;
-            transition: all 0.3s;
+            transition: all 0.2s;
         }
 
         .form-input:focus {
             outline: none;
-            background: rgba(255, 255, 255, 0.08);
-            border-color: #4a9eff;
-            box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.1);
-        }
-
-        .form-input:focus + .input-icon {
-            color: #4a9eff;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
 
         .form-input::placeholder {
-            color: #6b7280;
+            color: #9ca3af;
         }
 
         .password-toggle {
@@ -206,20 +141,20 @@
         }
 
         .checkbox {
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
             appearance: none;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 6px;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
             cursor: pointer;
             position: relative;
-            transition: all 0.3s;
+            transition: all 0.2s;
         }
 
         .checkbox:checked {
-            background: linear-gradient(135deg, #4a9eff, #00d4ff);
-            border-color: transparent;
+            background: #4f46e5;
+            border-color: #4f46e5;
         }
 
         .checkbox:checked::after {
@@ -229,43 +164,41 @@
             left: 50%;
             transform: translate(-50%, -50%);
             color: white;
-            font-size: 14px;
+            font-size: 12px;
         }
 
         .remember-label {
-            color: #d1d5db;
+            color: #374151;
             font-size: 14px;
             cursor: pointer;
         }
 
         .forgot-link {
-            color: #4a9eff;
+            color: #4f46e5;
             font-size: 14px;
             text-decoration: none;
-            transition: color 0.3s;
+            transition: color 0.2s;
         }
 
         .forgot-link:hover {
-            color: #00d4ff;
+            color: #4338ca;
         }
 
         .login-btn {
             width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #4a9eff, #00d4ff);
+            padding: 12px 16px;
+            background: #4f46e5;
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 6px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 10px 30px rgba(74, 158, 255, 0.3);
+            transition: all 0.2s;
         }
 
         .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 40px rgba(74, 158, 255, 0.4);
+            background: #4338ca;
         }
 
         .login-btn:active {
@@ -326,28 +259,28 @@
 
         .register-link {
             text-align: center;
-            color: #9ca3af;
+            color: #64748b;
             font-size: 14px;
         }
 
         .register-link a {
-            color: #4a9eff;
+            color: #4f46e5;
             text-decoration: none;
-            font-weight: 600;
-            transition: color 0.3s;
+            font-weight: 500;
+            transition: color 0.2s;
         }
 
         .register-link a:hover {
-            color: #00d4ff;
+            color: #4338ca;
         }
 
         .error-message {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 8px;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 6px;
             padding: 12px;
-            margin-bottom: 20px;
-            color: #f87171;
+            margin-bottom: 16px;
+            color: #dc2626;
             font-size: 14px;
             display: none;
         }
@@ -391,35 +324,26 @@
     </style>
 </head>
 <body>
-    <div class="background-animation" id="backgroundAnimation"></div>
-
     <div class="login-container">
         <div class="logo-section">
             <div class="logo">
                 <i class="fas fa-robot"></i>
             </div>
             <h1>欢迎回来</h1>
-            <p class="subtitle">登录您的账户，继续学习之旅</p>
+            <p class="subtitle">登录到信息革命平台</p>
         </div>
 
         <div class="error-message" id="errorMessage"></div>
 
         <form id="loginForm">
             <div class="form-group">
-                <label class="form-label">用户名/邮箱/手机号</label>
-                <div class="input-wrapper">
-                    <i class="fas fa-user input-icon"></i>
-                    <input type="text" class="form-input" id="username" placeholder="请输入用户名、邮箱或手机号" required>
-                </div>
+                <label class="form-label">用户名或邮箱</label>
+                <input type="text" class="form-input" id="username" placeholder="请输入用户名或邮箱" required>
             </div>
 
             <div class="form-group">
                 <label class="form-label">密码</label>
-                <div class="input-wrapper">
-                    <i class="fas fa-lock input-icon"></i>
-                    <input type="password" class="form-input" id="password" placeholder="请输入密码" required>
-                    <i class="fas fa-eye password-toggle" id="passwordToggle"></i>
-                </div>
+                <input type="password" class="form-input" id="password" placeholder="请输入密码" required>
             </div>
 
             <div class="form-options">
@@ -435,27 +359,6 @@
             </button>
         </form>
 
-        <div class="divider">
-            <div class="divider-line"></div>
-            <span class="divider-text">或</span>
-            <div class="divider-line"></div>
-        </div>
-
-        <div class="social-login">
-            <button class="social-btn">
-                <i class="fab fa-weixin"></i>
-                <span style="font-size: 14px;">微信</span>
-            </button>
-            <button class="social-btn">
-                <i class="fab fa-qq"></i>
-                <span style="font-size: 14px;">QQ</span>
-            </button>
-            <button class="social-btn">
-                <i class="fab fa-github"></i>
-                <span style="font-size: 14px;">GitHub</span>
-            </button>
-        </div>
-
         <div class="register-link">
             还没有账号？<a href="register.html">立即注册</a>
         </div>
@@ -465,33 +368,6 @@
         import '../utils/api.js';
         import '../utils/notification.js';
 
-        // 创建背景动画粒子
-        function createParticles() {
-            const container = document.getElementById('backgroundAnimation');
-            for (let i = 0; i < 20; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.width = Math.random() * 4 + 2 + 'px';
-                particle.style.height = particle.style.width;
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.top = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 20 + 's';
-                particle.style.animationDuration = (Math.random() * 20 + 20) + 's';
-                container.appendChild(particle);
-            }
-        }
-
-        createParticles();
-
-        // 密码显示/隐藏切换
-        const passwordToggle = document.getElementById('passwordToggle');
-        const passwordInput = document.getElementById('password');
-        
-        passwordToggle.addEventListener('click', () => {
-            const type = passwordInput.type === 'password' ? 'text' : 'password';
-            passwordInput.type = type;
-            passwordToggle.className = type === 'password' ? 'fas fa-eye password-toggle' : 'fas fa-eye-slash password-toggle';
-        });
 
         // 登录表单提交
         const loginForm = document.getElementById('loginForm');
@@ -517,14 +393,30 @@
             errorMessage.classList.remove('show');
 
             try {
+                console.log('=== 开始登录请求 ===');
+                console.log('用户名:', username);
+                console.log('密码长度:', password.length);
+                
                 const response = await window.API.auth.login({
                     username,
                     password,
                     rememberMe
                 });
+                
+                console.log('=== 登录响应 ===');
+                console.log('响应码:', response.code);
+                console.log('响应数据:', response.data);
+                console.log('完整响应:', response);
 
                 if (response.code === 200 && response.data) {
                     window.notification.success('登录成功！正在跳转...');
+                    
+                    // 验证登录信息是否正确保存
+                    console.log('=== 登录成功后验证 ===');
+                    console.log('Token已保存:', !!localStorage.getItem('token'));
+                    console.log('User已保存:', !!localStorage.getItem('user'));
+                    console.log('Token内容:', localStorage.getItem('token'));
+                    console.log('User内容:', localStorage.getItem('user'));
                     
                     // 保存记住我状态
                     if (rememberMe) {
@@ -535,8 +427,24 @@
 
                     // 延迟跳转以显示成功消息
                     setTimeout(() => {
+                        // 跳转前再次验证
+                        console.log('=== 跳转前再次验证 ===');
+                        console.log('Token状态:', !!localStorage.getItem('token'));
+                        console.log('User状态:', !!localStorage.getItem('user'));
+                        
                         const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
-                        window.location.href = returnUrl || '/';
+                        if (returnUrl) {
+                            // 处理相对路径
+                            if (returnUrl === '/') {
+                                window.location.href = '/';
+                            } else if (returnUrl.startsWith('/')) {
+                                window.location.href = returnUrl;
+                            } else {
+                                window.location.href = `/src/pages/${returnUrl}`;
+                            }
+                        } else {
+                            window.location.href = '/';
+                        }
                     }, 1000);
                 } else {
                     showError(response.message || '登录失败，请检查用户名和密码');

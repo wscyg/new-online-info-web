@@ -268,11 +268,76 @@ function initializeParticles() {
     }
 }
 
+// 从API加载课程数据
+async function loadCoursesFromAPI() {
+    try {
+        const response = await fetch('http://localhost:8080/api/courses');
+        const data = await response.json();
+        
+        if (data.code === 200 && data.data) {
+            // 将API数据转换为前端需要的格式
+            allCourses = data.data.map(course => ({
+                id: course.id,
+                title: course.title,
+                description: course.description,
+                category: getCategoryKey(course.categoryId),
+                level: mapDifficulty(course.difficulty),
+                duration: `${course.durationHours || 20}小时`,
+                rating: course.rating || 4.5,
+                originalPrice: course.originalPrice || course.price,
+                currentPrice: course.price,
+                badge: course.isFree ? '免费' : '精品',
+                students: course.enrollmentCount || 100,
+                chapters: [], // 章节信息需要单独API获取
+                instructor: '专业讲师',
+                tags: ['AI', '机器学习', '深度学习'] // 可以根据分类生成标签
+            }));
+        } else {
+            throw new Error('API返回数据格式错误');
+        }
+    } catch (error) {
+        console.error('API加载失败:', error);
+        throw error;
+    }
+}
+
+// 根据categoryId获取分类键值
+function getCategoryKey(categoryId) {
+    const categoryMap = {
+        1: 'ai',
+        2: 'dl',
+        3: 'ml', 
+        4: 'nlp',
+        5: 'cv',
+        6: 'rl'
+    };
+    return categoryMap[categoryId] || 'ai';
+}
+
+// 映射难度等级
+function mapDifficulty(difficulty) {
+    const difficultyMap = {
+        'beginner': '初级',
+        'intermediate': '中级',
+        'advanced': '高级'
+    };
+    return difficultyMap[difficulty] || '初级';
+}
+
 // 初始化课程数据
-function initializeCourses() {
-    allCourses = [...coursesData];
-    filterAndSortCourses();
-    renderCourses();
+async function initializeCourses() {
+    try {
+        // 从API加载真实课程数据
+        await loadCoursesFromAPI();
+        filterAndSortCourses();
+        renderCourses();
+    } catch (error) {
+        console.error('加载课程数据失败:', error);
+        // 使用回退数据
+        allCourses = [...coursesData];
+        filterAndSortCourses();
+        renderCourses();
+    }
 }
 
 // 设置事件监听器
@@ -463,7 +528,7 @@ function loadMoreCourses() {
 }
 
 // 显示课程详情弹窗
-function showCourseModal(courseId) {
+async function showCourseModal(courseId) {
     const course = allCourses.find(c => c.id === courseId);
     if (!course) return;
 
@@ -479,20 +544,14 @@ function showCourseModal(courseId) {
 
     // 渲染章节列表
     const chaptersContainer = document.getElementById('courseChapters');
+    
+    // 先显示加载状态
     chaptersContainer.innerHTML = `
         <h3>课程内容</h3>
         <div class="chapters-list">
-            ${course.chapters.map((chapter, index) => `
-                <div class="chapter-item">
-                    <div class="chapter-number">${index + 1}</div>
-                    <div class="chapter-title">${chapter}</div>
-                    <div class="chapter-duration">45分钟</div>
-                </div>
-            `).join('')}
-        </div>
-        <div class="course-tags">
-            <h4>技术标签</h4>
-            ${course.tags.map(tag => `<span class="tech-tag">${tag}</span>`).join('')}
+            <div style="text-align: center; padding: 2rem; color: #8892b0;">
+                正在加载章节信息...
+            </div>
         </div>
     `;
 
@@ -502,6 +561,74 @@ function showCourseModal(courseId) {
     
     // 存储当前课程ID用于报名
     window.currentCourseId = courseId;
+    
+    // 异步加载章节信息
+    try {
+        const chapters = await loadCourseChapters(courseId);
+        displayCourseChapters(chapters, course.tags, chaptersContainer);
+    } catch (error) {
+        console.error('加载章节失败:', error);
+        // 使用回退数据或显示错误
+        displayFallbackChapters(course.chapters, course.tags, chaptersContainer);
+    }
+}
+
+// 加载课程章节
+async function loadCourseChapters(courseId) {
+    try {
+        const response = await fetch(`http://localhost:8080/api/content/courses/${courseId}/chapters`);
+        const data = await response.json();
+        
+        if (data.code === 200 && data.data) {
+            return data.data;
+        } else {
+            throw new Error('无法获取章节信息');
+        }
+    } catch (error) {
+        console.error('章节加载失败:', error);
+        throw error;
+    }
+}
+
+// 显示课程章节
+function displayCourseChapters(chapters, tags, container) {
+    container.innerHTML = `
+        <h3>课程内容</h3>
+        <div class="chapters-list">
+            ${chapters.map((chapter, index) => `
+                <div class="chapter-item">
+                    <div class="chapter-number">${index + 1}</div>
+                    <div class="chapter-title">${chapter.title}</div>
+                    <div class="chapter-duration">${chapter.durationMinutes || 45}分钟</div>
+                    ${chapter.isFree ? '<span class="free-badge">免费</span>' : ''}
+                </div>
+            `).join('')}
+        </div>
+        <div class="course-tags">
+            <h4>技术标签</h4>
+            ${tags.map(tag => `<span class="tech-tag">${tag}</span>`).join('')}
+        </div>
+    `;
+}
+
+// 显示回退章节数据
+function displayFallbackChapters(chapters, tags, container) {
+    container.innerHTML = `
+        <h3>课程内容</h3>
+        <div class="chapters-list">
+            ${chapters.length > 0 ? chapters.map((chapter, index) => `
+                <div class="chapter-item">
+                    <div class="chapter-number">${index + 1}</div>
+                    <div class="chapter-title">${chapter}</div>
+                    <div class="chapter-duration">45分钟</div>
+                </div>
+            `).join('') : '<div style="text-align: center; color: #8892b0;">课程内容制作中</div>'}
+        </div>
+        <div class="course-tags">
+            <h4>技术标签</h4>
+            ${tags.map(tag => `<span class="tech-tag">${tag}</span>`).join('')}
+        </div>
+    `;
 }
 
 // 隐藏课程详情弹窗

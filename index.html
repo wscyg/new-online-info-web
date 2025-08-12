@@ -39,8 +39,8 @@
             <div class="nav-actions">
                 <!-- 登录状态 -->
                 <div class="auth-container" id="authContainer">
-                    <a href="src/pages/login.html" class="btn btn-outline login-btn" id="loginBtn">登录</a>
-                    <a href="src/pages/register.html" class="btn btn-primary register-btn" id="registerBtn">注册</a>
+                    <a href="src/pages/login.html?returnUrl=/" class="btn btn-outline login-btn" id="loginBtn">登录</a>
+                    <a href="src/pages/register.html?returnUrl=/" class="btn btn-primary register-btn" id="registerBtn">注册</a>
                 </div>
                 <!-- 用户头像 (登录后显示) -->
                 <div class="user-profile" id="userProfile" style="display: none;">
@@ -48,19 +48,79 @@
                         <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><circle cx='20' cy='20' r='18' fill='%234a9eff'/><circle cx='20' cy='16' r='6' fill='white'/><path d='M8 32c0-6.6 5.4-12 12-12s12 5.4 12 12' fill='white'/></svg>" alt="用户头像" id="userAvatar">
                     </div>
                     <div class="user-menu" id="userMenu">
-                        <div class="user-info">
-                            <div class="user-name" id="userName">用户名</div>
-                            <div class="user-email" id="userEmail">user@example.com</div>
+                        <div class="user-info-card">
+                            <div class="user-avatar-small">
+                                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><circle cx='20' cy='20' r='18' fill='%234a9eff'/><circle cx='20' cy='16' r='6' fill='white'/><path d='M8 32c0-6.6 5.4-12 12-12s12 5.4 12 12' fill='white'/></svg>" alt="用户头像" id="userAvatarSmall">
+                            </div>
+                            <div class="user-details">
+                                <div class="user-name" id="userName">用户名</div>
+                                <div class="user-level">Lv.1 学习者</div>
+                            </div>
+                            <div class="user-points">
+                                <span class="points-count" id="userPoints">0</span>
+                                <span class="points-label">积分</span>
+                            </div>
                         </div>
                         <div class="menu-divider"></div>
-                        <a href="src/pages/profile.html" class="menu-item">个人资料</a>
-                        <a href="src/pages/courses.html" class="menu-item">我的课程</a>
-                        <a href="src/pages/dashboard.html" class="menu-item">学习中心</a>
-                        <a href="src/pages/profile.html#settings" class="menu-item">设置</a>
+                        
+                        <!-- 个人中心相关 -->
+                        <div class="menu-section">
+                            <a href="src/pages/profile.html" class="menu-item">
+                                <i class="menu-icon">👤</i>
+                                <span>个人中心</span>
+                            </a>
+                            <a href="src/pages/profile.html?tab=personal-info" class="menu-item">
+                                <i class="menu-icon">📝</i>
+                                <span>个人信息</span>
+                            </a>
+                            <a href="src/pages/profile.html?tab=orders" class="menu-item">
+                                <i class="menu-icon">📦</i>
+                                <span>我的订单</span>
+                                <span class="menu-badge" id="orderBadge" style="display: none;">3</span>
+                            </a>
+                        </div>
+                        
                         <div class="menu-divider"></div>
-                        <div class="menu-item avatar-selector" onclick="showAvatarSelector()">更换头像</div>
+                        
+                        <!-- 学习相关 -->
+                        <div class="menu-section">
+                            <a href="src/pages/courses.html" class="menu-item">
+                                <i class="menu-icon">📚</i>
+                                <span>我的课程</span>
+                            </a>
+                            <a href="src/pages/dashboard.html" class="menu-item">
+                                <i class="menu-icon">📊</i>
+                                <span>学习中心</span>
+                            </a>
+                            <a href="src/pages/profile.html?tab=certificates" class="menu-item">
+                                <i class="menu-icon">📜</i>
+                                <span>我的证书</span>
+                            </a>
+                        </div>
+                        
                         <div class="menu-divider"></div>
-                        <a href="#" class="menu-item" onclick="logout()">退出登录</a>
+                        
+                        <!-- 设置相关 -->
+                        <div class="menu-section">
+                            <div class="menu-item avatar-selector" onclick="showAvatarSelector()">
+                                <i class="menu-icon">🎨</i>
+                                <span>更换头像</span>
+                            </div>
+                            <a href="src/pages/profile.html?tab=settings" class="menu-item">
+                                <i class="menu-icon">⚙️</i>
+                                <span>账号设置</span>
+                            </a>
+                        </div>
+                        
+                        <div class="menu-divider"></div>
+                        
+                        <!-- 退出登录 -->
+                        <div class="menu-section">
+                            <a href="#" class="menu-item logout-item" onclick="logout()">
+                                <i class="menu-icon">🚪</i>
+                                <span>退出登录</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
 
@@ -105,13 +165,13 @@
         <!-- AI科技图片展示 -->
         <div class="tech-showcase">
             <!-- 高级神经网络可视化 -->
-            <div class="tech-image brain" style="background: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 200 150\"><defs><linearGradient id=\"brainGrad\" x1=\"0%25\" y1=\"0%25\" x2=\"100%25\" y2=\"100%25\"><stop offset=\"0%25\" style=\"stop-color:%23001133;stop-opacity:1\" /><stop offset=\"100%25\" style=\"stop-color:%23151a3d;stop-opacity:1\" /></linearGradient><filter id=\"glow\"><feGaussianBlur stdDeviation=\"3\" result=\"coloredBlur\"/><feMerge><feMergeNode in=\"coloredBlur\"/><feMergeNode in=\"SourceGraphic\"/></feMerge></filter></defs><rect width=\"200\" height=\"150\" fill=\"url(%23brainGrad)\" rx=\"12\"/><g filter=\"url(%23glow)\"><circle cx=\"30\" cy=\"30\" r=\"6\" fill=\"%234a9eff\" opacity=\"0.9\"><animate attributeName=\"opacity\" values=\"0.9;0.4;0.9\" dur=\"2s\" repeatCount=\"indefinite\"/></circle><circle cx=\"70\" cy=\"25\" r=\"8\" fill=\"%234a9eff\" opacity=\"0.7\"><animate attributeName=\"opacity\" values=\"0.7;1;0.7\" dur=\"2.5s\" repeatCount=\"indefinite\"/></circle><circle cx=\"120\" cy=\"35\" r=\"5\" fill=\"%234a9eff\" opacity=\"0.8\"><animate attributeName=\"opacity\" values=\"0.8;0.3;0.8\" dur=\"1.8s\" repeatCount=\"indefinite\"/></circle><circle cx=\"170\" cy=\"30\" r=\"7\" fill=\"%234a9eff\" opacity=\"0.6\"><animate attributeName=\"opacity\" values=\"0.6;1;0.6\" dur=\"2.2s\" repeatCount=\"indefinite\"/></circle><circle cx=\"50\" cy=\"70\" r=\"9\" fill=\"%234a9eff\" opacity=\"0.8\"><animate attributeName=\"opacity\" values=\"0.8;0.4;0.8\" dur=\"2.8s\" repeatCount=\"indefinite\"/></circle><circle cx=\"100\" cy=\"65\" r=\"6\" fill=\"%234a9eff\" opacity=\"0.9\"><animate attributeName=\"opacity\" values=\"0.9;0.5;0.9\" dur=\"2.1s\" repeatCount=\"indefinite\"/></circle><circle cx=\"150\" cy=\"75\" r=\"8\" fill=\"%234a9eff\" opacity=\"0.7\"><animate attributeName=\"opacity\" values=\"0.7;1;0.7\" dur=\"2.6s\" repeatCount=\"indefinite\"/></circle><circle cx=\"80\" cy=\"110\" r=\"7\" fill=\"%234a9eff\" opacity=\"0.8\"><animate attributeName=\"opacity\" values=\"0.8;0.3;0.8\" dur=\"2.3s\" repeatCount=\"indefinite\"/></circle><circle cx=\"130\" cy=\"105\" r=\"6\" fill=\"%234a9eff\" opacity=\"0.9\"><animate attributeName=\"opacity\" values=\"0.9;0.6;0.9\" dur=\"1.9s\" repeatCount=\"indefinite\"/></circle><path d=\"M30 30 L70 25 L120 35 L170 30\" stroke=\"%234a9eff\" stroke-width=\"1.5\" opacity=\"0.6\" fill=\"none\"><animate attributeName=\"opacity\" values=\"0.6;0.2;0.6\" dur=\"3s\" repeatCount=\"indefinite\"/></path><path d=\"M70 25 L50 70 L100 65\" stroke=\"%234a9eff\" stroke-width=\"1.5\" opacity=\"0.7\" fill=\"none\"><animate attributeName=\"opacity\" values=\"0.7;0.3;0.7\" dur=\"3.2s\" repeatCount=\"indefinite\"/></path><path d=\"M120 35 L150 75 L130 105\" stroke=\"%234a9eff\" stroke-width=\"1.5\" opacity=\"0.5\" fill=\"none\"><animate attributeName=\"opacity\" values=\"0.5;0.1;0.5\" dur=\"2.7s\" repeatCount=\"indefinite\"/></path><path d=\"M100 65 L80 110\" stroke=\"%234a9eff\" stroke-width=\"1.5\" opacity=\"0.8\" fill=\"none\"><animate attributeName=\"opacity\" values=\"0.8;0.4;0.8\" dur=\"2.4s\" repeatCount=\"indefinite\"/></path></g><text x=\"100\" y=\"135\" text-anchor=\"middle\" fill=\"%23b8c1ec\" font-size=\"11\" font-family=\"Arial,sans-serif\" font-weight=\"500\">Deep Neural Network</text></svg>') center/cover;"></div>
+            <div class="tech-image brain"></div>
 
             <!-- 高级电路板设计 -->
-            <div class="tech-image circuit" style="background: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 180 120\"><defs><linearGradient id=\"circuitGrad\" x1=\"0%25\" y1=\"0%25\" x2=\"100%25\" y2=\"100%25\"><stop offset=\"0%25\" style=\"stop-color:%23001133;stop-opacity:1\" /><stop offset=\"100%25\" style=\"stop-color:%23151a3d;stop-opacity:1\" /></linearGradient><filter id=\"circuitGlow\"><feGaussianBlur stdDeviation=\"2\" result=\"coloredBlur\"/><feMerge><feMergeNode in=\"coloredBlur\"/><feMergeNode in=\"SourceGraphic\"/></feMerge></filter></defs><rect width=\"180\" height=\"120\" fill=\"url(%23circuitGrad)\" rx=\"12\"/><g filter=\"url(%23circuitGlow)\"><rect x=\"15\" y=\"15\" width=\"35\" height=\"25\" fill=\"%234a9eff\" opacity=\"0.8\" rx=\"4\"><animate attributeName=\"opacity\" values=\"0.8;0.4;0.8\" dur=\"2s\" repeatCount=\"indefinite\"/></rect><rect x=\"65\" y=\"20\" width=\"40\" height=\"20\" fill=\"%234a9eff\" opacity=\"0.7\" rx=\"4\"><animate attributeName=\"opacity\" values=\"0.7;1;0.7\" dur=\"2.3s\" repeatCount=\"indefinite\"/></rect><rect x=\"120\" y=\"18\" width=\"30\" height=\"24\" fill=\"%234a9eff\" opacity=\"0.9\" rx=\"4\"><animate attributeName=\"opacity\" values=\"0.9;0.5;0.9\" dur=\"1.8s\" repeatCount=\"indefinite\"/></rect><rect x=\"25\" y=\"60\" width=\"28\" height=\"22\" fill=\"%234a9eff\" opacity=\"0.6\" rx=\"4\"><animate attributeName=\"opacity\" values=\"0.6;0.9;0.6\" dur=\"2.5s\" repeatCount=\"indefinite\"/></rect><rect x=\"75\" y=\"65\" width=\"35\" height=\"18\" fill=\"%234a9eff\" opacity=\"0.8\" rx=\"4\"><animate attributeName=\"opacity\" values=\"0.8;0.3;0.8\" dur=\"2.1s\" repeatCount=\"indefinite\"/></rect><rect x=\"130\" y=\"62\" width=\"25\" height=\"25\" fill=\"%234a9eff\" opacity=\"0.7\" rx=\"4\"><animate attributeName=\"opacity\" values=\"0.7;1;0.7\" dur=\"2.4s\" repeatCount=\"indefinite\"/></rect><path d=\"M50 27 L65 30 M105 30 L120 30\" stroke=\"%234a9eff\" stroke-width=\"2\" opacity=\"0.8\"><animate attributeName=\"opacity\" values=\"0.8;0.3;0.8\" dur=\"3s\" repeatCount=\"indefinite\"/></path><path d=\"M39 60 L75 74 M110 74 L130 74\" stroke=\"%234a9eff\" stroke-width=\"2\" opacity=\"0.7\"><animate attributeName=\"opacity\" values=\"0.7;1;0.7\" dur=\"3.2s\" repeatCount=\"indefinite\"/></path><path d=\"M32 40 L32 60 M85 42 L85 65 M135 42 L135 62\" stroke=\"%234a9eff\" stroke-width=\"2\" opacity=\"0.6\"><animate attributeName=\"opacity\" values=\"0.6;0.2;0.6\" dur=\"2.8s\" repeatCount=\"indefinite\"/></path><circle cx=\"57\" cy=\"50\" r=\"3\" fill=\"%23ffffff\" opacity=\"0.9\"/><circle cx=\"95\" cy=\"48\" r=\"3\" fill=\"%23ffffff\" opacity=\"0.9\"/><circle cx=\"142\" cy=\"51\" r=\"3\" fill=\"%23ffffff\" opacity=\"0.9\"/></g><text x=\"90\" y=\"105\" text-anchor=\"middle\" fill=\"%23b8c1ec\" font-size=\"10\" font-family=\"Arial,sans-serif\" font-weight=\"500\">AI Processing Unit</text></svg>') center/cover;"></div>
+            <div class="tech-image circuit"></div>
 
             <!-- 高级AI芯片设计 -->
-            <div class="tech-image ai-chip" style="background: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 160 160\"><defs><radialGradient id=\"chipGrad\" cx=\"50%25\" cy=\"50%25\" r=\"50%25\"><stop offset=\"0%25\" style=\"stop-color:%23151a3d;stop-opacity:1\" /><stop offset=\"100%25\" style=\"stop-color:%23001133;stop-opacity:1\" /></radialGradient><filter id=\"chipGlow\"><feGaussianBlur stdDeviation=\"3\" result=\"coloredBlur\"/><feMerge><feMergeNode in=\"coloredBlur\"/><feMergeNode in=\"SourceGraphic\"/></feMerge></filter></defs><rect width=\"160\" height=\"160\" fill=\"url(%23chipGrad)\" rx=\"12\"/><g filter=\"url(%23chipGlow)\"><rect x=\"30\" y=\"30\" width=\"100\" height=\"100\" fill=\"none\" stroke=\"%234a9eff\" stroke-width=\"2\" opacity=\"0.6\" rx=\"10\"><animate attributeName=\"opacity\" values=\"0.6;1;0.6\" dur=\"3s\" repeatCount=\"indefinite\"/></rect><circle cx=\"80\" cy=\"80\" r=\"35\" fill=\"none\" stroke=\"%234a9eff\" stroke-width=\"1.5\" opacity=\"0.8\"><animate attributeName=\"opacity\" values=\"0.8;0.4;0.8\" dur=\"2.5s\" repeatCount=\"indefinite\"/></circle><circle cx=\"80\" cy=\"80\" r=\"25\" fill=\"none\" stroke=\"%234a9eff\" stroke-width=\"1.5\" opacity=\"0.9\"><animate attributeName=\"opacity\" values=\"0.9;0.5;0.9\" dur=\"2s\" repeatCount=\"indefinite\"/></circle><circle cx=\"80\" cy=\"80\" r=\"15\" fill=\"%234a9eff\" opacity=\"0.7\"><animate attributeName=\"opacity\" values=\"0.7;1;0.7\" dur=\"1.8s\" repeatCount=\"indefinite\"/></circle><circle cx=\"80\" cy=\"80\" r=\"8\" fill=\"%23ffffff\" opacity=\"1\"><animate attributeName=\"opacity\" values=\"1;0.6;1\" dur=\"1.5s\" repeatCount=\"indefinite\"/></circle><rect x=\"5\" y=\"70\" width=\"20\" height=\"20\" fill=\"%234a9eff\" opacity=\"0.7\" rx=\"2\"/><rect x=\"135\" y=\"70\" width=\"20\" height=\"20\" fill=\"%234a9eff\" opacity=\"0.7\" rx=\"2\"/><rect x=\"70\" y=\"5\" width=\"20\" height=\"20\" fill=\"%234a9eff\" opacity=\"0.7\" rx=\"2\"/><rect x=\"70\" y=\"135\" width=\"20\" height=\"20\" fill=\"%234a9eff\" opacity=\"0.7\" rx=\"2\"/><path d=\"M25 80 L30 80 M130 80 L135 80 M80 25 L80 30 M80 130 L80 135\" stroke=\"%234a9eff\" stroke-width=\"3\" opacity=\"0.8\"/><g transform=\"translate(80,80)\"><path d=\"M-10,-10 L10,-10 L10,10 L-10,10 Z\" fill=\"%234a9eff\" opacity=\"0.3\"><animateTransform attributeName=\"transform\" attributeType=\"XML\" type=\"rotate\" from=\"0\" to=\"360\" dur=\"10s\" repeatCount=\"indefinite\"/></path></g></g><text x=\"80\" y=\"145\" text-anchor=\"middle\" fill=\"%23b8c1ec\" font-size=\"10\" font-family=\"Arial,sans-serif\" font-weight=\"500\">Neural Processing Unit</text></svg>') center/cover;"></div>
+            <div class="tech-image ai-chip"></div>
         </div>
 
         <div class="hero-content">
@@ -406,6 +466,7 @@
         </div>
     </footer>
 
-    <script src="src/utils/homepage.js"></script>
+    <script type="module" src="src/utils/api.js"></script>
+    <script type="module" src="src/utils/homepage.js"></script>
 </body>
 </html>

@@ -9,12 +9,14 @@ let recommendedData = [];
 
 // 页面加载完成后初始化
 document.addEventListener('DOMContentLoaded', function() {
+    initTheme(); // 初始化主题
     initializeDashboard();
     loadUserData();
     setupEventListeners();
     animateStats();
     renderCalendar();
     initializeCharts();
+    initializeCalendarData();
 });
 
 // 初始化仪表板
@@ -22,8 +24,7 @@ function initializeDashboard() {
     // 检查用户登录状态
     checkAuthenticationStatus();
     
-    // 初始化模拟数据
-    initializeMockData();
+    // 不再使用模拟数据，将在loadUserData中加载真实数据
 }
 
 // 检查用户认证状态
@@ -59,10 +60,9 @@ function updateUserWelcome(username) {
     }
 }
 
-// 初始化模拟数据
-function initializeMockData() {
-    // 学习进度数据
-    progressData = [
+// 生成回退学习进度数据
+function generateFallbackProgressData() {
+    return [
         {
             id: 1,
             title: '深度学习基础与实践',
@@ -91,9 +91,11 @@ function initializeMockData() {
             category: 'cv'
         }
     ];
+}
 
-    // 学习计划数据
-    planData = [
+// 生成回退学习计划数据
+function generateFallbackPlanData() {
+    return [
         {
             id: 1,
             title: '完成深度学习第9章',
@@ -119,9 +121,11 @@ function initializeMockData() {
             status: 'pending'
         }
     ];
+}
 
-    // 学习笔记数据
-    notesData = [
+// 生成回退笔记数据
+function generateFallbackNotesData() {
+    return [
         {
             id: 1,
             title: '卷积神经网络工作原理',
@@ -147,9 +151,11 @@ function initializeMockData() {
             course: '机器学习基础'
         }
     ];
+}
 
-    // 成就数据
-    achievementsData = [
+// 生成回退成就数据
+function generateFallbackAchievementsData() {
+    return [
         {
             id: 1,
             title: '初学者',
@@ -193,9 +199,11 @@ function initializeMockData() {
             unlocked: false
         }
     ];
+}
 
-    // 推荐课程数据
-    recommendedData = [
+// 生成回退推荐课程数据
+function generateFallbackRecommendedData() {
+    return [
         {
             id: 1,
             title: '强化学习入门',
@@ -221,8 +229,10 @@ function initializeMockData() {
             rating: 4.9
         }
     ];
+}
 
-    // 学习日历数据
+// 初始化日历数据
+function initializeCalendarData() {
     studyData = generateStudyCalendarData();
 }
 
@@ -256,19 +266,243 @@ function generateStudyCalendarData() {
 // 加载用户数据
 async function loadUserData() {
     try {
-        // 在真实环境中，这里会调用API获取用户数据
-        // const userData = await window.apiRequest('/dashboard/data');
+        // 加载所有数据
+        await loadMyCourses();
+        await loadUserProgress();
+        await loadStudyPlans();
+        await loadUserNotes();
+        await loadUserAchievements();
+        await loadRecommendedCourses();
         
-        // 现在使用模拟数据
+        // 渲染页面组件
         renderProgressList();
         renderPlanList();
         renderNotesGrid();
         renderAchievements();
         renderRecommendedCourses();
+        updateProgressDisplay();
         
     } catch (error) {
         console.error('加载用户数据失败:', error);
         showNotification('数据加载失败，请刷新页面重试', 'error');
+    }
+}
+
+// 加载我的课程
+async function loadMyCourses() {
+    const myCoursesContainer = document.getElementById('myCourseslist');
+    if (!myCoursesContainer) return;
+    
+    try {
+        // 从API获取所有课程（由于订阅系统不完整，暂时显示所有可用课程）
+        const response = await fetch('http://localhost:8080/api/courses');
+        const data = await response.json();
+        
+        if (data.code === 200 && data.data && data.data.length > 0) {
+            renderMyCourses(data.data);
+        } else {
+            showNoCoursesMessage();
+        }
+    } catch (error) {
+        console.error('加载课程失败:', error);
+        showCoursesError();
+    }
+}
+
+// 渲染我的课程列表
+function renderMyCourses(courses) {
+    const myCoursesContainer = document.getElementById('myCourseslist');
+    if (!myCoursesContainer) return;
+    
+    const coursesHTML = courses.map(course => `
+        <div class="course-card">
+            <div class="course-image">
+                <img src="${course.coverImage || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjNGE5ZWZmIi8+Cjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2cHgiIGZvbnQtd2VpZ2h0PSJib2xkIj5BSSBDb3Vyc2U8L3RleHQ+Cjwvc3ZnPg=='}" 
+                     alt="${course.title}" 
+                     onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjNGE5ZWZmIi8+Cjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2cHgiIGZvbnQtd2VpZ2h0PSJib2xkIj5BSSBDb3Vyc2U8L3RleHQ+Cjwvc3ZnPg=='">
+            </div>
+            <div class="course-info">
+                <h3 class="course-title">${course.title}</h3>
+                <p class="course-description">${course.description || '探索AI技术的奥秘'}</p>
+                <div class="course-meta">
+                    <span class="course-price">${course.isFree ? '免费' : '¥' + course.price}</span>
+                    <span class="course-rating">⭐ ${course.rating || '5.0'}</span>
+                </div>
+                <div class="course-actions">
+                    <button class="btn-continue" onclick="continueCourse(${course.id})">
+                        ${course.isFree ? '开始学习' : '继续学习'}
+                    </button>
+                    <button class="btn-details" onclick="viewCourseDetails(${course.id})">详情</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    myCoursesContainer.innerHTML = coursesHTML;
+}
+
+// 显示无课程消息
+function showNoCoursesMessage() {
+    const myCoursesContainer = document.getElementById('myCourseslist');
+    if (!myCoursesContainer) return;
+    
+    myCoursesContainer.innerHTML = `
+        <div class="no-courses">
+            <div class="no-courses-icon">📚</div>
+            <h3>暂无课程</h3>
+            <p>还没有购买课程，快去探索吧！</p>
+            <button class="btn-browse" onclick="window.location.href='courses.html'">浏览课程</button>
+        </div>
+    `;
+}
+
+// 显示课程加载错误
+function showCoursesError() {
+    const myCoursesContainer = document.getElementById('myCourseslist');
+    if (!myCoursesContainer) return;
+    
+    myCoursesContainer.innerHTML = `
+        <div class="courses-error">
+            <div class="error-icon">⚠️</div>
+            <p>课程加载失败，请稍后重试</p>
+            <button class="btn-retry" onclick="loadMyCourses()">重新加载</button>
+        </div>
+    `;
+}
+
+// 继续学习课程
+function continueCourse(courseId) {
+    window.location.href = `study.html?courseId=${courseId}&chapterId=100`;
+}
+
+// 查看课程详情
+function viewCourseDetails(courseId) {
+    window.location.href = `course-detail.html?id=${courseId}`;
+}
+
+// 加载用户学习进度
+async function loadUserProgress() {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:8080/api/users/progress', {
+            headers: {
+                'Authorization': token ? `Bearer ${token}` : ''
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            if (data.code === 200 && data.data) {
+                progressData = data.data;
+            } else {
+                // 使用回退数据
+                progressData = generateFallbackProgressData();
+            }
+        } else {
+            progressData = generateFallbackProgressData();
+        }
+    } catch (error) {
+        console.error('加载学习进度失败:', error);
+        progressData = generateFallbackProgressData();
+    }
+}
+
+// 加载学习计划
+async function loadStudyPlans() {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:8080/api/study-plans', {
+            headers: {
+                'Authorization': token ? `Bearer ${token}` : ''
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            if (data.code === 200 && data.data) {
+                planData = data.data;
+            } else {
+                planData = generateFallbackPlanData();
+            }
+        } else {
+            planData = generateFallbackPlanData();
+        }
+    } catch (error) {
+        console.error('加载学习计划失败:', error);
+        planData = generateFallbackPlanData();
+    }
+}
+
+// 加载用户笔记
+async function loadUserNotes() {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:8080/api/notes', {
+            headers: {
+                'Authorization': token ? `Bearer ${token}` : ''
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            if (data.code === 200 && data.data) {
+                notesData = data.data;
+            } else {
+                notesData = generateFallbackNotesData();
+            }
+        } else {
+            notesData = generateFallbackNotesData();
+        }
+    } catch (error) {
+        console.error('加载笔记失败:', error);
+        notesData = generateFallbackNotesData();
+    }
+}
+
+// 加载用户成就
+async function loadUserAchievements() {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:8080/api/users/achievements', {
+            headers: {
+                'Authorization': token ? `Bearer ${token}` : ''
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            if (data.code === 200 && data.data) {
+                achievementsData = data.data;
+            } else {
+                achievementsData = generateFallbackAchievementsData();
+            }
+        } else {
+            achievementsData = generateFallbackAchievementsData();
+        }
+    } catch (error) {
+        console.error('加载成就失败:', error);
+        achievementsData = generateFallbackAchievementsData();
+    }
+}
+
+// 加载推荐课程
+async function loadRecommendedCourses() {
+    try {
+        const response = await fetch('http://localhost:8080/api/courses/recommended');
+        
+        if (response.ok) {
+            const data = await response.json();
+            if (data.code === 200 && data.data) {
+                recommendedData = data.data;
+            } else {
+                recommendedData = generateFallbackRecommendedData();
+            }
+        } else {
+            recommendedData = generateFallbackRecommendedData();
+        }
+    } catch (error) {
+        console.error('加载推荐课程失败:', error);
+        recommendedData = generateFallbackRecommendedData();
     }
 }
 

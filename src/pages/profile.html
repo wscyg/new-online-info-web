@@ -10,6 +10,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles/main.css">
     <link rel="stylesheet" href="../styles/profile.css">
+    <link rel="stylesheet" href="../styles/theme.css">
+    <!-- 预加载主题切换器 -->
+    <script src="../utils/theme-switcher.js"></script>
 </head>
 <body class="profile-theme">
     <!-- 深色背景效果 -->
@@ -31,6 +34,12 @@
                 <a href="/src/pages/courses.html" class="nav-link">课程</a>
                 <a href="/src/pages/dashboard.html" class="nav-link">学习中心</a>
                 <a href="/src/pages/profile.html" class="nav-link active">个人中心</a>
+                
+                <!-- 主题切换按钮 -->
+                <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="切换主题">
+                    <span class="theme-icon sun-icon">☀️</span>
+                    <span class="theme-icon moon-icon">🌙</span>
+                </button>
             </div>
             <div class="nav-actions">
                 <button class="btn-notifications">
@@ -38,6 +47,92 @@
                     <span class="notification-badge">3</span>
                 </button>
                 <button class="btn-settings">⚙️</button>
+                
+                <!-- 用户头像下拉菜单 -->
+                <div class="user-profile" id="userProfile" style="display: none;">
+                    <div class="user-avatar-container" onclick="toggleUserMenu()">
+                        <img src="/assets/avatar-default.svg" alt="用户头像" id="userAvatar" class="user-avatar">
+                        <div class="user-status online"></div>
+                    </div>
+                    
+                    <div class="user-dropdown" id="userDropdown">
+                        <!-- 用户信息卡片 -->
+                        <div class="user-info-card">
+                            <div class="user-avatar-small">
+                                <img src="/assets/avatar-default.svg" alt="用户头像" id="userAvatarSmall">
+                            </div>
+                            <div class="user-details">
+                                <div class="user-name" id="userName">用户名</div>
+                                <div class="user-level">Lv.1 学习者</div>
+                            </div>
+                            <div class="user-points">
+                                <span class="points-count" id="userPoints">0</span>
+                                <span class="points-label">积分</span>
+                            </div>
+                        </div>
+                        
+                        <!-- 菜单分组 -->
+                        <div class="menu-group">
+                            <div class="menu-label">个人中心</div>
+                            <a href="/src/pages/profile.html?tab=personal-info" class="menu-item">
+                                <span class="menu-icon">👤</span>
+                                <span class="menu-text">个人信息</span>
+                            </a>
+                            <a href="/src/pages/profile.html?tab=achievements" class="menu-item">
+                                <span class="menu-icon">🏆</span>
+                                <span class="menu-text">我的成就</span>
+                            </a>
+                            <a href="/src/pages/profile.html?tab=certificates" class="menu-item">
+                                <span class="menu-icon">📜</span>
+                                <span class="menu-text">证书管理</span>
+                            </a>
+                        </div>
+                        
+                        <div class="menu-group">
+                            <div class="menu-label">订单中心</div>
+                            <a href="/src/pages/profile.html?tab=orders" class="menu-item">
+                                <span class="menu-icon">📦</span>
+                                <span class="menu-text">我的订单</span>
+                                <span class="menu-badge">2</span>
+                            </a>
+                            <a href="#" class="menu-item">
+                                <span class="menu-icon">💰</span>
+                                <span class="menu-text">充值记录</span>
+                            </a>
+                        </div>
+                        
+                        <div class="menu-group">
+                            <div class="menu-label">学习管理</div>
+                            <a href="/src/pages/courses.html" class="menu-item">
+                                <span class="menu-icon">📚</span>
+                                <span class="menu-text">我的课程</span>
+                            </a>
+                            <a href="#" class="menu-item">
+                                <span class="menu-icon">📝</span>
+                                <span class="menu-text">学习笔记</span>
+                            </a>
+                        </div>
+                        
+                        <div class="menu-divider"></div>
+                        
+                        <div class="menu-group">
+                            <a href="/src/pages/profile.html?tab=settings" class="menu-item">
+                                <span class="menu-icon">⚙️</span>
+                                <span class="menu-text">设置</span>
+                            </a>
+                            <a href="#" class="menu-item logout-item" onclick="handleLogout()">
+                                <span class="menu-icon">🚪</span>
+                                <span class="menu-text">退出登录</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 未登录时显示的按钮 -->
+                <div class="auth-container" id="authContainer">
+                    <a href="/src/pages/login.html?returnUrl=profile.html" class="btn-login">登录</a>
+                    <a href="/src/pages/register.html" class="btn-register">注册</a>
+                </div>
             </div>
         </div>
     </nav>
@@ -54,7 +149,7 @@
                 <div class="profile-info">
                     <div class="avatar-section">
                         <div class="avatar-wrapper">
-                            <img src="/assets/avatar-default.png" alt="用户头像" class="user-avatar">
+                            <img src="/assets/avatar-default.svg" alt="用户头像" class="user-avatar">
                             <div class="avatar-status online"></div>
                             <button class="btn-change-avatar">📷</button>
                         </div>
@@ -99,6 +194,14 @@
                 <button class="tab-btn active" data-tab="overview">
                     <span class="tab-icon">📊</span>
                     <span>学习概览</span>
+                </button>
+                <button class="tab-btn" data-tab="personal-info">
+                    <span class="tab-icon">👤</span>
+                    <span>个人信息</span>
+                </button>
+                <button class="tab-btn" data-tab="orders">
+                    <span class="tab-icon">📦</span>
+                    <span>我的订单</span>
                 </button>
                 <button class="tab-btn" data-tab="achievements">
                     <span class="tab-icon">🏆</span>
@@ -238,6 +341,107 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 个人信息 -->
+                <div class="content-panel" id="personalInfoPanel">
+                    <div class="personal-info-section">
+                        <div class="info-header">
+                            <h3>个人资料</h3>
+                            <button class="btn-edit" onclick="toggleEditMode()">
+                                <span id="editToggleText">编辑</span>
+                            </button>
+                        </div>
+                        
+                        <div class="info-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="displayName">显示名称</label>
+                                    <input type="text" id="displayName" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="username">用户名</label>
+                                    <input type="text" id="username" readonly>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="email">邮箱地址</label>
+                                    <input type="email" id="email" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">手机号码</label>
+                                    <input type="tel" id="phone" readonly>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="city">所在城市</label>
+                                    <input type="text" id="city" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="birthday">生日</label>
+                                    <input type="date" id="birthday" readonly>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group full-width">
+                                <label for="bio">个人简介</label>
+                                <textarea id="bio" rows="3" readonly placeholder="介绍一下自己吧"></textarea>
+                            </div>
+                            
+                            <div class="form-actions" style="display: none;" id="formActions">
+                                <button class="btn-save" onclick="savePersonalInfo()">保存</button>
+                                <button class="btn-cancel" onclick="cancelEdit()">取消</button>
+                            </div>
+                        </div>
+                        
+                        <div class="account-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">注册时间</span>
+                                <span class="stat-value" id="registrationDate">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">最后登录</span>
+                                <span class="stat-value" id="lastLoginDate">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">学习天数</span>
+                                <span class="stat-value" id="studyDays">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 我的订单 -->
+                <div class="content-panel" id="ordersPanel">
+                    <div class="orders-section">
+                        <div class="orders-header">
+                            <h3>我的订单</h3>
+                            <div class="orders-filter">
+                                <button class="filter-btn active" data-status="all">全部</button>
+                                <button class="filter-btn" data-status="paid">已支付</button>
+                                <button class="filter-btn" data-status="pending">待支付</button>
+                                <button class="filter-btn" data-status="completed">已完成</button>
+                                <button class="filter-btn" data-status="refunded">已退款</button>
+                            </div>
+                        </div>
+                        
+                        <div class="orders-list" id="ordersList">
+                            <div class="loading-state">
+                                <div class="loading-spinner"></div>
+                                <span>正在加载订单数据...</span>
+                            </div>
+                        </div>
+                        
+                        <div class="no-orders" style="display: none;" id="noOrders">
+                            <div class="no-data-icon">📦</div>
+                            <p>暂无订单记录</p>
+                            <a href="../courses.html" class="btn-browse">去逛逛课程</a>
                         </div>
                     </div>
                 </div>
@@ -449,7 +653,7 @@
     </main>
 
     <!-- Scripts -->
-    <script src="../utils/main.js"></script>
-    <script src="../utils/profile.js"></script>
+    <script type="module" src="../utils/api.js"></script>
+    <script type="module" src="../utils/profile.js"></script>
 </body>
 </html>

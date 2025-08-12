@@ -7,12 +7,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles/design-system.css">
+    <link rel="stylesheet" href="../styles/theme.css">
+    <!-- 预加载主题切换器 -->
+    <script src="../utils/theme-switcher.js"></script>
     <style>
         body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            background: var(--light);
             min-height: 100vh;
             margin: 0;
             padding: 0;
+            transition: all 0.3s ease;
+        }
+        
+        [data-theme="dark"] body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
         }
 
         .study-container {
@@ -25,31 +33,169 @@
             height: calc(100vh - 48px);
         }
 
-        /* 全屏模式样式 */
-        .fullscreen-mode .study-container {
+        /* 专注模式 - 只隐藏上下导航栏，保留侧边栏 */
+        .focus-mode .content-header,
+        .focus-mode .content-footer {
+            display: none;
+        }
+
+        .focus-mode .content-body {
+            flex: 1;
+            padding: 0;
+        }
+
+        .focus-mode #contentFrame {
+            min-height: calc(100vh - 100px);
+        }
+
+        /* 第一档：浏览器全窗口模式 - 隐藏所有干扰元素 */
+        .browser-fullscreen .study-container {
             grid-template-columns: 1fr;
             padding: 0;
             height: 100vh;
             max-width: 100%;
         }
 
-        .fullscreen-mode .chapters-sidebar,
-        .fullscreen-mode .tools-sidebar {
+        .browser-fullscreen .chapters-sidebar,
+        .browser-fullscreen .tools-sidebar,
+        .browser-fullscreen .content-header,
+        .browser-fullscreen .content-footer {
             display: none;
         }
 
-        .fullscreen-mode .content-area {
+        .browser-fullscreen .content-area {
             border-radius: 0;
             border: none;
+            display: flex;
+            flex-direction: column;
         }
 
-        .fullscreen-mode .content-header {
-            padding: 16px 24px;
+        .browser-fullscreen .content-body {
+            flex: 1;
+            padding: 0;
+            overflow-y: auto;
         }
 
-        .fullscreen-mode .content-body {
-            padding: 24px 48px;
+        .browser-fullscreen #contentFrame {
+            width: 100%;
+            height: 100vh;
+            min-height: 100vh;
+            border: none;
+            background: transparent;
         }
+
+        /* 浏览器全窗口模式下的浮动控制栏 */
+        .browser-fullscreen-controls {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9998;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 25px;
+            padding: 8px;
+            backdrop-filter: blur(10px);
+            transition: opacity 0.3s ease;
+            opacity: 0.7;
+        }
+
+        .browser-fullscreen .browser-fullscreen-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .browser-fullscreen-controls:hover {
+            opacity: 1;
+        }
+
+        .browser-fullscreen-controls .control-btn {
+            background: transparent;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .browser-fullscreen-controls .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* 第二档：真正的全屏模式 - 隐藏所有界面元素 */
+        .system-fullscreen .study-container {
+            grid-template-columns: 1fr;
+            padding: 0;
+            height: 100vh;
+            max-width: 100%;
+        }
+
+        .system-fullscreen .chapters-sidebar,
+        .system-fullscreen .tools-sidebar,
+        .system-fullscreen .content-header,
+        .system-fullscreen .content-footer {
+            display: none;
+        }
+
+        .system-fullscreen .content-area {
+            border-radius: 0;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+
+        .system-fullscreen .content-body {
+            flex: 1;
+            padding: 0;
+            overflow-y: auto;
+            height: 100vh;
+            background: white;
+        }
+
+        .system-fullscreen #contentFrame {
+            width: 100%;
+            height: 100vh;
+            min-height: 100vh;
+            border: none;
+            background: transparent;
+        }
+
+        /* 全屏模式下的退出按钮 */
+        .fullscreen-exit-btn {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .system-fullscreen .fullscreen-exit-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fullscreen-exit-btn:hover {
+            background: rgba(0, 0, 0, 0.9);
+            transform: scale(1.1);
+        }
+
 
         /* 左侧章节导航 */
         .chapters-sidebar {
@@ -507,6 +653,13 @@
             border-color: transparent;
         }
 
+        /* 专注模式按钮高亮 */
+        #focusBtn.active {
+            background: var(--gradient-secondary);
+            color: white;
+            border-color: transparent;
+        }
+
         /* 退出全屏提示 */
         .exit-fullscreen-hint {
             position: fixed;
@@ -574,8 +727,9 @@
                             <i class="fas fa-text-height"></i>
                             字体
                         </button>
-                        <button class="nav-btn" id="themeBtn">
-                            <i class="fas fa-moon"></i>
+                        <button class="nav-btn" id="themeBtn" onclick="toggleTheme()" title="切换主题">
+                            <span class="theme-icon sun-icon">☀️</span>
+                            <span class="theme-icon moon-icon">🌙</span>
                             主题
                         </button>
                     </div>
@@ -681,18 +835,36 @@
         按 ESC 或 F11 退出全屏模式
     </div>
 
+    <!-- 浏览器全窗口模式控制栏 -->
+    <div class="browser-fullscreen-controls" id="browserFullscreenControls">
+        <button class="control-btn" onclick="toggleFullscreen()" title="进入系统全屏">
+            <i class="fas fa-expand"></i>
+        </button>
+        <button class="control-btn" onclick="exitToNormal()" title="退出到正常模式">
+            ✕
+        </button>
+    </div>
+
+    <!-- 系统全屏模式退出按钮 -->
+    <button class="fullscreen-exit-btn" id="fullscreenExitBtn" onclick="toggleFullscreen()" title="退出全屏 (ESC)">
+        ✕
+    </button>
+
     <!-- 移动端菜单按钮 -->
     <button class="mobile-menu-btn" id="mobileMenuBtn" style="display: none;">
         <i class="fas fa-bars"></i>
     </button>
 
+    <!-- 添加外部脚本 -->
+    <!-- 先加载API服务 -->
+    <script src="../utils/api.js"></script>
+    
     <script type="module">
-        import '../utils/api.js';
         import '../utils/notification.js';
 
         // 获取URL参数
         const urlParams = new URLSearchParams(window.location.search);
-        const courseId = urlParams.get('courseId') || '100'; // 默认Transformer课程
+        let courseId = urlParams.get('courseId') || '1'; // 默认为课程ID 1
         const chapterId = urlParams.get('chapterId');
 
         // 全局变量
@@ -701,6 +873,8 @@
         let currentChapterIndex = 0;
         let userProgress = {};
         let isFullscreen = false;
+        let fullscreenMode = 0; // 0: 正常, 1: 浏览器全窗口, 2: 系统全屏
+        let isFocusMode = false; // 专注模式状态
 
         // DOM元素
         const elements = {
@@ -727,6 +901,8 @@
 
         // 初始化
         async function init() {
+            // 初始化主题
+            initTheme();
             try {
                 // 检查登录状态
                 const token = localStorage.getItem('token');
@@ -738,8 +914,8 @@
                     return;
                 }
 
-                // 模拟数据（实际应从API获取）
-                await loadMockData();
+                // 从API获取真实数据
+                await loadRealData();
                 
                 // 加载指定章节或第一章
                 if (chapterId) {
@@ -759,11 +935,96 @@
             }
         }
 
-        // 加载模拟数据
+        // 从API加载真实数据
+        async function loadRealData() {
+            try {
+                console.log('=== 开始加载真实数据 ===');
+                const token = localStorage.getItem('token');
+                console.log('Token存在:', !!token);
+                console.log('课程ID:', courseId);
+                console.log('章节ID:', chapterId);
+                
+                // 从URL参数获取课程ID，如果没有则默认为1
+                if (!courseId) {
+                    courseId = '1';
+                }
+                
+                // 1. 获取课程信息
+                console.log('正在获取课程信息...');
+                const courseResponse = await fetch(`http://localhost:8080/api/courses/${courseId}`, {
+                    headers: {
+                        'Authorization': token ? `Bearer ${token}` : ''
+                    }
+                });
+                
+                if (!courseResponse.ok) {
+                    throw new Error('无法获取课程信息');
+                }
+                
+                const courseData = await courseResponse.json();
+                if (courseData.code === 200 && courseData.data) {
+                    currentCourse = courseData.data;
+                    console.log('课程信息加载成功:', currentCourse.title);
+                } else {
+                    throw new Error(courseData.message || '课程信息加载失败');
+                }
+                
+                // 2. 获取课程章节
+                const chaptersResponse = await fetch(`http://localhost:8080/api/content/courses/${courseId}/chapters`, {
+                    headers: {
+                        'Authorization': token ? `Bearer ${token}` : ''
+                    }
+                });
+                
+                if (!chaptersResponse.ok) {
+                    throw new Error('无法获取章节信息');
+                }
+                
+                const chaptersData = await chaptersResponse.json();
+                if (chaptersData.code === 200 && chaptersData.data) {
+                    chapters = chaptersData.data.map(chapter => ({
+                        id: chapter.id,
+                        chapterNumber: chapter.chapterNumber,
+                        title: chapter.title,
+                        description: chapter.description,
+                        durationMinutes: chapter.durationMinutes || 0,
+                        isFree: chapter.isFree
+                    }));
+                    console.log('章节信息加载成功:', chapters.length, '个章节');
+                } else {
+                    throw new Error(chaptersData.message || '章节信息加载失败');
+                }
+                
+                // 3. 更新页面标题和课程信息
+                document.title = `${currentCourse.title} - 学习中心`;
+                updateCourseInfo();
+                
+                // 4. 渲染章节列表到侧边栏
+                renderChaptersList();
+                
+            } catch (error) {
+                console.error('数据加载失败:', error);
+                // 如果API失败，回退到模拟数据
+                await loadMockData();
+            }
+        }
+        
+        // 更新课程信息显示
+        function updateCourseInfo() {
+            // 更新课程标题等信息（如果页面有这些元素的话）
+            const courseTitle = document.querySelector('.course-title');
+            if (courseTitle) {
+                courseTitle.textContent = currentCourse.title;
+            }
+        }
+        
+        // 第一个renderChaptersList函数已删除，使用下面更完整的版本
+        
+        // 保留原有的模拟数据作为后备方案
         async function loadMockData() {
             // 模拟课程信息
             currentCourse = {
-                id: 100,
+                id: parseInt(courseId) || 1,
                 title: 'Transformer架构深度解析',
                 description: '从零开始理解改变AI世界的Transformer'
             };
@@ -892,10 +1153,22 @@
                 const iframe = elements.contentFrame;
                 const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
                 
-                // 写入完整的HTML内容
-                iframeDoc.open();
-                iframeDoc.write(htmlContent);
-                iframeDoc.close();
+                // 清除之前的内容和脚本，避免变量重复声明
+                try {
+                    // 重新创建iframe内容，确保JavaScript环境干净
+                    iframe.src = 'about:blank';
+                    setTimeout(() => {
+                        const newDoc = iframe.contentDocument || iframe.contentWindow.document;
+                        newDoc.open();
+                        newDoc.write(htmlContent);
+                        newDoc.close();
+                    }, 100);
+                } catch (e) {
+                    // 降级处理：直接写入内容
+                    iframeDoc.open();
+                    iframeDoc.write(htmlContent);
+                    iframeDoc.close();
+                }
                 
                 // 调整iframe高度
                 iframe.onload = function() {
@@ -929,7 +1202,267 @@
 
         // 获取章节HTML内容
         async function getChapterHTML(chapterId) {
-            // 这里应该从API获取，现在返回您提供的HTML内容
+            try {
+                // 从后端API获取章节详细内容
+                const token = localStorage.getItem('token');
+                const response = await fetch(`http://localhost:8080/api/content/chapters/${chapterId}`, {
+                    headers: {
+                        'Authorization': token ? `Bearer ${token}` : ''
+                    }
+                });
+                
+                const data = await response.json();
+                console.log('API响应数据:', data);
+                
+                if (data.code === 200 && data.data) {
+                    const { chapter, content } = data.data;
+                    
+                    // 检查是否有HTML内容
+                    if (content && content.contentHtml) {
+                        console.log('找到HTML内容，直接返回');
+                        return content.contentHtml;
+                    }
+                    
+                    // 检查chapter是否有content字段（兼容旧格式）
+                    if (chapter.content && chapter.contentType === 'html') {
+                        console.log('从章节对象中找到HTML内容');
+                        return chapter.content;
+                    }
+                    
+                    // 否则生成基本的章节页面
+                    console.log('未找到HTML内容，生成默认页面');
+                    return generateChapterHTML(chapter);
+                } else if (data.code === 403) {
+                    // 无权限访问，显示权限提示页面
+                    return generatePermissionDeniedHTML(chapterId, data.message);
+                } else if (data.code === 401) {
+                    // 未登录，显示登录提示页面
+                    return generateLoginRequiredHTML(chapterId);
+                } else {
+                    console.warn('无法获取章节内容:', data.message);
+                    return generateFallbackHTML(chapterId);
+                }
+            } catch (error) {
+                console.error('获取章节内容失败:', error);
+                return generateFallbackHTML(chapterId);
+            }
+        }
+        
+        // 生成章节HTML页面
+        function generateChapterHTML(chapter) {
+            return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${chapter.title}</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: #e0e6ff;
+            background: #0a0e27;
+            margin: 0;
+            padding: 2rem;
+        }
+        h1 {
+            color: #4a9eff;
+            border-bottom: 2px solid #4a9eff;
+            padding-bottom: 1rem;
+        }
+        h2 {
+            color: #64b5f6;
+            margin-top: 2rem;
+        }
+        p {
+            margin-bottom: 1.2rem;
+        }
+        .chapter-meta {
+            background: rgba(74, 158, 255, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        .coming-soon {
+            text-align: center;
+            padding: 3rem;
+            color: #8892b0;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>${chapter.title}</h1>
+    <div class="chapter-meta">
+        <p><strong>章节描述：</strong>${chapter.description || '暂无描述'}</p>
+        ${chapter.durationMinutes ? `<p><strong>预计学习时长：</strong>${chapter.durationMinutes} 分钟</p>` : ''}
+        <p><strong>章节编号：</strong>第 ${chapter.chapterNumber} 章</p>
+    </div>
+    
+    ${chapter.content ? 
+        `<div class="chapter-content">${chapter.content}</div>` : 
+        '<div class="coming-soon"><h2>📚 内容制作中</h2><p>该章节的详细内容正在制作中，敬请期待！</p></div>'
+    }
+</body>
+</html>`;
+        }
+        
+        // 生成权限被拒绝的HTML页面
+        function generatePermissionDeniedHTML(chapterId, message) {
+            return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>需要购买课程</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: #e0e6ff;
+            background: #0a0e27;
+            margin: 0;
+            padding: 2rem;
+            text-align: center;
+        }
+        .permission-denied {
+            padding: 3rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+        }
+        h1 {
+            color: #ff9800;
+            margin-bottom: 1rem;
+        }
+        p {
+            margin-bottom: 2rem;
+            color: #8892b0;
+            font-size: 1.1rem;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: #4a9eff;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #3b82f6;
+        }
+        .btn-secondary {
+            background: transparent;
+            color: #4a9eff;
+            border: 1px solid #4a9eff;
+        }
+        .btn-secondary:hover {
+            background: rgba(74, 158, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="permission-denied">
+        <div class="icon">🔒</div>
+        <h1>需要购买课程</h1>
+        <p>${message || '该章节需要购买课程后才能观看'}</p>
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="window.parent.location.href='/src/pages/course-detail.html?id=${currentCourse ? currentCourse.id : 1}'">
+                购买课程
+            </button>
+            <button class="btn btn-secondary" onclick="window.parent.location.href='/src/pages/courses.html'">
+                浏览其他课程
+            </button>
+        </div>
+    </div>
+</body>
+</html>`;
+        }
+        
+        // 生成需要登录的HTML页面
+        function generateLoginRequiredHTML(chapterId) {
+            return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>请先登录</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: #e0e6ff;
+            background: #0a0e27;
+            margin: 0;
+            padding: 2rem;
+            text-align: center;
+        }
+        .login-required {
+            padding: 3rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+        }
+        h1 {
+            color: #4a9eff;
+            margin-bottom: 1rem;
+        }
+        p {
+            margin-bottom: 2rem;
+            color: #8892b0;
+            font-size: 1.1rem;
+        }
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-size: 14px;
+            background: #4a9eff;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: #3b82f6;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-required">
+        <div class="icon">👤</div>
+        <h1>请先登录</h1>
+        <p>需要登录后才能观看课程内容</p>
+        <button class="btn" onclick="window.parent.location.href='/src/pages/login.html?returnUrl=' + encodeURIComponent(window.parent.location.href)">
+            立即登录
+        </button>
+    </div>
+</body>
+</html>`;
+        }
+        
+        // 生成回退HTML（当API调用失败时）
+        function generateFallbackHTML(chapterId) {
+            // 保留原有的硬编码内容作为回退方案
             if (chapterId === 100) {
                 return `<!DOCTYPE html>
 <html lang="zh-CN">
@@ -1056,8 +1589,42 @@
 </html>`;
             }
             
-            // 其他章节返回示例内容
-            return `<h1>${chapter.title}</h1><p>章节内容正在制作中...</p>`;
+            // 其他章节返回基本页面
+            return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>章节内容</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: #e0e6ff;
+            background: #0a0e27;
+            margin: 0;
+            padding: 2rem;
+            text-align: center;
+        }
+        h1 {
+            color: #4a9eff;
+            margin-bottom: 2rem;
+        }
+        .coming-soon {
+            padding: 3rem;
+            color: #8892b0;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="coming-soon">
+        <h1>📚 章节内容制作中</h1>
+        <p>该章节的详细内容正在制作中，敬请期待！</p>
+        <p>请稍后返回查看更新内容。</p>
+    </div>
+</body>
+</html>`;
         }
 
         // 更新章节选择状态
@@ -1143,14 +1710,30 @@
                 }
             });
             
+            
             // 全屏模式 - 重要功能
             elements.fullscreenBtn.addEventListener('click', toggleFullscreen);
             
-            // 监听F11键
+            // 主题切换
+            elements.themeBtn.addEventListener('click', toggleTheme);
+            
+            // 监听F11和ESC键
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'F11') {
                     e.preventDefault();
                     toggleFullscreen();
+                } else if (e.key === 'Escape') {
+                    // ESC键的行为：
+                    // - 在系统全屏模式下：退出到正常模式 (浏览器会自动处理)
+                    // - 在浏览器全窗口模式下：退出到正常模式
+                    if (fullscreenMode === 1) {
+                        e.preventDefault();
+                        fullscreenMode = 0;
+                        document.body.classList.remove('browser-fullscreen');
+                        elements.fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i> 全屏';
+                        elements.fullscreenBtn.classList.remove('active');
+                    }
+                    // 系统全屏模式下的ESC由浏览器处理，会触发fullscreenchange事件
                 }
             });
             
@@ -1189,23 +1772,86 @@
             });
         }
 
-        // 切换全屏模式
+
+        // 切换全屏模式 - 三个状态循环
         function toggleFullscreen() {
-            if (!document.fullscreenElement && !document.webkitFullscreenElement && 
-                !document.mozFullScreenElement && !document.msFullscreenElement) {
-                // 进入全屏
-                const elem = document.documentElement;
-                if (elem.requestFullscreen) {
-                    elem.requestFullscreen();
-                } else if (elem.webkitRequestFullscreen) {
-                    elem.webkitRequestFullscreen();
-                } else if (elem.mozRequestFullScreen) {
-                    elem.mozRequestFullScreen();
-                } else if (elem.msRequestFullscreen) {
-                    elem.msRequestFullscreen();
+            fullscreenMode = (fullscreenMode + 1) % 3;
+            
+            // 清除所有全屏类
+            document.body.classList.remove('browser-fullscreen', 'system-fullscreen');
+            
+            switch(fullscreenMode) {
+                case 0: // 正常模式
+                    // 如果在系统全屏中，退出系统全屏
+                    if (document.fullscreenElement || document.webkitFullscreenElement || 
+                        document.mozFullScreenElement || document.msFullscreenElement) {
+                        if (document.exitFullscreen) {
+                            document.exitFullscreen();
+                        } else if (document.webkitExitFullscreen) {
+                            document.webkitExitFullscreen();
+                        } else if (document.mozCancelFullScreen) {
+                            document.mozCancelFullScreen();
+                        } else if (document.msExitFullscreen) {
+                            document.msExitFullscreen();
+                        }
+                    }
+                    elements.fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i> 全屏';
+                    elements.fullscreenBtn.classList.remove('active');
+                    break;
+                    
+                case 1: // 浏览器全窗口模式
+                    document.body.classList.add('browser-fullscreen');
+                    elements.fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i> 全屏';
+                    elements.fullscreenBtn.classList.add('active');
+                    break;
+                    
+                case 2: // 系统全屏模式
+                    document.body.classList.remove('browser-fullscreen');
+                    document.body.classList.add('system-fullscreen');
+                    elements.fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i> 退出';
+                    elements.fullscreenBtn.classList.add('active');
+                    
+                    // 进入系统全屏
+                    const elem = document.documentElement;
+                    if (elem.requestFullscreen) {
+                        elem.requestFullscreen();
+                    } else if (elem.webkitRequestFullscreen) {
+                        elem.webkitRequestFullscreen();
+                    } else if (elem.mozRequestFullScreen) {
+                        elem.mozRequestFullScreen();
+                    } else if (elem.msRequestFullscreen) {
+                        elem.msRequestFullscreen();
+                    }
+                    break;
+            }
+            
+            // 简单的高度调整
+            setTimeout(() => {
+                const iframe = elements.contentFrame;
+                if (iframe && iframe.contentDocument && iframe.contentDocument.body) {
+                    const height = Math.max(iframe.contentDocument.body.scrollHeight, 800);
+                    iframe.style.height = height + 'px';
                 }
-            } else {
-                // 退出全屏
+            }, 300);
+        }
+
+        // 重新加载当前章节
+        function loadCurrentChapter() {
+            if (chapters && chapters[currentChapterIndex]) {
+                loadChapterContent(chapters[currentChapterIndex]);
+            }
+        }
+
+        // 直接退出到正常模式
+        function exitToNormal() {
+            fullscreenMode = 0;
+            document.body.classList.remove('browser-fullscreen', 'system-fullscreen');
+            elements.fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i> 全屏';
+            elements.fullscreenBtn.classList.remove('active');
+            
+            // 如果当前在系统全屏，退出系统全屏
+            if (document.fullscreenElement || document.webkitFullscreenElement || 
+                document.mozFullScreenElement || document.msFullscreenElement) {
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
                 } else if (document.webkitExitFullscreen) {
@@ -1223,12 +1869,10 @@
             isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || 
                             document.mozFullScreenElement || document.msFullscreenElement);
             
-            if (isFullscreen) {
-                document.body.classList.add('fullscreen-mode');
-                elements.fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i> 退出';
-                elements.fullscreenBtn.classList.add('active');
-            } else {
-                document.body.classList.remove('fullscreen-mode');
+            // 如果用户通过浏览器退出了系统全屏（比如按ESC），重置状态
+            if (!isFullscreen && fullscreenMode === 2) {
+                fullscreenMode = 0;
+                document.body.classList.remove('browser-fullscreen', 'system-fullscreen');
                 elements.fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i> 全屏';
                 elements.fullscreenBtn.classList.remove('active');
             }
@@ -1272,5 +1916,8 @@
         // 启动应用
         init();
     </script>
+    
+    <!-- 引入支付和订阅相关功能 -->
+    <script src="../utils/payment.js"></script>
 </body>
 </html>
