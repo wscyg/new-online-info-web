@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .form-group { margin-bottom: 15px; }
+        input, button { padding: 10px; margin: 5px; }
+        button { background: #007bff; color: white; border: none; cursor: pointer; }
+        .result { margin-top: 20px; padding: 10px; background: #f8f9fa; border: 1px solid #dee2e6; }
+    </style>
+</head>
+<body>
+    <h1>登录功能测试</h1>
+    
+    <div class="form-group">
+        <input type="text" id="username" placeholder="用户名" value="cygws123">
+    </div>
+    <div class="form-group">
+        <input type="password" id="password" placeholder="密码" value="123.00.aa">
+    </div>
+    <button onclick="testLogin()">测试登录</button>
+    <button onclick="testAPI()">测试API对象</button>
+    
+    <div id="result" class="result"></div>
+
+    <script type="module">
+        // 直接导入API模块
+        import './assets/api-28a76582.js';
+        
+        window.testAPI = function() {
+            const result = document.getElementById('result');
+            result.innerHTML = '<h3>API对象测试:</h3>';
+            
+            if (window.API) {
+                result.innerHTML += '<p>✅ window.API 存在</p>';
+                result.innerHTML += '<p>✅ window.API.auth 存在: ' + !!window.API.auth + '</p>';
+                result.innerHTML += '<p>✅ login方法存在: ' + typeof window.API.auth.login + '</p>';
+            } else {
+                result.innerHTML += '<p>❌ window.API 不存在</p>';
+            }
+        };
+        
+        window.testLogin = async function() {
+            const result = document.getElementById('result');
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            result.innerHTML = '<h3>登录测试结果:</h3><p>正在测试...</p>';
+            
+            try {
+                if (!window.API) {
+                    throw new Error('API对象未加载');
+                }
+                
+                console.log('开始登录测试...');
+                
+                const response = await window.API.auth.login({
+                    username: username,
+                    password: password,
+                    rememberMe: false
+                });
+                
+                console.log('登录响应:', response);
+                
+                if (response.code === 200) {
+                    result.innerHTML += '<p>✅ 登录成功!</p>';
+                    result.innerHTML += '<p>用户: ' + response.data.user.username + '</p>';
+                    result.innerHTML += '<p>Token已保存: ' + !!localStorage.getItem('token') + '</p>';
+                } else {
+                    result.innerHTML += '<p>❌ 登录失败: ' + response.message + '</p>';
+                }
+            } catch (error) {
+                console.error('登录错误:', error);
+                result.innerHTML += '<p>❌ 登录出错: ' + error.message + '</p>';
+            }
+        };
+    </script>
+</body>
+</html>

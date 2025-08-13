@@ -951,7 +951,7 @@
                 
                 // 1. 获取课程信息
                 console.log('正在获取课程信息...');
-                const courseResponse = await fetch(`http://localhost:8080/api/courses/${courseId}`, {
+                const courseResponse = await fetch(`http://42.194.245.66:8070/api/courses/${courseId}`, {
                     headers: {
                         'Authorization': token ? `Bearer ${token}` : ''
                     }
@@ -970,7 +970,7 @@
                 }
                 
                 // 2. 获取课程章节
-                const chaptersResponse = await fetch(`http://localhost:8080/api/content/courses/${courseId}/chapters`, {
+                const chaptersResponse = await fetch(`http://42.194.245.66:8070/api/content/courses/${courseId}/chapters`, {
                     headers: {
                         'Authorization': token ? `Bearer ${token}` : ''
                     }
@@ -1205,7 +1205,7 @@
             try {
                 // 从后端API获取章节详细内容
                 const token = localStorage.getItem('token');
-                const response = await fetch(`http://localhost:8080/api/content/chapters/${chapterId}`, {
+                const response = await fetch(`http://42.194.245.66:8070/api/content/chapters/${chapterId}`, {
                     headers: {
                         'Authorization': token ? `Bearer ${token}` : ''
                     }

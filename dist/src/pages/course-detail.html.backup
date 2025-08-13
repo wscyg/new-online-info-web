@@ -895,49 +895,36 @@
         }
 
         // 直接支付流程
-        async function processDirectPayment(retryCount = 0) {
+        async function processDirectPayment() {
             const enrollBtn = document.querySelector('.btn-enroll');
             enrollBtn.disabled = true;
             enrollBtn.textContent = '处理中...';
-            
-            // 最大重试3次
-            if (retryCount >= 3) {
-                alert('支付系统暂时繁忙，请稍后重试');
-                enrollBtn.disabled = false;
-                enrollBtn.textContent = '立即报名';
-                return;
-            }
             
             try {
                 const token = localStorage.getItem('token');
                 
                 // 确保每次创建全新订单，避免重复问题
                 const timestamp = Date.now();
-                const randomNum = Math.floor(Math.random() * 100000);
-                const sessionId = Math.random().toString(36).substring(7);
+                const randomNum = Math.floor(Math.random() * 10000);
                 
-                // 1. 创建订阅订单 - 使用多重唯一标识
+                // 1. 创建订阅订单 - 使用时间戳和随机数确保唯一性
                 const subscriptionResponse = await fetch('/api/subscriptions/create', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
-                        'Authorization': `Bearer ${token}`,
-                        'X-Request-ID': `${timestamp}-${randomNum}`, // 添加请求ID
-                        'X-Client-Session': sessionId // 添加会话ID
+                        'Authorization': `Bearer ${token}`
                     },
                     body: new URLSearchParams({
                         subscribableType: 'course',
-                        subscribableId: `${currentCourse.id}`, // 保持原始课程ID
+                        subscribableId: currentCourse.id,
                         paymentMethod: 'alipay',
-                        clientTimestamp: timestamp.toString(),
-                        clientRandom: randomNum.toString(),
-                        clientSession: sessionId,
-                        retryAttempt: retryCount.toString() // 添加重试次数
+                        clientTimestamp: timestamp.toString(), // 添加客户端时间戳
+                        clientRandom: randomNum.toString()     // 添加随机数
                     })
                 });
 
                 const subscriptionData = await subscriptionResponse.json();
-                console.log(`订阅订单创建响应 (第${retryCount + 1}次尝试):`, subscriptionData);
+                console.log('订阅订单创建响应:', subscriptionData);
                 
                 if (subscriptionData.code !== 200) {
                     throw new Error(subscriptionData.message || '创建订单失败');
@@ -946,27 +933,18 @@
                 const orderNo = subscriptionData.data.subscription.orderNo;
                 console.log('新订单号:', orderNo);
                 
-                // 检查是否又返回了相同的订单号
-                if (retryCount > 0 && orderNo === 'CO17549878667511861') {
-                    console.log('后端仍返回相同订单号，尝试清理缓存后重试');
-                    // 等待更长时间让后端处理完成
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-                    return await processDirectPayment(retryCount + 1);
-                }
-                
                 // 2. 创建支付宝支付
                 const alipayResponse = await fetch('/api/payment/alipay/create', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
-                        'Authorization': `Bearer ${token}`,
-                        'X-Request-ID': `${timestamp}-${randomNum}-pay` // 支付请求ID
+                        'Authorization': `Bearer ${token}`
                     },
                     body: new URLSearchParams({
                         orderNo: orderNo,
                         amount: (currentCourse.price || 99).toString(),
                         subject: `课程购买-${currentCourse.title}`,
-                        body: `购买课程：${currentCourse.title} (${timestamp}-${retryCount})` // 添加重试标识
+                        body: `购买课程：${currentCourse.title} (${timestamp})` // 添加时间戳确保唯一性
                     })
                 });
 
@@ -989,35 +967,25 @@
                     if (form) {
                         console.log('正在跳转到支付宝...');
                         form.submit();
-                        return; // 成功跳转，退出函数
                     } else {
                         throw new Error('支付表单格式错误');
                     }
                 } else if (alipayData.code === 500 && alipayData.message && alipayData.message.includes('Duplicate entry')) {
-                    // 如果仍然遇到重复问题，等待后重试
-                    console.log(`检测到重复订单，第${retryCount + 1}次重试...`);
-                    await new Promise(resolve => setTimeout(resolve, 1500 + retryCount * 1000)); // 递增等待时间
+                    // 如果仍然遇到重复问题，等待1秒后重试一次
+                    console.log('检测到重复订单，等待1秒后重试...');
+                    await new Promise(resolve => setTimeout(resolve, 1000));
                     
-                    // 递归调用重试
-                    return await processDirectPayment(retryCount + 1);
+                    // 递归调用自己重试
+                    return await processDirectPayment();
                 } else {
                     throw new Error(alipayData.message || '创建支付宝支付失败');
                 }
                 
             } catch (error) {
-                console.error(`支付流程错误 (第${retryCount + 1}次尝试):`, error);
+                console.error('支付流程错误:', error);
                 
-                // 如果是重复订单错误且未达到最大重试次数，继续重试
-                if (error.message && error.message.includes('Duplicate entry') && retryCount < 3) {
-                    console.log(`准备第${retryCount + 2}次重试...`);
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-                    return await processDirectPayment(retryCount + 1);
-                }
-                
-                // 其他错误或达到最大重试次数，显示错误
-                if (retryCount >= 2) {
-                    alert('支付系统暂时繁忙，请稍后重试');
-                } else if (error.message && error.message.includes('Duplicate entry')) {
+                // 如果是重复订单错误，提供更友好的提示
+                if (error.message && error.message.includes('Duplicate entry')) {
                     alert('系统检测到重复订单，请稍等片刻后重试');
                 } else {
                     alert(`支付失败：${error.message}`);

@@ -1,7 +1,5 @@
 // API配置
-const API_BASE_URL = '/api';
-
-// 文件版本：2025-08-13 19:15 - 修复认证UI问题
+const API_BASE_URL = 'http://42.194.245.66:8070/api';
 
 // 用户认证状态
 let isAuthenticated = false;
@@ -270,17 +268,7 @@ function checkAuthStatus() {
 
 // 更新认证UI
 function updateAuthUI() {
-    console.log('=== updateAuthUI 函数被调用 ===');
     const authContainer = document.querySelector('.nav-auth');
-    console.log('authContainer 元素:', authContainer);
-    
-    // 检查元素是否存在，如果不存在则跳过更新
-    if (!authContainer) {
-        console.log('nav-auth 容器不存在，跳过UI更新');
-        return;
-    }
-    
-    console.log('authContainer 找到，继续更新UI');
     
     if (isAuthenticated && currentUser) {
         authContainer.innerHTML = `

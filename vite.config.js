@@ -9,7 +9,7 @@ export default defineConfig({
     strictPort: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'http://42.194.245.66:8070',
         changeOrigin: true
       }
     }
@@ -18,14 +18,20 @@ export default defineConfig({
     outDir: 'dist',
     rollupOptions: {
       input: {
-        main: 'index.html',
+        main: 'home.html',
         courses: 'src/pages/courses.html',
         dashboard: 'src/pages/dashboard.html',
         payment: 'src/pages/payment.html',
         study: 'src/pages/study.html',
-        qa: 'src/pages/qa.html',
-        profile: 'src/pages/profile.html'
+        profile: 'src/pages/profile.html',
+        login: 'src/pages/login.html',
+        register: 'src/pages/register.html',
+        orders: 'src/pages/orders.html',
+        'course-detail': 'src/pages/course-detail.html'
       }
-    }
-  }
+    },
+    copyPublicDir: true
+  },
+  publicDir: false,
+  assetsInclude: ['**/*.js']
 })

@@ -7,93 +7,6 @@ let originalAmount = 899.00;
 let currentAmount = 899.00;
 let isFreeMode = false;
 
-// 显示通知函数（移植自main.js以避免依赖问题）
-function showNotification(message, type = 'info') {
-    // 创建通知元素
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.innerHTML = `
-        <div class="notification-content">
-            <span>${message}</span>
-            <button onclick="this.parentElement.parentElement.remove()" class="notification-close">&times;</button>
-        </div>
-    `;
-    
-    // 添加样式（如果不存在）
-    if (!document.querySelector('#notification-styles')) {
-        const styles = document.createElement('style');
-        styles.id = 'notification-styles';
-        styles.textContent = `
-            .notification {
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: white;
-                border: 1px solid #e0e6ff;
-                border-radius: 8px;
-                padding: 16px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-                z-index: 10000;
-                max-width: 300px;
-                animation: slideInRight 0.3s ease-out;
-            }
-            
-            .notification-success {
-                border-left: 4px solid #4CAF50;
-            }
-            
-            .notification-error {
-                border-left: 4px solid #f44336;
-            }
-            
-            .notification-warning {
-                border-left: 4px solid #ff9800;
-            }
-            
-            .notification-info {
-                border-left: 4px solid #2196F3;
-            }
-            
-            .notification-content {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-            
-            .notification-close {
-                background: none;
-                border: none;
-                font-size: 18px;
-                cursor: pointer;
-                color: #999;
-                margin-left: 10px;
-            }
-            
-            @keyframes slideInRight {
-                from {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
-        `;
-        document.head.appendChild(styles);
-    }
-    
-    // 添加到页面
-    document.body.appendChild(notification);
-    
-    // 自动移除
-    setTimeout(() => {
-        if (notification.parentElement) {
-            notification.remove();
-        }
-    }, 5000);
-}
-
 // 页面加载完成后初始化
 document.addEventListener('DOMContentLoaded', function() {
     initializePayment();
@@ -168,7 +81,7 @@ function generateOrderId() {
 async function loadOrderById(orderId) {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`/api/orders/${orderId}`, {
+        const response = await fetch(`http://42.194.245.66:8070/api/orders/${orderId}`, {
             headers: {
                 'Authorization': token ? `Bearer ${token}` : ''
             }
@@ -208,50 +121,25 @@ async function loadCourseData() {
     
     if (courseId) {
         try {
-            const response = await fetch(`/api/courses/${courseId}`);
+            const response = await fetch(`http://42.194.245.66:8070/api/courses/${courseId}`);
             const data = await response.json();
             
             if (data.code === 200 && data.data) {
                 courseData = data.data;
-                console.log('课程数据:', courseData);
                 
                 // 检查是否为免费课程
                 if (courseData.isFree) {
                     handleFreeCourse();
                 } else {
-                    // 创建订单数据
-                    orderData = {
-                        orderId: generateOrderId(),
-                        courseId: courseData.id,
-                        courseName: courseData.title,
-                        courseLevel: getDifficultyText(courseData.difficulty),
-                        courseDuration: `${courseData.durationHours || 10}小时`,
-                        instructor: '专业讲师',
-                        originalPrice: courseData.originalPrice || (courseData.price !== undefined ? courseData.price : 899),
-                        currentPrice: courseData.price !== undefined ? courseData.price : 899,
-                        discount: Math.max(0, (courseData.originalPrice || (courseData.price !== undefined ? courseData.price : 899)) - (courseData.price !== undefined ? courseData.price : 899))
-                    };
-                    
-                    // 更新全局金额变量
-                    originalAmount = orderData.currentPrice;
-                    currentAmount = originalAmount;
-                    
-                    console.log('课程价格信息:', {
-                        originalPrice: orderData.originalPrice,
-                        currentPrice: orderData.currentPrice,
-                        originalAmount: originalAmount,
-                        currentAmount: currentAmount
-                    });
-                    
                     updateOrderDisplay();
                 }
             }
         } catch (error) {
             console.error('加载课程数据失败:', error);
-            initializeDefaultOrder();
+            updateOrderDisplay();
         }
     } else {
-        initializeDefaultOrder();
+        updateOrderDisplay();
     }
 }
 
@@ -296,7 +184,7 @@ function disableNonAlipayMethods() {
 // 加载课程并创建订单
 async function loadCourseAndCreateOrder(courseId) {
     try {
-        const response = await fetch(`/api/courses/${courseId}`);
+        const response = await fetch(`http://42.194.245.66:8070/api/courses/${courseId}`);
         const data = await response.json();
         
         if (data.code === 200 && data.data) {
@@ -316,9 +204,9 @@ async function loadCourseAndCreateOrder(courseId) {
                 courseLevel: getDifficultyText(courseData.difficulty),
                 courseDuration: `${courseData.durationHours || 10}小时`,
                 instructor: '专业讲师',
-                originalPrice: courseData.originalPrice || (courseData.price !== undefined ? courseData.price : 299),
-                currentPrice: courseData.price !== undefined ? courseData.price : 299,
-                discount: Math.max(0, (courseData.originalPrice || (courseData.price !== undefined ? courseData.price : 299)) - (courseData.price !== undefined ? courseData.price : 299)),
+                originalPrice: courseData.originalPrice || courseData.price,
+                currentPrice: courseData.price,
+                discount: (courseData.originalPrice || courseData.price) - courseData.price,
                 createTime: new Date().toISOString()
             };
             
@@ -545,12 +433,12 @@ function updateOrderDisplay() {
             }
         });
     } else {
-        originalAmount = (orderData.currentPrice !== undefined && orderData.currentPrice !== null) ? orderData.currentPrice : 899.00;
+        originalAmount = orderData.currentPrice || 899.00;
+        updatePaymentAmount();
         
         // 更新价格显示
         const originalPriceElement = document.querySelector('.original-price');
         const currentPriceElement = document.querySelector('.current-price');
-        const priceValueElements = document.querySelectorAll('.price-value');
         
         if (originalPriceElement && orderData.originalPrice) {
             originalPriceElement.textContent = `¥${orderData.originalPrice}`;
@@ -558,18 +446,6 @@ function updateOrderDisplay() {
         if (currentPriceElement) {
             currentPriceElement.textContent = `¥${orderData.currentPrice || originalAmount}`;
         }
-        
-        // 更新价格明细
-        if (priceValueElements.length >= 3) {
-            priceValueElements[0].textContent = `¥${orderData.originalPrice || originalAmount}`;
-            if (orderData.discount > 0) {
-                priceValueElements[1].textContent = `-¥${orderData.discount}`;
-            } else {
-                priceValueElements[1].textContent = `-¥0.00`;
-            }
-        }
-        
-        updatePaymentAmount();
     }
     
     // 更新确认弹窗中的课程名称
@@ -597,19 +473,6 @@ function processPay() {
     if (currentAmount <= 0) {
         showNotification('支付金额有误', 'error');
         return;
-    }
-    
-    // 更新支付按钮文案
-    const payButton = document.getElementById('payButton');
-    const payText = payButton.querySelector('.pay-text');
-    if (payText) {
-        const methodNames = {
-            'alipay': '支付宝支付',
-            'wechat': '微信支付',
-            'card': '银行卡支付',
-            'balance': '余额支付'
-        };
-        payText.textContent = methodNames[selectedMethod] || '立即支付';
     }
     
     // 显示确认弹窗
@@ -684,11 +547,10 @@ async function confirmPayment() {
         
         if (result.success) {
             // 支付成功
-            payButton.classList.remove('loading');
-            showNotification('支付成功！', 'success');
             setTimeout(() => {
+                payButton.classList.remove('loading');
                 showSuccessModal();
-            }, 1000);
+            }, 2000);
         } else {
             throw new Error(result.message || '支付失败');
         }
@@ -717,7 +579,7 @@ async function processPaymentRequest(paymentData) {
     }
 }
 
-// 支付宝支付 - 调用真实支付宝接口
+// 支付宝支付
 async function processAlipayPayment(paymentData) {
     try {
         // 1. 首先创建订阅订单
@@ -726,111 +588,43 @@ async function processAlipayPayment(paymentData) {
             throw new Error(subscriptionResponse.message || '创建订单失败');
         }
 
-        const orderNo = subscriptionResponse.data.subscription.orderNo;
-        
-        // 2. 创建支付宝支付
-        const token = localStorage.getItem('token');
-        const alipayResponse = await fetch('/api/payment/alipay/create', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': token ? `Bearer ${token}` : ''
-            },
-            body: new URLSearchParams({
-                orderNo: orderNo,
-                amount: paymentData.amount.toString(),
-                subject: courseData ? `课程购买-${courseData.title}` : '课程购买',
-                body: courseData ? courseData.description : '在线课程购买'
-            })
-        });
-
-        const alipayData = await alipayResponse.json();
-        console.log('支付宝支付创建响应:', alipayData);
-        
-        if (alipayData.code === 200 && alipayData.data && alipayData.data.form) {
-            // 3. 处理支付宝支付表单
-            const paymentForm = alipayData.data.form;
-            console.log('收到支付宝支付表单:', paymentForm);
-            
-            // 显示支付提示
-            showNotification('正在跳转到支付宝支付页面...', 'info');
-            
-            // 返回Promise来处理支付结果
-            return new Promise((resolve, reject) => {
-                // 延迟跳转，让用户看到提示
-                setTimeout(() => {
-                    // 创建一个新窗口并提交支付表单
-                    const payWindow = window.open('', 'alipay_payment', 'width=800,height=600,scrollbars=yes,resizable=yes');
-                    if (payWindow) {
-                        payWindow.document.write(paymentForm);
-                        payWindow.document.close();
+        // 2. 模拟支付处理
+        return new Promise((resolve) => {
+            setTimeout(async () => {
+                try {
+                    // 3. 支付成功后激活订阅
+                    const orderNo = subscriptionResponse.data.subscription.orderNo;
+                    const activateResponse = await activateSubscription(orderNo);
+                    
+                    if (activateResponse.success) {
+                        resolve({
+                            success: true,
+                            data: {
+                                transactionId: generateTransactionId(),
+                                paymentMethod: 'alipay',
+                                amount: paymentData.amount,
+                                orderNo: orderNo
+                            }
+                        });
+                    } else {
+                        resolve({
+                            success: false,
+                            message: '支付成功但激活失败，请联系客服'
+                        });
                     }
-                    
-                    // 监听支付结果
-                    const checkPaymentStatus = setInterval(async () => {
-                        try {
-                            // 检查支付状态
-                            const statusResponse = await fetch(`/api/payment/status/${orderNo}`);
-                            const statusData = await statusResponse.json();
-                            
-                            if (statusData.code === 200 && statusData.data) {
-                                const paymentStatus = statusData.data.status;
-                                
-                                if (paymentStatus === 'TRADE_SUCCESS' || paymentStatus === 'TRADE_FINISHED') {
-                                    // 支付成功
-                                    clearInterval(checkPaymentStatus);
-                                    if (payWindow && !payWindow.closed) {
-                                        payWindow.close();
-                                    }
-                                    
-                                    // 激活订阅
-                                    const activateResponse = await activateSubscription(orderNo);
-                                    
-                                    resolve({
-                                        success: true,
-                                        data: {
-                                            transactionId: statusData.data.tradeNo || generateTransactionId(),
-                                            paymentMethod: 'alipay',
-                                            amount: paymentData.amount,
-                                            orderNo: orderNo
-                                        }
-                                    });
-                                } else if (paymentStatus === 'TRADE_CLOSED') {
-                                    // 支付失败或取消
-                                    clearInterval(checkPaymentStatus);
-                                    if (payWindow && !payWindow.closed) {
-                                        payWindow.close();
-                                    }
-                                    reject(new Error('支付已取消或失败'));
-                                }
-                            }
-                            
-                            // 检查窗口是否被用户关闭
-                            if (payWindow && payWindow.closed) {
-                                clearInterval(checkPaymentStatus);
-                                reject(new Error('支付窗口已关闭，支付可能未完成'));
-                            }
-                        } catch (error) {
-                            console.error('检查支付状态失败:', error);
+                } catch (error) {
+                    console.error('激活订阅失败:', error);
+                    resolve({
+                        success: true, // 支付本身成功
+                        data: {
+                            transactionId: generateTransactionId(),
+                            paymentMethod: 'alipay',
+                            amount: paymentData.amount
                         }
-                    }, 2000); // 每2秒检查一次
-                    
-                    // 15分钟后停止检查
-                    setTimeout(() => {
-                        clearInterval(checkPaymentStatus);
-                        if (payWindow && !payWindow.closed) {
-                            payWindow.close();
-                        }
-                        reject(new Error('支付超时，请重试'));
-                    }, 15 * 60 * 1000);
-                    
-                }, 1000);
-            });
-            
-        } else {
-            throw new Error(alipayData.message || '创建支付宝支付失败');
-        }
-        
+                    });
+                }
+            }, 2000);
+        });
     } catch (error) {
         console.error('支付宝支付失败:', error);
         throw error;
@@ -1010,7 +804,7 @@ async function createSubscriptionOrder() {
             },
             body: new URLSearchParams({
                 subscribableType: 'course',
-                subscribableId: courseData?.id || orderData?.courseId || 1,
+                subscribableId: courseData?.id || orderData?.courseId || '1',
                 paymentMethod: selectedMethod || 'alipay'
             })
         });
@@ -1033,12 +827,10 @@ async function createSubscriptionOrder() {
 // 激活订阅
 async function activateSubscription(orderNo) {
     try {
-        const token = localStorage.getItem('token');
         const response = await fetch('/api/subscriptions/activate', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': token ? `Bearer ${token}` : ''
+                'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: new URLSearchParams({
                 orderNo: orderNo
