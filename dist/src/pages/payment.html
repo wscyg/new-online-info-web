@@ -54,6 +54,25 @@
         .hide-for-free {
             display: none;
         }
+        
+        /* 支付成功按钮样式 */
+        .btn-back-course {
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 0 5px;
+        }
+        
+        .btn-back-course:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+        }
     </style>
   <link rel="stylesheet" href="/assets/payment-1a61b2bd.css">
   <link rel="stylesheet" href="/assets/main-ff827300.css">
@@ -354,13 +373,13 @@
             <p>恭喜您成功购买课程，现在就开始学习吧！</p>
             <div class="success-actions">
                 <button class="btn-start-learn" onclick="startLearning()">立即学习</button>
+                <button class="btn-back-course" onclick="backToCourse()">返回课程页面</button>
                 <button class="btn-view-order" onclick="viewOrder()">查看订单</button>
             </div>
         </div>
     </div>
 
     <!-- Scripts -->
-    <script src="../utils/main.js"></script>
-    <script src="../utils/payment.js"></script>
+    <script src="../utils/payment.js?v=20250813-1920"></script>
 </body>
 </html>

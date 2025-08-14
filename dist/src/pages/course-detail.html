@@ -3,39 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>课程详情 - 信息革命AI学习平台</title>
-    <meta name="description" content="深度学习课程详情，掌握AI核心技术">
+    <title>课程详情 - AI未来学院</title>
+    <meta name="description" content="前沿AI课程，构建未来科技核心竞争力">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/main-ff827300.css">
-    <link rel="stylesheet" href="/assets/theme-70c29f4a.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    
     <!-- 预加载主题切换器 -->
-    <script src="/src/utils/theme-switcher.js"></script>
+    <script src="../utils/theme-switcher.js"></script>
     <style>
-        /* 课程详情页样式 */
+        /* 课程详情页样式 - 更现代化设计 */
         .course-detail-page {
-            background: var(--light);
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             min-height: 100vh;
             color: var(--dark);
+            font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
             transition: all 0.3s ease;
         }
         
         [data-theme="dark"] .course-detail-page {
-            background: linear-gradient(135deg, #0a0e27 0%, #151a3d 100%);
-            color: #e0e6ff;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #0f0f23 100%);
+            color: #e2e8f0;
+        }
+        
+        /* 添加动态背景元素 */
+        .course-detail-page::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
         }
         
         .course-header {
-            background: var(--gray-100);
-            backdrop-filter: blur(10px);
-            padding: 2rem 0;
-            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 3rem 0;
+            margin-bottom: 3rem;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+            position: relative;
+            overflow: hidden;
             transition: all 0.3s ease;
         }
         
+        .course-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -50%;
+            width: 200%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent 0%, rgba(59, 130, 246, 0.05) 50%, transparent 100%);
+            animation: shimmer 4s infinite linear;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
         [data-theme="dark"] .course-header {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(15, 15, 35, 0.9);
+            border-bottom: 1px solid rgba(139, 92, 246, 0.2);
         }
         
         .course-container {
@@ -74,20 +110,80 @@
         }
         
         .course-title {
-            font-size: 2.5rem;
+            font-size: 3.5rem;
             font-weight: 700;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #06b6d4 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+            position: relative;
+        }
+        
+        .course-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 2px;
+        }
+        
+        /* 订阅状态样式 */
+        .subscription-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 1rem 0;
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            width: fit-content;
+            transition: all 0.3s ease;
+        }
+        
+        .subscription-status.subscribed {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+        
+        .subscription-status.not-subscribed {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+        
+        .status-icon {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        
+        .status-text {
+            letter-spacing: 0.3px;
+        }
+        
+        [data-theme="dark"] .subscription-status {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
         }
         
         .course-subtitle {
-            font-size: 1.2rem;
-            color: var(--gray-500);
-            margin-bottom: 2rem;
-            line-height: 1.6;
+            font-size: 1.4rem;
+            color: var(--gray-600);
+            margin-bottom: 2.5rem;
+            line-height: 1.7;
+            font-weight: 400;
+            max-width: 600px;
+            position: relative;
+        }
+        
+        [data-theme="dark"] .course-subtitle {
+            color: #94a3b8;
         }
         
         .course-meta {
@@ -105,45 +201,85 @@
         }
         
         .course-stats {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 2rem;
-            margin-bottom: 2rem;
-            padding: 1.5rem;
-            background: var(--gray-100);
-            border-radius: 12px;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            backdrop-filter: blur(10px);
             transition: all 0.3s ease;
         }
         
         [data-theme="dark"] .course-stats {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(15, 15, 35, 0.8);
+            border: 1px solid rgba(139, 92, 246, 0.2);
         }
         
         .stat-item {
             text-align: center;
+            position: relative;
+            padding: 1rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-5px);
         }
         
         .stat-number {
             display: block;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
         }
         
         .stat-label {
-            font-size: 12px;
-            color: var(--gray-500);
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        [data-theme="dark"] .stat-label {
+            color: #94a3b8;
         }
         
         .course-description {
-            background: var(--gray-100);
-            padding: 2rem;
-            border-radius: 12px;
-            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 3rem;
+            border-radius: 24px;
+            margin-bottom: 3rem;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .course-description::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
         }
         
         [data-theme="dark"] .course-description {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(15, 15, 35, 0.8);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
         
         .course-description h3 {
@@ -157,17 +293,31 @@
         }
         
         .course-card {
-            background: var(--light);
-            border: 1px solid var(--gray-200);
-            border-radius: 16px;
-            padding: 2rem;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            border-radius: 24px;
+            padding: 2.5rem;
             backdrop-filter: blur(20px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.08);
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .course-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, rgba(59, 130, 246, 0.3) 50%, transparent 100%);
         }
         
         [data-theme="dark"] .course-card {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(74, 158, 255, 0.2);
+            background: rgba(15, 15, 35, 0.9);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
         }
         
         .course-image {
@@ -207,20 +357,40 @@
         }
         
         .btn-enroll {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
             color: white;
             border: none;
-            padding: 1rem 2rem;
-            border-radius: 12px;
+            padding: 1.2rem 2.5rem;
+            border-radius: 16px;
             font-size: 1.1rem;
-            font-weight: 600;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
             cursor: pointer;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-enroll::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
         }
         
         .btn-enroll:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-enroll:hover::before {
+            left: 100%;
         }
         
         .btn-secondary {
@@ -275,15 +445,32 @@
         
         /* 课程章节样式 */
         .course-chapters {
-            background: var(--gray-100);
-            padding: 2rem;
-            border-radius: 12px;
-            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 3rem;
+            border-radius: 24px;
+            margin-bottom: 3rem;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .course-chapters::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #06b6d4, #3b82f6, #8b5cf6);
         }
         
         [data-theme="dark"] .course-chapters {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(15, 15, 35, 0.8);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
         
         .course-chapters h3 {
@@ -298,27 +485,48 @@
         }
         
         .chapter-item {
-            background: var(--light);
-            border: 1px solid var(--gray-200);
-            border-radius: 8px;
-            padding: 1rem 1.5rem;
-            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            border-radius: 16px;
+            padding: 1.8rem 2rem;
+            margin-bottom: 1rem;
+            transition: all 0.4s ease;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        .chapter-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #3b82f6, #8b5cf6);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
         }
         
         [data-theme="dark"] .chapter-item {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(74, 158, 255, 0.1);
+            background: rgba(15, 15, 35, 0.8);
+            border: 1px solid rgba(139, 92, 246, 0.2);
         }
         
         .chapter-item:hover {
-            border-color: var(--primary);
-            background: var(--gray-100);
+            transform: translateX(8px);
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 15px 30px rgba(59, 130, 246, 0.15);
+        }
+        
+        .chapter-item:hover::before {
+            transform: scaleY(1);
         }
         
         [data-theme="dark"] .chapter-item:hover {
-            border-color: rgba(74, 158, 255, 0.3);
-            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(139, 92, 246, 0.4);
+            box-shadow: 0 15px 30px rgba(139, 92, 246, 0.2);
         }
         
         .chapter-header {
@@ -329,13 +537,15 @@
         }
         
         .chapter-title {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-weight: 600;
             color: var(--dark);
+            margin-bottom: 0.5rem;
+            font-family: 'Space Grotesk', sans-serif;
         }
         
         [data-theme="dark"] .chapter-title {
-            color: #e0e6ff;
+            color: #e2e8f0;
         }
         
         .chapter-badges {
@@ -351,18 +561,36 @@
         }
         
         .badge-free {
-            background: #4caf50;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
             color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .badge-premium {
-            background: #ff9800;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
             color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .badge-duration {
-            background: rgba(59, 130, 246, 0.2);
-            color: var(--primary);
+            background: rgba(59, 130, 246, 0.15);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
         }
         
         .chapter-description {
@@ -533,13 +761,17 @@
             }
         }
     </style>
+  <script type="module" crossorigin src="/assets/modulepreload-polyfill-3cfb730f.js"></script>
+  <script type="module" crossorigin src="/assets/api-4ed993c7.js"></script>
+  <link rel="stylesheet" href="/assets/main-ff827300.css">
+  <link rel="stylesheet" href="/assets/theme-70c29f4a.css">
 </head>
 <body class="course-detail-page">
     <!-- 导航栏 -->
     <nav class="nav">
         <div class="nav-container">
             <div class="nav-brand">
-                <a href="/home.html" class="logo">信息革命</a>
+                <a href="/home.html" class="logo">AI未来学院</a>
             </div>
             <div class="nav-menu">
                 <a href="/home.html" class="nav-link">首页</a>
@@ -557,7 +789,7 @@
                 <!-- 用户头像下拉菜单 -->
                 <div class="user-profile" id="userProfile" style="display: none;">
                     <div class="user-avatar-container" onclick="toggleUserMenu()">
-                        <img src="/assets/avatar-default.svg" alt="用户头像" id="userAvatar" class="user-avatar">
+                        <img src="/assets/avatar-default-b23b2439.svg" alt="用户头像" id="userAvatar" class="user-avatar">
                         <div class="user-status online"></div>
                     </div>
                     <!-- 用户下拉菜单 -->
@@ -575,6 +807,10 @@
                             <a href="/src/pages/dashboard.html" class="dropdown-item">
                                 <i class="fas fa-tachometer-alt"></i>
                                 学习中心
+                            </a>
+                            <a href="/src/pages/orders.html" class="dropdown-item">
+                                <i class="fas fa-shopping-cart"></i>
+                                我的订单
                             </a>
                             <a href="#" class="dropdown-item" onclick="handleLogout()">
                                 <i class="fas fa-sign-out-alt"></i>
@@ -620,6 +856,10 @@
             <div class="course-info">
                 <div class="course-main">
                     <h1 class="course-title" id="courseTitle">课程标题</h1>
+                    <div class="subscription-status" id="subscriptionStatus" style="display: none;">
+                        <span class="status-icon" id="statusIcon">✓</span>
+                        <span class="status-text" id="statusText">已订阅</span>
+                    </div>
                     <p class="course-subtitle" id="courseSubtitle">课程副标题</p>
                     
                     <div class="course-meta">
@@ -688,7 +928,7 @@
                         </div>
                         
                         <div class="course-actions">
-                            <button class="btn-enroll" onclick="enrollCourse()">立即报名</button>
+                            <button class="btn-enroll" id="enrollBtn" onclick="enrollCourse()">立即报名</button>
                             <button class="btn-secondary" onclick="addToWishlist()">加入收藏</button>
                         </div>
                         
@@ -717,9 +957,10 @@
     </main>
 
     <!-- Scripts -->
-    <script type="module" src="../utils/api.js"></script>
+    
     <script>
         let currentCourse = null;
+        let isSubscribed = false; // 添加订阅状态变量
         
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
@@ -777,6 +1018,10 @@
                     currentCourse = data.data;
                     displayCourse(currentCourse);
                     loadChapters(courseId);
+                    // 先显示默认的未订阅状态
+                    updateEnrollButton(false);
+                    // 然后检查真实的订阅状态
+                    await checkSubscriptionStatus(courseId);
                     showContent();
                 } else {
                     showError('课程不存在或已被删除');
@@ -790,7 +1035,7 @@
         // 显示课程信息
         function displayCourse(course) {
             // 更新页面标题
-            document.title = `${course.title} - 信息革命AI学习平台`;
+            document.title = `${course.title} - AI未来学院`;
             
             // 更新导航
             document.getElementById('courseNavTitle').textContent = course.title;
@@ -851,6 +1096,73 @@
                 'advanced': '高级'
             };
             return levels[difficulty] || '入门';
+        }
+        
+        // 检查用户订阅状态
+        async function checkSubscriptionStatus(courseId) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                updateEnrollButton(false);
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/subscriptions/check?subscribableType=course&subscribableId=${courseId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.code === 200) {
+                        isSubscribed = data.data && data.data.subscribed === true;
+                        console.log('订阅状态:', isSubscribed);
+                        updateEnrollButton(isSubscribed);
+                    }
+                }
+            } catch (error) {
+                console.error('检查订阅状态失败:', error);
+                updateEnrollButton(false);
+            }
+        }
+        
+        // 更新报名按钮状态和订阅状态显示
+        function updateEnrollButton(subscribed) {
+            const enrollBtn = document.getElementById('enrollBtn');
+            const subscriptionStatus = document.getElementById('subscriptionStatus');
+            const statusIcon = document.getElementById('statusIcon');
+            const statusText = document.getElementById('statusText');
+            
+            // 显示订阅状态
+            if (subscriptionStatus) {
+                subscriptionStatus.style.display = 'flex';
+                
+                if (subscribed) {
+                    subscriptionStatus.className = 'subscription-status subscribed';
+                    statusIcon.textContent = '✓';
+                    statusText.textContent = '已订阅';
+                } else {
+                    subscriptionStatus.className = 'subscription-status not-subscribed';
+                    statusIcon.textContent = '✗';
+                    statusText.textContent = '未订阅';
+                }
+            }
+            
+            // 更新按钮
+            if (!enrollBtn) return;
+            
+            if (subscribed) {
+                enrollBtn.textContent = '开始学习';
+                enrollBtn.style.background = 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)';
+                enrollBtn.onclick = function() {
+                    window.location.href = `/src/pages/study.html?courseId=${currentCourse.id}`;
+                };
+            } else {
+                enrollBtn.textContent = currentCourse && currentCourse.isFree ? '免费学习' : '立即报名';
+                enrollBtn.style.background = 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)';
+                enrollBtn.onclick = enrollCourse;
+            }
         }
         
         // 显示加载状态
@@ -974,24 +1286,96 @@
                 console.log('支付宝支付创建响应:', alipayData);
                 
                 if (alipayData.code === 200 && alipayData.data && alipayData.data.form) {
-                    // 3. 直接跳转到支付宝页面
+                    // 3. 在新窗口打开支付页面，而不是直接跳转
                     const paymentForm = alipayData.data.form;
-                    console.log('收到支付表单，准备跳转到支付宝');
+                    console.log('收到支付表单，准备在新窗口打开支付宝');
                     
-                    // 创建一个隐藏的div来容纳支付表单
-                    const formContainer = document.createElement('div');
-                    formContainer.style.display = 'none';
-                    formContainer.innerHTML = paymentForm;
-                    document.body.appendChild(formContainer);
-                    
-                    // 自动提交表单，跳转到支付宝
-                    const form = formContainer.querySelector('form');
-                    if (form) {
-                        console.log('正在跳转到支付宝...');
-                        form.submit();
-                        return; // 成功跳转，退出函数
+                    // 在新窗口打开支付页面
+                    const payWindow = window.open('', 'alipay_payment', 'width=800,height=600,scrollbars=yes,resizable=yes');
+                    if (payWindow) {
+                        payWindow.document.write(paymentForm);
+                        payWindow.document.close();
+                        
+                        // 提示用户
+                        alert('支付窗口已打开，请在新窗口中完成支付。支付完成后页面会自动更新。');
+                        
+                        // 监听支付结果 - 改进版本
+                        let checkCount = 0;
+                        const maxChecks = 150; // 最多检查5分钟 (150 * 2秒)
+                        
+                        const checkPaymentStatus = setInterval(async () => {
+                            checkCount++;
+                            
+                            try {
+                                // 检查支付窗口是否关闭或达到最大检查次数
+                                if (payWindow.closed || checkCount >= maxChecks) {
+                                    clearInterval(checkPaymentStatus);
+                                    
+                                    if (checkCount >= maxChecks) {
+                                        alert('支付状态检查超时，请手动刷新页面查看订阅状态');
+                                        return;
+                                    }
+                                    
+                                    // 检查支付状态
+                                    const statusResponse = await fetch(`/api/payment/status/${orderNo}`, {
+                                        headers: {
+                                            'Authorization': `Bearer ${token}`
+                                        }
+                                    });
+                                    
+                                    if (statusResponse.ok) {
+                                        const statusData = await statusResponse.json();
+                                        
+                                        if (statusData.code === 200 && statusData.data) {
+                                            const paymentStatus = statusData.data.tradeStatus;
+                                            
+                                            if (paymentStatus === 'TRADE_SUCCESS' || paymentStatus === 'TRADE_FINISHED') {
+                                                alert('支付成功！现在可以开始学习了！');
+                                                // 重新检查订阅状态并更新按钮
+                                                await checkSubscriptionStatus(currentCourse.id);
+                                                return;
+                                            }
+                                        }
+                                    }
+                                    
+                                    // 如果状态检查失败，重新检查订阅状态
+                                    await checkSubscriptionStatus(currentCourse.id);
+                                    const finalMsg = isSubscribed ? '支付已完成，现在可以开始学习了！' : '支付状态确认中，如已完成支付请稍后刷新页面';
+                                    alert(finalMsg);
+                                }
+                                
+                                // 如果窗口还开着，每次都检查一下支付状态
+                                if (!payWindow.closed && checkCount % 5 === 0) { // 每10秒检查一次状态
+                                    const statusResponse = await fetch(`/api/payment/status/${orderNo}`, {
+                                        headers: {
+                                            'Authorization': `Bearer ${token}`
+                                        }
+                                    });
+                                    
+                                    if (statusResponse.ok) {
+                                        const statusData = await statusResponse.json();
+                                        if (statusData.code === 200 && statusData.data) {
+                                            const paymentStatus = statusData.data.tradeStatus;
+                                            if (paymentStatus === 'TRADE_SUCCESS' || paymentStatus === 'TRADE_FINISHED') {
+                                                clearInterval(checkPaymentStatus);
+                                                payWindow.close();
+                                                alert('支付成功！现在可以开始学习了！');
+                                                await checkSubscriptionStatus(currentCourse.id);
+                                                return;
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                            } catch (error) {
+                                console.error('检查支付状态失败:', error);
+                            }
+                        }, 2000); // 每2秒检查一次
+                        
+                        return; // 成功打开新窗口，退出函数
                     } else {
-                        throw new Error('支付表单格式错误');
+                        alert('无法打开支付窗口，请允许弹窗并重试');
+                        throw new Error('无法打开支付窗口');
                     }
                 } else if (alipayData.code === 500 && alipayData.message && alipayData.message.includes('Duplicate entry')) {
                     // 如果仍然遇到重复问题，等待后重试

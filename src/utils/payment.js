@@ -783,8 +783,17 @@ async function processAlipayPayment(paymentData) {
                                         payWindow.close();
                                     }
                                     
+                                    // 显示支付成功通知
+                                    showNotification('支付成功！正在处理订单...', 'success');
+                                    
                                     // 激活订阅
                                     const activateResponse = await activateSubscription(orderNo);
+                                    
+                                    if (activateResponse.success) {
+                                        showNotification('订单处理完成！课程已开通', 'success');
+                                    } else {
+                                        showNotification('订单激活中，请稍后查看课程', 'warning');
+                                    }
                                     
                                     resolve({
                                         success: true,
@@ -929,6 +938,17 @@ function startLearning() {
     setTimeout(() => {
         const courseId = (courseData && courseData.id) || orderData.courseId || 1;
         window.location.href = `study.html?courseId=${courseId}`;
+    }, 1000);
+}
+
+// 返回课程详情页面
+function backToCourse() {
+    hideSuccessModal();
+    showNotification('正在返回课程页面...', 'info');
+    
+    setTimeout(() => {
+        const courseId = (courseData && courseData.id) || orderData.courseId || 1;
+        window.location.href = `course-detail.html?courseId=${courseId}`;
     }, 1000);
 }
 
@@ -1089,6 +1109,7 @@ window.processPay = processPay;
 window.hidePaymentModal = hidePaymentModal;
 window.confirmPayment = confirmPayment;
 window.startLearning = startLearning;
+window.backToCourse = backToCourse;
 window.viewOrder = viewOrder;
 window.showAllCoupons = showAllCoupons;
 window.checkSubscriptionStatus = checkSubscriptionStatus;

@@ -3,140 +3,320 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的订单 - AI学习平台</title>
+    <title>我的订单 - AI未来学院</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     
     
+    <!-- 预加载主题切换器 -->
+    <script src="../utils/theme-switcher.js"></script>
     <style>
+        /* 订单页面样式 - 现代化设计 */
         .orders-page {
-            background: var(--light);
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             min-height: 100vh;
             color: var(--dark);
+            font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
             transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .orders-page::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(6, 182, 212, 0.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
         }
         
         [data-theme="dark"] .orders-page {
-            background: linear-gradient(135deg, #0a0e27 0%, #151a3d 100%);
-            color: #e0e6ff;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #0f0f23 100%);
+            color: #e2e8f0;
         }
         
         .orders-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 6rem 2rem 4rem;
         }
         
         .orders-header {
-            margin-bottom: 2rem;
+            text-align: center;
+            margin-bottom: 4rem;
+            position: relative;
         }
         
         .orders-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #06b6d4 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+        
+        .orders-header p {
+            font-size: 1.4rem;
+            color: var(--gray-600);
+            font-weight: 400;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        [data-theme="dark"] .orders-header p {
+            color: #94a3b8;
         }
         
         .orders-stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
         }
         
         .stat-card {
-            background: var(--gray-100);
-            padding: 1.5rem;
-            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 2.5rem 2rem;
+            border-radius: 24px;
             text-align: center;
-            transition: all 0.3s ease;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(59, 130, 246, 0.15);
         }
         
         [data-theme="dark"] .stat-card {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(15, 15, 35, 0.8);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
         
         .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary);
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
+            font-family: 'JetBrains Mono', monospace;
         }
         
         .stat-label {
-            color: var(--gray-500);
-            font-size: 0.9rem;
+            color: var(--gray-600);
+            font-size: 1rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        [data-theme="dark"] .stat-label {
+            color: #94a3b8;
         }
         
         .orders-list {
-            background: var(--gray-100);
-            border-radius: 12px;
-            padding: 2rem;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 28px;
+            padding: 3rem;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .orders-list::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #06b6d4, #3b82f6, #8b5cf6);
         }
         
         [data-theme="dark"] .orders-list {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(15, 15, 35, 0.8);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
         }
         
         .order-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            background: var(--light);
-            border-radius: 8px;
-            border-left: 4px solid var(--primary);
-            transition: all 0.3s ease;
+            padding: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .order-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 6px;
+            height: 100%;
+            background: linear-gradient(180deg, #3b82f6, #8b5cf6);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .order-item:hover {
+            transform: translateX(12px) translateY(-2px);
+            box-shadow: 0 25px 50px rgba(59, 130, 246, 0.15);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+        
+        .order-item:hover::before {
+            transform: scaleY(1);
         }
         
         [data-theme="dark"] .order-item {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(15, 15, 35, 0.9);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        [data-theme="dark"] .order-item:hover {
+            box-shadow: 0 25px 50px rgba(139, 92, 246, 0.2);
+            border-color: rgba(139, 92, 246, 0.4);
         }
         
         .order-info h3 {
-            margin: 0 0 0.5rem 0;
+            margin: 0 0 1rem 0;
             color: var(--dark);
+            font-size: 1.4rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
         }
         
         [data-theme="dark"] .order-info h3 {
-            color: #e0e6ff;
+            color: #e2e8f0;
         }
         
         .order-meta {
-            color: var(--gray-500);
-            font-size: 0.9rem;
+            color: var(--gray-600);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        [data-theme="dark"] .order-meta {
+            color: #94a3b8;
         }
         
         .order-status {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .order-status:hover {
+            transform: scale(1.05);
         }
         
         .status-active {
-            background: #4caf50;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
             color: white;
         }
         
         .status-pending {
-            background: #ff9800;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
             color: white;
         }
         
         .status-expired {
-            background: #f44336;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
             color: white;
         }
         
         .loading, .error {
             text-align: center;
-            padding: 3rem;
+            padding: 4rem;
+            color: var(--gray-600);
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+        
+        [data-theme="dark"] .loading, [data-theme="dark"] .error {
+            color: #94a3b8;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem;
+        }
+        
+        .empty-state h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--gray-600);
+        }
+        
+        .empty-state p {
+            font-size: 1.2rem;
             color: var(--gray-500);
+            margin-bottom: 2rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 16px;
+            text-decoration: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(59, 130, 246, 0.3);
         }
     </style>
   <link rel="stylesheet" href="/assets/main-ff827300.css">
@@ -147,7 +327,7 @@
     <nav class="nav">
         <div class="nav-container">
             <div class="nav-brand">
-                <a href="/home.html" class="logo">信息革命</a>
+                <a href="/home.html" class="logo">AI未来学院</a>
             </div>
             <div class="nav-menu">
                 <a href="/home.html" class="nav-link">首页</a>
@@ -211,6 +391,7 @@
     <script>
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
             checkAuth();
             loadOrderStats();
             loadOrders();
