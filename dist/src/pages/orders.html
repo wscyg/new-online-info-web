@@ -273,6 +273,37 @@
             color: white;
         }
         
+        .order-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .btn-pay {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-pay:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        }
+        
+        .timeout-tip {
+            color: #f59e0b;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
         .loading, .error {
             text-align: center;
             padding: 4rem;
@@ -473,6 +504,10 @@
                 const statusClass = getStatusClass(order.status);
                 const statusText = getStatusText(order.status);
                 
+                // 检查是否是待支付订单且在30分钟内
+                const isPayable = order.status === 'pending' && isOrderPayable(order.createdAt);
+                const actionButtons = getActionButtons(order, isPayable);
+                
                 return `
                     <div class="order-item">
                         <div class="order-info">
@@ -482,16 +517,123 @@
                             </div>
                             <div class="order-meta">
                                 支付方式: ${getPaymentMethodText(order.paymentMethod)} | 金额: ¥${order.amount}
+                                ${!isPayable && order.status === 'pending' ? '<span class="timeout-tip">（订单已超时）</span>' : ''}
                             </div>
                         </div>
                         <div class="order-actions">
                             <span class="order-status ${statusClass}">${statusText}</span>
+                            ${actionButtons}
                         </div>
                     </div>
                 `;
             }).join('');
             
             container.innerHTML = ordersHTML;
+        }
+        
+        // 检查订单是否可支付（30分钟内）
+        function isOrderPayable(createdAt) {
+            if (!createdAt) return false;
+            const orderTime = new Date(createdAt);
+            const now = new Date();
+            const diffMinutes = (now - orderTime) / (1000 * 60);
+            return diffMinutes <= 30;
+        }
+        
+        // 获取操作按钮
+        function getActionButtons(order, isPayable) {
+            if (!isPayable || order.status !== 'pending') {
+                return '';
+            }
+            
+            return `
+                <button class="btn-pay" onclick="payOrder('${order.orderNo}', '${order.courseName}', ${order.amount})">
+                    立即支付
+                </button>
+            `;
+        }
+        
+        // 支付订单
+        async function payOrder(orderNo, courseName, amount) {
+            try {
+                const token = localStorage.getItem('token');
+                
+                // 创建支付宝支付
+                const response = await fetch('/api/payment/alipay/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: new URLSearchParams({
+                        orderNo: orderNo,
+                        amount: amount.toString(),
+                        subject: `课程购买-${courseName}`,
+                        body: `购买课程：${courseName}`
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.code === 200 && data.data && data.data.form) {
+                    // 在新窗口打开支付页面
+                    const payWindow = window.open('', 'alipay_payment', 'width=800,height=600,scrollbars=yes,resizable=yes');
+                    if (payWindow) {
+                        payWindow.document.write(data.data.form);
+                        payWindow.document.close();
+                        
+                        alert('支付窗口已打开，请在新窗口中完成支付。支付完成后页面会自动更新。');
+                        
+                        // 监听支付结果
+                        const checkPaymentStatus = setInterval(async () => {
+                            try {
+                                if (payWindow.closed) {
+                                    clearInterval(checkPaymentStatus);
+                                    
+                                    // 检查支付状态
+                                    const statusResponse = await fetch(`/api/payment/status/${orderNo}`, {
+                                        headers: {
+                                            'Authorization': `Bearer ${token}`
+                                        }
+                                    });
+                                    
+                                    if (statusResponse.ok) {
+                                        const statusData = await statusResponse.json();
+                                        if (statusData.code === 200 && statusData.data) {
+                                            const paymentStatus = statusData.data.tradeStatus;
+                                            if (paymentStatus === 'TRADE_SUCCESS' || paymentStatus === 'TRADE_FINISHED') {
+                                                alert('支付成功！');
+                                                // 重新加载订单列表
+                                                loadOrders();
+                                                loadOrderStats();
+                                                return;
+                                            }
+                                        }
+                                    }
+                                    
+                                    alert('支付状态确认中，如已完成支付请稍后刷新页面');
+                                }
+                            } catch (error) {
+                                console.error('检查支付状态失败:', error);
+                            }
+                        }, 2000);
+                        
+                        // 5分钟后停止检查
+                        setTimeout(() => {
+                            clearInterval(checkPaymentStatus);
+                        }, 5 * 60 * 1000);
+                        
+                    } else {
+                        alert('无法打开支付窗口，请允许弹窗并重试');
+                    }
+                } else {
+                    alert(`支付失败：${data.message}`);
+                }
+                
+            } catch (error) {
+                console.error('支付失败:', error);
+                alert(`支付失败：${error.message}`);
+            }
         }
         
         // 获取状态样式类
