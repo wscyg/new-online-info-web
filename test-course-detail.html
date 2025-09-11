@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试课程详情页</title>
+</head>
+<body>
+    <h1>测试课程详情页</h1>
+    
+    <div style="margin: 20px;">
+        <button onclick="testAPI()">测试API连接</button>
+        <button onclick="setCookie()">设置测试Token</button>
+        <button onclick="openCoursePage()">打开课程详情页</button>
+    </div>
+    
+    <div id="result" style="margin: 20px; padding: 15px; border: 1px solid #ccc; min-height: 200px;">
+        <h3>测试结果:</h3>
+        <pre id="output"></pre>
+    </div>
+    
+    <script>
+        const API_BASE = 'http://42.194.245.66/api';
+        
+        async function testAPI() {
+            const output = document.getElementById('output');
+            try {
+                output.textContent = '正在测试API连接...';
+                
+                const response = await fetch(`${API_BASE}/courses/1`);
+                const data = await response.json();
+                
+                output.textContent = '✅ API连接成功!\n\n' + JSON.stringify(data, null, 2);
+            } catch (error) {
+                output.textContent = '❌ API连接失败: ' + error.message;
+            }
+        }
+        
+        function setCookie() {
+            // 设置一个测试用的token
+            const testToken = 'test-token-' + Date.now();
+            localStorage.setItem('token', testToken);
+            
+            // 设置测试用户信息
+            const testUser = {
+                id: 1,
+                username: 'cygws123',
+                nickname: '测试用户',
+                email: 'test@example.com'
+            };
+            localStorage.setItem('user', JSON.stringify(testUser));
+            
+            document.getElementById('output').textContent = 
+                '✅ 已设置测试Token和用户信息:\n\nToken: ' + testToken + 
+                '\n\n用户信息:\n' + JSON.stringify(testUser, null, 2);
+        }
+        
+        function openCoursePage() {
+            window.open('/dist/src/pages/course-detail.html?id=1', '_blank');
+        }
+    </script>
+</body>
+</html>

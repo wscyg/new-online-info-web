@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的证书 - AI学习平台</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --white: #ffffff;
+            --gold: #fbbf24;
+            --silver: #9ca3af;
+            --bronze: #d97706;
+            --gradient-gold: linear-gradient(135deg, #fbbf24, #f59e0b);
+            --gradient-certificate: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(to bottom right, #0f172a, #1e293b);
+            min-height: 100vh;
+            color: var(--white);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 动态背景 */
+        .particles-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: float-up 15s infinite linear;
+        }
+
+        @keyframes float-up {
+            from {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            to {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--white);
+        }
+
+        .nav-link.active {
+            color: var(--white);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #60a5fa, #c084fc);
+        }
+
+        /* 主容器 */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 页面标题 */
+        .page-header {
+            text-align: center;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .page-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #60a5fa 0%, #c084fc 50%, #fbbf24 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s ease infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .page-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.2rem;
+        }
+
+        /* 统计卡片 */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        /* 证书筛选 */
+        .certificate-filters {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .filter-btn.active {
+            background: var(--gradient-certificate);
+            color: var(--white);
+            border: none;
+            box-shadow: 0 10px 30px rgba(103, 126, 234, 0.3);
+        }
+
+        /* 证书网格 */
+        .certificates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        /* 证书卡片 */
+        .certificate-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s;
+            position: relative;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+        }
+
+        .certificate-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .certificate-card.gold {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.05));
+            border-color: rgba(251, 191, 36, 0.3);
+        }
+
+        .certificate-card.platinum {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(139, 92, 246, 0.05));
+            border-color: rgba(168, 85, 247, 0.3);
+        }
+
+        /* 证书预览 */
+        .certificate-preview {
+            height: 200px;
+            background: var(--gradient-certificate);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .certificate-preview::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='pattern' x='0' y='0' width='100' height='100' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='50' cy='50' r='40' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='0.5'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100' height='100' fill='url(%23pattern)'/%3E%3C/svg%3E");
+            opacity: 0.3;
+        }
+
+        .certificate-icon {
+            font-size: 4rem;
+            z-index: 1;
+        }
+
+        .certificate-ribbon {
+            position: absolute;
+            top: 1rem;
+            right: -3rem;
+            background: var(--gradient-gold);
+            color: var(--dark);
+            padding: 0.5rem 4rem;
+            transform: rotate(45deg);
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        /* 证书信息 */
+        .certificate-info {
+            padding: 1.5rem;
+        }
+
+        .certificate-course {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .certificate-date {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .certificate-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .certificate-id {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+        }
+
+        .certificate-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 8px;
+            color: var(--white);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        /* 证书模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(30, 41, 59, 0.95);
+            border-radius: 24px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 50%;
+            color: var(--white);
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+
+        /* 证书详情设计 */
+        .certificate-detail {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .certificate-detail::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255, 255, 255, 0.05) 10px,
+                rgba(255, 255, 255, 0.05) 20px
+            );
+            animation: slide 20s linear infinite;
+        }
+
+        @keyframes slide {
+            from { transform: translate(0, 0); }
+            to { transform: translate(50px, 50px); }
+        }
+
+        .certificate-logo {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .certificate-title {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .certificate-content {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .certificate-recipient {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .recipient-name {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            margin: 1rem 0;
+            color: var(--gold);
+        }
+
+        .certificate-course-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 1rem 0;
+        }
+
+        .certificate-achievement {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin: 1rem 0;
+        }
+
+        .certificate-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .certificate-seal {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--gradient-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+        }
+
+        .certificate-signature {
+            text-align: center;
+        }
+
+        .signature-line {
+            width: 150px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            margin: 0 auto 0.5rem;
+        }
+
+        .signature-title {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* 证书操作按钮 */
+        .certificate-modal-actions {
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--gradient-certificate);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(103, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* 加载动画 */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2.5rem;
+            }
+
+            .certificates-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .certificate-title {
+                font-size: 1.8rem;
+            }
+
+            .recipient-name {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 粒子背景 -->
+    <div class="particles-bg" id="particlesBg"></div>
+
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">AI学习平台</div>
+            <ul class="nav-menu">
+                <li><a href="courses.html" class="nav-link">课程</a></li>
+                <li><a href="dashboard.html" class="nav-link">仪表盘</a></li>
+                <li><a href="study-plan.html" class="nav-link">学习计划</a></li>
+                <li><a href="achievements.html" class="nav-link">成就</a></li>
+                <li><a href="leaderboard.html" class="nav-link">排行榜</a></li>
+                <li><a href="points-shop.html" class="nav-link">积分商城</a></li>
+                <li><a href="certificates.html" class="nav-link active">我的证书</a></li>
+                <li><a href="profile.html" class="nav-link">个人中心</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <h1 class="page-title">🎓 我的证书</h1>
+            <p class="page-subtitle">见证每一次成长，收获知识的荣耀</p>
+        </div>
+
+        <!-- 统计卡片 -->
+        <div class="stats-cards">
+            <div class="stat-card">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-number">12</div>
+                <div class="stat-label">获得证书</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-number">3</div>
+                <div class="stat-label">优秀证书</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📚</div>
+                <div class="stat-number">8</div>
+                <div class="stat-label">课程完成</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-number">95%</div>
+                <div class="stat-label">平均成绩</div>
+            </div>
+        </div>
+
+        <!-- 证书筛选 -->
+        <div class="certificate-filters">
+            <button class="filter-btn active" data-filter="all">全部证书</button>
+            <button class="filter-btn" data-filter="course">课程证书</button>
+            <button class="filter-btn" data-filter="achievement">成就证书</button>
+            <button class="filter-btn" data-filter="competition">竞赛证书</button>
+            <button class="filter-btn" data-filter="honor">荣誉证书</button>
+        </div>
+
+        <!-- 证书网格 -->
+        <div class="certificates-grid" id="certificatesGrid">
+            <!-- 证书卡片将通过JavaScript动态加载 -->
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <p>加载证书中...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 证书详情模态框 -->
+    <div class="modal" id="certificateModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeCertificateModal()">×</button>
+            <div class="certificate-detail">
+                <div class="certificate-logo">🎓</div>
+                <h1 class="certificate-title">Certificate of Completion</h1>
+                <div class="certificate-content">
+                    <p class="certificate-recipient">This is to certify that</p>
+                    <h2 class="recipient-name" id="recipientName">张三</h2>
+                    <p class="certificate-achievement">has successfully completed the course</p>
+                    <h3 class="certificate-course-name" id="courseName">深度学习基础与实践</h3>
+                    <p class="certificate-achievement">with excellent performance</p>
+                </div>
+                <div class="certificate-footer">
+                    <div class="certificate-seal">🏅</div>
+                    <div>
+                        <p style="color: rgba(255, 255, 255, 0.7);">Certificate ID: <span id="certificateId">CERT-2024-0001</span></p>
+                        <p style="color: rgba(255, 255, 255, 0.7);">Issue Date: <span id="issueDate">2024-08-10</span></p>
+                    </div>
+                    <div class="certificate-signature">
+                        <div class="signature-line"></div>
+                        <p class="signature-title">Director Signature</p>
+                    </div>
+                </div>
+            </div>
+            <div class="certificate-modal-actions">
+                <button class="btn btn-primary" onclick="downloadCertificate()">
+                    📥 下载证书
+                </button>
+                <button class="btn btn-secondary" onclick="shareCertificate()">
+                    🔗 分享证书
+                </button>
+                <button class="btn btn-secondary" onclick="verifyCertificate()">
+                    ✅ 验证证书
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 证书数据
+        const certificates = [
+            {
+                id: 'CERT-2024-0001',
+                type: 'course',
+                courseName: '深度学习基础与实践',
+                issueDate: '2024-08-10',
+                grade: 'A+',
+                score: 98,
+                level: 'gold'
+            },
+            {
+                id: 'CERT-2024-0002',
+                type: 'course',
+                courseName: 'Python高级编程',
+                issueDate: '2024-07-25',
+                grade: 'A',
+                score: 92,
+                level: 'normal'
+            },
+            {
+                id: 'CERT-2024-0003',
+                type: 'achievement',
+                courseName: '学习达人',
+                issueDate: '2024-07-20',
+                grade: '特殊成就',
+                score: 100,
+                level: 'platinum'
+            },
+            {
+                id: 'CERT-2024-0004',
+                type: 'course',
+                courseName: '机器学习算法详解',
+                issueDate: '2024-07-15',
+                grade: 'A',
+                score: 90,
+                level: 'normal'
+            },
+            {
+                id: 'CERT-2024-0005',
+                type: 'competition',
+                courseName: 'AI创新大赛',
+                issueDate: '2024-07-01',
+                grade: '二等奖',
+                score: 95,
+                level: 'gold'
+            },
+            {
+                id: 'CERT-2024-0006',
+                type: 'course',
+                courseName: '数据科学入门',
+                issueDate: '2024-06-20',
+                grade: 'B+',
+                score: 88,
+                level: 'normal'
+            }
+        ];
+
+        let currentFilter = 'all';
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeParticles();
+            bindEvents();
+            loadCertificates();
+        });
+
+        // 初始化粒子背景
+        function initializeParticles() {
+            const particlesBg = document.getElementById('particlesBg');
+            
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                particlesBg.appendChild(particle);
+            }
+        }
+
+        // 绑定事件
+        function bindEvents() {
+            // 筛选按钮
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.filter;
+                    loadCertificates();
+                });
+            });
+        }
+
+        // 加载证书
+        async function loadCertificates() {
+            const grid = document.getElementById('certificatesGrid');
+            
+            // 显示加载状态
+            grid.innerHTML = `
+                <div class="loading" style="grid-column: 1 / -1;">
+                    <div class="loading-spinner"></div>
+                    <p>加载证书中...</p>
+                </div>
+            `;
+
+            // 模拟API调用延迟
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // 筛选证书
+            let filteredCertificates = certificates;
+            if (currentFilter !== 'all') {
+                filteredCertificates = certificates.filter(cert => cert.type === currentFilter);
+            }
+
+            if (filteredCertificates.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-icon">📜</div>
+                        <h3>暂无证书</h3>
+                        <p>完成课程学习即可获得证书</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // 渲染证书
+            grid.innerHTML = filteredCertificates.map(cert => createCertificateCard(cert)).join('');
+        }
+
+        // 创建证书卡片
+        function createCertificateCard(cert) {
+            const levelClass = cert.level === 'gold' ? 'gold' : cert.level === 'platinum' ? 'platinum' : '';
+            const ribbon = cert.level === 'gold' ? '金牌' : cert.level === 'platinum' ? '白金' : '';
+            
+            return `
+                <div class="certificate-card ${levelClass}" onclick="viewCertificate('${cert.id}')">
+                    ${ribbon ? `<div class="certificate-ribbon">${ribbon}</div>` : ''}
+                    <div class="certificate-preview">
+                        <div class="certificate-icon">🎓</div>
+                    </div>
+                    <div class="certificate-info">
+                        <h3 class="certificate-course">${cert.courseName}</h3>
+                        <p class="certificate-date">颁发日期：${cert.issueDate}</p>
+                        <div class="certificate-meta">
+                            <span class="certificate-id">证书编号：${cert.id}</span>
+                            <div class="certificate-actions">
+                                <button class="action-btn" onclick="event.stopPropagation(); downloadCertificate('${cert.id}')">📥</button>
+                                <button class="action-btn" onclick="event.stopPropagation(); shareCertificate('${cert.id}')">🔗</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 查看证书详情
+        function viewCertificate(certId) {
+            const cert = certificates.find(c => c.id === certId);
+            if (!cert) return;
+
+            // 更新模态框内容
+            document.getElementById('recipientName').textContent = '张三'; // 实际应从用户信息获取
+            document.getElementById('courseName').textContent = cert.courseName;
+            document.getElementById('certificateId').textContent = cert.id;
+            document.getElementById('issueDate').textContent = cert.issueDate;
+
+            // 显示模态框
+            document.getElementById('certificateModal').classList.add('active');
+        }
+
+        // 关闭证书模态框
+        function closeCertificateModal() {
+            document.getElementById('certificateModal').classList.remove('active');
+        }
+
+        // 下载证书
+        function downloadCertificate(certId) {
+            showNotification('证书下载中...', 'info');
+            // 实际实现应该调用后端API生成PDF
+            setTimeout(() => {
+                showNotification('证书下载成功！', 'success');
+            }, 1500);
+        }
+
+        // 分享证书
+        function shareCertificate(certId) {
+            const shareUrl = `${window.location.origin}/certificate/${certId || 'current'}`;
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                showNotification('分享链接已复制到剪贴板！', 'success');
+            });
+        }
+
+        // 验证证书
+        function verifyCertificate() {
+            showNotification('证书验证通过！', 'success');
+        }
+
+        // 显示通知
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#6366f1'};
+                color: white;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

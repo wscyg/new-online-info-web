@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习计划 - AI未来学院</title>
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/study-plan.css">
+</head>
+<body>
+    <header class="page-header">
+        <div class="container">
+            <h1>学习计划</h1>
+            <button class="btn btn-primary" onclick="createPlan()">创建计划</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="plan-container">
+            <!-- Calendar View -->
+            <section class="calendar-section">
+                <div class="calendar-header">
+                    <button class="btn btn-icon" onclick="previousMonth()">←</button>
+                    <h2 id="currentMonth">2024年8月</h2>
+                    <button class="btn btn-icon" onclick="nextMonth()">→</button>
+                </div>
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar will be rendered here -->
+                </div>
+            </section>
+
+            <!-- Daily Plans -->
+            <section class="daily-plans">
+                <h2>今日计划 <span id="selectedDate"></span></h2>
+                <div class="plans-list" id="plansList">
+                    <!-- Plans will be loaded here -->
+                </div>
+            </section>
+
+            <!-- Study Goals -->
+            <section class="study-goals">
+                <h2>学习目标</h2>
+                <div class="goals-grid">
+                    <div class="goal-card">
+                        <h3>本周目标</h3>
+                        <div class="goal-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="weekProgress"></div>
+                            </div>
+                            <span id="weekProgressText">0/5 天</span>
+                        </div>
+                    </div>
+                    <div class="goal-card">
+                        <h3>本月目标</h3>
+                        <div class="goal-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="monthProgress"></div>
+                            </div>
+                            <span id="monthProgressText">0/20 天</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Statistics -->
+            <section class="plan-statistics">
+                <h2>学习统计</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-label">总计划数</span>
+                        <span class="stat-value" id="totalPlans">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">已完成</span>
+                        <span class="stat-value" id="completedPlans">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">完成率</span>
+                        <span class="stat-value" id="completionRate">0%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">连续天数</span>
+                        <span class="stat-value" id="streakDays">0</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Create/Edit Plan Modal -->
+        <div class="modal" id="planModal">
+            <div class="modal-content">
+                <span class="modal-close" onclick="closePlanModal()">&times;</span>
+                <h2 id="modalTitle">创建学习计划</h2>
+                <form id="planForm">
+                    <div class="form-group">
+                        <label for="planTitle">计划标题</label>
+                        <input type="text" id="planTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="planCourse">选择课程</label>
+                        <select id="planCourse" required>
+                            <option value="">请选择课程</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="planDate">计划日期</label>
+                        <input type="date" id="planDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="planTime">学习时长（分钟）</label>
+                        <input type="number" id="planTime" min="15" max="480" value="60" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="planReminder">提醒时间</label>
+                        <input type="time" id="planReminder">
+                    </div>
+                    <div class="form-group">
+                        <label for="planDescription">计划描述</label>
+                        <textarea id="planDescription" rows="3"></textarea>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closePlanModal()">取消</button>
+                        <button type="submit" class="btn btn-primary">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/study-plan.js"></script>
+</body>
+</html>

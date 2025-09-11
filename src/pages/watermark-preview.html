@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>水印效果预览 - www.infofuture.online</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 40px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+        
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        p {
+            line-height: 1.8;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        /* 水印容器样式 */
+        .watermark-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+        
+        /* 多个斜向水印网格 */
+        .watermark-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 20px;
+            padding: 50px;
+        }
+        
+        .watermark-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(-45deg);
+            font-size: 28px;
+            font-weight: bold;
+            color: rgba(0, 0, 0, 0.04);
+            white-space: nowrap;
+            user-select: none;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        /* 交替不同透明度创建层次感 */
+        .watermark-item:nth-child(odd) {
+            color: rgba(0, 0, 0, 0.03);
+        }
+        
+        .watermark-item:nth-child(even) {
+            color: rgba(0, 0, 0, 0.05);
+        }
+        
+        .watermark-left {
+            position: absolute;
+            top: 50%;
+            left: 10%;
+            transform: translateY(-50%) rotate(-90deg);
+            font-size: 24px;
+            font-weight: bold;
+            color: rgba(0, 0, 0, 0.08);
+            white-space: nowrap;
+            user-select: none;
+        }
+        
+        .watermark-right {
+            position: absolute;
+            top: 50%;
+            right: 10%;
+            transform: translateY(-50%) rotate(90deg);
+            font-size: 24px;
+            font-weight: bold;
+            color: rgba(0, 0, 0, 0.08);
+            white-space: nowrap;
+            user-select: none;
+        }
+        
+        .watermark-pattern {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background-image: repeating-linear-gradient(
+                -45deg,
+                transparent,
+                transparent 200px,
+                rgba(0, 0, 0, 0.02) 200px,
+                rgba(0, 0, 0, 0.02) 400px
+            );
+        }
+        
+        .demo-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .feature-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .feature-card h3 {
+            margin-top: 0;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <!-- 水印容器 -->
+    <div class="watermark-container">
+        <div class="watermark-pattern"></div>
+        <div class="watermark-grid">
+            <div class="watermark-item">www.infofuture.online</div>
+            <div class="watermark-item">www.infofuture.online</div>
+            <div class="watermark-item">www.infofuture.online</div>
+            <div class="watermark-item">www.infofuture.online</div>
+            <div class="watermark-item">www.infofuture.online</div>
+            <div class="watermark-item">www.infofuture.online</div>
+            <div class="watermark-item">www.infofuture.online</div>
+            <div class="watermark-item">www.infofuture.online</div>
+            <div class="watermark-item">www.infofuture.online</div>
+            <div class="watermark-item">www.infofuture.online</div>
+            <div class="watermark-item">www.infofuture.online</div>
+            <div class="watermark-item">www.infofuture.online</div>
+        </div>
+        <div class="watermark-left">
+            用户: cygws123 | www.infofuture.online
+        </div>
+        <div class="watermark-right">
+            用户: cygws123 | www.infofuture.online
+        </div>
+    </div>
+
+    <!-- 页面内容 -->
+    <div class="content">
+        <h1>🎓 AI Master Class - 水印效果预览</h1>
+        
+        <p>这是一个水印效果的预览页面。水印会显示在所有打开的课程章节内容上，包含网站地址和用户名信息。</p>
+        
+        <div class="demo-box">
+            <h2>水印特性</h2>
+            <p>我们的水印系统具有以下特点：</p>
+            <ul>
+                <li>✅ 大型中央水印 - 显示网站域名</li>
+                <li>✅ 两侧用户标识 - 显示当前登录用户</li>
+                <li>✅ 透明度优化 - 不影响内容阅读</li>
+                <li>✅ 防删除保护 - 自动恢复被删除的水印</li>
+                <li>✅ 响应式设计 - 适配各种屏幕尺寸</li>
+            </ul>
+        </div>
+        
+        <h2>水印布局说明</h2>
+        
+        <div class="feature-list">
+            <div class="feature-card">
+                <h3>🔢 多个小水印</h3>
+                <p>3x4网格布局，共12个斜向水印，28px字体大小，均匀分布在页面上</p>
+            </div>
+            
+            <div class="feature-card">
+                <h3>👤 左侧用户信息</h3>
+                <p>垂直显示在页面左侧，包含用户名和网站地址</p>
+            </div>
+            
+            <div class="feature-card">
+                <h3>👤 右侧用户信息</h3>
+                <p>垂直显示在页面右侧，与左侧对称</p>
+            </div>
+            
+            <div class="feature-card">
+                <h3>🔒 安全保护</h3>
+                <p>使用MutationObserver监控，防止水印被恶意删除</p>
+            </div>
+            
+            <div class="feature-card">
+                <h3>🎨 视觉优化</h3>
+                <p>精心调整的透明度，既能标识版权又不影响阅读</p>
+            </div>
+            
+            <div class="feature-card">
+                <h3>🌙 深色模式</h3>
+                <p>自动适配深色模式，确保在不同主题下都能正常显示</p>
+            </div>
+        </div>
+        
+        <h2>实际应用场景</h2>
+        <p>
+            当用户打开任何课程章节内容时，系统会自动在新窗口或模态框中添加这个水印。
+            水印会显示当前登录用户的用户名，以及我们网站的地址 www.infofuture.online。
+        </p>
+        
+        <p>
+            这个水印设计既能有效保护内容版权，又不会过度影响用户的学习体验。
+            透明度和位置都经过精心调整，确保在标识内容归属的同时，保持良好的可读性。
+        </p>
+        
+        <div style="height: 200px;"></div>
+    </div>
+
+    <script>
+        // 防止水印被删除的保护机制
+        const watermarkContainer = document.querySelector('.watermark-container');
+        const observer = new MutationObserver(function(mutations) {
+            const watermark = document.querySelector('.watermark-container');
+            if (!watermark && watermarkContainer) {
+                document.body.appendChild(watermarkContainer.cloneNode(true));
+                console.log('水印已自动恢复');
+            }
+        });
+        
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+        
+        // 模拟获取用户信息
+        const savedUser = localStorage.getItem('user');
+        if (savedUser) {
+            try {
+                const user = JSON.parse(savedUser);
+                const username = user.username || user.nickname || user.email || '学员';
+                // 更新水印中的用户名
+                document.querySelectorAll('.watermark-left, .watermark-right').forEach(el => {
+                    el.textContent = `用户: ${username} | www.infofuture.online`;
+                });
+            } catch (e) {
+                console.log('使用默认用户名');
+            }
+        }
+    </script>
+</body>
+</html>

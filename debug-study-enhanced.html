@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study页面调试版本</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #0f172a;
+            font-family: sans-serif;
+        }
+        #contentFrame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+            font-size: 1.2rem;
+            padding: 2rem;
+        }
+        .debug-info {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            max-width: 80%;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            border: 1px solid #475569;
+        }
+        .success { color: #22c55e; }
+        .error { color: #ef4444; }
+        .warning { color: #f59e0b; }
+        .info { color: #06b6d4; }
+    </style>
+    <script>
+        // 增强版本的库替换函数，带调试输出
+        function replaceExternalLibs(htmlContent) {
+            console.log('🔍 开始替换外部库...');
+            
+            const replacements = {
+                // Cloudflare CDN
+                'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css': '/lib/highlightjs/github-dark.min.css',
+                'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css': '/lib/katex/katex.min.css',
+                'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js': '/lib/highlightjs/highlight.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js': '/lib/katex/katex.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js': '/lib/katex/auto-render.min.js',
+                // JSDelivr CDN
+                'https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css': '/lib/highlightjs/github-dark.min.css',
+                'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css': '/lib/katex/katex.min.css',
+                'https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/highlight.min.js': '/lib/highlightjs/highlight.min.js',
+                'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js': '/lib/katex/katex.min.js',
+                'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js': '/lib/katex/auto-render.min.js'
+            };
+            
+            let modifiedHtml = htmlContent;
+            let replacementCount = 0;
+            
+            for (const [cdnUrl, localUrl] of Object.entries(replacements)) {
+                const originalLength = modifiedHtml.length;
+                modifiedHtml = modifiedHtml.split(cdnUrl).join(localUrl);
+                if (modifiedHtml.length !== originalLength) {
+                    replacementCount++;
+                    console.log(`✅ 替换成功: ${cdnUrl} → ${localUrl}`);
+                }
+            }
+            
+            console.log(`📊 总共替换了 ${replacementCount} 个外部链接`);
+            
+            // 检查是否还有未处理的CDN链接
+            const remainingCDN = [];
+            if (modifiedHtml.includes('cdnjs.cloudflare.com')) remainingCDN.push('Cloudflare CDN');
+            if (modifiedHtml.includes('cdn.jsdelivr.net')) remainingCDN.push('JSDelivr CDN');
+            if (modifiedHtml.includes('unpkg.com')) remainingCDN.push('unpkg CDN');
+            
+            if (remainingCDN.length > 0) {
+                console.warn(`⚠️  仍然存在外部CDN: ${remainingCDN.join(', ')}`);
+            }
+            
+            return modifiedHtml;
+        }
+
+        function updateDebugInfo(message, type = 'info') {
+            const debugDiv = document.getElementById('debug-info');
+            if (debugDiv) {
+                const timestamp = new Date().toLocaleTimeString();
+                debugDiv.innerHTML += `<div class="${type}">[${timestamp}] ${message}</div>`;
+                debugDiv.scrollTop = debugDiv.scrollHeight;
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="loading" class="loading-container">
+        <div>🚀 正在加载章节内容...</div>
+        <div class="debug-info" id="debug-info"></div>
+    </div>
+    <iframe id="contentFrame" style="display: none;"></iframe>
+    
+    <script>
+        (async function () {
+            const loadingIndicator = document.getElementById('loading');
+            const contentFrame = document.getElementById('contentFrame');
+            
+            try {
+                updateDebugInfo('开始获取章节参数...');
+                
+                const urlParams = new URLSearchParams(window.location.search);
+                const chapterId = urlParams.get('chapterId');
+                if (!chapterId) {
+                    throw new Error('URL中未找到章节ID (chapterId)');
+                }
+                
+                updateDebugInfo(`章节ID: ${chapterId}`, 'success');
+                updateDebugInfo('发送API请求...');
+                
+                const response = await fetch(`/api/content/chapters/${chapterId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+                    }
+                });
+                
+                updateDebugInfo(`API响应状态: ${response.status}`, response.ok ? 'success' : 'error');
+                
+                if (!response.ok) {
+                    throw new Error(`无法获取章节内容，服务器状态: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                updateDebugInfo(`API响应代码: ${data.code}`, data.code === 200 ? 'success' : 'warning');
+                
+                let htmlText = '';
+                if (data.code === 200 && data.data && data.data.content && data.data.content.contentHtml) {
+                    const originalHtml = data.data.content.contentHtml;
+                    updateDebugInfo(`原始HTML长度: ${originalHtml.length} 字符`);
+                    
+                    // 检查原始HTML中的CDN链接
+                    const cdnCount = (originalHtml.match(/https:\/\/cdnjs\.cloudflare\.com/g) || []).length + 
+                                   (originalHtml.match(/https:\/\/cdn\.jsdelivr\.net/g) || []).length;
+                    updateDebugInfo(`检测到 ${cdnCount} 个CDN链接`, cdnCount > 0 ? 'warning' : 'success');
+                    
+                    // 关键：在这里替换外部库为本地库
+                    updateDebugInfo('开始替换CDN链接为本地库...');
+                    htmlText = replaceExternalLibs(originalHtml);
+                    
+                    updateDebugInfo(`处理后HTML长度: ${htmlText.length} 字符`);
+                    
+                    // 验证替换结果
+                    const localLibCount = (htmlText.match(/\/lib\//g) || []).length;
+                    updateDebugInfo(`检测到 ${localLibCount} 个本地库引用`, localLibCount > 0 ? 'success' : 'warning');
+                    
+                } else {
+                    throw new Error(data.message || '未找到章节内容');
+                }
+                
+                updateDebugInfo('创建Blob URL...');
+                const blob = new Blob([htmlText], { type: 'text/html' });
+                const blobUrl = URL.createObjectURL(blob);
+                
+                updateDebugInfo('加载内容到iframe...');
+                contentFrame.src = blobUrl;
+                
+                contentFrame.onload = () => {
+                    updateDebugInfo('内容加载完成！', 'success');
+                    setTimeout(() => {
+                        loadingIndicator.style.display = 'none';
+                        contentFrame.style.display = 'block';
+                    }, 2000); // 延迟2秒以便查看调试信息
+                    
+                    // 清理blob URL以释放内存
+                    setTimeout(() => {
+                        URL.revokeObjectURL(blobUrl);
+                    }, 3000);
+                };
+                
+                contentFrame.onerror = (error) => {
+                    updateDebugInfo(`iframe加载错误: ${error}`, 'error');
+                };
+                
+            } catch (error) {
+                console.error('加载章节失败:', error);
+                updateDebugInfo(`❌ 加载失败: ${error.message}`, 'error');
+            }
+        })();
+    </script>
+</body>
+</html>

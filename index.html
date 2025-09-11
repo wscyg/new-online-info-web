@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线学习平台</title>
+    <script>
+        // 自动跳转到课程页面
+        window.onload = function() {
+            const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            const coursesPath = isDev ? '/src/pages/courses.html' : '/courses.html';
+            window.location.href = coursesPath;
+        };
+    </script>
+</head>
+<body>
+    <p>正在跳转到课程页面...</p>
+</body>
+</html>

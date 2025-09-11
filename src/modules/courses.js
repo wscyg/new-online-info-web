@@ -123,9 +123,9 @@ class CoursesManager {
                             <div class="course-price">
                                 ${course.isFree ? 
                                     '<span class="price-free">免费</span>' : 
-                                    `<span class="price-current">¥${course.price}</span>
+                                    `<span class="price-current">¥${course.price.toFixed(2)}</span>
                                      ${course.originalPrice ? 
-                                        `<span class="price-original">¥${course.originalPrice}</span>` : ''}`
+                                        `<span class="price-original">¥${course.originalPrice.toFixed(2)}</span>` : ''}`
                                 }
                             </div>
                             <button class="btn-enroll" onclick="coursesManager.enrollCourse(${course.id})">

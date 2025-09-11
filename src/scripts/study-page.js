@@ -59,7 +59,7 @@
                         headers['Authorization'] = `Bearer ${token}`;
                     }
                     
-                    const response = await fetch(`http://42.194.245.66:8070/api/content/chapters/${this.chapterId}`, {
+                    const response = await fetch(`http://42.194.245.66/api/content/chapters/${this.chapterId}`, {
                         headers: headers
                     });
                     const data = await response.json();
@@ -103,7 +103,7 @@
                 // 确保API服务已加载
                 if (typeof window.API === 'undefined') {
                     console.error('API service not loaded, falling back to direct fetch');
-                    const response = await fetch('http://42.194.245.66:8070/api/content/chapters/101');
+                    const response = await fetch('http://42.194.245.66/api/content/chapters/101');
                     const data = await response.json();
                     
                     if (data.code === 200 && data.data) {

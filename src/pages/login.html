@@ -20,46 +20,34 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0;
-            color: #1a202c;
+            color: #1a1a1a;
+            line-height: 1.5;
         }
 
         .login-container {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 32px;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 48px;
             width: 100%;
             max-width: 400px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            animation: slideUp 0.6s ease-out;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .logo-section {
             text-align: center;
-            margin-bottom: 32px;
+            margin-bottom: 40px;
         }
 
         .logo {
+            width: 64px;
+            height: 64px;
+            background: #2563eb;
+            border-radius: 12px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 60px;
-            height: 60px;
-            background: #4f46e5;
-            border-radius: 12px;
-            margin-bottom: 16px;
+            margin-bottom: 24px;
         }
 
         .logo i {
@@ -68,19 +56,20 @@
         }
 
         h1 {
-            color: #1a202c;
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 600;
+            color: #111827;
             margin-bottom: 8px;
         }
 
         .subtitle {
-            color: #64748b;
-            font-size: 14px;
+            color: #6b7280;
+            font-size: 16px;
+            font-weight: 400;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .form-label {
@@ -88,43 +77,47 @@
             color: #374151;
             font-size: 14px;
             font-weight: 500;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
 
         .form-input {
             width: 100%;
             padding: 12px 16px;
-            background: white;
+            background: #ffffff;
             border: 1px solid #d1d5db;
-            border-radius: 6px;
-            color: #1a202c;
+            border-radius: 8px;
+            color: #111827;
             font-size: 16px;
-            transition: all 0.2s;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         .form-input:focus {
             outline: none;
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
         .form-input::placeholder {
             color: #9ca3af;
         }
 
+        .input-wrapper {
+            position: relative;
+        }
+
         .password-toggle {
             position: absolute;
-            right: 16px;
+            right: 12px;
             top: 50%;
             transform: translateY(-50%);
-            color: #6b7280;
+            color: #9ca3af;
             cursor: pointer;
-            font-size: 18px;
-            transition: color 0.3s;
+            padding: 4px;
+            transition: color 0.2s;
         }
 
         .password-toggle:hover {
-            color: #9ca3af;
+            color: #6b7280;
         }
 
         .form-options {
@@ -143,18 +136,18 @@
         .checkbox {
             width: 16px;
             height: 16px;
-            appearance: none;
-            background: white;
             border: 1px solid #d1d5db;
             border-radius: 4px;
             cursor: pointer;
             position: relative;
+            appearance: none;
+            background: white;
             transition: all 0.2s;
         }
 
         .checkbox:checked {
-            background: #4f46e5;
-            border-color: #4f46e5;
+            background: #2563eb;
+            border-color: #2563eb;
         }
 
         .checkbox:checked::after {
@@ -165,121 +158,73 @@
             transform: translate(-50%, -50%);
             color: white;
             font-size: 12px;
+            font-weight: 600;
         }
 
         .remember-label {
             color: #374151;
             font-size: 14px;
             cursor: pointer;
+            user-select: none;
         }
 
         .forgot-link {
-            color: #4f46e5;
+            color: #2563eb;
             font-size: 14px;
             text-decoration: none;
             transition: color 0.2s;
         }
 
         .forgot-link:hover {
-            color: #4338ca;
+            color: #1d4ed8;
         }
 
         .login-btn {
             width: 100%;
-            padding: 12px 16px;
-            background: #4f46e5;
+            padding: 12px 24px;
+            background: #2563eb;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 16px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: background-color 0.2s;
         }
 
         .login-btn:hover {
-            background: #4338ca;
-        }
-
-        .login-btn:active {
-            transform: translateY(0);
+            background: #1d4ed8;
         }
 
         .login-btn:disabled {
-            opacity: 0.5;
+            opacity: 0.6;
             cursor: not-allowed;
-            transform: none;
-        }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 32px 0;
-        }
-
-        .divider-line {
-            flex: 1;
-            height: 1px;
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .divider-text {
-            color: #6b7280;
-            font-size: 14px;
-            padding: 0 16px;
-        }
-
-        .social-login {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 32px;
-        }
-
-        .social-btn {
-            flex: 1;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            color: #d1d5db;
-            font-size: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .social-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
         }
 
         .register-link {
             text-align: center;
-            color: #64748b;
+            color: #6b7280;
             font-size: 14px;
+            margin-top: 32px;
         }
 
         .register-link a {
-            color: #4f46e5;
+            color: #2563eb;
             text-decoration: none;
             font-weight: 500;
             transition: color 0.2s;
         }
 
         .register-link a:hover {
-            color: #4338ca;
+            color: #1d4ed8;
         }
 
         .error-message {
             background: #fef2f2;
             border: 1px solid #fecaca;
-            border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 16px;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 24px;
             color: #dc2626;
             font-size: 14px;
             display: none;
@@ -287,20 +232,13 @@
 
         .error-message.show {
             display: block;
-            animation: shake 0.5s;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
         }
 
         .loading-spinner {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             border-top-color: white;
             animation: spin 0.8s linear infinite;
@@ -311,14 +249,131 @@
             to { transform: rotate(360deg); }
         }
 
+        /* 响应式设计 */
         @media (max-width: 640px) {
             .login-container {
-                margin: 20px;
+                margin: 16px;
                 padding: 32px 24px;
             }
 
             h1 {
-                font-size: 28px;
+                font-size: 24px;
+            }
+
+            .logo {
+                width: 56px;
+                height: 56px;
+            }
+
+            .logo i {
+                font-size: 20px;
+            }
+        }
+
+        /* 暗色模式适配 */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #111827;
+                color: #f9fafb;
+            }
+
+            .login-container {
+                background: #1f2937;
+                border-color: rgba(255, 255, 255, 0.1);
+                box-shadow: 0 4px 25px rgba(0, 0, 0, 0.25);
+            }
+
+            h1 {
+                color: #f9fafb;
+            }
+
+            .subtitle {
+                color: #9ca3af;
+            }
+
+            .form-label {
+                color: #d1d5db;
+            }
+
+            .form-input {
+                background: #374151;
+                border-color: #4b5563;
+                color: #f9fafb;
+            }
+
+            .form-input:focus {
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            }
+
+            .form-input::placeholder {
+                color: #6b7280;
+            }
+
+            .remember-label {
+                color: #d1d5db;
+            }
+
+            .checkbox {
+                background: #374151;
+                border-color: #4b5563;
+            }
+
+            .forgot-link {
+                color: #60a5fa;
+            }
+
+            .forgot-link:hover {
+                color: #3b82f6;
+            }
+
+            .login-btn {
+                background: #3b82f6;
+            }
+
+            .login-btn:hover {
+                background: #2563eb;
+            }
+
+            .register-link {
+                color: #9ca3af;
+            }
+
+            .register-link a {
+                color: #60a5fa;
+            }
+
+            .register-link a:hover {
+                color: #3b82f6;
+            }
+
+            .error-message {
+                background: #7f1d1d;
+                border-color: #991b1b;
+                color: #fca5a5;
+            }
+        }
+
+        /* 高对比度模式 */
+        @media (prefers-contrast: high) {
+            .login-container {
+                border: 2px solid #000000;
+            }
+
+            .form-input {
+                border-width: 2px;
+            }
+
+            .login-btn {
+                border: 2px solid transparent;
+            }
+        }
+
+        /* 减少动画模式 */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
             }
         }
     </style>
@@ -327,23 +382,40 @@
     <div class="login-container">
         <div class="logo-section">
             <div class="logo">
-                <i class="fas fa-robot"></i>
+                <i class="fas fa-graduation-cap"></i>
             </div>
             <h1>欢迎回来</h1>
-            <p class="subtitle">登录到信息革命平台</p>
+            <p class="subtitle">登录到 AI 未来学院</p>
         </div>
 
         <div class="error-message" id="errorMessage"></div>
 
         <form id="loginForm">
             <div class="form-group">
-                <label class="form-label">用户名或邮箱</label>
-                <input type="text" class="form-input" id="username" placeholder="请输入用户名或邮箱" required>
+                <label class="form-label" for="username">用户名或邮箱</label>
+                <input 
+                    type="text" 
+                    class="form-input" 
+                    id="username" 
+                    placeholder="请输入用户名或邮箱" 
+                    required 
+                    autocomplete="username"
+                >
             </div>
 
             <div class="form-group">
-                <label class="form-label">密码</label>
-                <input type="password" class="form-input" id="password" placeholder="请输入密码" required>
+                <label class="form-label" for="password">密码</label>
+                <div class="input-wrapper">
+                    <input 
+                        type="password" 
+                        class="form-input" 
+                        id="password" 
+                        placeholder="请输入密码" 
+                        required
+                        autocomplete="current-password"
+                    >
+                    <i class="fas fa-eye password-toggle" id="passwordToggle" aria-label="切换密码显示"></i>
+                </div>
             </div>
 
             <div class="form-options">
@@ -368,12 +440,31 @@
         import '../utils/api.js';
         import '../utils/notification.js';
 
-
-        // 登录表单提交
+        // 等待API对象初始化
+        const waitForAPI = () => {
+            return new Promise((resolve) => {
+                if (window.API) {
+                    resolve();
+                } else {
+                    setTimeout(() => waitForAPI().then(resolve), 100);
+                }
+            });
+        };
+        
         const loginForm = document.getElementById('loginForm');
         const loginBtn = document.getElementById('loginBtn');
         const btnText = document.getElementById('btnText');
         const errorMessage = document.getElementById('errorMessage');
+        const passwordToggle = document.getElementById('passwordToggle');
+        const passwordInput = document.getElementById('password');
+
+        // 密码显示/隐藏切换
+        passwordToggle.addEventListener('click', () => {
+            const isPassword = passwordInput.type === 'password';
+            passwordInput.type = isPassword ? 'text' : 'password';
+            passwordToggle.classList.toggle('fa-eye', !isPassword);
+            passwordToggle.classList.toggle('fa-eye-slash', isPassword);
+        });
 
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -393,30 +484,20 @@
             errorMessage.classList.remove('show');
 
             try {
-                console.log('=== 开始登录请求 ===');
-                console.log('用户名:', username);
-                console.log('密码长度:', password.length);
+                // 等待API初始化
+                await waitForAPI();
                 
                 const response = await window.API.auth.login({
-                    username,
+                    loginAccount: username,
                     password,
                     rememberMe
                 });
-                
-                console.log('=== 登录响应 ===');
-                console.log('响应码:', response.code);
-                console.log('响应数据:', response.data);
-                console.log('完整响应:', response);
 
                 if (response.code === 200 && response.data) {
-                    window.notification.success('登录成功！正在跳转...');
-                    
-                    // 验证登录信息是否正确保存
-                    console.log('=== 登录成功后验证 ===');
-                    console.log('Token已保存:', !!localStorage.getItem('token'));
-                    console.log('User已保存:', !!localStorage.getItem('user'));
-                    console.log('Token内容:', localStorage.getItem('token'));
-                    console.log('User内容:', localStorage.getItem('user'));
+                    // 安全调用notification
+                    if (window.notification && window.notification.success) {
+                        window.notification.success('登录成功！正在跳转...');
+                    }
                     
                     // 保存记住我状态
                     if (rememberMe) {
@@ -427,23 +508,11 @@
 
                     // 延迟跳转以显示成功消息
                     setTimeout(() => {
-                        // 跳转前再次验证
-                        console.log('=== 跳转前再次验证 ===');
-                        console.log('Token状态:', !!localStorage.getItem('token'));
-                        console.log('User状态:', !!localStorage.getItem('user'));
-                        
                         const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
                         if (returnUrl) {
-                            // 处理相对路径
-                            if (returnUrl === '/') {
-                                window.location.href = '/';
-                            } else if (returnUrl.startsWith('/')) {
-                                window.location.href = returnUrl;
-                            } else {
-                                window.location.href = `/src/pages/${returnUrl}`;
-                            }
+                            window.location.href = returnUrl;
                         } else {
-                            window.location.href = '/';
+                            window.location.href = '/src/pages/courses.html';
                         }
                     }, 1000);
                 } else {
@@ -461,11 +530,14 @@
         function showError(message) {
             errorMessage.textContent = message;
             errorMessage.classList.add('show');
-            window.notification.error(message);
+            
+            if (window.notification && window.notification.error) {
+                window.notification.error(message);
+            }
         }
 
-        // 检查记住的用户名
-        window.addEventListener('DOMContentLoaded', () => {
+        // 页面加载时检查记住的用户名
+        document.addEventListener('DOMContentLoaded', () => {
             const rememberedUsername = localStorage.getItem('rememberedUsername');
             if (rememberedUsername) {
                 document.getElementById('username').value = rememberedUsername;

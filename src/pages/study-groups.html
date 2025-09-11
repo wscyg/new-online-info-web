@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习小组 - 在线教育平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #f0f2f5;
+            height: 100vh;
+            display: flex;
+        }
+        
+        /* 左侧边栏 */
+        .sidebar {
+            width: 80px;
+            background: #2c3e50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .sidebar-item {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #95a5a6;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .sidebar-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .sidebar-item.active {
+            background: #3498db;
+            color: white;
+        }
+        
+        .sidebar-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        
+        .sidebar-label {
+            font-size: 12px;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 8px;
+            height: 8px;
+            background: #e74c3c;
+            border-radius: 50%;
+        }
+        
+        /* 群组列表 */
+        .groups-panel {
+            width: 320px;
+            background: white;
+            border-right: 1px solid #e1e8ed;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .panel-header {
+            padding: 20px;
+            border-bottom: 1px solid #e1e8ed;
+        }
+        
+        .panel-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .search-box {
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            border: 1px solid #e1e8ed;
+            border-radius: 25px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #95a5a6;
+        }
+        
+        /* 标签切换 */
+        .group-tabs {
+            display: flex;
+            padding: 0 20px;
+            border-bottom: 1px solid #e1e8ed;
+        }
+        
+        .tab-item {
+            flex: 1;
+            padding: 15px 0;
+            text-align: center;
+            color: #7f8c8d;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.3s;
+        }
+        
+        .tab-item.active {
+            color: #3498db;
+        }
+        
+        .tab-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #3498db;
+        }
+        
+        .tab-count {
+            background: #e74c3c;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+        
+        /* 群组列表 */
+        .groups-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .group-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .group-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .group-item.active {
+            background: #e3f2fd;
+        }
+        
+        .group-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            flex-shrink: 0;
+        }
+        
+        .group-avatar.study {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .group-avatar.mentor {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .group-avatar.online {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .group-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .group-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .group-badge {
+            padding: 2px 8px;
+            background: #27ae60;
+            color: white;
+            border-radius: 10px;
+            font-size: 11px;
+        }
+        
+        .group-last-message {
+            font-size: 13px;
+            color: #7f8c8d;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .group-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+        }
+        
+        .group-time {
+            font-size: 12px;
+            color: #95a5a6;
+        }
+        
+        .unread-count {
+            background: #e74c3c;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            min-width: 20px;
+            text-align: center;
+        }
+        
+        .online-indicator {
+            width: 10px;
+            height: 10px;
+            background: #27ae60;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            border: 2px solid white;
+        }
+        
+        /* 聊天区域 */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+        
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid #e1e8ed;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .chat-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+        
+        .chat-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .chat-status {
+            font-size: 13px;
+            color: #7f8c8d;
+        }
+        
+        .chat-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid #e1e8ed;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            background: #f8f9fa;
+            border-color: #3498db;
+            color: #3498db;
+        }
+        
+        /* 消息区域 */
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .message {
+            display: flex;
+            gap: 10px;
+            max-width: 70%;
+        }
+        
+        .message.self {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #3498db;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        
+        .message-content {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .message-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: #95a5a6;
+        }
+        
+        .message.self .message-info {
+            justify-content: flex-end;
+        }
+        
+        .message-bubble {
+            padding: 12px 16px;
+            background: #f1f3f5;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #2c3e50;
+        }
+        
+        .message.self .message-bubble {
+            background: #3498db;
+            color: white;
+        }
+        
+        .message-image {
+            max-width: 300px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        
+        .system-message {
+            text-align: center;
+            font-size: 12px;
+            color: #95a5a6;
+            padding: 10px;
+        }
+        
+        /* 输入区域 */
+        .input-area {
+            padding: 20px;
+            border-top: 1px solid #e1e8ed;
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+        }
+        
+        .input-tools {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .tool-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid #e1e8ed;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+        
+        .tool-btn:hover {
+            background: #f8f9fa;
+            border-color: #3498db;
+            color: #3498db;
+        }
+        
+        .message-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #e1e8ed;
+            border-radius: 20px;
+            font-size: 14px;
+            resize: none;
+            min-height: 40px;
+            max-height: 120px;
+            line-height: 1.5;
+        }
+        
+        .message-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .send-btn {
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .send-btn:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
+        }
+        
+        /* 右侧信息面板 */
+        .info-panel {
+            width: 320px;
+            background: white;
+            border-left: 1px solid #e1e8ed;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .info-section {
+            padding: 20px;
+            border-bottom: 1px solid #e1e8ed;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .member-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .member-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .member-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .member-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #95a5a6;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            position: relative;
+        }
+        
+        .member-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            border: 2px solid white;
+        }
+        
+        .status-online {
+            background: #27ae60;
+        }
+        
+        .status-away {
+            background: #f39c12;
+        }
+        
+        .status-offline {
+            background: #95a5a6;
+        }
+        
+        .member-info {
+            flex: 1;
+        }
+        
+        .member-name {
+            font-size: 14px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        
+        .member-role {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        .mentor-badge {
+            padding: 2px 8px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 10px;
+            font-size: 11px;
+        }
+        
+        /* 快速操作 */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .quick-action {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .quick-action:hover {
+            background: #e3f2fd;
+            transform: translateY(-2px);
+        }
+        
+        .quick-action-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .quick-action-label {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        /* 创建群组模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #e1e8ed;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .modal-close {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        textarea.form-input {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #e1e8ed;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+        
+        .btn-cancel {
+            background: #f8f9fa;
+            color: #7f8c8d;
+        }
+        
+        .btn-cancel:hover {
+            background: #e1e8ed;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        /* 师徒关系卡片 */
+        .mentor-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 20px;
+        }
+        
+        .mentor-title {
+            font-size: 16px;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+        
+        .mentor-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .mentor-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .mentor-details {
+            flex: 1;
+        }
+        
+        .mentor-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .mentor-level {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .mentor-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .mentor-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- 左侧边栏 -->
+    <div class="sidebar">
+        <div class="sidebar-item active">
+            <span class="sidebar-icon">💬</span>
+            <span class="sidebar-label">聊天</span>
+            <span class="notification-badge"></span>
+        </div>
+        <div class="sidebar-item" onclick="showContacts()">
+            <span class="sidebar-icon">👥</span>
+            <span class="sidebar-label">通讯录</span>
+        </div>
+        <div class="sidebar-item" onclick="showStudyGroups()">
+            <span class="sidebar-icon">📚</span>
+            <span class="sidebar-label">学习组</span>
+        </div>
+        <div class="sidebar-item" onclick="showMentorSystem()">
+            <span class="sidebar-icon">🎓</span>
+            <span class="sidebar-label">师徒</span>
+        </div>
+        <div class="sidebar-item" onclick="showOnlineUsers()">
+            <span class="sidebar-icon">🟢</span>
+            <span class="sidebar-label">在线</span>
+        </div>
+    </div>
+
+    <!-- 群组列表 -->
+    <div class="groups-panel">
+        <div class="panel-header">
+            <h2 class="panel-title">消息</h2>
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="搜索群组或用户...">
+                <span class="search-icon">🔍</span>
+            </div>
+        </div>
+        
+        <div class="group-tabs">
+            <div class="tab-item active" onclick="switchTab('all', this)">
+                全部
+                <span class="tab-count">5</span>
+            </div>
+            <div class="tab-item" onclick="switchTab('groups', this)">
+                群组
+            </div>
+            <div class="tab-item" onclick="switchTab('private', this)">
+                私聊
+            </div>
+        </div>
+        
+        <div class="groups-list">
+            <!-- 学习小组 -->
+            <div class="group-item active" onclick="selectGroup(this, 'group')">
+                <div class="group-avatar study">📚</div>
+                <div class="group-info">
+                    <div class="group-name">
+                        前端进阶学习组
+                        <span class="group-badge">156人</span>
+                    </div>
+                    <div class="group-last-message">李明: 今晚8点直播分享Vue3...</div>
+                </div>
+                <div class="group-meta">
+                    <div class="group-time">10:23</div>
+                    <div class="unread-count">12</div>
+                </div>
+            </div>
+            
+            <!-- 师徒群 -->
+            <div class="group-item" onclick="selectGroup(this, 'mentor')">
+                <div class="group-avatar mentor">🎓</div>
+                <div class="group-info">
+                    <div class="group-name">
+                        张老师的门下
+                        <span class="group-badge">师徒</span>
+                    </div>
+                    <div class="group-last-message">师父: 作业都完成了吗？</div>
+                </div>
+                <div class="group-meta">
+                    <div class="group-time">昨天</div>
+                    <div class="unread-count">3</div>
+                </div>
+            </div>
+            
+            <!-- 私聊 -->
+            <div class="group-item" onclick="selectGroup(this, 'private')">
+                <div class="group-avatar online">王</div>
+                <div class="group-info">
+                    <div class="group-name">王小芳</div>
+                    <div class="group-last-message">好的，我看看这个问题</div>
+                </div>
+                <div class="group-meta">
+                    <div class="group-time">15:30</div>
+                </div>
+                <div class="online-indicator"></div>
+            </div>
+            
+            <!-- 项目组 -->
+            <div class="group-item" onclick="selectGroup(this, 'group')">
+                <div class="group-avatar study">🚀</div>
+                <div class="group-info">
+                    <div class="group-name">
+                        React项目实战组
+                        <span class="group-badge">89人</span>
+                    </div>
+                    <div class="group-last-message">赵强: 代码已提交到GitHub</div>
+                </div>
+                <div class="group-meta">
+                    <div class="group-time">2小时前</div>
+                </div>
+            </div>
+            
+            <!-- 私聊 -->
+            <div class="group-item" onclick="selectGroup(this, 'private')">
+                <div class="group-avatar">刘</div>
+                <div class="group-info">
+                    <div class="group-name">刘洋</div>
+                    <div class="group-last-message">明天一起复习算法吗？</div>
+                </div>
+                <div class="group-meta">
+                    <div class="group-time">周三</div>
+                    <div class="unread-count">1</div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="padding: 15px;">
+            <button class="btn btn-primary" style="width: 100%;" onclick="showCreateGroup()">
+                ➕ 创建学习小组
+            </button>
+        </div>
+    </div>
+
+    <!-- 聊天区域 -->
+    <div class="chat-area">
+        <div class="chat-header">
+            <div class="chat-title">
+                <div class="chat-avatar">📚</div>
+                <div class="chat-info">
+                    <div class="chat-name">前端进阶学习组</div>
+                    <div class="chat-status">156位成员 · 23人在线</div>
+                </div>
+            </div>
+            <div class="chat-actions">
+                <button class="action-btn" onclick="startVoiceCall()">📞</button>
+                <button class="action-btn" onclick="startVideoCall()">📹</button>
+                <button class="action-btn" onclick="showGroupInfo()">ℹ️</button>
+            </div>
+        </div>
+        
+        <div class="messages-container" id="messagesContainer">
+            <!-- 系统消息 -->
+            <div class="system-message">
+                ———— 2024年3月15日 ————
+            </div>
+            
+            <!-- 其他人的消息 -->
+            <div class="message">
+                <div class="message-avatar">李</div>
+                <div class="message-content">
+                    <div class="message-info">
+                        <span>李明</span>
+                        <span>10:23</span>
+                    </div>
+                    <div class="message-bubble">
+                        大家好！今晚8点我会在群里直播分享Vue3的Composition API使用技巧，欢迎大家参加！
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 自己的消息 -->
+            <div class="message self">
+                <div class="message-avatar">我</div>
+                <div class="message-content">
+                    <div class="message-info">
+                        <span>15:30</span>
+                    </div>
+                    <div class="message-bubble">
+                        太好了，正好想学习这方面的内容！
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 图片消息 -->
+            <div class="message">
+                <div class="message-avatar">王</div>
+                <div class="message-content">
+                    <div class="message-info">
+                        <span>王小芳</span>
+                        <span>16:45</span>
+                    </div>
+                    <div class="message-bubble">
+                        这是我整理的Vue3学习脑图，分享给大家
+                    </div>
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200'%3E%3Crect width='300' height='200' fill='%23f0f0f0'/%3E%3Ctext x='150' y='100' text-anchor='middle' fill='%23999' font-size='16'%3EVue3 脑图%3C/text%3E%3C/svg%3E" 
+                         class="message-image" onclick="viewImage(this)">
+                </div>
+            </div>
+            
+            <!-- 更多消息 -->
+            <div class="message">
+                <div class="message-avatar">赵</div>
+                <div class="message-content">
+                    <div class="message-info">
+                        <span>赵强</span>
+                        <span>17:20</span>
+                    </div>
+                    <div class="message-bubble">
+                        有人一起刷LeetCode吗？我创建了一个刷题小组，每天打卡
+                    </div>
+                </div>
+            </div>
+            
+            <div class="message self">
+                <div class="message-avatar">我</div>
+                <div class="message-content">
+                    <div class="message-info">
+                        <span>17:25</span>
+                    </div>
+                    <div class="message-bubble">
+                        我加入！正好需要提升算法能力
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 系统通知 -->
+            <div class="system-message">
+                📢 群公告：本周六下午2点组织线下交流会，地点：北京中关村
+            </div>
+        </div>
+        
+        <div class="input-area">
+            <div class="input-tools">
+                <button class="tool-btn" onclick="selectEmoji()">😊</button>
+                <button class="tool-btn" onclick="selectFile()">📎</button>
+                <button class="tool-btn" onclick="selectImage()">🖼️</button>
+            </div>
+            <textarea class="message-input" id="messageInput" placeholder="输入消息..." onkeypress="handleKeyPress(event)"></textarea>
+            <button class="send-btn" onclick="sendMessage()">发送</button>
+        </div>
+    </div>
+
+    <!-- 右侧信息面板 -->
+    <div class="info-panel">
+        <!-- 师徒关系 -->
+        <div class="info-section">
+            <div class="mentor-card">
+                <div class="mentor-title">我的导师</div>
+                <div class="mentor-info">
+                    <div class="mentor-avatar">张</div>
+                    <div class="mentor-details">
+                        <div class="mentor-name">张教授</div>
+                        <div class="mentor-level">高级讲师 · 10年经验</div>
+                    </div>
+                    <button class="mentor-btn" onclick="chatWithMentor()">私聊</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 群成员 -->
+        <div class="info-section">
+            <h3 class="section-title">在线成员 (23)</h3>
+            <div class="member-list">
+                <div class="member-item" onclick="startPrivateChat('李明')">
+                    <div class="member-avatar">
+                        李
+                        <span class="member-status status-online"></span>
+                    </div>
+                    <div class="member-info">
+                        <div class="member-name">
+                            李明
+                            <span class="mentor-badge">管理员</span>
+                        </div>
+                        <div class="member-role">前端架构师</div>
+                    </div>
+                </div>
+                
+                <div class="member-item" onclick="startPrivateChat('王小芳')">
+                    <div class="member-avatar">
+                        王
+                        <span class="member-status status-online"></span>
+                    </div>
+                    <div class="member-info">
+                        <div class="member-name">王小芳</div>
+                        <div class="member-role">UI设计师</div>
+                    </div>
+                </div>
+                
+                <div class="member-item" onclick="startPrivateChat('赵强')">
+                    <div class="member-avatar">
+                        赵
+                        <span class="member-status status-away"></span>
+                    </div>
+                    <div class="member-info">
+                        <div class="member-name">赵强</div>
+                        <div class="member-role">全栈工程师</div>
+                    </div>
+                </div>
+                
+                <div class="member-item" onclick="startPrivateChat('刘洋')">
+                    <div class="member-avatar">
+                        刘
+                        <span class="member-status status-offline"></span>
+                    </div>
+                    <div class="member-info">
+                        <div class="member-name">刘洋</div>
+                        <div class="member-role">后端开发</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 快速操作 -->
+        <div class="info-section">
+            <h3 class="section-title">快速操作</h3>
+            <div class="quick-actions">
+                <div class="quick-action" onclick="createStudyPlan()">
+                    <div class="quick-action-icon">📅</div>
+                    <div class="quick-action-label">学习计划</div>
+                </div>
+                <div class="quick-action" onclick="shareResource()">
+                    <div class="quick-action-icon">📁</div>
+                    <div class="quick-action-label">共享资源</div>
+                </div>
+                <div class="quick-action" onclick="startLive()">
+                    <div class="quick-action-icon">🎥</div>
+                    <div class="quick-action-label">开始直播</div>
+                </div>
+                <div class="quick-action" onclick="createPoll()">
+                    <div class="quick-action-icon">📊</div>
+                    <div class="quick-action-label">发起投票</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 创建群组模态框 -->
+    <div class="modal" id="createGroupModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">创建学习小组</h3>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">小组名称</label>
+                    <input type="text" class="form-input" placeholder="例如：Vue3进阶学习组">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">小组简介</label>
+                    <textarea class="form-input" placeholder="介绍一下小组的学习目标和计划..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">小组类型</label>
+                    <select class="form-input">
+                        <option>学习小组</option>
+                        <option>项目团队</option>
+                        <option>考试备考</option>
+                        <option>兴趣交流</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">加入方式</label>
+                    <select class="form-input">
+                        <option>自由加入</option>
+                        <option>需要审核</option>
+                        <option>邀请加入</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-cancel" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" onclick="createGroup()">创建小组</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 选择群组
+        function selectGroup(element, type) {
+            // 移除其他active状态
+            document.querySelectorAll('.group-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            element.classList.add('active');
+            
+            // 根据类型更新聊天界面
+            updateChatInterface(type);
+        }
+        
+        // 更新聊天界面
+        function updateChatInterface(type) {
+            const chatName = document.querySelector('.chat-name');
+            const chatStatus = document.querySelector('.chat-status');
+            const chatAvatar = document.querySelector('.chat-avatar');
+            
+            if (type === 'private') {
+                chatName.textContent = '王小芳';
+                chatStatus.textContent = '在线';
+                chatAvatar.textContent = '王';
+            } else if (type === 'mentor') {
+                chatName.textContent = '张老师的门下';
+                chatStatus.textContent = '12位弟子 · 5人在线';
+                chatAvatar.textContent = '🎓';
+            }
+            
+            // 清空消息区域并加载新消息
+            loadMessages(type);
+        }
+        
+        // 加载消息
+        function loadMessages(type) {
+            // TODO: 根据类型加载对应的消息
+            console.log('加载消息:', type);
+        }
+        
+        // 切换标签
+        function switchTab(tab, element) {
+            // 更新标签样式
+            document.querySelectorAll('.tab-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            element.classList.add('active');
+            
+            // TODO: 筛选显示对应类型的群组
+            console.log('切换到:', tab);
+        }
+        
+        // 发送消息
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // 创建消息元素
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message self';
+            messageDiv.innerHTML = `
+                <div class="message-avatar">我</div>
+                <div class="message-content">
+                    <div class="message-info">
+                        <span>${new Date().toLocaleTimeString('zh-CN', {hour: '2-digit', minute: '2-digit'})}</span>
+                    </div>
+                    <div class="message-bubble">${message}</div>
+                </div>
+            `;
+            
+            // 添加到消息容器
+            const container = document.getElementById('messagesContainer');
+            container.appendChild(messageDiv);
+            
+            // 滚动到底部
+            container.scrollTop = container.scrollHeight;
+            
+            // 清空输入框
+            input.value = '';
+            input.style.height = 'auto';
+        }
+        
+        // 处理回车键
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+        
+        // 开始私聊
+        function startPrivateChat(username) {
+            console.log('开始与', username, '私聊');
+            // TODO: 切换到私聊界面
+        }
+        
+        // 显示创建群组模态框
+        function showCreateGroup() {
+            document.getElementById('createGroupModal').classList.add('show');
+        }
+        
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('createGroupModal').classList.remove('show');
+        }
+        
+        // 创建群组
+        function createGroup() {
+            console.log('创建群组');
+            closeModal();
+            // TODO: 实现创建群组功能
+        }
+        
+        // 与导师聊天
+        function chatWithMentor() {
+            console.log('与导师聊天');
+            // TODO: 切换到与导师的私聊
+        }
+        
+        // 显示在线用户
+        function showOnlineUsers() {
+            console.log('显示在线用户');
+            // TODO: 显示在线用户列表
+        }
+        
+        // 显示师徒系统
+        function showMentorSystem() {
+            console.log('显示师徒系统');
+            // TODO: 显示师徒系统界面
+        }
+        
+        // 显示学习小组
+        function showStudyGroups() {
+            console.log('显示学习小组');
+            // TODO: 显示学习小组列表
+        }
+        
+        // 显示通讯录
+        function showContacts() {
+            console.log('显示通讯录');
+            // TODO: 显示通讯录界面
+        }
+        
+        // 开始语音通话
+        function startVoiceCall() {
+            alert('语音通话功能开发中...');
+        }
+        
+        // 开始视频通话
+        function startVideoCall() {
+            alert('视频通话功能开发中...');
+        }
+        
+        // 显示群组信息
+        function showGroupInfo() {
+            console.log('显示群组信息');
+            // TODO: 显示群组详细信息
+        }
+        
+        // 创建学习计划
+        function createStudyPlan() {
+            alert('创建学习计划功能开发中...');
+        }
+        
+        // 共享资源
+        function shareResource() {
+            alert('共享资源功能开发中...');
+        }
+        
+        // 开始直播
+        function startLive() {
+            alert('直播功能开发中...');
+        }
+        
+        // 创建投票
+        function createPoll() {
+            alert('投票功能开发中...');
+        }
+        
+        // 选择表情
+        function selectEmoji() {
+            alert('表情选择器开发中...');
+        }
+        
+        // 选择文件
+        function selectFile() {
+            alert('文件选择功能开发中...');
+        }
+        
+        // 选择图片
+        function selectImage() {
+            alert('图片选择功能开发中...');
+        }
+        
+        // 查看图片
+        function viewImage(img) {
+            console.log('查看图片');
+            // TODO: 实现图片预览功能
+        }
+        
+        // 自动调整输入框高度
+        document.getElementById('messageInput').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+    </script>
+</body>
+</html>

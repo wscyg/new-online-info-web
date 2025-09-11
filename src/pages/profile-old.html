@@ -1,0 +1,1788 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心 - AI未来学院</title>
+    <meta name="description" content="管理您的学习进度，查看成就和数据分析">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --primary-light: #764ba2;
+            --secondary-color: #f093fb;
+            --accent-color: #4facfe;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-bg: #0f0f23;
+            --dark-surface: #16213e;
+            --dark-card: #1a2332;
+            --dark-border: #2d3748;
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            --text-muted: #718096;
+            --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            --gradient-secondary: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+            --gradient-success: linear-gradient(135deg, #10b981, #059669);
+            --gradient-warning: linear-gradient(135deg, #f59e0b, #d97706);
+            --box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            --box-shadow-hover: 0 20px 60px rgba(0, 0, 0, 0.15);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Background Effects */
+        .profile-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #0f0f23 0%, #16213e 100%);
+        }
+
+        .gradient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.6;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 300px;
+            height: 300px;
+            background: var(--gradient-primary);
+            top: 10%;
+            right: 10%;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 200px;
+            height: 200px;
+            background: var(--gradient-secondary);
+            bottom: 20%;
+            left: 15%;
+            animation-delay: 2s;
+        }
+
+        .orb-3 {
+            width: 150px;
+            height: 150px;
+            background: var(--gradient-success);
+            top: 50%;
+            left: 50%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        /* Navigation */
+        .profile-nav {
+            background: rgba(22, 33, 62, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--dark-border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+        }
+
+        .nav-brand .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text-primary);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gradient-primary);
+            border-radius: 1px;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-logout {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-logout:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--box-shadow);
+        }
+
+        /* Main Content */
+        .profile-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Profile Header */
+        .profile-header {
+            background: var(--dark-card);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--dark-border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: var(--gradient-primary);
+            opacity: 0.1;
+        }
+
+        .profile-info {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            position: relative;
+        }
+
+        .avatar-wrapper {
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            object-fit: cover;
+        }
+
+        .avatar-status {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--success-color);
+            border: 3px solid var(--dark-card);
+        }
+
+        .user-details h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-title {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .user-stats {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .profile-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-edit-profile,
+        .btn-share-profile {
+            background: var(--dark-surface);
+            border: 1px solid var(--dark-border);
+            color: var(--text-primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-edit-profile:hover,
+        .btn-share-profile:hover {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        /* Tabs */
+        .profile-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background: var(--dark-card);
+            padding: 0.5rem;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--dark-border);
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        /* Content Panels */
+        .profile-content {
+            background: var(--dark-card);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--dark-border);
+            min-height: 600px;
+        }
+
+        .content-panel {
+            display: none;
+            padding: 2rem;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .content-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Overview Panel */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .overview-card {
+            background: var(--dark-surface);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--dark-border);
+            transition: var(--transition);
+        }
+
+        .overview-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow);
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        /* Form Styles */
+        .info-form {
+            max-width: 800px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            background: var(--dark-surface);
+            border: 1px solid var(--dark-border);
+            border-radius: 8px;
+            padding: 0.75rem;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group input[readonly] {
+            background: rgba(255, 255, 255, 0.02);
+            cursor: not-allowed;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-save,
+        .btn-cancel {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-save {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .btn-cancel {
+            background: var(--dark-surface);
+            border: 1px solid var(--dark-border);
+            color: var(--text-primary);
+        }
+
+        /* Orders */
+        .orders-filter {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .filter-btn {
+            background: none;
+            border: 1px solid var(--dark-border);
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filter-btn.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .order-item {
+            background: var(--dark-surface);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: var(--transition);
+        }
+
+        .order-item:hover {
+            border-color: var(--primary-color);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .order-info {
+            flex: 1;
+        }
+
+        .order-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-paid {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success-color);
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning-color);
+        }
+
+        /* Achievements */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .achievement-card {
+            background: var(--dark-surface);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .achievement-card.unlocked {
+            border-color: var(--success-color);
+        }
+
+        .achievement-card.unlocked::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-success);
+        }
+
+        .achievement-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            filter: grayscale(100%);
+        }
+
+        .achievement-card.unlocked .achievement-icon {
+            filter: none;
+        }
+
+        .achievement-info h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Skills */
+        .skills-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .skill-item {
+            background: var(--dark-surface);
+            border: 1px solid var(--dark-border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .skill-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .skill-progress {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: var(--dark-border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-primary);
+            transition: width 1s ease-in-out;
+        }
+
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            background: rgba(102, 126, 234, 0.2);
+            color: var(--primary-color);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        /* Settings */
+        .settings-section {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+        }
+
+        .settings-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .setting-nav-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: left;
+        }
+
+        .setting-nav-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        .setting-nav-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .setting-panel {
+            display: none;
+        }
+
+        .setting-panel.active {
+            display: block;
+        }
+
+        /* Loading and Empty States */
+        .loading-state,
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--dark-border);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 0 1rem;
+            }
+
+            .profile-main {
+                padding: 1rem;
+            }
+
+            .profile-info {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .user-stats {
+                justify-content: center;
+            }
+
+            .profile-actions {
+                margin-left: 0;
+                justify-content: center;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .overview-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-section {
+                grid-template-columns: 1fr;
+            }
+
+            .skills-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Utilities */
+        .text-center { text-align: center; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mt-2 { margin-top: 1rem; }
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 1rem; }
+    </style>
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="profile-bg">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="profile-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <div class="logo">AI未来学院</div>
+            </div>
+            <div class="nav-menu">
+                <a href="/home.html" class="nav-link">首页</a>
+                <a href="/src/pages/courses.html" class="nav-link">课程</a>
+                <a href="/src/pages/dashboard.html" class="nav-link">学习中心</a>
+                <a href="/src/pages/profile.html" class="nav-link active">个人中心</a>
+            </div>
+            <div class="nav-actions">
+                <button class="btn-logout" onclick="handleLogout()">退出登录</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="profile-main">
+        <!-- Profile Header -->
+        <section class="profile-header">
+            <div class="profile-info">
+                <div class="avatar-wrapper">
+                    <img src="/assets/avatar-default.svg" alt="用户头像" class="user-avatar" id="userAvatar">
+                    <div class="avatar-status"></div>
+                </div>
+                <div class="user-details">
+                    <h1 class="user-name" id="profileName">加载中...</h1>
+                    <p class="user-title" id="profileTitle">AI学习者</p>
+                    <div class="user-stats">
+                        <div class="stat-item">
+                            <span class="stat-value" id="studyDays">0</span>
+                            <span class="stat-label">学习天数</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="completedCourses">0</span>
+                            <span class="stat-label">完成课程</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="avgRating">0.0</span>
+                            <span class="stat-label">平均评分</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="certificates">0</span>
+                            <span class="stat-label">获得证书</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-actions">
+                    <button class="btn-edit-profile" onclick="switchTab('personal-info')">
+                        <span>✏️</span>
+                        <span>编辑资料</span>
+                    </button>
+                    <button class="btn-share-profile">
+                        <span>🔗</span>
+                        <span>分享主页</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tabs Navigation -->
+        <div class="profile-tabs">
+            <button class="tab-btn active" data-tab="overview" onclick="switchTab('overview')">
+                <span>📊</span>
+                <span>学习概览</span>
+            </button>
+            <button class="tab-btn" data-tab="personal-info" onclick="switchTab('personal-info')">
+                <span>👤</span>
+                <span>个人信息</span>
+            </button>
+            <button class="tab-btn" data-tab="orders" onclick="switchTab('orders')">
+                <span>📦</span>
+                <span>我的订单</span>
+            </button>
+            <button class="tab-btn" data-tab="achievements" onclick="switchTab('achievements')">
+                <span>🏆</span>
+                <span>成就勋章</span>
+            </button>
+            <button class="tab-btn" data-tab="certificates" onclick="switchTab('certificates')">
+                <span>📜</span>
+                <span>证书管理</span>
+            </button>
+            <button class="tab-btn" data-tab="skills" onclick="switchTab('skills')">
+                <span>💡</span>
+                <span>技能图谱</span>
+            </button>
+            <button class="tab-btn" data-tab="settings" onclick="switchTab('settings')">
+                <span>⚙️</span>
+                <span>账号设置</span>
+            </button>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="profile-content">
+            <!-- Overview Panel -->
+            <div class="content-panel active" id="overviewPanel">
+                <div class="overview-grid">
+                    <!-- Weekly Progress -->
+                    <div class="overview-card">
+                        <h3 class="card-title">本周学习进度</h3>
+                        <div id="weeklyProgressContent">
+                            <div class="loading-state">
+                                <div class="loading-spinner"></div>
+                                <span>正在加载数据...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Learning Paths -->
+                    <div class="overview-card">
+                        <h3 class="card-title">我的学习路径</h3>
+                        <div id="learningPathsContent">
+                            <div class="loading-state">
+                                <div class="loading-spinner"></div>
+                                <span>正在加载数据...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Courses -->
+                    <div class="overview-card">
+                        <h3 class="card-title">最近学习</h3>
+                        <div id="recentCoursesContent">
+                            <div class="loading-state">
+                                <div class="loading-spinner"></div>
+                                <span>正在加载数据...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Learning Calendar -->
+                    <div class="overview-card" style="grid-column: 1 / -1;">
+                        <h3 class="card-title">学习日历</h3>
+                        <div id="learningCalendarContent">
+                            <div class="loading-state">
+                                <div class="loading-spinner"></div>
+                                <span>正在加载数据...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Personal Info Panel -->
+            <div class="content-panel" id="personalInfoPanel">
+                <div class="flex items-center justify-between mb-2">
+                    <h3>个人资料</h3>
+                    <button class="btn-edit-profile" onclick="toggleEditMode()" id="editToggleBtn">
+                        <span id="editToggleText">编辑</span>
+                    </button>
+                </div>
+
+                <div class="info-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="displayName">显示名称</label>
+                            <input type="text" id="displayName" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="username">用户名</label>
+                            <input type="text" id="username" readonly>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">邮箱地址</label>
+                            <input type="email" id="email" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">手机号码</label>
+                            <input type="tel" id="phone" readonly>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="city">所在城市</label>
+                            <input type="text" id="city" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="birthday">生日</label>
+                            <input type="date" id="birthday" readonly>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label for="bio">个人简介</label>
+                        <textarea id="bio" rows="3" readonly placeholder="介绍一下自己吧"></textarea>
+                    </div>
+                    
+                    <div class="form-actions hidden" id="formActions">
+                        <button class="btn-save" onclick="savePersonalInfo()">保存</button>
+                        <button class="btn-cancel" onclick="cancelEdit()">取消</button>
+                    </div>
+                </div>
+
+                <div class="user-stats mt-2">
+                    <div class="stat-item">
+                        <span class="stat-label">注册时间</span>
+                        <span class="stat-value" id="registrationDate">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">最后登录</span>
+                        <span class="stat-value" id="lastLoginDate">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">学习总时长</span>
+                        <span class="stat-value" id="totalStudyHours">0小时</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Panel -->
+            <div class="content-panel" id="ordersPanel">
+                <div class="flex items-center justify-between mb-2">
+                    <h3>我的订单</h3>
+                    <div class="orders-filter">
+                        <button class="filter-btn active" data-status="all" onclick="filterOrders('all')">全部</button>
+                        <button class="filter-btn" data-status="paid" onclick="filterOrders('paid')">已支付</button>
+                        <button class="filter-btn" data-status="pending" onclick="filterOrders('pending')">待支付</button>
+                        <button class="filter-btn" data-status="completed" onclick="filterOrders('completed')">已完成</button>
+                        <button class="filter-btn" data-status="refunded" onclick="filterOrders('refunded')">已退款</button>
+                    </div>
+                </div>
+                
+                <div id="ordersList">
+                    <div class="loading-state">
+                        <div class="loading-spinner"></div>
+                        <span>正在加载订单数据...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievements Panel -->
+            <div class="content-panel" id="achievementsPanel">
+                <h3 class="mb-2">成就勋章</h3>
+                <div id="achievementsContent">
+                    <div class="loading-state">
+                        <div class="loading-spinner"></div>
+                        <span>正在加载成就数据...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Certificates Panel -->
+            <div class="content-panel" id="certificatesPanel">
+                <div class="flex items-center justify-between mb-2">
+                    <h3>我的证书</h3>
+                    <button class="btn-edit-profile">批量下载</button>
+                </div>
+                <div id="certificatesContent">
+                    <div class="loading-state">
+                        <div class="loading-spinner"></div>
+                        <span>正在加载证书数据...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills Panel -->
+            <div class="content-panel" id="skillsPanel">
+                <h3 class="mb-2">技能图谱</h3>
+                <div class="skills-section">
+                    <div>
+                        <h4 class="mb-2">技能雷达图</h4>
+                        <div id="skillsRadarContainer">
+                            <canvas id="skillsRadar" width="400" height="400"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="mb-2">技能详情</h4>
+                        <div id="skillsListContent">
+                            <div class="loading-state">
+                                <div class="loading-spinner"></div>
+                                <span>正在加载技能数据...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Panel -->
+            <div class="content-panel" id="settingsPanel">
+                <div class="settings-section">
+                    <div class="settings-sidebar">
+                        <button class="setting-nav-btn active" onclick="showSettingSection('basic')">基本信息</button>
+                        <button class="setting-nav-btn" onclick="showSettingSection('security')">账号安全</button>
+                        <button class="setting-nav-btn" onclick="showSettingSection('privacy')">隐私设置</button>
+                        <button class="setting-nav-btn" onclick="showSettingSection('notifications')">通知设置</button>
+                        <button class="setting-nav-btn" onclick="showSettingSection('preferences')">学习偏好</button>
+                    </div>
+                    <div class="settings-content">
+                        <div class="setting-panel active" id="basicSettingsPanel">
+                            <h3 class="mb-2">基本信息设置</h3>
+                            <div class="info-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="settingsUsername">用户名</label>
+                                        <input type="text" id="settingsUsername">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="settingsDisplayName">显示昵称</label>
+                                        <input type="text" id="settingsDisplayName">
+                                    </div>
+                                </div>
+                                <div class="form-group full-width">
+                                    <label for="settingsBio">个人简介</label>
+                                    <textarea id="settingsBio" rows="3"></textarea>
+                                </div>
+                                <div class="form-actions">
+                                    <button class="btn-save" onclick="saveSettings('basic')">保存设置</button>
+                                    <button class="btn-cancel" onclick="resetSettings('basic')">重置</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-panel" id="securitySettingsPanel">
+                            <h3 class="mb-2">账号安全</h3>
+                            <div class="info-form">
+                                <div class="form-group">
+                                    <label for="currentPassword">当前密码</label>
+                                    <input type="password" id="currentPassword">
+                                </div>
+                                <div class="form-group">
+                                    <label for="newPassword">新密码</label>
+                                    <input type="password" id="newPassword">
+                                </div>
+                                <div class="form-group">
+                                    <label for="confirmPassword">确认新密码</label>
+                                    <input type="password" id="confirmPassword">
+                                </div>
+                                <div class="form-actions">
+                                    <button class="btn-save" onclick="changePassword()">修改密码</button>
+                                    <button class="btn-cancel" onclick="resetPasswordForm()">重置</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script type="module" src="../utils/api.js"></script>
+    <script>
+        // Global state
+        let profileData = null;
+        let isEditMode = false;
+        let originalFormData = {};
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkAuth();
+            await loadProfile();
+            initializeTabs();
+        });
+
+        // Authentication check
+        async function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/src/pages/login.html?returnUrl=profile.html';
+                return;
+            }
+        }
+
+        // Load profile data
+        async function loadProfile() {
+            try {
+                const response = await window.API.user.getProfile();
+                if (response.success && response.data) {
+                    profileData = response.data;
+                    updateProfileDisplay();
+                    loadTabContent('overview');
+                }
+            } catch (error) {
+                console.error('Failed to load profile:', error);
+                showNotification('加载用户资料失败', 'error');
+            }
+        }
+
+        // Update profile display
+        function updateProfileDisplay() {
+            if (!profileData) return;
+
+            document.getElementById('profileName').textContent = profileData.displayName || profileData.username || '用户';
+            document.getElementById('profileTitle').textContent = profileData.bio || 'AI学习者';
+            
+            // Update stats
+            document.getElementById('studyDays').textContent = profileData.stats?.studyDays || 0;
+            document.getElementById('completedCourses').textContent = profileData.stats?.completedCourses || 0;
+            document.getElementById('avgRating').textContent = (profileData.stats?.avgRating || 0).toFixed(1);
+            document.getElementById('certificates').textContent = profileData.stats?.certificates || 0;
+
+            // Update personal info form
+            document.getElementById('displayName').value = profileData.displayName || '';
+            document.getElementById('username').value = profileData.username || '';
+            document.getElementById('email').value = profileData.email || '';
+            document.getElementById('phone').value = profileData.phone || '';
+            document.getElementById('city').value = profileData.city || '';
+            document.getElementById('birthday').value = profileData.birthday || '';
+            document.getElementById('bio').value = profileData.bio || '';
+
+            // Update account stats
+            if (profileData.registrationDate) {
+                document.getElementById('registrationDate').textContent = 
+                    new Date(profileData.registrationDate).toLocaleDateString();
+            }
+            if (profileData.lastLoginDate) {
+                document.getElementById('lastLoginDate').textContent = 
+                    new Date(profileData.lastLoginDate).toLocaleDateString();
+            }
+            document.getElementById('totalStudyHours').textContent = 
+                `${profileData.stats?.totalStudyHours || 0}小时`;
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+            // Update content panels
+            document.querySelectorAll('.content-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            document.getElementById(`${tabName}Panel`).classList.add('active');
+
+            // Load tab content
+            loadTabContent(tabName);
+        }
+
+        // Load tab-specific content
+        async function loadTabContent(tabName) {
+            switch (tabName) {
+                case 'overview':
+                    await loadOverviewData();
+                    break;
+                case 'orders':
+                    await loadOrders();
+                    break;
+                case 'achievements':
+                    await loadAchievements();
+                    break;
+                case 'certificates':
+                    await loadCertificates();
+                    break;
+                case 'skills':
+                    await loadSkills();
+                    break;
+            }
+        }
+
+        // Load overview data
+        async function loadOverviewData() {
+            try {
+                const [weeklyProgress, learningPaths, recentCourses, calendar] = await Promise.all([
+                    window.API.user.getWeeklyProgress(),
+                    window.API.user.getLearningPaths(),
+                    window.API.user.getRecentCourses(),
+                    window.API.user.getLearningCalendar(new Date().getFullYear(), new Date().getMonth() + 1)
+                ]);
+
+                renderWeeklyProgress(weeklyProgress.data);
+                renderLearningPaths(learningPaths.data);
+                renderRecentCourses(recentCourses.data);
+                renderLearningCalendar(calendar.data);
+            } catch (error) {
+                console.error('Failed to load overview data:', error);
+                document.getElementById('weeklyProgressContent').innerHTML = '<div class="empty-state">暂无数据</div>';
+                document.getElementById('learningPathsContent').innerHTML = '<div class="empty-state">暂无数据</div>';
+                document.getElementById('recentCoursesContent').innerHTML = '<div class="empty-state">暂无数据</div>';
+                document.getElementById('learningCalendarContent').innerHTML = '<div class="empty-state">暂无数据</div>';
+            }
+        }
+
+        // Render weekly progress
+        function renderWeeklyProgress(data) {
+            const content = document.getElementById('weeklyProgressContent');
+            if (!data) {
+                content.innerHTML = '<div class="empty-state">暂无数据</div>';
+                return;
+            }
+
+            content.innerHTML = `
+                <div class="progress-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">总学习时长</span>
+                        <span class="stat-value">${data.totalHours || 0}小时</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">完成课时</span>
+                        <span class="stat-value">${data.completedLessons || 0}节</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">提交作业</span>
+                        <span class="stat-value">${data.submittedAssignments || 0}份</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render learning paths
+        function renderLearningPaths(paths) {
+            const content = document.getElementById('learningPathsContent');
+            if (!paths || paths.length === 0) {
+                content.innerHTML = '<div class="empty-state">暂无学习路径</div>';
+                return;
+            }
+
+            content.innerHTML = paths.map(path => `
+                <div class="path-item ${path.isActive ? 'active' : ''}">
+                    <div class="path-icon">${path.icon || '🧠'}</div>
+                    <div class="path-info">
+                        <h4>${path.name}</h4>
+                        <p>已完成 ${path.progress || 0}%</p>
+                        <div class="path-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${path.progress || 0}%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render recent courses
+        function renderRecentCourses(courses) {
+            const content = document.getElementById('recentCoursesContent');
+            if (!courses || courses.length === 0) {
+                content.innerHTML = '<div class="empty-state">暂无最近学习记录</div>';
+                return;
+            }
+
+            content.innerHTML = courses.map(course => `
+                <div class="course-item">
+                    <div class="course-thumb">
+                        <div class="thumb-placeholder">${course.shortName || course.name.substring(0, 3)}</div>
+                    </div>
+                    <div class="course-info">
+                        <h4>${course.name}</h4>
+                        <p>上次学习：${formatRelativeTime(course.lastStudyTime)}</p>
+                        <div class="course-progress">
+                            <span>进度 ${course.progress || 0}%</span>
+                        </div>
+                    </div>
+                    <button class="btn-save" onclick="continueCourse(${course.id})">继续学习</button>
+                </div>
+            `).join('');
+        }
+
+        // Render learning calendar
+        function renderLearningCalendar(calendarData) {
+            const content = document.getElementById('learningCalendarContent');
+            if (!calendarData) {
+                content.innerHTML = '<div class="empty-state">暂无学习记录</div>';
+                return;
+            }
+
+            // Simple calendar implementation
+            content.innerHTML = `
+                <div class="calendar-placeholder text-center" style="padding: 2rem; color: var(--text-secondary);">
+                    📅 学习日历功能开发中...
+                    <br><small>本月学习天数: ${calendarData.studyDays || 0} 天</small>
+                </div>
+            `;
+        }
+
+        // Load orders
+        async function loadOrders() {
+            try {
+                const response = await window.API.user.getOrders();
+                renderOrders(response.data || []);
+            } catch (error) {
+                console.error('Failed to load orders:', error);
+                document.getElementById('ordersList').innerHTML = '<div class="empty-state">暂无订单记录</div>';
+            }
+        }
+
+        // Render orders
+        function renderOrders(orders) {
+            const content = document.getElementById('ordersList');
+            if (!orders || orders.length === 0) {
+                content.innerHTML = '<div class="empty-state">暂无订单记录<br><a href="../courses.html" class="btn-save mt-2">去逛逛课程</a></div>';
+                return;
+            }
+
+            content.innerHTML = orders.map(order => `
+                <div class="order-item">
+                    <div class="order-header flex items-center justify-between">
+                        <div class="order-info">
+                            <h4>${order.courseName || order.itemName}</h4>
+                            <p>订单号: ${order.orderNo}</p>
+                            <p>下单时间: ${new Date(order.createTime).toLocaleString()}</p>
+                        </div>
+                        <div class="order-status status-${order.status}">
+                            ${getStatusText(order.status)}
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="order-price">¥${order.amount}</span>
+                        ${order.status === 'pending' ? `<button class="btn-save" onclick="payOrder('${order.orderNo}')">立即支付</button>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load achievements
+        async function loadAchievements() {
+            try {
+                const response = await window.API.achievement.getUserAchievements();
+                renderAchievements(response.data || []);
+            } catch (error) {
+                console.error('Failed to load achievements:', error);
+                document.getElementById('achievementsContent').innerHTML = '<div class="empty-state">暂无成就数据</div>';
+            }
+        }
+
+        // Render achievements
+        function renderAchievements(achievements) {
+            const content = document.getElementById('achievementsContent');
+            if (!achievements || achievements.length === 0) {
+                content.innerHTML = '<div class="empty-state">暂无成就记录</div>';
+                return;
+            }
+
+            content.innerHTML = `
+                <div class="achievements-grid">
+                    ${achievements.map(achievement => `
+                        <div class="achievement-card ${achievement.unlocked ? 'unlocked' : 'locked'}">
+                            <div class="achievement-icon">${achievement.icon || '🏆'}</div>
+                            <div class="achievement-info">
+                                <h4>${achievement.name}</h4>
+                                <p>${achievement.description}</p>
+                                ${achievement.unlocked ? 
+                                    `<span class="unlock-date">${new Date(achievement.unlockedAt).toLocaleDateString()} 解锁</span>` :
+                                    `<span class="unlock-progress">进度: ${achievement.progress || 0}%</span>`
+                                }
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Load certificates
+        async function loadCertificates() {
+            try {
+                const response = await window.API.user.getCertificates();
+                renderCertificates(response.data || []);
+            } catch (error) {
+                console.error('Failed to load certificates:', error);
+                document.getElementById('certificatesContent').innerHTML = '<div class="empty-state">暂无证书记录</div>';
+            }
+        }
+
+        // Render certificates
+        function renderCertificates(certificates) {
+            const content = document.getElementById('certificatesContent');
+            if (!certificates || certificates.length === 0) {
+                content.innerHTML = '<div class="empty-state">暂无证书记录</div>';
+                return;
+            }
+
+            content.innerHTML = `
+                <div class="achievements-grid">
+                    ${certificates.map(cert => `
+                        <div class="achievement-card unlocked">
+                            <div class="achievement-icon">📜</div>
+                            <div class="achievement-info">
+                                <h4>${cert.courseName}</h4>
+                                <p>证书编号: ${cert.certificateNo}</p>
+                                <span class="unlock-date">颁发日期: ${new Date(cert.issuedAt).toLocaleDateString()}</span>
+                            </div>
+                            <div class="flex gap-2 mt-2">
+                                <button class="btn-save" onclick="downloadCertificate(${cert.id})">下载</button>
+                                <button class="btn-cancel" onclick="shareCertificate(${cert.id})">分享</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Load skills
+        async function loadSkills() {
+            try {
+                const response = await window.API.user.getSkills();
+                renderSkills(response.data || []);
+            } catch (error) {
+                console.error('Failed to load skills:', error);
+                document.getElementById('skillsListContent').innerHTML = '<div class="empty-state">暂无技能数据</div>';
+            }
+        }
+
+        // Render skills
+        function renderSkills(skills) {
+            const content = document.getElementById('skillsListContent');
+            if (!skills || skills.length === 0) {
+                content.innerHTML = '<div class="empty-state">暂无技能数据</div>';
+                return;
+            }
+
+            content.innerHTML = skills.map(skill => `
+                <div class="skill-item">
+                    <div class="skill-header">
+                        <span class="skill-name">${skill.name}</span>
+                        <span class="skill-level">${getSkillLevel(skill.score)}</span>
+                    </div>
+                    <div class="skill-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${skill.score}%;"></div>
+                        </div>
+                        <span class="skill-score">${skill.score}/100</span>
+                    </div>
+                    ${skill.tags ? `
+                        <div class="skill-tags">
+                            ${skill.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+
+            // Render radar chart
+            renderSkillsRadar(skills);
+        }
+
+        // Render skills radar chart
+        function renderSkillsRadar(skills) {
+            const canvas = document.getElementById('skillsRadar');
+            const ctx = canvas.getContext('2d');
+            
+            // Simple radar chart implementation
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#667eea';
+            ctx.fillStyle = 'rgba(102, 126, 234, 0.2)';
+            ctx.lineWidth = 2;
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = 120;
+
+            // Draw background grid
+            ctx.strokeStyle = '#2d3748';
+            for (let i = 1; i <= 5; i++) {
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, (radius / 5) * i, 0, 2 * Math.PI);
+                ctx.stroke();
+            }
+
+            if (skills.length > 0) {
+                // Draw skill areas
+                ctx.beginPath();
+                ctx.strokeStyle = '#667eea';
+                ctx.fillStyle = 'rgba(102, 126, 234, 0.2)';
+
+                skills.forEach((skill, index) => {
+                    const angle = (2 * Math.PI / skills.length) * index - Math.PI / 2;
+                    const value = (skill.score / 100) * radius;
+                    const x = centerX + Math.cos(angle) * value;
+                    const y = centerY + Math.sin(angle) * value;
+
+                    if (index === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                // Draw skill labels
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '12px Inter';
+                ctx.textAlign = 'center';
+
+                skills.forEach((skill, index) => {
+                    const angle = (2 * Math.PI / skills.length) * index - Math.PI / 2;
+                    const labelRadius = radius + 20;
+                    const x = centerX + Math.cos(angle) * labelRadius;
+                    const y = centerY + Math.sin(angle) * labelRadius;
+
+                    ctx.fillText(skill.name, x, y);
+                });
+            }
+        }
+
+        // Edit mode functions
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            const inputs = document.querySelectorAll('#personalInfoPanel input, #personalInfoPanel textarea');
+            const toggleBtn = document.getElementById('editToggleBtn');
+            const formActions = document.getElementById('formActions');
+
+            if (isEditMode) {
+                // Store original data
+                originalFormData = {};
+                inputs.forEach(input => {
+                    if (input.id !== 'username') { // Username should not be editable
+                        input.removeAttribute('readonly');
+                        originalFormData[input.id] = input.value;
+                    }
+                });
+                toggleBtn.innerHTML = '<span>取消</span>';
+                formActions.classList.remove('hidden');
+            } else {
+                inputs.forEach(input => {
+                    input.setAttribute('readonly', true);
+                });
+                toggleBtn.innerHTML = '<span>编辑</span>';
+                formActions.classList.add('hidden');
+                // Restore original data
+                Object.keys(originalFormData).forEach(key => {
+                    const input = document.getElementById(key);
+                    if (input) input.value = originalFormData[key];
+                });
+            }
+        }
+
+        function cancelEdit() {
+            toggleEditMode();
+        }
+
+        async function savePersonalInfo() {
+            try {
+                const formData = {
+                    displayName: document.getElementById('displayName').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    city: document.getElementById('city').value,
+                    birthday: document.getElementById('birthday').value,
+                    bio: document.getElementById('bio').value
+                };
+
+                const response = await window.API.user.updateProfile(formData);
+                if (response.success) {
+                    showNotification('个人资料更新成功', 'success');
+                    toggleEditMode();
+                    await loadProfile(); // Reload profile data
+                }
+            } catch (error) {
+                console.error('Failed to save profile:', error);
+                showNotification('保存失败，请稍后重试', 'error');
+            }
+        }
+
+        // Settings functions
+        function showSettingSection(section) {
+            document.querySelectorAll('.setting-nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.setting-panel').forEach(panel => panel.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(`${section}SettingsPanel`).classList.add('active');
+        }
+
+        async function saveSettings(section) {
+            // Implementation depends on specific settings
+            showNotification('设置保存成功', 'success');
+        }
+
+        async function changePassword() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                showNotification('请填写完整信息', 'warning');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showNotification('两次输入的密码不一致', 'warning');
+                return;
+            }
+
+            try {
+                const response = await window.API.user.changePassword({
+                    currentPassword,
+                    newPassword
+                });
+
+                if (response.success) {
+                    showNotification('密码修改成功', 'success');
+                    resetPasswordForm();
+                }
+            } catch (error) {
+                console.error('Failed to change password:', error);
+                showNotification('密码修改失败', 'error');
+            }
+        }
+
+        function resetPasswordForm() {
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+        }
+
+        // Order functions
+        function filterOrders(status) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Re-load orders with filter
+            loadOrders(status);
+        }
+
+        async function payOrder(orderNo) {
+            try {
+                const response = await window.API.payment.createPayment({ orderNo });
+                if (response.success && response.data.payUrl) {
+                    window.open(response.data.payUrl, '_blank');
+                }
+            } catch (error) {
+                console.error('Failed to create payment:', error);
+                showNotification('支付失败，请稍后重试', 'error');
+            }
+        }
+
+        // Certificate functions
+        async function downloadCertificate(certificateId) {
+            try {
+                await window.API.user.downloadCertificate(certificateId);
+                showNotification('证书下载成功', 'success');
+            } catch (error) {
+                console.error('Failed to download certificate:', error);
+                showNotification('证书下载失败', 'error');
+            }
+        }
+
+        function shareCertificate(certificateId) {
+            // Implementation for sharing certificate
+            showNotification('分享功能开发中', 'info');
+        }
+
+        // Utility functions
+        function formatRelativeTime(date) {
+            const now = new Date();
+            const diff = now - new Date(date);
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+
+            if (days > 0) return `${days}天前`;
+            if (hours > 0) return `${hours}小时前`;
+            if (minutes > 0) return `${minutes}分钟前`;
+            return '刚刚';
+        }
+
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': '待支付',
+                'paid': '已支付',
+                'completed': '已完成',
+                'refunded': '已退款',
+                'cancelled': '已取消'
+            };
+            return statusMap[status] || '未知状态';
+        }
+
+        function getSkillLevel(score) {
+            if (score >= 90) return '专家';
+            if (score >= 70) return '高级';
+            if (score >= 50) return '中级';
+            if (score >= 30) return '初级';
+            return '入门';
+        }
+
+        function continueCourse(courseId) {
+            window.location.href = `/src/pages/course-detail.html?id=${courseId}`;
+        }
+
+        function showNotification(message, type = 'info') {
+            // Simple notification implementation
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--dark-card);
+                color: var(--text-primary);
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                border-left: 4px solid var(--${type === 'success' ? 'success' : type === 'error' ? 'danger' : type === 'warning' ? 'warning' : 'primary'}-color);
+                box-shadow: var(--box-shadow);
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+            `;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        async function handleLogout() {
+            if (confirm('确定要退出登录吗？')) {
+                localStorage.clear();
+                window.location.href = '/src/pages/login.html';
+            }
+        }
+
+        function initializeTabs() {
+            // URL parameter handling
+            const urlParams = new URLSearchParams(window.location.search);
+            const tab = urlParams.get('tab');
+            if (tab) {
+                switchTab(tab);
+            }
+        }
+
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

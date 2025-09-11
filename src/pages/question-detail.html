@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>问题详情 - AI学习平台</title>
+    <meta name="description" content="查看问题详情，参与回答和讨论">
+    <link rel="stylesheet" href="../styles/theme.css">
+    <script src="../utils/theme-switcher.js"></script>
+    <style>
+        /* 基本样式继承qa.html */
+        :root {
+            --primary: #3B82F6;
+            --secondary: #8B5CF6;
+            --accent: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --dark: #1E293B;
+            --darker: #0F172A;
+            --light: #FFFFFF;
+            --gray-100: #F1F5F9;
+            --gray-200: #E2E8F0;
+            --gray-300: #CBD5E1;
+            --gray-400: #94A3B8;
+            --gray-500: #64748B;
+            --gray-600: #475569;
+            --success: #22C55E;
+        }
+
+        [data-theme="dark"] {
+            --primary: #60A5FA;
+            --secondary: #A78BFA;
+            --accent: #34D399;
+            --warning: #FBBF24;
+            --danger: #F87171;
+            --dark: #F1F5F9;
+            --darker: #E2E8F0;
+            --light: #0F172A;
+            --gray-100: #1E293B;
+            --gray-200: #334155;
+            --gray-300: #475569;
+            --gray-400: #64748B;
+            --gray-500: #94A3B8;
+            --gray-600: #CBD5E1;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            margin: 0;
+            padding: 0;
+            transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] body {
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
+        }
+
+        .main-layout {
+            margin-top: 80px;
+            min-height: calc(100vh - 80px);
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 2rem;
+        }
+
+        .question-detail {
+            background: var(--light);
+            border: 1px solid var(--gray-200);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        [data-theme="dark"] .question-detail {
+            background: var(--gray-100);
+            border-color: var(--gray-200);
+        }
+
+        .question-header {
+            padding: 2rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .question-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+
+        .question-meta {
+            display: flex;
+            gap: 2rem;
+            color: var(--gray-500);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .question-content {
+            background: var(--gray-100);
+            padding: 2rem;
+            border-radius: 12px;
+            line-height: 1.6;
+            color: var(--dark);
+            white-space: pre-wrap;
+        }
+
+        .answers-section {
+            background: var(--light);
+            border: 1px solid var(--gray-200);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        [data-theme="dark"] .answers-section {
+            background: var(--gray-100);
+            border-color: var(--gray-200);
+        }
+
+        .answers-header {
+            background: var(--gray-100);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--gray-200);
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .answer-form {
+            padding: 2rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-group textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 1rem;
+            border: 2px solid var(--gray-300);
+            border-radius: 12px;
+            background: var(--light);
+            color: var(--dark);
+            resize: vertical;
+            font-family: inherit;
+            line-height: 1.6;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .answer-item {
+            padding: 2rem;
+            border-bottom: 1px solid var(--gray-200);
+            position: relative;
+        }
+
+        .answer-item:last-child {
+            border-bottom: none;
+        }
+
+        .answer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .answer-user {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .answer-time {
+            color: var(--gray-500);
+            font-size: 0.9rem;
+        }
+
+        .answer-content {
+            color: var(--dark);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            white-space: pre-wrap;
+        }
+
+        .answer-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--gray-500);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: var(--gray-100);
+            color: var(--primary);
+        }
+
+        .accepted-answer {
+            border-left: 4px solid var(--success);
+            background: rgba(34, 197, 94, 0.05);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray-500);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray-500);
+        }
+    </style>
+</head>
+<body>
+    <div class="main-layout">
+        <!-- 返回按钮 -->
+        <div style="margin-bottom: 2rem;">
+            <button class="btn btn-secondary" onclick="history.back()">← 返回问题列表</button>
+        </div>
+
+        <!-- 问题详情 -->
+        <div class="question-detail" id="questionDetail">
+            <div class="loading">正在加载问题详情...</div>
+        </div>
+
+        <!-- 回答区域 -->
+        <div class="answers-section" id="answersSection" style="display: none;">
+            <div class="answers-header">
+                <span id="answersCount">0 个回答</span>
+            </div>
+
+            <!-- 回答表单 -->
+            <div class="answer-form" id="answerForm">
+                <form onsubmit="submitAnswer(event)">
+                    <div class="form-group">
+                        <label for="answerContent">你的回答</label>
+                        <textarea id="answerContent" placeholder="请详��回答这个问题..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">发布回答</button>
+                </form>
+            </div>
+
+            <!-- 回答列表 -->
+            <div id="answersList">
+                <!-- 回答将在这里动态加载 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://42.194.245.66/api';
+        let questionId = null;
+        let questionData = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            questionId = new URLSearchParams(window.location.search).get('id');
+            if (questionId) {
+                loadQuestionDetail();
+            } else {
+                document.getElementById('questionDetail').innerHTML = 
+                    '<div class="empty-state"><h3>问题不存在</h3><p>请检查URL是否正确</p></div>';
+            }
+        });
+
+        async function loadQuestionDetail() {
+            try {
+                const token = localStorage.getItem('token');
+                const headers = {};
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+
+                const response = await fetch(`${API_BASE_URL}/qa/questions/${questionId}`, {
+                    headers
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.data) {
+                        questionData = data.data.question || data.data;
+                        renderQuestionDetail(questionData);
+                        await loadAnswers();
+                        document.getElementById('answersSection').style.display = 'block';
+                    } else {
+                        throw new Error(data.message || '加载失败');
+                    }
+                } else {
+                    throw new Error('网络请求失败');
+                }
+            } catch (error) {
+                console.error('加载问题详情失败:', error);
+                document.getElementById('questionDetail').innerHTML = 
+                    '<div class="empty-state"><h3>加载失败</h3><p>请刷新页面重试</p></div>';
+            }
+        }
+
+        function renderQuestionDetail(question) {
+            const questionDetail = document.getElementById('questionDetail');
+            questionDetail.innerHTML = `
+                <div class="question-header">
+                    <h1 class="question-title">${question.title}</h1>
+                    <div class="question-meta">
+                        <span>👤 ${question.user?.username || question.username || '匿名用户'}</span>
+                        <span>⏰ ${formatTime(question.created_at || question.createdAt)}</span>
+                        <span>👀 ${question.view_count || question.viewCount || 0} 浏览</span>
+                        <span>💬 ${question.answer_count || question.answerCount || 0} 回答</span>
+                    </div>
+                </div>
+                <div style="padding: 2rem;">
+                    <div class="question-content">${question.content}</div>
+                </div>
+            `;
+        }
+
+        async function loadAnswers() {
+            try {
+                const token = localStorage.getItem('token');
+                const headers = {};
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+
+                const response = await fetch(`${API_BASE_URL}/qa/questions/${questionId}/answers`, {
+                    headers
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.data) {
+                        const answers = data.data.answers || data.data.items || [];
+                        renderAnswers(answers);
+                        document.getElementById('answersCount').textContent = `${answers.length} 个回答`;
+                    }
+                }
+            } catch (error) {
+                console.error('加载回答失败:', error);
+                document.getElementById('answersList').innerHTML = 
+                    '<div class="empty-state"><p>回答加载失败，请刷新页面重试</p></div>';
+            }
+        }
+
+        function renderAnswers(answers) {
+            const answersList = document.getElementById('answersList');
+            
+            if (answers.length === 0) {
+                answersList.innerHTML = '<div class="empty-state"><p>还没有回答，快来抢沙发吧！</p></div>';
+                return;
+            }
+
+            const answersHTML = answers.map(answer => `
+                <div class="answer-item ${answer.is_accepted ? 'accepted-answer' : ''}">
+                    <div class="answer-header">
+                        <div class="answer-user">
+                            <div class="user-avatar">
+                                ${(answer.user?.username || answer.username || 'U').charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                                <div style="font-weight: 600;">${answer.user?.username || answer.username || '匿名用户'}</div>
+                                <div class="answer-time">${formatTime(answer.created_at || answer.createdAt)}</div>
+                            </div>
+                        </div>
+                        ${answer.is_accepted ? '<span style="color: var(--success); font-weight: 600;">✓ 已采纳</span>' : ''}
+                    </div>
+                    <div class="answer-content">${answer.content}</div>
+                    <div class="answer-actions">
+                        <button class="action-btn" onclick="likeAnswer(${answer.id})">
+                            👍 ${answer.like_count || 0}
+                        </button>
+                        <button class="action-btn" onclick="replyToAnswer(${answer.id})">
+                            💬 回复
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            answersList.innerHTML = answersHTML;
+        }
+
+        async function submitAnswer(event) {
+            event.preventDefault();
+            
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('请先登录');
+                return;
+            }
+
+            const content = document.getElementById('answerContent').value.trim();
+            if (!content) {
+                alert('请输入回答内容');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/qa/questions/${questionId}/answers`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ content })
+                });
+
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    document.getElementById('answerContent').value = '';
+                    await loadAnswers(); // 重新加载回答列表
+                    showNotification('回答发布成功！', 'success');
+                } else {
+                    throw new Error(data.message || '发布失败');
+                }
+            } catch (error) {
+                console.error('发布回答失败:', error);
+                showNotification('发布失败，请稍后重试', 'error');
+            }
+        }
+
+        async function likeAnswer(answerId) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('请先登录');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/qa/answers/${answerId}/like`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    await loadAnswers(); // 重新加载以更新点赞数
+                    showNotification('点赞成功！', 'success');
+                }
+            } catch (error) {
+                console.error('点赞失败:', error);
+                showNotification('点赞失败，请稍后重试', 'error');
+            }
+        }
+
+        function replyToAnswer(answerId) {
+            // 这里可以实现回复功能
+            alert('回复功能正在开发中');
+        }
+
+        function formatTime(timeString) {
+            if (!timeString) return '未知时间';
+            const now = new Date();
+            const time = new Date(timeString);
+            const diff = now - time;
+            
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            
+            if (days > 0) return `${days}天前`;
+            if (hours > 0) return `${hours}小时前`;
+            if (minutes > 0) return `${minutes}分钟前`;
+            return '刚刚';
+        }
+
+        function showNotification(message, type = 'info') {
+            const existing = document.querySelector('.notification');
+            if (existing) {
+                existing.remove();
+            }
+
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                background: var(--light);
+                border: 1px solid var(--gray-200);
+                border-radius: 12px;
+                padding: 1rem 1.5rem;
+                color: var(--dark);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+                z-index: 1001;
+                border-left: 4px solid ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+                max-width: 350px;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

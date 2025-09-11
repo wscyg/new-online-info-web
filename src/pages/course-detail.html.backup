@@ -1,0 +1,3964 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课程详情 - AI Master Class</title>
+    <meta name="description" content="掌握AI，定义未来 - 与硅谷顶尖专家一起学习">
+
+    <!-- 外部资源 - 优化加载 -->
+    <!-- 移除Google字体，使用系统字体栈提高加载速度 -->
+    <!-- <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366F1;
+            --primary-dark: #4F46E5;
+            --secondary: #EC4899;
+            --accent: #14B8A6;
+            --gold: #F59E0B;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --info: #3B82F6;
+
+            --dark: #0F172A;
+            --darker: #020617;
+            --light: #FFFFFF;
+            --gray-50: #F8FAFC;
+            --gray-100: #F1F5F9;
+            --gray-200: #E2E8F0;
+            --gray-300: #CBD5E1;
+            --gray-400: #94A3B8;
+            --gray-500: #64748B;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1E293B;
+            --gray-900: #0F172A;
+        }
+
+        [data-theme="dark"] {
+            --primary: #818CF8;
+            --primary-dark: #6366F1;
+            --secondary: #F472B6;
+            --accent: #2DD4BF;
+            --gold: #FCD34D;
+            --success: #34D399;
+            --warning: #FCD34D;
+            --danger: #F87171;
+            --info: #60A5FA;
+
+            --dark: #F8FAFC;
+            --darker: #F1F5F9;
+            --light: #0F172A;
+            --gray-50: #020617;
+            --gray-100: #0F172A;
+            --gray-200: #1E293B;
+            --gray-300: #334155;
+            --gray-400: #475569;
+            --gray-500: #64748B;
+            --gray-600: #94A3B8;
+            --gray-700: #CBD5E1;
+            --gray-800: #E2E8F0;
+            --gray-900: #F1F5F9;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            overflow-x: hidden;
+            min-height: 100vh;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 高端背景效果 */
+        .premium-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
+            opacity: 0.03;
+        }
+
+        [data-theme="dark"] .premium-bg {
+            opacity: 0.1;
+        }
+
+        /* 动态光效 */
+        .glow-effect {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: float 20s infinite ease-in-out;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .glow-effect:nth-child(2) {
+            right: -200px;
+            top: 60%;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.15) 0%, transparent 70%);
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(100px, -100px) scale(1.1); }
+            66% { transform: translate(-100px, 100px) scale(0.9); }
+        }
+
+        /* 导航栏 - 现代化设计 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 0;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] .navbar {
+            background: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .navbar.scrolled {
+            padding: 0.6rem 0;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        }
+
+        [data-theme="dark"] .navbar.scrolled {
+            background: rgba(15, 23, 42, 0.95);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--gray-600);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            position: relative;
+            padding: 0.5rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        /* 主题切换按钮 */
+        .theme-toggle {
+            background: var(--light);
+            border: 2px solid var(--gray-300);
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        /* 用户菜单样式 - 与dashboard一致 */
+        .user-menu-container {
+            position: relative;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            background: var(--gray-100);
+            border: 2px solid var(--gray-200);
+            transition: all 0.3s;
+        }
+
+        .user-info:hover {
+            background: var(--light);
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+        }
+
+        .user-info .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            overflow: hidden;
+        }
+
+        .user-info .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-name {
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        .dropdown-arrow {
+            color: var(--gray-600);
+            font-size: 0.75rem;
+            transition: transform 0.3s;
+        }
+
+        .user-menu-container.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 0.5rem);
+            right: 0;
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s;
+            z-index: 10001;
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #333;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .dropdown-item:hover {
+            background: #f7fafc;
+        }
+
+        .dropdown-item:first-child {
+            border-radius: 0.5rem 0.5rem 0 0;
+        }
+
+        .dropdown-item:last-child {
+            border-radius: 0 0 0.5rem 0.5rem;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 0.25rem 0;
+        }
+
+
+
+        /* 面包屑导航 */
+        .breadcrumb {
+            padding: 100px 0 2rem;
+            background: linear-gradient(135deg,
+            rgba(99, 102, 241, 0.05) 0%,
+            rgba(236, 72, 153, 0.05) 100%);
+        }
+
+        .breadcrumb-nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: var(--gray-600);
+        }
+
+        .breadcrumb-nav a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .breadcrumb-nav a:hover {
+            color: var(--secondary);
+        }
+
+        /* 主容器 */
+        .course-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* 课程信息网格 */
+        .course-info {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        /* 课程标题区 */
+        .course-header-section {
+            margin-bottom: 3rem;
+        }
+
+        .course-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+
+        .course-subtitle {
+            font-size: 1.25rem;
+            color: var(--gray-600);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        /* 订阅状态 */
+        .subscription-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .subscription-status.subscribed {
+            background: linear-gradient(135deg,
+            rgba(16, 185, 129, 0.1),
+            rgba(52, 211, 153, 0.1));
+            color: var(--success);
+            border: 2px solid var(--success);
+        }
+
+        .subscription-status.not-subscribed {
+            background: linear-gradient(135deg,
+            rgba(245, 158, 11, 0.1),
+            rgba(252, 211, 77, 0.1));
+            color: var(--warning);
+            border: 2px solid var(--warning);
+        }
+
+        /* 课程元信息 */
+        .course-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            color: var(--gray-600);
+        }
+
+        .meta-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg,
+            rgba(99, 102, 241, 0.1),
+            rgba(236, 72, 153, 0.1));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        /* 统计卡片 */
+        .course-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            margin: 3rem 0;
+        }
+
+        .stat-card {
+            background: var(--light);
+            border: 1px solid var(--gray-200);
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        [data-theme="dark"] .stat-card {
+            background: var(--gray-800);
+            border-color: var(--gray-700);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(99, 102, 241, 0.2);
+            border-color: var(--primary);
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* 内容卡片 */
+        .content-card {
+            background: var(--light);
+            border: 1px solid var(--gray-200);
+            border-radius: 24px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        [data-theme="dark"] .content-card {
+            background: var(--gray-800);
+            border-color: var(--gray-700);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .content-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+        }
+
+        .content-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .content-card h3::before {
+            content: '';
+            width: 4px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+
+        /* 章节列表 */
+        .chapters-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .chapter-item {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        [data-theme="dark"] .chapter-item {
+            background: var(--gray-900);
+            border-color: var(--gray-700);
+        }
+
+        .chapter-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .chapter-item:hover {
+            transform: translateX(10px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.15);
+            border-color: var(--primary);
+        }
+
+        .chapter-item:hover::before {
+            transform: scaleY(1);
+        }
+
+        .chapter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .chapter-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .chapter-badges {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chapter-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-free {
+            background: linear-gradient(135deg, var(--success), var(--accent));
+            color: white;
+        }
+
+        .badge-premium {
+            background: linear-gradient(135deg, var(--gold), var(--warning));
+            color: white;
+        }
+
+        .badge-duration {
+            background: linear-gradient(135deg,
+            rgba(99, 102, 241, 0.1),
+            rgba(236, 72, 153, 0.1));
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .chapter-description {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* 相关课程样式 */
+        .related-courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .related-course-card {
+            background: var(--light);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .related-course-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+
+        .related-course-image {
+            height: 140px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            position: relative;
+        }
+
+        .related-course-image img {
+            width: 100%;
+            height: 100%;
+            -o-object-fit: cover;
+               object-fit: cover;
+        }
+
+        .related-course-content {
+            padding: 1rem;
+        }
+
+        .related-course-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .related-course-price {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .related-course-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--gray-500);
+        }
+
+        .related-course-difficulty {
+            background: var(--gray-100);
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+        }
+
+        /* 侧边栏购买卡片 */
+        .course-sidebar {
+            position: relative; /* 修改为relative，避免sticky定位问题 */
+        }
+
+        .purchase-card {
+            background: var(--light);
+            border: 1px solid var(--gray-200);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] .purchase-card {
+            background: var(--gray-800);
+            border-color: var(--gray-700);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .course-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-image img {
+            width: 100%;
+            height: 100%;
+            -o-object-fit: cover;
+               object-fit: cover;
+            border-radius: 16px;
+        }
+
+        .course-price {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .price-current {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .price-original {
+            font-size: 1.2rem;
+            color: var(--gray-500);
+            text-decoration: line-through;
+            margin-left: 0.5rem;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            width: 100%;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-enroll {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .btn-enroll:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg,
+            rgba(99, 102, 241, 0.1),
+            rgba(236, 72, 153, 0.1));
+            transform: translateY(-2px);
+        }
+
+        /* 特性列表 */
+        .course-features {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            color: var(--gray-600);
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg,
+            rgba(99, 102, 241, 0.1),
+            rgba(236, 72, 153, 0.1));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        /* 加载状态 */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+            font-size: 1.2rem;
+            color: var(--gray-600);
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 错误状态 */
+        .error {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--danger);
+        }
+
+        .error h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* 通知系统 */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 2rem;
+            padding: 1rem 2rem;
+            background: var(--light);
+            border: 1px solid var(--gray-200);
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-color: var(--success);
+            background: linear-gradient(135deg,
+            rgba(16, 185, 129, 0.05),
+            rgba(52, 211, 153, 0.05));
+        }
+
+        .notification.error {
+            border-color: var(--danger);
+            background: linear-gradient(135deg,
+            rgba(239, 68, 68, 0.05),
+            rgba(248, 113, 113, 0.05));
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .course-info {
+                grid-template-columns: 1fr;
+            }
+
+            .course-sidebar {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .course-title {
+                font-size: 2rem;
+            }
+
+            .course-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .course-meta {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* 内容模态框样式 */
+        .content-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .content-modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+        }
+
+        .content-modal-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            max-height: 90vh;
+            background: var(--light);
+            border-radius: 24px;
+            box-shadow: 0 25px 100px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        [data-theme="dark"] .content-modal-container {
+            background: var(--gray-800);
+            box-shadow: 0 25px 100px rgba(0, 0, 0, 0.7);
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .content-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--gray-200);
+            background: linear-gradient(135deg,
+                rgba(99, 102, 241, 0.05),
+                rgba(236, 72, 153, 0.05));
+        }
+
+        [data-theme="dark"] .content-modal-header {
+            border-bottom-color: var(--gray-700);
+        }
+
+        .content-modal-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .content-modal-close {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: var(--gray-500);
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .content-modal-close:hover {
+            background: var(--gray-100);
+            color: var(--dark);
+        }
+
+        .content-modal-body {
+            padding: 2rem;
+            max-height: calc(90vh - 100px);
+            overflow-y: auto;
+        }
+
+        .content-modal-body .loading {
+            min-height: 200px;
+        }
+
+        #contentModalContent {
+            line-height: 1.8;
+            color: var(--dark);
+        }
+
+        #contentModalContent h1,
+        #contentModalContent h2,
+        #contentModalContent h3,
+        #contentModalContent h4,
+        #contentModalContent h5,
+        #contentModalContent h6 {
+            color: var(--dark);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        #contentModalContent p {
+            margin-bottom: 1rem;
+            color: var(--gray-700);
+        }
+
+        #contentModalContent ul,
+        #contentModalContent ol {
+            margin-bottom: 1rem;
+            padding-left: 2rem;
+        }
+
+        #contentModalContent li {
+            margin-bottom: 0.5rem;
+            color: var(--gray-700);
+        }
+
+        #contentModalContent pre {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        [data-theme="dark"] #contentModalContent pre {
+            background: var(--gray-900);
+            border-color: var(--gray-700);
+        }
+
+        #contentModalContent code {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 4px;
+            padding: 0.2rem 0.4rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        [data-theme="dark"] #contentModalContent code {
+            background: var(--gray-900);
+            border-color: var(--gray-700);
+        }
+
+        /* 滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--gray-100);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gray-400);
+            border-radius: 5px;
+            -webkit-transition: background 0.3s ease;
+            transition: background 0.3s ease;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-600);
+        }
+    </style>
+</head>
+<body>
+<!-- 高端背景效果 -->
+<div class="premium-bg"></div>
+<div class="glow-effect"></div>
+<div class="glow-effect"></div>
+
+<!-- 导航栏 -->
+<nav class="navbar" id="navbar">
+    <div class="nav-container">
+        <div class="nav-brand">
+            <a href="/home.html" class="logo">🎓 AI Master Class</a>
+        </div>
+
+        <div class="nav-menu">
+            <a href="/home.html" class="nav-link">首页</a>
+            <a href="courses.html" class="nav-link active">课程</a>
+            <a href="dashboard.html" class="nav-link">学习中心</a>
+            <a href="profile.html" class="nav-link">个人中心</a>
+
+            <!-- 主题切换按钮 -->
+            <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="切换主题">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </div>
+
+        <!-- 用户菜单 - 与dashboard一致 -->
+        <div class="user-menu-container">
+            <div class="user-info" onclick="toggleUserMenu(event)">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <span class="user-name" id="userName">加载中...</span>
+                <span class="dropdown-arrow">▼</span>
+            </div>
+            <div class="dropdown-menu" id="userDropdown">
+                <a href="profile.html" class="dropdown-item">
+                    <span>👤</span> 个人资料
+                </a>
+                <a href="dashboard.html" class="dropdown-item">
+                    <span>📊</span> 学习中心
+                </a>
+                <a href="orders.html" class="dropdown-item">
+                    <span>📦</span> 我的订单
+                </a>
+                <a href="certificates.html" class="dropdown-item">
+                    <span>🎓</span> 我的证书
+                </a>
+                <a href="points-shop.html" class="dropdown-item">
+                    <span>💎</span> 积分商城
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item" onclick="logout()">
+                    <span>🚪</span> 退出登录
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- 面包屑导航 -->
+<div class="breadcrumb">
+    <nav class="breadcrumb-nav">
+        <a href="/home.html">首页</a>
+        <span>/</span>
+        <a href="courses.html">课程</a>
+        <span>/</span>
+        <span id="courseNavTitle">课程详情</span>
+    </nav>
+</div>
+
+<!-- 主内容 -->
+<main class="course-container">
+    <!-- 加载状态 -->
+    <div id="loadingState" class="loading">
+        <div class="loading-spinner"></div>
+        正在加载课程信息...
+    </div>
+
+    <!-- 错误状态 -->
+    <div id="errorState" class="error" style="display: none;">
+        <h3>加载失败</h3>
+        <p>无法获取课程信息，请稍后重试</p>
+        <button onclick="loadCourseDetail()" class="btn btn-secondary" style="width: auto; padding: 0.8rem 2rem;">重新加载</button>
+    </div>
+
+    <!-- 课程内容 -->
+    <div id="courseContent" style="display: none;">
+        <div class="course-info">
+            <!-- 左侧主要内容 -->
+            <div class="course-main">
+                <!-- 课程标题区 -->
+                <div class="course-header-section">
+                    <h1 class="course-title" id="courseTitle">课程标题</h1>
+                    <p class="course-subtitle" id="courseSubtitle">课程副标题</p>
+
+                    <div class="subscription-status" id="subscriptionStatus" style="display: none;">
+                        <span class="status-icon" id="statusIcon">✓</span>
+                        <span class="status-text" id="statusText">已订阅</span>
+                    </div>
+                </div>
+
+                <!-- 课程元信息 -->
+                <div class="course-meta">
+                    <div class="meta-item">
+                        <div class="meta-icon">👨‍🏫</div>
+                        <div>
+                            <div style="font-size: 0.85rem; color: var(--gray-500);">讲师</div>
+                            <div id="courseInstructor" style="font-weight: 600;">专业讲师</div>
+                        </div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">📚</div>
+                        <div>
+                            <div style="font-size: 0.85rem; color: var(--gray-500);">分类</div>
+                            <div id="courseCategory" style="font-weight: 600;">AI课程</div>
+                        </div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">⏱️</div>
+                        <div>
+                            <div style="font-size: 0.85rem; color: var(--gray-500);">时长</div>
+                            <div id="courseDuration" style="font-weight: 600;">10小时</div>
+                        </div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">📝</div>
+                        <div>
+                            <div style="font-size: 0.85rem; color: var(--gray-500);">课时</div>
+                            <div id="courseLessons" style="font-weight: 600;">20课时</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 统计信息 -->
+                <div class="course-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="enrollmentCount">0</div>
+                        <div class="stat-label">学习人数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="courseRating">5.0</div>
+                        <div class="stat-label">课程评分</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="viewCount">0</div>
+                        <div class="stat-label">浏览次数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="difficultyLevel">入门</div>
+                        <div class="stat-label">难度等级</div>
+                    </div>
+                </div>
+
+                <!-- 课程介绍 -->
+                <div class="content-card">
+                    <h3>课程介绍</h3>
+                    <div id="courseDescription" style="color: var(--gray-600); line-height: 1.8;">
+                        课程详细介绍内容...
+                    </div>
+                </div>
+
+                <!-- 课程章节 -->
+                <div class="content-card">
+                    <h3>课程章节</h3>
+                    <div id="chaptersList" class="chapters-list">
+                        <div class="loading">正在加载章节...</div>
+                    </div>
+                </div>
+
+                <!-- 相关课程 -->
+                <div class="content-card" id="relatedCoursesSection">
+                    <h3>相关课程推荐</h3>
+                    <div id="relatedCoursesList" class="related-courses-grid">
+                        <div class="loading">正在加载相关课程...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧购买卡片 -->
+            <div class="course-sidebar">
+                <div class="purchase-card">
+                    <div class="course-image" id="courseImage">
+                        🤖
+                    </div>
+
+                    <div class="course-price">
+                        <span class="price-current" id="coursePrice">¥299</span>
+                        <span class="price-original" id="originalPrice" style="display: none;">¥399</span>
+                    </div>
+
+                    <div class="course-actions">
+                        <button class="btn btn-enroll" id="enrollBtn" onclick="enrollCourse()">立即报名</button>
+                        <button class="btn btn-secondary" onclick="addToWishlist()">加入收藏</button>
+                    </div>
+
+                    <div class="course-features">
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-infinity"></i>
+                            </div>
+                            <span>永久访问权限</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <span>支持移动端学习</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-certificate"></i>
+                            </div>
+                            <span>完成证书</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <span>社区讨论支持</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- 通知系统 -->
+<div id="notification" class="notification">
+    <span id="notificationMessage"></span>
+</div>
+
+
+<!-- Scripts -->
+<script>
+    // API配置 - 使用nginx代理路径
+    const hostname = window.location.hostname;
+    // 不再直接访问8070端口，而是使用nginx代理的/api路径
+    const API_BASE = '/api';  // nginx代理到localhost:8070/api
+    let currentCourse = null;
+    let isSubscribed = false;
+
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, initializing...');
+        loadUserInfo(); // Load user info for dropdown
+        initTheme();
+        checkAuth();
+        
+        // 确保API配置正确
+        console.log('API endpoint:', API_BASE);
+        
+        // 直接加载课程详情，不需要延迟
+        loadCourseDetail();
+        
+        // 监听来自blob页面的消息
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'chapterLoaded') {
+                console.log('章节加载完成:', event.data);
+                showNotification(`章节"${event.data.title}"已打开`, 'success');
+            }
+        });
+    });
+
+    // 导航栏滚动效果
+    window.addEventListener('scroll', () => {
+        const navbar = document.getElementById('navbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+    // 主题切换
+    function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+    }
+
+    // 初始化主题
+    function initTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    }
+
+    // 显示通知
+    function showNotification(message, type = 'success') {
+        const notification = document.getElementById('notification');
+        const messageEl = document.getElementById('notificationMessage');
+        
+        messageEl.textContent = message;
+        notification.className = `notification ${type} show`;
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 3000);
+    }
+
+    // 检查登录状态
+    function checkAuth() {
+        const token = localStorage.getItem('token');
+        const user = localStorage.getItem('user');
+
+        console.log('checkAuth 调用:', { token: !!token, user: !!user });
+
+        if (token && user) {
+            try {
+                const userData = JSON.parse(user);
+                console.log('用户数据:', userData);
+                
+                const userNameEl = document.getElementById('userName');
+                const userAvatarEl = document.getElementById('userAvatar');
+
+                if (userNameEl) {
+                    const displayName = userData.username || userData.name || '用户';
+                    userNameEl.textContent = displayName;
+                    console.log('设置用户名:', displayName);
+                }
+                if (userAvatarEl) {
+                    const initials = (userData.username || userData.name || 'U').charAt(0).toUpperCase();
+                    userAvatarEl.textContent = initials;
+                    console.log('设置头像:', initials);
+                }
+            } catch (error) {
+                console.error('Error parsing user data:', error);
+            }
+        } else {
+            console.log('用户未登录');
+        }
+    }
+
+    // 添加请求超时处理
+    function fetchWithTimeout(url, options = {}, timeout = 5000) {
+        return Promise.race([
+            fetch(url, options),
+            new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('请求超时')), timeout)
+            )
+        ]);
+    }
+
+    // 加载课程详情
+    async function loadCourseDetail() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const courseId = urlParams.get('id') || 1; // 默认显示课程ID 1
+
+        try {
+            showLoading();
+            console.log('加载课程详情, ID:', courseId);
+            console.log('API端点:', `${API_BASE}/courses/${courseId}`);
+
+            // 获取课程详情（设置5秒超时）
+            const response = await fetchWithTimeout(`${API_BASE}/courses/${courseId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            }, 5000).catch(error => {
+                console.error('网络请求错误:', error);
+                throw new Error('网络连接失败，请检查网络设置');
+            });
+
+            if (!response) {
+                throw new Error('无法连接到服务器');
+            }
+
+            console.log('响应状态:', response.status, response.statusText);
+
+            if (!response.ok) {
+                if (response.status === 404) {
+                    throw new Error('课程不存在');
+                } else if (response.status === 401) {
+                    throw new Error('请先登录');
+                } else if (response.status === 500) {
+                    throw new Error('服务器错误');
+                } else {
+                    throw new Error(`获取课程失败: ${response.status}`);
+                }
+            }
+
+            const data = await response.json();
+
+            if (data.success && data.data) {
+                // 新的API响应格式包含course、chapters、access等
+                const responseData = data.data;
+                currentCourse = responseData.course || responseData; // 兼容新旧格式
+                
+                // 存储章节和权限信息
+                window.courseChapters = responseData.chapters || [];
+                window.courseAccess = responseData.access || {};
+                
+                displayCourse(currentCourse);
+                
+                // 如果API已经返回章节，直接显示，否则单独加载
+                if (window.courseChapters && window.courseChapters.length > 0) {
+                    displayChapters(window.courseChapters);
+                } else {
+                    await loadChapters(courseId);
+                }
+                
+                // 并行加载相关课程和订阅状态以提高性能
+                const loadPromises = [];
+                
+                // 如果需要加载相关课程
+                if (currentCourse.categoryId) {
+                    loadPromises.push(
+                        loadRelatedCourses(courseId, currentCourse.categoryId)
+                            .catch(err => console.log('加载相关课程失败:', err))
+                    );
+                }
+                
+                // 检查订阅状态（不阻塞页面显示）
+                loadPromises.push(
+                    checkSubscriptionStatus(courseId)
+                        .catch(err => console.log('检查订阅状态失败:', err))
+                );
+                
+                // 显示内容（不等待其他请求）
+                showContent();
+                
+                // 在后台并行执行其他请求
+                Promise.all(loadPromises).then(() => {
+                    console.log('所有附加信息加载完成');
+                });
+            } else {
+                throw new Error(data.message || 'API返回数据格式不正确');
+            }
+        } catch (error) {
+            console.error('加载课程失败:', error);
+            
+            // 显示更详细的错误信息
+            if (error.message.includes('网络')) {
+                showError('网络连接失败，请检查网络并刷新页面');
+            } else if (error.message.includes('登录')) {
+                showError('请先登录再查看课程详情');
+                // 可以显示部分公开信息
+                loadMockCourseData(courseId);
+            } else {
+                showError(error.message || '加载课程失败');
+                // 尝试加载模拟数据作为后备
+                loadMockCourseData(courseId);
+            }
+        }
+    }
+
+    // 加载模拟课程数据作为后备
+    function loadMockCourseData(courseId) {
+        console.log('加载模拟数据作为后备方案');
+        const mockCourse = getMockCourse(courseId);
+        if (mockCourse) {
+            currentCourse = mockCourse;
+            displayCourse(mockCourse);
+            displayChapters(getMockChapters());
+            showContent();
+            showNotification('注意：当前显示的是演示数据', 'warning');
+        }
+    }
+
+    // 获取模拟章节数据
+    function getMockChapters() {
+        return [
+            {
+                id: 1,
+                title: '第1章：课程介绍',
+                description: '了解课程目标和学习路径',
+                is_free: true,
+                canAccess: true,
+                duration_minutes: 30
+            },
+            {
+                id: 2,
+                title: '第2章：基础知识',
+                description: '掌握必要的基础概念',
+                is_free: true,
+                canAccess: true,
+                duration_minutes: 45
+            },
+            {
+                id: 3,
+                title: '第3章：核心内容',
+                description: '深入学习核心知识点',
+                is_free: false,
+                canAccess: false,
+                duration_minutes: 60
+            }
+        ];
+    }
+
+    // 获取模拟课程数据
+    function getMockCourse(id) {
+        const courses = {
+            1: {
+                id: 1,
+                title: 'Vue3从入门到精通',
+                subtitle: '2024最新Vue3全栈开发实战',
+                description: '全面掌握Vue3核心技术，包括Composition API、TypeScript、Vite构建工具等。本课程将带你从零开始，循序渐进地学习Vue3的所有核心概念和最佳实践。',
+                instructor: '张三老师',
+                categoryId: 1,
+                categoryName: '前端开发',
+                durationHours: 40.5,
+                lessonCount: 120,
+                price: 299,
+                originalPrice: 399,
+                isFree: false,
+                difficulty: 'intermediate',
+                enrollmentCount: 1234,
+                rating: 4.8,
+                viewCount: 5678
+            },
+            2: {
+                id: 2,
+                title: 'React18实战教程',
+                subtitle: '构建企业级React应用',
+                description: '深入学习React18新特性，Hooks进阶，性能优化，状态管理等核心技术。通过实战项目掌握React开发的精髓。',
+                instructor: '李四老师',
+                categoryId: 1,
+                categoryName: '前端开发',
+                durationHours: 50,
+                lessonCount: 150,
+                price: 399,
+                originalPrice: 599,
+                isFree: false,
+                difficulty: 'advanced',
+                enrollmentCount: 2345,
+                rating: 4.9,
+                viewCount: 8901
+            }
+        };
+        return courses[id] || courses[1];
+    }
+
+    // 显示课程信息
+    function displayCourse(course) {
+        document.title = `${course.title} - AI Master Class`;
+
+        document.getElementById('courseNavTitle').textContent = course.title;
+        document.getElementById('courseTitle').textContent = course.title;
+        document.getElementById('courseSubtitle').textContent = course.subtitle || course.description;
+        document.getElementById('courseDescription').textContent = course.description;
+
+        document.getElementById('courseInstructor').textContent = course.instructor || '专业讲师团队';
+        document.getElementById('courseCategory').textContent = course.categoryName || getCategoryName(course.categoryId);
+        document.getElementById('courseDuration').textContent = `${course.durationHours || 10} 小时`;
+        document.getElementById('courseLessons').textContent = `${course.lessonCount || 20} 课时`;
+
+        document.getElementById('enrollmentCount').textContent = course.enrollmentCount || 0;
+        document.getElementById('courseRating').textContent = course.rating || 5.0;
+        document.getElementById('viewCount').textContent = course.viewCount || 0;
+        document.getElementById('difficultyLevel').textContent = getDifficultyText(course.difficulty);
+
+        if (course.isFree) {
+            document.getElementById('coursePrice').textContent = '免费';
+            document.getElementById('originalPrice').style.display = 'none';
+        } else {
+            // 添加安全检查，确保price存在且是数字
+            const price = parseFloat(course.price) || 0;
+            document.getElementById('coursePrice').textContent = `¥${price.toFixed(2)}`;
+            
+            if (course.originalPrice && course.originalPrice > price) {
+                const originalPrice = parseFloat(course.originalPrice) || 0;
+                document.getElementById('originalPrice').textContent = `¥${originalPrice.toFixed(2)}`;
+                document.getElementById('originalPrice').style.display = 'inline';
+            } else {
+                document.getElementById('originalPrice').style.display = 'none';
+            }
+        }
+
+        const imageEl = document.getElementById('courseImage');
+        if (course.coverImage) {
+            imageEl.innerHTML = `<img src="${course.coverImage}" alt="${course.title}">`;
+        }
+    }
+
+    // 获取分类名称
+    function getCategoryName(categoryId) {
+        const categories = {
+            1: '前端开发',
+            2: '后端开发',
+            3: '移动开发',
+            4: '数据库',
+            5: '人工智能',
+            6: '云计算'
+        };
+        return categories[categoryId] || 'AI课程';
+    }
+
+    // 获取难度文本
+    function getDifficultyText(difficulty) {
+        const levels = {
+            'beginner': '入门',
+            'intermediate': '进阶',
+            'advanced': '高级',
+            'expert': '专家'
+        };
+        return levels[difficulty] || '入门';
+    }
+
+    // 加载章节列表
+    async function loadChapters(courseId) {
+        try {
+            const response = await fetch(`${API_BASE}/content/courses/${courseId}/chapters`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch chapters');
+            }
+
+            const data = await response.json();
+
+            if (data.success && data.data && data.data.length > 0) {
+                displayChapters(data.data);
+            } else {
+                displayNoChapters();
+            }
+        } catch (error) {
+            console.error('Error loading chapters:', error);
+            displayNoChapters();
+        }
+    }
+
+    // 显示章节
+    function displayChapters(chapters) {
+        const chaptersList = document.getElementById('chaptersList');
+        
+        let chaptersHTML = '';
+        chapters.forEach((chapter, index) => {
+            // 检查章节访问权限
+            const canAccess = chapter.canAccess !== undefined ? chapter.canAccess : true;
+            const isLocked = chapter.locked || !canAccess;
+            const isFree = chapter.is_free || chapter.isFree;
+            const accessReason = chapter.accessReason || '';
+            
+            // 生成徽章HTML
+            let badgesHTML = '';
+            if (isFree) {
+                badgesHTML += '<span class="chapter-badge badge-free">免费试看</span>';
+            } else if (canAccess) {
+                badgesHTML += '<span class="chapter-badge badge-unlocked">已解锁</span>';
+            } else {
+                badgesHTML += '<span class="chapter-badge badge-locked">🔒 需订阅</span>';
+            }
+            badgesHTML += `<span class="chapter-badge badge-duration">${chapter.duration_minutes || chapter.durationMinutes || 30}分钟</span>`;
+            
+            // 生成章节HTML
+            chaptersHTML += `
+                <div class="chapter-item ${isLocked ? 'chapter-locked' : 'chapter-unlocked'}" 
+                     onclick="${canAccess ? `window.goToChapter('${chapter.id}')` : 'window.showSubscribePrompt()'}">
+                    <div class="chapter-header">
+                        <div class="chapter-number">第${index + 1}章</div>
+                        <div class="chapter-content">
+                            <div class="chapter-title">${chapter.title}</div>
+                            <div class="chapter-badges">
+                                ${badgesHTML}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chapter-description">${chapter.description || '本章节将深入讲解相关知识点'}</div>
+                    ${!canAccess && accessReason === '需要订阅' ? 
+                        '<div class="chapter-lock-hint">订阅课程后即可学习本章节</div>' : ''}
+                </div>
+            `;
+        });
+        
+        chaptersList.innerHTML = chaptersHTML;
+    }
+    
+    // 显示订阅提示
+    function showSubscribePrompt() {
+        if (!window.currentUser) {
+            // 未登录，提示登录
+            if (confirm('请先登录后再订阅课程')) {
+                window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
+            }
+        } else {
+            // 已登录，提示订阅
+            const subscribeSection = document.querySelector('.course-subscribe');
+            if (subscribeSection) {
+                subscribeSection.scrollIntoView({ behavior: 'smooth' });
+            }
+            alert('请订阅课程后学习完整内容');
+        }
+    }
+
+    // 显示无章节消息
+    function displayNoChapters() {
+        const chaptersList = document.getElementById('chaptersList');
+        chaptersList.innerHTML = `
+            <div class="no-chapters-message" style="text-align: center; padding: 3rem 2rem; color: var(--gray-500);">
+                <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">📚</div>
+                <h3 style="color: var(--gray-600); margin-bottom: 1rem; font-size: 1.2rem;">暂无章节内容</h3>
+                <p style="line-height: 1.6; color: var(--gray-500);">
+                    该课程暂无可用章节，请联系客服了解详情。
+                </p>
+                <button onclick="loadChapters(${new URLSearchParams(window.location.search).get('id') || 1})" 
+                        style="margin-top: 1.5rem; padding: 0.8rem 1.5rem; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer;">
+                    重新加载章节
+                </button>
+            </div>
+        `;
+    }
+
+    // 加载相关课程
+    async function loadRelatedCourses(currentCourseId, categoryId) {
+        try {
+            const relatedList = document.getElementById('relatedCoursesList');
+            if (!relatedList) return;
+
+            // 通过分类获取相关课程
+            let apiUrl = `${API_BASE}/courses`;
+            const params = new URLSearchParams({
+                page: 1,
+                size: 6  // 最多显示6个相关课程
+            });
+
+            // 如果有分类ID，按分类筛选
+            if (categoryId) {
+                params.append('categoryId', categoryId);
+            }
+
+            const response = await fetch(`${apiUrl}?${params}`);
+            
+            if (!response.ok) {
+                throw new Error('Failed to fetch related courses');
+            }
+
+            const data = await response.json();
+            
+            if (data.success && data.data && data.data.length > 0) {
+                // 过滤掉当前课程
+                const relatedCourses = data.data.filter(course => course.id != currentCourseId).slice(0, 4);
+                
+                if (relatedCourses.length > 0) {
+                    displayRelatedCourses(relatedCourses);
+                } else {
+                    hideRelatedCoursesSection();
+                }
+            } else {
+                // 如果没有同分类的课程，获取其他课程
+                await loadGeneralRelatedCourses(currentCourseId);
+            }
+        } catch (error) {
+            console.error('Error loading related courses:', error);
+            await loadGeneralRelatedCourses(currentCourseId);
+        }
+    }
+
+    // 加载通用相关课程（当没有同分类课程时）
+    async function loadGeneralRelatedCourses(currentCourseId) {
+        try {
+            const response = await fetch(`${API_BASE}/courses?page=1&size=6`);
+            
+            if (response.ok) {
+                const data = await response.json();
+                
+                if (data.success && data.data && data.data.length > 0) {
+                    const relatedCourses = data.data.filter(course => course.id != currentCourseId).slice(0, 4);
+                    
+                    if (relatedCourses.length > 0) {
+                        displayRelatedCourses(relatedCourses);
+                    } else {
+                        hideRelatedCoursesSection();
+                    }
+                } else {
+                    hideRelatedCoursesSection();
+                }
+            } else {
+                hideRelatedCoursesSection();
+            }
+        } catch (error) {
+            console.error('Error loading general related courses:', error);
+            hideRelatedCoursesSection();
+        }
+    }
+
+    // 显示相关课程
+    function displayRelatedCourses(courses) {
+        const relatedList = document.getElementById('relatedCoursesList');
+        if (!relatedList) return;
+
+        const coursesHTML = courses.map(course => {
+            const difficultyMap = {
+                'beginner': '入门',
+                'intermediate': '进阶', 
+                'advanced': '高级'
+            };
+            const difficulty = difficultyMap[course.difficulty] || '入门';
+            const price = parseFloat(course.price || 0);
+
+            return `
+                <div class="related-course-card" onclick="goToRelatedCourse(${course.id})">
+                    <div class="related-course-image">
+                        ${course.coverImage ? 
+                            `<img src="${course.coverImage}" alt="${course.title}" 
+                                 onerror="this.style.display='none'; this.parentElement.innerHTML='🎓';">` :
+                            '🎓'
+                        }
+                    </div>
+                    <div class="related-course-content">
+                        <div class="related-course-title">${course.title || '未命名课程'}</div>
+                        <div class="related-course-price">
+                            ${course.isFree || price === 0 ? '免费' : `¥${price.toFixed(2)}`}
+                        </div>
+                        <div class="related-course-meta">
+                            <span class="related-course-difficulty">${difficulty}</span>
+                            <span>${course.enrollmentCount || 0}人学习</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        relatedList.innerHTML = coursesHTML;
+    }
+
+    // 隐藏相关课程部分
+    function hideRelatedCoursesSection() {
+        const section = document.getElementById('relatedCoursesSection');
+        if (section) {
+            section.style.display = 'none';
+        }
+    }
+
+    // 跳转到相关课程详情页
+    function goToRelatedCourse(courseId) {
+        window.location.href = `course-detail.html?id=${courseId}`;
+    }
+
+    // 检查订阅状态
+    async function checkSubscriptionStatus(courseId) {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            // 用户未登录，这是正常状态，不需要检查订阅
+            updateEnrollButton(false);
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE}/subscriptions/access/course/${courseId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success) {
+                    isSubscribed = data.data && data.data.hasAccess === true;
+                    updateEnrollButton(isSubscribed);
+                    console.log('订阅状态检查:', { courseId, hasAccess: isSubscribed });
+                } else {
+                    // API返回失败，但不是错误
+                    updateEnrollButton(false);
+                }
+            } else if (response.status === 401) {
+                // 401是预期的状态（token过期或无效），静默处理
+                console.log('用户认证已过期，需要重新登录');
+                updateEnrollButton(false);
+                // 可选：清除过期的token
+                // localStorage.removeItem('token');
+                // localStorage.removeItem('user');
+            } else if (response.status === 403) {
+                // 403表示无权限，也是正常状态
+                console.log('用户无权限访问此课程');
+                updateEnrollButton(false);
+            } else {
+                // 其他HTTP错误才记录
+                console.warn('订阅状态检查返回异常:', response.status);
+                updateEnrollButton(false);
+            }
+        } catch (error) {
+            // 网络错误等异常，降级处理
+            console.log('订阅状态检查失败，使用默认状态');
+            updateEnrollButton(false);
+        }
+    }
+
+    // 更新报名按钮状态
+    function updateEnrollButton(subscribed) {
+        const enrollBtn = document.getElementById('enrollBtn');
+        const subscriptionStatus = document.getElementById('subscriptionStatus');
+        const statusIcon = document.getElementById('statusIcon');
+        const statusText = document.getElementById('statusText');
+
+        if (subscriptionStatus) {
+            subscriptionStatus.style.display = 'inline-flex';
+
+            if (subscribed) {
+                subscriptionStatus.className = 'subscription-status subscribed';
+                statusIcon.textContent = '✓';
+                statusText.textContent = '已订阅';
+            } else {
+                subscriptionStatus.className = 'subscription-status not-subscribed';
+                statusIcon.textContent = '⚡';
+                statusText.textContent = '未订阅';
+            }
+        }
+
+        if (!enrollBtn) return;
+
+        if (subscribed) {
+            enrollBtn.textContent = '开始学习';
+            enrollBtn.style.background = 'linear-gradient(135deg, #10B981, #14B8A6)';
+            enrollBtn.onclick = function() {
+                startLearning();
+            };
+        } else {
+            enrollBtn.textContent = currentCourse && currentCourse.isFree ? '免费学习' : '立即报名';
+            enrollBtn.style.background = 'linear-gradient(135deg, #6366F1, #EC4899)';
+            enrollBtn.onclick = enrollCourse;
+        }
+    }
+
+    // 报名课程
+    async function enrollCourse() {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            showNotification('请先登录', 'error');
+            setTimeout(() => {
+                window.location.href = `login.html?returnUrl=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+            }, 1500);
+            return;
+        }
+
+        if (!currentCourse) {
+            showNotification('课程信息加载失败', 'error');
+            return;
+        }
+
+        if (currentCourse.isFree) {
+            // 免费课程直接订阅
+            try {
+                const formData = new FormData();
+                formData.append('subscribableType', 'course');
+                formData.append('subscribableId', currentCourse.id);
+                formData.append('paymentMethod', 'free');
+                
+                const response = await fetch(`${API_BASE}/subscriptions/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification('订阅成功！');
+                    isSubscribed = true;
+                    updateEnrollButton(true);
+                } else {
+                    showNotification(data.message || '订阅失败，请重试', 'error');
+                }
+            } catch (error) {
+                console.error('订阅失败:', error);
+                showNotification('网络错误，请稍后重试', 'error');
+            }
+        } else {
+            // 付费课程跳转到支付页面
+            window.location.href = `payment.html?courseId=${currentCourse.id}&price=${currentCourse.price}`;
+        }
+    }
+
+    // 加入收藏
+    async function addToWishlist() {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            showNotification('请先登录', 'error');
+            setTimeout(() => {
+                window.location.href = `login.html?returnUrl=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+            }, 1500);
+            return;
+        }
+
+        if (!currentCourse) {
+            showNotification('课程信息加载失败', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE}/wishlist`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    courseId: currentCourse.id
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showNotification('已加入收藏！');
+            } else if (data.code === 409) {
+                showNotification('课程已在收藏列表中');
+            } else {
+                showNotification(data.message || '收藏失败，请重试', 'error');
+            }
+        } catch (error) {
+            console.error('收藏失败:', error);
+            showNotification('网络错误，请稍后重试', 'error');
+        }
+    }
+
+    // 前往章节 - 使用blob方式打开
+    function goToChapter(chapterId) {
+        // 检查章节是否存在
+        const chapter = window.courseChapters?.find(ch => ch.id == chapterId);
+        if (!chapter) {
+            showNotification('章节不存在', 'error');
+            return;
+        }
+        
+        // 检查章节访问权限
+        if (chapter.canAccess !== false) {
+            loadChapterContent(chapterId);
+        } else {
+            showNotification('请先订阅课程才能学习', 'error');
+        }
+    }
+    
+    // 暴露函数到全局作用域
+    window.goToChapter = goToChapter;
+    window.showSubscribePrompt = showSubscribePrompt;
+    window.loadChapterContent = loadChapterContent;
+
+    // 显示加载状态
+    function showLoading() {
+        document.getElementById('loadingState').style.display = 'flex';
+        document.getElementById('errorState').style.display = 'none';
+        document.getElementById('courseContent').style.display = 'none';
+    }
+
+    // 显示内容
+    function showContent() {
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('errorState').style.display = 'none';
+        document.getElementById('courseContent').style.display = 'block';
+    }
+
+    // 显示错误
+    function showError(message) {
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('courseContent').style.display = 'none';
+        document.getElementById('errorState').style.display = 'block';
+        if (message) {
+            document.querySelector('#errorState p').textContent = message;
+        }
+    }
+
+    // 切换用户菜单
+    function toggleUserMenu(event) {
+        if (event) {
+            event.stopPropagation();
+        }
+        const dropdown = document.getElementById('userDropdown');
+        const container = document.querySelector('.user-menu-container');
+        if (dropdown && container) {
+            dropdown.classList.toggle('show');
+            container.classList.toggle('active');
+        }
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        const userMenu = document.querySelector('.user-menu-container');
+        if (userMenu && !userMenu.contains(event.target)) {
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown) {
+                dropdown.classList.remove('show');
+                userMenu.classList.remove('active');
+            }
+        }
+    });
+
+    // 退出登录
+    function handleLogout() {
+        logout();
+    }
+    
+    function logout() {
+        if (confirm('确定要退出登录吗？')) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/home.html';
+        }
+    }
+
+    // Load user info for dropdown
+    async function loadUserInfo() {
+        try {
+            const savedUser = localStorage.getItem('user');
+            let user = null;
+            
+            // Try to get from API first
+            if (localStorage.getItem('token')) {
+                try {
+                    const response = await fetch(`${API_BASE}/user/profile`, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.success && data.data) {
+                            user = data.data.user || data.data;
+                        }
+                    }
+                } catch (error) {
+                    console.log('Using cached user data');
+                }
+            }
+            
+            // Fallback to saved user
+            if (!user && savedUser) {
+                user = JSON.parse(savedUser);
+            }
+            
+            if (user) {
+                // Update UI
+                document.getElementById('userName').textContent = user.nickname || user.username || '用户';
+                const avatar = document.getElementById('userAvatar');
+                if (user.avatar) {
+                    avatar.innerHTML = `<img src="${user.avatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+                } else {
+                    avatar.textContent = (user.nickname || user.username || 'U').charAt(0).toUpperCase();
+                }
+            }
+        } catch (error) {
+            console.error('Failed to load user info:', error);
+        }
+    }
+
+    // 开始学习 - 打开第一个章节
+    async function startLearning() {
+        try {
+            const response = await fetch(`${API_BASE}/content/courses/${currentCourse.id}/chapters`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch chapters');
+            }
+
+            const data = await response.json();
+
+            if (data.success && data.data && data.data.length > 0) {
+                // 打开第一个章节的内容
+                loadChapterContent(data.data[0].id);
+            } else {
+                showNotification('暂无可学习的章节', 'error');
+            }
+        } catch (error) {
+            console.error('Error starting learning:', error);
+            showNotification('获取章节列表失败', 'error');
+        }
+    }
+    
+    // 加载章节内容函数 
+    async function loadChapterContent(chapterId) {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${API_BASE}/content/chapters/${chapterId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token || ''}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data.success && data.data) {
+                const chapterData = data.data;
+                
+                // 获取章节标题和内容
+                const chapterTitle = (chapterData.chapter && chapterData.chapter.title) || '章节内容';
+                let contentHtml = '';
+                
+                if (chapterData.content && chapterData.content.contentHtml) {
+                    contentHtml = chapterData.content.contentHtml;
+                } else if (chapterData.chapter && chapterData.chapter.description) {
+                    contentHtml = '<h1>' + chapterTitle + '</h1><p>' + chapterData.chapter.description + '</p>';
+                } else {
+                    contentHtml = '<h1>' + chapterTitle + '</h1><h3>暂无内容</h3><p>该章节内容正在准备中，敬请期待！</p>';
+                }
+
+                // 使用blob方式显示章节内容
+                const baseTag = '<base href="' + window.location.origin + '/">';
+                
+                // 基础库（样式和JS库）
+                const libraries = `
+                    <!-- 基础样式库 -->
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+                    
+                    <!-- Tailwind CSS 用于章节内容样式 -->
+                    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+                    
+                    <!-- JavaScript库 -->
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"><\/script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"><\/script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"><\/script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"><\/script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"><\/script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"><\/script>
+                    
+                    <!-- GSAP动画库 -->
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"><\/script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"><\/script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"><\/script>
+                    
+                    <!-- Three.js 3D库 - 可选，按需加载 -->
+                    <!-- 注意: Three.js不是必需的，只在特定章节需要时才会加载 -->
+                    
+                    <!-- Chart.js 图表库 -->
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"><\/script>
+                    
+                    <!-- 其他常用库 -->
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.16/typed.umd.js"><\/script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"><\/script>
+                    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"><\/script>
+                `;
+                
+                // 辅助脚本（提供基础功能，不覆盖章节函数）
+                const helperScript = `
+                    <script>
+                        // 定义常用的全局变量，防止未定义错误
+                        window.functionType = window.functionType || 'quadratic';
+                        window.learningRate = window.learningRate || 0.01;
+                        
+                        // 定义缺失的函数
+                        if (typeof window.initGradientDescent2D === 'undefined') {
+                            window.initGradientDescent2D = function() {
+                                console.log('initGradientDescent2D called - placeholder function');
+                                // 提供一个空实现，防止报错
+                            };
+                        }
+                        
+                        if (typeof window.changeGDFunction === 'undefined') {
+                            window.changeGDFunction = function(type) {
+                                window.functionType = type;
+                                console.log('Changed function type to:', type);
+                            };
+                        }
+                        
+                        if (typeof window.startGD2D === 'undefined') {
+                            window.startGD2D = function() {
+                                console.log('startGD2D called - placeholder function');
+                            };
+                        }
+                        
+                        if (typeof window.resetGD2D === 'undefined') {
+                            window.resetGD2D = function() {
+                                console.log('resetGD2D called - placeholder function');
+                            };
+                        }
+                        
+                        // 立即拦截所有链接点击，防止导航
+                        document.addEventListener('click', function(e) {
+                            // 获取点击的链接元素
+                            const link = e.target.closest('a');
+                            if (link) {
+                                const href = link.getAttribute('href');
+                                console.log('Link clicked:', href);
+                                
+                                // 处理所有类型的链接
+                                if (href) {
+                                    // 锚点链接 - 页内跳转
+                                    if (href.startsWith('#')) {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        const targetId = href.substring(1);
+                                        const target = document.getElementById(targetId);
+                                        if (target) {
+                                            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                            console.log('Scrolled to:', targetId);
+                                        } else {
+                                            console.warn('Target not found:', targetId);
+                                        }
+                                        return false;
+                                    }
+                                    
+                                    // 阻止所有外部导航
+                                    if (!href.startsWith('javascript:') && !href.startsWith('blob:')) {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        console.log('Blocked external navigation to:', href);
+                                        return false;
+                                    }
+                                }
+                            }
+                            
+                            // 处理onclick属性的元素
+                            if (e.target.hasAttribute('onclick')) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                const onclickCode = e.target.getAttribute('onclick');
+                                console.log('Executing onclick:', onclickCode);
+                                try {
+                                    // 在当前window上下文中执行onclick代码
+                                    const func = new Function(onclickCode);
+                                    func.call(e.target);
+                                } catch (error) {
+                                    console.error('Error executing onclick:', error);
+                                }
+                                return false;
+                            }
+                        }, true); // 使用捕获阶段，最早拦截
+                        
+                        // 等待页面加载完成后初始化其他功能
+                        window.addEventListener('DOMContentLoaded', function() {
+                            // 初始化代码高亮
+                            if (typeof hljs !== 'undefined') {
+                                hljs.highlightAll();
+                            }
+                            
+                            // 初始化数学公式
+                            if (typeof renderMathInElement !== 'undefined') {
+                                renderMathInElement(document.body, {
+                                    delimiters: [
+                                        {left: '$$', right: '$$', display: true},
+                                        {left: '$', right: '$', display: false},
+                                        {left: '\\\\\\\\(', right: '\\\\\\\\)', display: false},
+                                        {left: '\\\\\\\\[', right: '\\\\\\\\]', display: true}
+                                    ],
+                                    throwOnError: false
+                                });
+                            }
+                            
+                            // 修复所有目录链接，确保它们是锚点链接
+                            const tocLinks = document.querySelectorAll('.toc a, .table-of-contents a, nav a, .nav a, .sidebar a');
+                            tocLinks.forEach(link => {
+                                const href = link.getAttribute('href');
+                                if (href && !href.startsWith('#') && !href.startsWith('javascript:')) {
+                                    // 尝试从href中提取锚点
+                                    const hashIndex = href.indexOf('#');
+                                    if (hashIndex !== -1) {
+                                        // 如果有锚点部分，只保留锚点
+                                        link.setAttribute('href', href.substring(hashIndex));
+                                        console.log('Fixed TOC link:', href, '->', href.substring(hashIndex));
+                                    } else {
+                                        // 没有锚点，禁用链接
+                                        link.setAttribute('href', 'javascript:void(0)');
+                                        console.log('Disabled non-anchor TOC link:', href);
+                                    }
+                                }
+                            });
+                            
+                            // 确保章节函数可用
+                            console.log('Checking for chapter functions...');
+                            if (typeof window.changeGDFunction !== 'undefined') {
+                                console.log('✓ changeGDFunction is defined');
+                            }
+                            if (typeof window.startGD2D !== 'undefined') {
+                                console.log('✓ startGD2D is defined');
+                            }
+                            if (typeof window.resetGD2D !== 'undefined') {
+                                console.log('✓ resetGD2D is defined');
+                            }
+                        });
+                    <\/script>
+                `;
+                
+                // 处理HTML内容
+                let processedHtml = contentHtml;
+                
+                // 如果内容看起来是Markdown或纯文本，转换为HTML
+                if (!processedHtml.includes('<') || processedHtml.indexOf('<') > 100) {
+                    // 可能是纯文本或Markdown，添加基本HTML包装
+                    processedHtml = `
+                        <div class="container mx-auto px-4 py-8">
+                            <div class="prose lg:prose-xl max-w-none">
+                                ${processedHtml.replace(/\n/g, '<br>')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // 创建一个全屏的模态框来显示内容
+                const modal = document.createElement('div');
+                modal.id = 'chapterContentModal';
+                modal.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    background: white;
+                    z-index: 10000;
+                    overflow: hidden; /* modal本身不滚动 */
+                    display: flex;
+                    flex-direction: column;
+                    box-sizing: border-box; /* 确保padding不会导致溢出 */
+                `;
+                
+                // 创建加载指示器（不添加到modal，避免干扰iframe）
+                const loadingDiv = document.createElement('div');
+                loadingDiv.id = 'chapterLoadingIndicator';
+                loadingDiv.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    text-align: center;
+                    z-index: 10002;
+                    padding: 20px;
+                    background: rgba(255, 255, 255, 0.95);
+                    border-radius: 8px;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                    pointer-events: none; /* 关键：防止鼠标事件干扰 */
+                    transition: opacity 0.3s ease;
+                `;
+                loadingDiv.innerHTML = `
+                    <div style="margin-bottom: 10px;">
+                        <div style="width: 40px; height: 40px; border: 3px solid #f3f4f6; border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;"></div>
+                    </div>
+                    <div style="color: #6b7280;">正在加载章节内容...</div>
+                    <style>
+                        @keyframes spin {
+                            to { transform: rotate(360deg); }
+                        }
+                    </style>
+                `;
+                document.body.appendChild(loadingDiv);
+                
+                // 3秒后自动移除加载指示器（备用机制）
+                setTimeout(() => {
+                    const indicator = document.getElementById('chapterLoadingIndicator');
+                    if (indicator && indicator.parentNode) {
+                        indicator.style.opacity = '0';
+                        setTimeout(() => indicator.remove(), 300);
+                    }
+                }, 3000);
+                
+                // 创建关闭按钮
+                const closeBtn = document.createElement('button');
+                closeBtn.innerHTML = '✕ 关闭';
+                closeBtn.style.cssText = `
+                    position: absolute; /* 改为absolute，相对于modal定位 */
+                    top: 10px;
+                    right: 10px;
+                    z-index: 10001;
+                    padding: 10px 20px;
+                    background: #ef4444;
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-size: 16px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                `;
+                closeBtn.onclick = () => {
+                    // 恢复背景页面滚动
+                    document.body.style.overflow = '';
+                    // 移除模态框和加载指示器
+                    const indicator = document.getElementById('chapterLoadingIndicator');
+                    if (indicator) indicator.remove();
+                    if (modal && modal.parentNode) modal.remove();
+                };
+                
+                // 创建iframe来显示内容（不设置sandbox，允许完全JS执行）
+                const iframe = document.createElement('iframe');
+                iframe.style.cssText = `
+                    width: 100%;
+                    height: 100%;
+                    border: none;
+                    flex: 1; /* 占满剩余空间 */
+                    overflow: auto; /* 允许滚动 */
+                `;
+                // 关键：不设置sandbox属性，允许所有操作
+                
+                modal.appendChild(closeBtn);
+                modal.appendChild(iframe);
+                
+                // 添加modal到页面
+                document.body.appendChild(modal);
+                
+                // 禁止背景页面滚动
+                document.body.style.overflow = 'hidden';
+                
+                // 创建预注入的函数定义脚本
+                const functionDefinitions = `
+                <script>
+                    // 立即定义所有需要的全局函数和变量
+                    console.log('Defining global functions for chapter content...');
+                    
+                    // 创建THREE的占位符对象，避免未定义错误
+                    window.THREE = window.THREE || {
+                        Scene: function() { return { add: function(){}, remove: function(){} }; },
+                        PerspectiveCamera: function() { return { position: {set: function(){}, x:0, y:0, z:0}, lookAt: function(){} }; },
+                        OrthographicCamera: function() { return { position: {set: function(){}, x:0, y:0, z:0}, lookAt: function(){}, updateProjectionMatrix: function(){} }; },
+                        WebGLRenderer: function(opts) { return { setSize: function(){}, render: function(){}, setPixelRatio: function(){}, domElement: document.createElement('canvas') }; },
+                        BoxGeometry: function() { return {}; },
+                        SphereGeometry: function() { return {}; },
+                        PlaneGeometry: function() { return {}; },
+                        CylinderGeometry: function() { return {}; },
+                        MeshBasicMaterial: function() { return {}; },
+                        MeshPhongMaterial: function() { return {}; },
+                        MeshLambertMaterial: function() { return {}; },
+                        Mesh: function() { return { position: {set: function(){}, x:0, y:0, z:0}, rotation: {x:0, y:0, z:0} }; },
+                        Vector3: function(x,y,z) { 
+                            const vec = { 
+                                x: x||0, 
+                                y: y||0, 
+                                z: z||0, 
+                                set: function(x,y,z) { this.x=x; this.y=y; this.z=z; return this; },
+                                normalize: function() { 
+                                    const len = Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z);
+                                    if(len > 0) { this.x/=len; this.y/=len; this.z/=len; }
+                                    return this; 
+                                },
+                                cross: function(v) { return new window.THREE.Vector3(this.y*v.z-this.z*v.y, this.z*v.x-this.x*v.z, this.x*v.y-this.y*v.x); },
+                                dot: function(v) { return this.x*v.x + this.y*v.y + this.z*v.z; },
+                                clone: function() { return new window.THREE.Vector3(this.x, this.y, this.z); },
+                                copy: function(v) { this.x=v.x; this.y=v.y; this.z=v.z; return this; },
+                                add: function(v) { this.x+=v.x; this.y+=v.y; this.z+=v.z; return this; },
+                                sub: function(v) { this.x-=v.x; this.y-=v.y; this.z-=v.z; return this; },
+                                multiplyScalar: function(s) { this.x*=s; this.y*=s; this.z*=s; return this; },
+                                length: function() { return Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z); }
+                            };
+                            return vec;
+                        },
+                        Vector2: function(x,y) { 
+                            return { 
+                                x: x||0, 
+                                y: y||0, 
+                                set: function(x,y) { this.x=x; this.y=y; return this; },
+                                clone: function() { return new window.THREE.Vector2(this.x, this.y); }
+                            };
+                        },
+                        Color: function(c) { return { r:1, g:1, b:1 }; },
+                        DirectionalLight: function() { return { position: { set: function(){} } }; },
+                        AmbientLight: function() { return {}; },
+                        PointLight: function() { return { position: { set: function(){} } }; },
+                        Group: function() { return { add: function(){}, remove: function(){}, rotation: {x:0, y:0, z:0}, position: {x:0, y:0, z:0} }; },
+                        Clock: function() { return { getElapsedTime: function() { return 0; }, getDelta: function() { return 0; } }; },
+                        BufferGeometry: function() { return { setAttribute: function(){}, setIndex: function(){} }; },
+                        BufferAttribute: function() { return {}; },
+                        Float32BufferAttribute: function() { return {}; },
+                        PointsMaterial: function() { return {}; },
+                        Points: function() { return {}; },
+                        LineBasicMaterial: function() { return {}; },
+                        LineDashedMaterial: function() { return {}; },
+                        Line: function() { return { geometry: {}, material: {} }; },
+                        LineSegments: function() { return {}; },
+                        Raycaster: function() { return { setFromCamera: function(){}, intersectObjects: function(){return [];} }; },
+                        ArrowHelper: function(dir, origin, length, color) { 
+                            return { 
+                                position: origin || {x:0, y:0, z:0}, 
+                                setDirection: function(d) { this.direction = d; },
+                                setLength: function(l) { this.length = l; },
+                                setColor: function(c) { this.color = c; },
+                                direction: dir || {x:1, y:0, z:0},
+                                length: length || 1,
+                                color: color || 0xffffff
+                            }; 
+                        },
+                        GridHelper: function() { return {}; },
+                        AxesHelper: function() { return {}; },
+                        OrbitControls: function() { return { update: function(){}, enableDamping: false, dampingFactor: 0.05 }; },
+                        Quaternion: function() { return { x:0, y:0, z:0, w:1 }; },
+                        Matrix4: function() { return { makeRotationX: function(){return this;}, makeRotationY: function(){return this;}, makeRotationZ: function(){return this;} }; },
+                        Object3D: function() { return { add: function(){}, remove: function(){}, position: {x:0, y:0, z:0}, rotation: {x:0, y:0, z:0} }; },
+                        REVISION: '160'
+                    };
+                    console.log('THREE.js stub created to prevent errors');
+                    
+                    // 初始化全局变量
+                    window.functionType = window.functionType || 'quadratic';
+                    window.learningRate = window.learningRate || 0.1;
+                    window.iterations = window.iterations || 100;
+                    window.regularizationType = window.regularizationType || 'none';
+                    window.regularizationLambda = window.regularizationLambda || 0.1;
+                    
+                    // 定义初始化canvas相关的函数
+                    window.initCanvases = function() {
+                        console.log('Initializing canvases...');
+                        // 初始化所有canvas元素
+                        const canvases = document.querySelectorAll('canvas');
+                        canvases.forEach(canvas => {
+                            if (!canvas.getContext) return;
+                            const ctx = canvas.getContext('2d');
+                            if (ctx && canvas.width === 0) {
+                                canvas.width = canvas.offsetWidth || 400;
+                                canvas.height = canvas.offsetHeight || 300;
+                            }
+                        });
+                        
+                        // 调用各种可视化初始化函数（如果存在）
+                        if (typeof window.initDotProductVisualization === 'function') {
+                            try { window.initDotProductVisualization(); } catch(e) { console.log('Dot product viz skipped'); }
+                        }
+                        if (typeof window.initGradientDescent === 'function') {
+                            try { window.initGradientDescent(); } catch(e) { console.log('Gradient descent viz skipped'); }
+                        }
+                        if (typeof window.initMatrixVisualization === 'function') {
+                            try { window.initMatrixVisualization(); } catch(e) { console.log('Matrix viz skipped'); }
+                        }
+                    };
+                    
+                    // 点积可视化函数（使用2D Canvas而不是THREE.js）
+                    window.initDotProductVisualization = function() {
+                        console.log('Initializing dot product visualization (2D mode)...');
+                        const canvas = document.getElementById('dotProductCanvas') || 
+                                      document.getElementById('vectorCanvas') ||
+                                      document.querySelector('canvas[data-viz="dotproduct"]');
+                        
+                        if (canvas && canvas.getContext) {
+                            const ctx = canvas.getContext('2d');
+                            if (!ctx) return;
+                            
+                            // 确保canvas有尺寸
+                            if (canvas.width === 0) {
+                                canvas.width = canvas.offsetWidth || 500;
+                                canvas.height = canvas.offsetHeight || 400;
+                            }
+                            
+                            // 清空画布
+                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                            
+                            // 绘制背景
+                            ctx.fillStyle = '#f8f9fa';
+                            ctx.fillRect(0, 0, canvas.width, canvas.height);
+                            
+                            // 绘制坐标轴
+                            ctx.strokeStyle = '#dee2e6';
+                            ctx.lineWidth = 1;
+                            ctx.beginPath();
+                            ctx.moveTo(0, canvas.height/2);
+                            ctx.lineTo(canvas.width, canvas.height/2);
+                            ctx.moveTo(canvas.width/2, 0);
+                            ctx.lineTo(canvas.width/2, canvas.height);
+                            ctx.stroke();
+                            
+                            // 绘制示例向量
+                            const centerX = canvas.width / 2;
+                            const centerY = canvas.height / 2;
+                            
+                            // 向量1 (蓝色)
+                            ctx.strokeStyle = '#0066cc';
+                            ctx.lineWidth = 3;
+                            ctx.beginPath();
+                            ctx.moveTo(centerX, centerY);
+                            ctx.lineTo(centerX + 100, centerY - 80);
+                            ctx.stroke();
+                            
+                            // 向量2 (红色)
+                            ctx.strokeStyle = '#cc0000';
+                            ctx.beginPath();
+                            ctx.moveTo(centerX, centerY);
+                            ctx.lineTo(centerX + 120, centerY + 60);
+                            ctx.stroke();
+                            
+                            // 添加标签
+                            ctx.fillStyle = '#333';
+                            ctx.font = '14px Arial';
+                            ctx.fillText('Vector A', centerX + 105, centerY - 85);
+                            ctx.fillText('Vector B', centerX + 125, centerY + 65);
+                            
+                            console.log('Dot product visualization rendered (2D)');
+                        }
+                    };
+                    window.currentFunction = window.currentFunction || 'quadratic';
+                    
+                    // 初始化函数 - 兼容多种调用方式
+                    window.initGradientDescent2D = function() {
+                        console.log('initGradientDescent2D called');
+                        window.functionType = window.functionType || 'quadratic';
+                        if (window.drawGradientDescentCanvas) {
+                            window.drawGradientDescentCanvas();
+                        }
+                    };
+                    
+                    // 改变函数类型
+                    window.changeGDFunction = function(type) {
+                        window.functionType = type || window.functionType;
+                        window.currentFunction = type || window.currentFunction;
+                        console.log('Changed function type to:', window.functionType);
+                        if (window.resetGD2D) window.resetGD2D();
+                        if (window.drawGradientDescentCanvas) {
+                            window.drawGradientDescentCanvas();
+                        }
+                    };
+                    
+                    // 选择函数类型（另一种调用方式）
+                    window.selectFunction = function(type) {
+                        window.changeGDFunction(type);
+                    };
+                    
+                    // 更新函数类型
+                    window.updateFunctionType = function(selectElement) {
+                        if (selectElement && selectElement.value) {
+                            window.changeGDFunction(selectElement.value);
+                        }
+                    };
+                    
+                    // 开始梯度下降
+                    window.startGD2D = function() {
+                        console.log('startGD2D called');
+                        if (!window.gdState.running) {
+                            window.gdState.running = true;
+                            window.animateGradientDescent();
+                        }
+                    };
+                    
+                    // 开始动画（兼容）
+                    window.startAnimation = function() {
+                        window.startGD2D();
+                    };
+                    
+                    // 重置梯度下降
+                    window.resetGD2D = function() {
+                        console.log('resetGD2D called');
+                        window.gdState = { x: -2, y: 2, path: [], running: false };
+                        if (window.gdAnimationId) {
+                            cancelAnimationFrame(window.gdAnimationId);
+                            window.gdAnimationId = null;
+                        }
+                        if (window.drawGradientDescentCanvas) {
+                            window.drawGradientDescentCanvas();
+                        }
+                    };
+                    
+                    // 重置动画（兼容）
+                    window.resetAnimation = function() {
+                        window.resetGD2D();
+                    };
+                    
+                    window.animateGradientDescent = function() {
+                        if (!window.gdState.running) return;
+                        
+                        const learningRate = window.learningRate || 0.1;
+                        const gradX = 2 * window.gdState.x;
+                        const gradY = 2 * window.gdState.y;
+                        
+                        window.gdState.x -= learningRate * gradX;
+                        window.gdState.y -= learningRate * gradY;
+                        window.gdState.path.push({x: window.gdState.x, y: window.gdState.y});
+                        
+                        window.drawGradientDescentCanvas();
+                        
+                        if (Math.abs(window.gdState.x) > 0.01 || Math.abs(window.gdState.y) > 0.01) {
+                            window.gdAnimationId = requestAnimationFrame(window.animateGradientDescent);
+                        } else {
+                            window.gdState.running = false;
+                        }
+                    };
+                    
+                    window.drawGradientDescentCanvas = function() {
+                        // 尝试多个可能的canvas ID
+                        const canvas = document.getElementById('gradientDescent2D') || 
+                                      document.getElementById('gd-2d-canvas') || 
+                                      document.getElementById('gradient-canvas') ||
+                                      document.querySelector('canvas[data-gradient]');
+                        if (!canvas) {
+                            // 不要警告，静默返回（canvas可能还未创建）
+                            return;
+                        }
+                        
+                        // 确保canvas有正确的尺寸
+                        if (canvas.width === 0 || canvas.height === 0) {
+                            canvas.width = canvas.offsetWidth || 500;
+                            canvas.height = canvas.offsetHeight || 400;
+                        }
+                        
+                        const ctx = canvas.getContext('2d');
+                        if (!ctx) {
+                            console.error('Failed to get 2D context for canvas');
+                            return;
+                        }
+                        
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        
+                        // 绘制等高线
+                        ctx.strokeStyle = 'rgba(100, 100, 255, 0.3)';
+                        for (let r = 0.5; r <= 3; r += 0.5) {
+                            ctx.beginPath();
+                            ctx.arc(canvas.width/2, canvas.height/2, r * 50, 0, Math.PI * 2);
+                            ctx.stroke();
+                        }
+                        
+                        // 绘制路径
+                        if (window.gdState && window.gdState.path.length > 0) {
+                            ctx.strokeStyle = '#ff6b6b';
+                            ctx.lineWidth = 2;
+                            ctx.beginPath();
+                            window.gdState.path.forEach((point, i) => {
+                                const x = canvas.width/2 + point.x * 50;
+                                const y = canvas.height/2 - point.y * 50;
+                                if (i === 0) ctx.moveTo(x, y);
+                                else ctx.lineTo(x, y);
+                            });
+                            ctx.stroke();
+                        }
+                        
+                        // 绘制当前位置
+                        if (window.gdState) {
+                            ctx.fillStyle = '#ff6b6b';
+                            ctx.beginPath();
+                            ctx.arc(canvas.width/2 + window.gdState.x * 50, canvas.height/2 - window.gdState.y * 50, 5, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                    };
+                    
+                    // 对比函数
+                    window.startGDComparison = function() {
+                        console.log('startGDComparison called');
+                        const canvas = document.getElementById('gdComparison');
+                        if (canvas) {
+                            const ctx = canvas.getContext('2d');
+                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                            ctx.fillStyle = '#4ecdc4';
+                            ctx.fillRect(50, 100, 100, 200);
+                            ctx.fillStyle = '#ff6b6b';
+                            ctx.fillRect(200, 150, 100, 150);
+                            ctx.fillStyle = '#95e1d3';
+                            ctx.fillRect(350, 120, 100, 180);
+                            ctx.fillStyle = 'white';
+                            ctx.font = '14px Arial';
+                            ctx.fillText('BGD', 80, 320);
+                            ctx.fillText('SGD', 230, 320);
+                            ctx.fillText('Mini-batch', 365, 320);
+                        }
+                    };
+                    
+                    window.resetGDComparison = function() {
+                        console.log('resetGDComparison called');
+                        const canvas = document.getElementById('gdComparison');
+                        if (canvas) {
+                            const ctx = canvas.getContext('2d');
+                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        }
+                    };
+                    
+                    // 正则化函数
+                    window.drawRegularization = function() {
+                        console.log('drawRegularization called with type:', window.regularizationType);
+                        const canvas = document.getElementById('regularizationCanvas');
+                        if (!canvas) return;
+                        
+                        const ctx = canvas.getContext('2d');
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        
+                        if (window.regularizationType === 'L1') {
+                            ctx.strokeStyle = '#ff6b6b';
+                            ctx.beginPath();
+                            ctx.moveTo(canvas.width/2, 50);
+                            ctx.lineTo(canvas.width - 50, canvas.height/2);
+                            ctx.lineTo(canvas.width/2, canvas.height - 50);
+                            ctx.lineTo(50, canvas.height/2);
+                            ctx.closePath();
+                            ctx.stroke();
+                        } else if (window.regularizationType === 'L2') {
+                            ctx.strokeStyle = '#4ecdc4';
+                            ctx.beginPath();
+                            ctx.arc(canvas.width/2, canvas.height/2, 100, 0, Math.PI * 2);
+                            ctx.stroke();
+                        }
+                    };
+                    
+                    window.initRegularization = function() {
+                        console.log('Initializing regularization...');
+                        window.drawRegularization();
+                    };
+                    
+                    window.changeRegularizationType = function(type) {
+                        window.regularizationType = type || 'none';
+                        console.log('Changed regularization type to:', window.regularizationType);
+                        window.drawRegularization();
+                    };
+                    
+                    // 其他辅助函数
+                    window.startCVAnimation = function() {
+                        console.log('startCVAnimation called');
+                    };
+                    
+                    window.updateLearningRate = function(rate) {
+                        window.learningRate = parseFloat(rate) || 0.1;
+                        console.log('Updated learning rate to:', window.learningRate);
+                        document.getElementById('learningRateValue') && 
+                            (document.getElementById('learningRateValue').textContent = window.learningRate);
+                    };
+                    
+                    window.updateIterations = function(iterations) {
+                        window.iterations = parseInt(iterations) || 100;
+                        console.log('Updated iterations to:', window.iterations);
+                    };
+                    
+                    window.resetAll = function() {
+                        console.log('Resetting all states...');
+                        window.gdState = { x: -2, y: 2, path: [], running: false };
+                        window.regularizationType = 'none';
+                        window.learningRate = 0.1;
+                        window.functionType = 'quadratic';
+                        if (window.gdAnimationId) {
+                            cancelAnimationFrame(window.gdAnimationId);
+                            window.gdAnimationId = null;
+                        }
+                    };
+                    
+                    // 通用交互函数
+                    window.toggleContent = function(elementId) {
+                        const elem = document.getElementById(elementId);
+                        if (elem) {
+                            elem.style.display = elem.style.display === 'none' ? 'block' : 'none';
+                        }
+                    };
+                    
+                    window.showTab = function(tabId) {
+                        // 隐藏所有标签内容
+                        document.querySelectorAll('.tab-content').forEach(tab => {
+                            tab.style.display = 'none';
+                        });
+                        // 显示选中的标签
+                        const selectedTab = document.getElementById(tabId);
+                        if (selectedTab) {
+                            selectedTab.style.display = 'block';
+                        }
+                    };
+                    
+                    window.runCode = function(codeBlockId) {
+                        const codeBlock = document.getElementById(codeBlockId);
+                        if (codeBlock) {
+                            console.log('Running code:', codeBlock.textContent);
+                            try {
+                                eval(codeBlock.textContent);
+                            } catch (error) {
+                                console.error('Code execution error:', error);
+                            }
+                        }
+                    };
+                    
+                    // 测验功能
+                    window.checkAnswer = function(questionId, answer) {
+                        console.log('Checking answer for question', questionId, ':', answer);
+                        const feedbackElem = document.getElementById('feedback_' + questionId);
+                        if (feedbackElem) {
+                            feedbackElem.style.display = 'block';
+                            feedbackElem.textContent = '答案已提交！';
+                        }
+                    };
+                    
+                    window.submitQuiz = function(quizId) {
+                        console.log('Submitting quiz:', quizId);
+                        alert('测验已提交！');
+                    };
+                    
+                    // 导航功能
+                    window.nextSection = function() {
+                        console.log('Navigate to next section');
+                        window.scrollBy(0, window.innerHeight);
+                    };
+                    
+                    window.prevSection = function() {
+                        console.log('Navigate to previous section');
+                        window.scrollBy(0, -window.innerHeight);
+                    };
+                    
+                    window.goToSection = function(sectionId) {
+                        const section = document.getElementById(sectionId);
+                        if (section) {
+                            section.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    };
+                    
+                    // 显示/隐藏解答
+                    window.toggleSolution = function(solutionId) {
+                        const solution = document.getElementById(solutionId || 'solution');
+                        if (solution) {
+                            const isHidden = solution.style.display === 'none';
+                            solution.style.display = isHidden ? 'block' : 'none';
+                            const button = event ? event.target : null;
+                            if (button) {
+                                button.textContent = isHidden ? '隐藏答案' : '显示答案';
+                            }
+                        }
+                    };
+                    
+                    // 播放动画
+                    window.playAnimation = function(animationId) {
+                        console.log('Playing animation:', animationId);
+                        const elem = document.getElementById(animationId);
+                        if (elem && elem.classList) {
+                            elem.classList.add('animated');
+                        }
+                    };
+                    
+                    // 展开/折叠内容
+                    window.toggleExpand = function(contentId) {
+                        const content = document.getElementById(contentId);
+                        if (content) {
+                            content.classList.toggle('expanded');
+                        }
+                    };
+                    
+                    // 代码高亮
+                    window.highlightCode = function() {
+                        if (typeof hljs !== 'undefined') {
+                            hljs.highlightAll();
+                        }
+                    };
+                    
+                    // 初始化交互元素
+                    window.initInteractive = function() {
+                        console.log('Initializing interactive elements...');
+                        
+                        // 初始化所有需要的canvas
+                        const canvasIds = ['gradientDescent2D', 'gd-2d-canvas', 'gdComparison', 'regularizationCanvas'];
+                        canvasIds.forEach(id => {
+                            const canvas = document.getElementById(id);
+                            if (canvas && !canvas.getContext) {
+                                console.warn('Canvas element found but not initialized:', id);
+                            }
+                        });
+                        
+                        // 绑定所有按钮的onclick事件
+                        document.querySelectorAll('button[onclick]').forEach(button => {
+                            const onclickAttr = button.getAttribute('onclick');
+                            if (onclickAttr) {
+                                button.removeAttribute('onclick');
+                                button.addEventListener('click', function() {
+                                    try {
+                                        eval(onclickAttr);
+                                    } catch (error) {
+                                        console.error('Button click error:', error);
+                                    }
+                                });
+                            }
+                        });
+                    };
+                    
+                    // 初始化简单的点积可视化（不依赖THREE.js）
+                    window.initDotProductVisualization = function() {
+                        console.log('Initializing dot product visualization...');
+                        const canvas = document.getElementById('dotProductCanvas') || document.querySelector('canvas[data-dotproduct]');
+                        if (canvas) {
+                            const ctx = canvas.getContext('2d');
+                            if (!ctx) return;
+                            
+                            // 设置默认尺寸
+                            if (canvas.width === 0) canvas.width = 400;
+                            if (canvas.height === 0) canvas.height = 300;
+                            
+                            // 绘制简单的2D可视化
+                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                            
+                            // 绘制坐标轴
+                            ctx.strokeStyle = '#ccc';
+                            ctx.beginPath();
+                            ctx.moveTo(0, canvas.height/2);
+                            ctx.lineTo(canvas.width, canvas.height/2);
+                            ctx.moveTo(canvas.width/2, 0);
+                            ctx.lineTo(canvas.width/2, canvas.height);
+                            ctx.stroke();
+                            
+                            // 绘制向量
+                            ctx.strokeStyle = '#3b82f6';
+                            ctx.lineWidth = 2;
+                            ctx.beginPath();
+                            ctx.moveTo(canvas.width/2, canvas.height/2);
+                            ctx.lineTo(canvas.width*0.75, canvas.height*0.25);
+                            ctx.stroke();
+                            
+                            ctx.strokeStyle = '#ef4444';
+                            ctx.beginPath();
+                            ctx.moveTo(canvas.width/2, canvas.height/2);
+                            ctx.lineTo(canvas.width*0.8, canvas.height*0.6);
+                            ctx.stroke();
+                            
+                            console.log('✅ Dot product visualization initialized (2D fallback)');
+                        }
+                    };
+                    
+                    // 初始化动画函数
+                    window.initAnimations = function() {
+                        console.log('Initializing animations...');
+                        
+                        // 等待GSAP完全加载
+                        if (typeof gsap === 'undefined') {
+                            console.warn('GSAP not loaded yet, retrying...');
+                            setTimeout(window.initAnimations, 500);
+                            return;
+                        }
+                        
+                        // 检查GSAP是否加载
+                        if (typeof gsap !== 'undefined') {
+                            // 注册插件
+                            if (gsap.registerPlugin) {
+                                if (typeof ScrollTrigger !== 'undefined') {
+                                    gsap.registerPlugin(ScrollTrigger);
+                                }
+                                if (typeof TextPlugin !== 'undefined') {
+                                    gsap.registerPlugin(TextPlugin);
+                                }
+                            }
+                            
+                            // 基础动画设置
+                            gsap.defaults({
+                                ease: "power2.inOut",
+                                duration: 1
+                            });
+                            
+                            // 淡入动画
+                            if (document.querySelectorAll('.fade-in').length > 0) {
+                                gsap.from('.fade-in', {
+                                    opacity: 0,
+                                    y: 30,
+                                    duration: 1,
+                                    stagger: 0.1
+                                });
+                            }
+                            
+                            // 滑入动画
+                            if (document.querySelectorAll('.slide-in').length > 0) {
+                                gsap.from('.slide-in', {
+                                    x: -100,
+                                    opacity: 0,
+                                    duration: 1,
+                                    stagger: 0.2
+                                });
+                            }
+                            
+                            console.log('✅ GSAP animations initialized');
+                        } else {
+                            console.warn('GSAP not loaded, animations disabled');
+                        }
+                    };
+                    
+                    // Three.js初始化（完全可选）
+                    window.initThreeJS = async function(canvasId) {
+                        console.log('Three.js initialization requested for canvas:', canvasId);
+                        const canvas = document.getElementById(canvasId);
+                        if (!canvas) {
+                            console.log('Canvas not found:', canvasId);
+                            return;
+                        }
+                        
+                        // 始终使用2D Canvas作为默认方案
+                        const ctx = canvas.getContext('2d');
+                        if (ctx) {
+                            // 设置canvas尺寸
+                            if (canvas.width === 0) canvas.width = 400;
+                            if (canvas.height === 0) canvas.height = 300;
+                            
+                            // 绘制一个简单的2D图形作为占位符
+                            ctx.fillStyle = '#f0f0f0';
+                            ctx.fillRect(0, 0, canvas.width, canvas.height);
+                            
+                            ctx.fillStyle = '#6366f1';
+                            ctx.fillRect(50, 50, 100, 100);
+                            
+                            ctx.fillStyle = '#ffffff';
+                            ctx.font = '16px Arial';
+                            ctx.textAlign = 'center';
+                            ctx.fillText('3D Preview', 100, 105);
+                            
+                            console.log('Canvas initialized with 2D fallback');
+                        }
+                    };
+                    
+                    // Chart.js初始化
+                    window.createChart = function(canvasId, config) {
+                        console.log('Creating chart...');
+                        if (typeof Chart !== 'undefined' && document.getElementById(canvasId)) {
+                            try {
+                                const ctx = document.getElementById(canvasId).getContext('2d');
+                                new Chart(ctx, config || {
+                                    type: 'line',
+                                    data: {
+                                        labels: ['1', '2', '3', '4', '5'],
+                                        datasets: [{
+                                            label: '示例数据',
+                                            data: [12, 19, 3, 5, 2],
+                                            borderColor: 'rgb(75, 192, 192)',
+                                            tension: 0.1
+                                        }]
+                                    }
+                                });
+                                console.log('✅ Chart created');
+                            } catch (error) {
+                                console.error('Chart creation error:', error);
+                            }
+                        }
+                    };
+                    
+                    // Typed.js初始化
+                    window.initTyped = function(elementId, options) {
+                        console.log('Initializing Typed.js...');
+                        if (typeof Typed !== 'undefined' && document.getElementById(elementId)) {
+                            try {
+                                new Typed('#' + elementId, options || {
+                                    strings: ['机器学习', '人工智能', '深度学习'],
+                                    typeSpeed: 50,
+                                    loop: true
+                                });
+                                console.log('✅ Typed.js initialized');
+                            } catch (error) {
+                                console.error('Typed.js error:', error);
+                            }
+                        }
+                    };
+                    
+                    // Particles.js初始化
+                    window.initParticles = function(elementId, config) {
+                        console.log('Initializing Particles.js...');
+                        if (typeof particlesJS !== 'undefined' && document.getElementById(elementId)) {
+                            try {
+                                particlesJS(elementId, config || {
+                                    particles: {
+                                        number: { value: 80 },
+                                        color: { value: '#ffffff' },
+                                        shape: { type: 'circle' },
+                                        opacity: { value: 0.5 },
+                                        size: { value: 3 },
+                                        move: { enable: true, speed: 2 }
+                                    }
+                                });
+                                console.log('✅ Particles.js initialized');
+                            } catch (error) {
+                                console.error('Particles.js error:', error);
+                            }
+                        }
+                    };
+                    
+                    // 页面加载完成后自动初始化
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', function() {
+                            window.initInteractive();
+                            if (typeof window.initGradientDescent2D === 'function') {
+                                window.initGradientDescent2D();
+                            }
+                            if (typeof window.initAnimations === 'function') {
+                                window.initAnimations();
+                            }
+                        });
+                    } else {
+                        // 页面已加载，直接初始化
+                        window.initInteractive();
+                        if (typeof window.initGradientDescent2D === 'function') {
+                            window.initGradientDescent2D();
+                        }
+                        if (typeof window.initAnimations === 'function') {
+                            window.initAnimations();
+                        }
+                    }
+                    
+                    console.log('✅ All functions defined and ready for use');
+                <\/script>
+                `;
+                
+                // 先写入内容
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                iframeDoc.open();
+                
+                // 添加确保内容正确显示的样式
+                const iframeFixStyles = `
+                    <style>
+                        /* 确保iframe内容可以正确滚动和显示 */
+                        html {
+                            height: auto !important;
+                            min-height: 100vh;
+                            overflow-x: hidden;
+                        }
+                        body {
+                            margin: 0;
+                            padding: 0;
+                            min-height: 100vh;
+                            height: auto !important;
+                            overflow-x: hidden;
+                            overflow-y: visible !important;
+                        }
+                        /* 修复固定定位元素 */
+                        nav.fixed, .fixed {
+                            position: fixed !important;
+                        }
+                        /* 确保所有section显示完整 */
+                        section {
+                            display: block !important;
+                            visibility: visible !important;
+                            opacity: 1 !important;
+                            min-height: auto !important;
+                        }
+                        /* 防止内容被截断 */
+                        .min-h-screen {
+                            min-height: 100vh !important;
+                        }
+                    </style>
+                `;
+                
+                // 根据内容类型处理HTML
+                if (!processedHtml.includes('<!DOCTYPE')) {
+                    // 片段HTML，需要包装成完整文档
+                    const fullHtml = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${chapterTitle}</title>
+    ${baseTag}
+    ${libraries}
+    <style>
+        /* 修复iframe内容显示问题 */
+        html {
+            height: auto !important;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* 基础样式 */
+        body { 
+            padding: 20px; 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            height: auto !important;
+            overflow-x: hidden;
+            overflow-y: visible !important;
+        }
+        
+        /* 确保内容正确显示 */
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 0 1rem;
+        }
+        
+        /* 确保所有section完整显示 */
+        section {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            min-height: auto !important;
+            height: auto !important;
+        }
+        
+        /* 修复min-h-screen类 */
+        .min-h-screen {
+            min-height: 100vh !important;
+            height: auto !important;
+        }
+        
+        /* 修复固定定位导航栏 */
+        nav.fixed, .fixed:not(section) {
+            position: fixed !important;
+        }
+        
+        /* 代码块样式 - 如果Tailwind没有加载 */
+        pre {
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        
+        code {
+            font-family: 'Monaco', 'Courier New', monospace;
+        }
+        
+        /* Canvas样式 */
+        canvas {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            max-width: 100%;
+            display: block;
+            margin: 1rem auto;
+        }
+        
+        /* 交互组件样式 */
+        .demo-container, .interactive-demo {
+            padding: 1.5rem;
+            background: #f9fafb;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        /* 控制面板样式 */
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        /* 按钮基础样式 - 优先级低于Tailwind */
+        button:not([class*="bg-"]) {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        button:not([class*="bg-"]):hover {
+            background: #2563eb;
+        }
+        
+        button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        /* 选择器样式 */
+        select {
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            background: white;
+            cursor: pointer;
+        }
+        
+        /* 卡片样式 */
+        .card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        /* 响应式网格 */
+        .grid {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        @media (min-width: 768px) {
+            .grid-cols-md-2 { grid-template-columns: repeat(2, 1fr); }
+            .grid-cols-md-3 { grid-template-columns: repeat(3, 1fr); }
+        }
+        
+        /* 数学公式样式 */
+        .katex-display {
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+        
+        /* 目录样式 */
+        .toc, .table-of-contents {
+            background: #f9fafb;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .toc a, .table-of-contents a {
+            color: #3b82f6;
+            text-decoration: none;
+            display: block;
+            padding: 0.25rem 0;
+        }
+        
+        .toc a:hover, .table-of-contents a:hover {
+            text-decoration: underline;
+        }
+        
+        /* 提示框样式 */
+        .alert, .note, .warning {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .note {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            color: #1e40af;
+        }
+        
+        .warning {
+            background: #fed7aa;
+            border-left: 4px solid #f97316;
+            color: #9a3412;
+        }
+        
+        /* 标签页样式 */
+        .tabs {
+            border-bottom: 2px solid #e5e7eb;
+            margin-bottom: 1rem;
+        }
+        
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+        
+        .tab-button:hover {
+            color: #3b82f6;
+        }
+        
+        .tab-button.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+        }
+        
+        .tab-content {
+            padding: 1rem 0;
+        }
+        
+        .tab-pane {
+            display: none;
+        }
+        
+        .tab-pane.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    ${functionDefinitions}
+    ${contentHtml}
+</body>
+</html>`;
+                    iframeDoc.write(fullHtml);
+                } else {
+                    // 完整HTML文档，注入库和函数
+                    processedHtml = processedHtml.replace(
+                        /<head([^>]*)>/i, 
+                        `<head$1>\n${baseTag}\n${libraries}\n${iframeFixStyles}`
+                    );
+                    
+                    // 在body标签后立即注入函数定义
+                    processedHtml = processedHtml.replace(
+                        /<body([^>]*)>/i,
+                        `<body$1>\n${functionDefinitions}\n`
+                    );
+                    
+                    iframeDoc.write(processedHtml);
+                }
+                
+                iframeDoc.close();
+                
+                // 简化的onload - 只处理初始化和导航修复
+                iframe.onload = function() {
+                    console.log('iframe content loaded, initializing...');
+                    setTimeout(() => {
+                        const iWin = iframe.contentWindow;
+                        const iDoc = iframe.contentDocument;
+                        
+                        console.log('iframe loaded, checking functions...');
+                        console.log('Functions available:', {
+                            changeGDFunction: typeof iWin.changeGDFunction,
+                            startGD2D: typeof iWin.startGD2D,
+                            resetGD2D: typeof iWin.resetGD2D
+                        });
+                        
+                        // 重要：处理所有带有事件属性的元素
+                        const eventTypes = ['onclick', 'onmousedown', 'onmouseup', 'onmouseenter', 'onmouseleave', 'onmouseover', 'onmouseout'];
+                        
+                        eventTypes.forEach(eventType => {
+                            const eventName = eventType.substring(2); // 去掉 'on' 前缀
+                            const elementsWithEvent = iDoc.querySelectorAll(`[${eventType}]`);
+                            console.log(`Found ${elementsWithEvent.length} elements with ${eventType}`);
+                            
+                            elementsWithEvent.forEach(element => {
+                                const eventCode = element.getAttribute(eventType);
+                                console.log(`Processing ${eventType}:`, eventCode);
+                                
+                                // 移除原始的事件属性
+                                element.removeAttribute(eventType);
+                                
+                                // 添加新的事件监听器
+                                element.addEventListener(eventName, function(event) {
+                                    console.log(`Executing ${eventType} code:`, eventCode);
+                                    try {
+                                        // 在iframe的window上下文中执行代码
+                                        // 创建一个函数，使其能访问iframe的window对象
+                                        const funcBody = `
+                                            return function(event) {
+                                                ${eventCode}
+                                            }
+                                        `;
+                                        const func = new iWin.Function(funcBody)();
+                                        func.call(element, event);
+                                    } catch (error) {
+                                        console.error(`Error executing ${eventType}:`, error);
+                                        // 尝试直接在iframe window上执行
+                                        try {
+                                            iWin.eval(eventCode);
+                                        } catch (evalError) {
+                                            console.error('Eval error:', evalError);
+                                        }
+                                    }
+                                });
+                                
+                                // 添加视觉反馈
+                                if (eventName === 'click' || eventName === 'mousedown') {
+                                    element.style.cursor = 'pointer';
+                                }
+                            });
+                        });
+                        
+                        // 修复导航链接
+                        iDoc.querySelectorAll('a').forEach(link => {
+                            link.addEventListener('click', function(e) {
+                                const href = this.getAttribute('href');
+                                if (href && href.startsWith('#')) {
+                                    e.preventDefault();
+                                    const target = iDoc.querySelector(href);
+                                    if (target) {
+                                        target.scrollIntoView({ behavior: 'smooth' });
+                                    }
+                                } else if (href && !href.startsWith('javascript:')) {
+                                    e.preventDefault();
+                                    console.log('Blocked navigation to:', href);
+                                }
+                            });
+                        });
+                        
+                        // 初始化高亮和数学公式 - 配置安全选项
+                        if (typeof iWin.hljs !== 'undefined') {
+                            // 配置highlight.js以避免XSS警告
+                            iWin.hljs.configure({
+                                ignoreUnescapedHTML: true,  // 忽略未转义的HTML警告
+                                languages: ['python', 'javascript', 'html', 'css', 'json', 'bash', 'sql', 'java'],
+                            });
+                            
+                            // 只高亮未处理的代码块
+                            iDoc.querySelectorAll('pre code:not(.hljs)').forEach((block) => {
+                                // 先转义HTML内容以防XSS
+                                const text = block.textContent;
+                                block.textContent = text;
+                                iWin.hljs.highlightElement(block);
+                            });
+                        }
+                        // 初始化数学公式渲染
+                        if (typeof iWin.renderMathInElement !== 'undefined') {
+                            // 创建数学渲染初始化函数
+                            iWin.initMathRenderer = function() {
+                                try {
+                                    iWin.renderMathInElement(iDoc.body, {
+                                        delimiters: [
+                                            {left: '$$', right: '$$', display: true},
+                                            {left: '$', right: '$', display: false},
+                                            {left: '\\[', right: '\\]', display: true},
+                                            {left: '\\(', right: '\\)', display: false}
+                                        ],
+                                        throwOnError: false,
+                                        strict: false,  // 关闭严格模式，允许中文
+                                        trust: true,    // 信任输入内容
+                                        preProcess: (text) => {
+                                            // 预处理：跳过包含中文的内容
+                                            if (/[\u4e00-\u9fa5]/.test(text)) {
+                                                return text.replace(/\$/g, '\\$');  // 转义$符号
+                                            }
+                                            return text;
+                                        }
+                                    });
+                                    console.log('Math rendering completed');
+                                } catch (error) {
+                                    console.warn('Math rendering error (non-fatal):', error);
+                                }
+                            };
+                            
+                            // 延迟执行以确保DOM完全加载
+                            setTimeout(() => iWin.initMathRenderer(), 100);
+                        }
+                        
+                        // 初始化canvas
+                        if (iDoc.getElementById('gradientDescent2D')) {
+                            iWin.drawGradientDescentCanvas();
+                        }
+                        if (iDoc.getElementById('gdComparison')) {
+                            iWin.startGDComparison();
+                        }
+                        
+                        // 在iframe window上下文中执行初始化代码
+                        try {
+                            if (typeof iWin.initInteractive === 'function') {
+                                iWin.initInteractive();
+                            }
+                            if (typeof iWin.initGradientDescent2D === 'function') {
+                                iWin.initGradientDescent2D();
+                            }
+                            if (typeof iWin.initRegularization === 'function') {
+                                iWin.initRegularization();
+                            }
+                            if (typeof iWin.initAnimations === 'function') {
+                                iWin.initAnimations();
+                            }
+                            
+                            // 确保所有canvas被正确初始化
+                            const canvasElements = iDoc.querySelectorAll('canvas');
+                            console.log(`Found ${canvasElements.length} canvas elements`);
+                            
+                            canvasElements.forEach(canvas => {
+                                if (!canvas.getContext) {
+                                    console.error('Canvas not properly initialized:', canvas.id);
+                                } else {
+                                    // 确保canvas有正确的尺寸
+                                    if (canvas.width === 0 || canvas.height === 0) {
+                                        canvas.width = canvas.offsetWidth || 500;
+                                        canvas.height = canvas.offsetHeight || 400;
+                                    }
+                                    console.log(`Canvas ${canvas.id} initialized: ${canvas.width}x${canvas.height}`);
+                                }
+                            });
+                            
+                            // 检查并初始化所有交互元素
+                            const interactiveElements = iDoc.querySelectorAll('[data-interactive], .interactive, .demo');
+                            console.log(`Found ${interactiveElements.length} interactive elements`);
+                            
+                        } catch (error) {
+                            console.error('Error during initialization:', error);
+                        }
+                        
+                        console.log('✅ iframe event handlers initialized');
+                        
+                        // 触发自定义事件通知内容已加载
+                        iWin.dispatchEvent(new Event('contentLoaded'));
+                        
+                        // 隐藏加载指示器
+                        const loadingIndicator = document.getElementById('chapterLoadingIndicator');
+                        if (loadingIndicator) {
+                            loadingIndicator.style.opacity = '0';
+                            setTimeout(() => {
+                                if (loadingIndicator.parentNode) {
+                                    loadingIndicator.remove();
+                                }
+                            }, 300);
+                        }
+                        
+                    }, 1000); // 增加延迟确保所有资源加载完成
+                };
+                
+                showNotification('章节"' + chapterTitle + '"已加载', 'success');
+                
+            } else {
+                throw new Error(data.message || '获取内容失败');
+            }
+        } catch (error) {
+            console.error('Error loading chapter content:', error);
+            
+            if (error.message.includes('401') || error.message.includes('unauthorized')) {
+                showNotification('请先登录再查看章节内容', 'error');
+            } else if (error.message.includes('403') || error.message.includes('forbidden')) {
+                showNotification('您还未订阅此课程，无法查看章节内容', 'error');
+            } else {
+                showNotification('无法获取章节内容，请稍后重试', 'error');
+            }
+        }
+    }
+    
+    // 显示加载状态
+    function showLoading() {
+        document.getElementById('loadingState').style.display = 'flex';
+        document.getElementById('errorState').style.display = 'none';
+        document.getElementById('courseContent').style.display = 'none';
+    }
+
+    // 显示内容
+    function showContent() {
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('errorState').style.display = 'none';
+        document.getElementById('courseContent').style.display = 'block';
+    }
+
+    // 显示错误
+    function showError(message) {
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('courseContent').style.display = 'none';
+        document.getElementById('errorState').style.display = 'block';
+        if (message) {
+            document.querySelector('#errorState p').textContent = message;
+        }
+    }
+
+</script>
+</body>
+</html>

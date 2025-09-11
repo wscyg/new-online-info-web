@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>支付调试页面</title>
+</head>
+<body>
+    <h1>支付功能调试</h1>
+    <div id="output"></div>
+    
+    <script>
+        const output = document.getElementById('output');
+        
+        // 测试获取课程信息
+        async function testCourseData() {
+            output.innerHTML = '<h2>测试课程数据获取</h2>';
+            
+            try {
+                const response = await fetch('/api/courses/4');
+                const data = await response.json();
+                
+                output.innerHTML += '<h3>API响应：</h3>';
+                output.innerHTML += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                
+                if (data.code === 200 && data.data) {
+                    let courseData;
+                    if (data.data.course) {
+                        courseData = data.data.course;
+                        output.innerHTML += '<p>✓ 找到 data.data.course</p>';
+                    } else {
+                        courseData = data.data;
+                        output.innerHTML += '<p>✓ 使用 data.data</p>';
+                    }
+                    
+                    output.innerHTML += '<h3>课程数据：</h3>';
+                    output.innerHTML += '<pre>' + JSON.stringify(courseData, null, 2) + '</pre>';
+                    
+                    output.innerHTML += '<h3>关键字段检查：</h3>';
+                    output.innerHTML += '<p>ID: ' + courseData.id + '</p>';
+                    output.innerHTML += '<p>Title: ' + courseData.title + '</p>';
+                    output.innerHTML += '<p>Price: ' + courseData.price + '</p>';
+                    
+                    // 模拟创建订阅订单时的ID获取
+                    const urlParams = new URLSearchParams('?courseId=4&type=course');
+                    const type = urlParams.get('type') || 'course';
+                    let subscribableId = courseData?.id || urlParams.get('courseId') || 1;
+                    
+                    output.innerHTML += '<h3>订阅参数：</h3>';
+                    output.innerHTML += '<p>subscribableType: ' + type + '</p>';
+                    output.innerHTML += '<p>subscribableId: ' + subscribableId + '</p>';
+                    output.innerHTML += '<p>courseData.id: ' + courseData.id + '</p>';
+                    output.innerHTML += '<p>urlParams.get("courseId"): ' + urlParams.get('courseId') + '</p>';
+                }
+            } catch (error) {
+                output.innerHTML += '<p style="color:red">错误: ' + error.message + '</p>';
+            }
+        }
+        
+        // 执行测试
+        testCourseData();
+    </script>
+</body>
+</html>

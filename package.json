@@ -14,13 +14,23 @@
   "license": "MIT",
   "devDependencies": {
     "vite": "^4.4.5",
-    "http-server": "^14.1.1"
+    "http-server": "^14.1.1",
+    "tailwindcss": "^3.3.6",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "@types/node": "^20.10.0"
   },
   "dependencies": {
     "axios": "^1.5.0",
     "chart.js": "^4.4.0",
     "gsap": "^3.12.2",
     "particles.js": "^2.0.0",
-    "three": "^0.156.1"
+    "three": "^0.156.1",
+    "zustand": "^4.4.7",
+    "@tailwindcss/typography": "^0.5.10",
+    "framer-motion": "^10.16.12",
+    "lucide": "^0.294.0",
+    "date-fns": "^2.30.0",
+    "@floating-ui/dom": "^1.5.3"
   }
 }

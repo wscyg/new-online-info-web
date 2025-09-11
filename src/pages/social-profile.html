@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人主页 - 学习圈</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #f8f8f8;
+            min-height: 100vh;
+        }
+        
+        /* 顶部导航 */
+        .header {
+            background: white;
+            box-shadow: 0 1px 0 rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            height: 56px;
+        }
+        
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #333;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+        
+        .back-btn:hover {
+            color: #ff2442;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #f5f5f5;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            background: #e8e8e8;
+            transform: scale(1.05);
+        }
+        
+        /* 个人信息区 */
+        .profile-header {
+            background: white;
+            padding: 24px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .profile-info {
+            display: flex;
+            gap: 32px;
+            align-items: flex-start;
+        }
+        
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+            flex-shrink: 0;
+            position: relative;
+        }
+        
+        .avatar-badge {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            width: 32px;
+            height: 32px;
+            background: #ffd700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            border: 3px solid white;
+        }
+        
+        .profile-details {
+            flex: 1;
+        }
+        
+        .profile-name {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .verified-badge {
+            background: #ff2442;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: normal;
+        }
+        
+        .profile-id {
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        
+        .profile-bio {
+            font-size: 15px;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+        
+        .profile-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .profile-tag {
+            padding: 4px 12px;
+            background: #f5f5f5;
+            border-radius: 16px;
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .profile-stats {
+            display: flex;
+            gap: 32px;
+        }
+        
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            color: #999;
+            margin-top: 4px;
+        }
+        
+        .profile-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .follow-btn {
+            padding: 10px 32px;
+            background: #ff2442;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .follow-btn:hover {
+            background: #ff1428;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 36, 66, 0.3);
+        }
+        
+        .follow-btn.following {
+            background: #f5f5f5;
+            color: #666;
+        }
+        
+        .message-btn {
+            padding: 10px 24px;
+            background: white;
+            color: #333;
+            border: 1px solid #e8e8e8;
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .message-btn:hover {
+            border-color: #ff2442;
+            color: #ff2442;
+        }
+        
+        /* 内容标签页 */
+        .content-tabs {
+            background: white;
+            border-bottom: 1px solid #f0f0f0;
+            position: sticky;
+            top: 56px;
+            z-index: 999;
+        }
+        
+        .tabs-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+        }
+        
+        .tab {
+            padding: 16px 24px;
+            color: #666;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+            font-size: 15px;
+        }
+        
+        .tab.active {
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 32px;
+            height: 3px;
+            background: #ff2442;
+            border-radius: 2px;
+        }
+        
+        .tab:hover {
+            color: #333;
+        }
+        
+        .tab-count {
+            margin-left: 4px;
+            color: #999;
+        }
+        
+        /* 内容区域 */
+        .content-area {
+            max-width: 1200px;
+            margin: 24px auto;
+            padding: 0 20px;
+        }
+        
+        /* 笔记网格 */
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+        
+        .note-item {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .note-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+        
+        .note-cover {
+            position: relative;
+            padding-bottom: 100%;
+            background: #f5f5f5;
+        }
+        
+        .note-cover img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .note-type {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            padding: 4px 8px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            font-size: 12px;
+            border-radius: 4px;
+            backdrop-filter: blur(8px);
+        }
+        
+        .note-info {
+            padding: 12px;
+        }
+        
+        .note-title {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.4;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .note-stats {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .note-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        /* 收藏展示 */
+        .collection-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        
+        .collection-item {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .collection-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            border-color: #ff2442;
+        }
+        
+        .collection-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .collection-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .collection-count {
+            font-size: 13px;
+            color: #999;
+        }
+        
+        .collection-preview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .preview-item {
+            padding-bottom: 100%;
+            background: #f5f5f5;
+            position: relative;
+        }
+        
+        .preview-item img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* 点赞列表 */
+        .likes-list {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .like-item {
+            display: flex;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .like-item:last-child {
+            border-bottom: none;
+        }
+        
+        .like-item:hover {
+            background: #f8f8f8;
+            margin: 0 -20px;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+        
+        .like-thumbnail {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            background: #f5f5f5;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        
+        .like-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .like-content {
+            flex: 1;
+        }
+        
+        .like-title {
+            font-size: 15px;
+            color: #333;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        
+        .like-author {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+        
+        .like-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: #999;
+        }
+        
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+        }
+        
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+        
+        .empty-text {
+            font-size: 16px;
+            color: #999;
+        }
+        
+        /* 编辑资料按钮 */
+        .edit-profile-btn {
+            padding: 10px 24px;
+            background: white;
+            color: #333;
+            border: 1px solid #e8e8e8;
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .edit-profile-btn:hover {
+            border-color: #ff2442;
+            color: #ff2442;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .notes-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .collection-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .profile-info {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .profile-stats {
+                justify-content: center;
+            }
+            
+            .profile-actions {
+                justify-content: center;
+                width: 100%;
+            }
+            
+            .follow-btn, .message-btn {
+                flex: 1;
+            }
+            
+            .notes-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .collection-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .profile-avatar {
+                width: 80px;
+                height: 80px;
+                font-size: 32px;
+            }
+            
+            .profile-name {
+                font-size: 20px;
+            }
+            
+            .tab {
+                padding: 16px 12px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <header class="header">
+        <div class="nav-container">
+            <a href="community.html" class="back-btn">
+                <span>←</span>
+                <span>返回</span>
+            </a>
+            
+            <div class="header-actions">
+                <button class="action-btn">🔍</button>
+                <button class="action-btn">⚙️</button>
+                <button class="action-btn">↗️</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 个人信息区 -->
+    <div class="profile-header">
+        <div class="profile-container">
+            <div class="profile-info">
+                <div class="profile-avatar">
+                    张
+                    <div class="avatar-badge">👑</div>
+                </div>
+                
+                <div class="profile-details">
+                    <h1 class="profile-name">
+                        张三
+                        <span class="verified-badge">认证讲师</span>
+                    </h1>
+                    <div class="profile-id">ID: 10086 · 北京</div>
+                    <div class="profile-bio">
+                        🎓 全栈工程师 | 10年开发经验<br>
+                        📚 专注于前端技术分享，Vue/React/Node.js<br>
+                        ✨ 帮助1000+学员成功转型，一起学习，共同成长！
+                    </div>
+                    <div class="profile-tags">
+                        <span class="profile-tag">前端开发</span>
+                        <span class="profile-tag">全栈工程师</span>
+                        <span class="profile-tag">技术博主</span>
+                        <span class="profile-tag">在线教育</span>
+                    </div>
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">15.6万</div>
+                            <div class="stat-label">粉丝</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">328</div>
+                            <div class="stat-label">关注</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">89.2万</div>
+                            <div class="stat-label">获赞</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">256</div>
+                            <div class="stat-label">笔记</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile-actions">
+                    <button class="follow-btn" onclick="toggleFollow(this)">关注</button>
+                    <button class="message-btn">私信</button>
+                    <button class="edit-profile-btn" onclick="editProfile()">编辑资料</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 内容标签页 -->
+    <div class="content-tabs">
+        <div class="tabs-wrapper">
+            <div class="tab active" onclick="switchTab('notes', this)">
+                笔记<span class="tab-count">256</span>
+            </div>
+            <div class="tab" onclick="switchTab('collections', this)">
+                收藏<span class="tab-count">12</span>
+            </div>
+            <div class="tab" onclick="switchTab('likes', this)">
+                点赞<span class="tab-count">1.2k</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 内容区域 -->
+    <div class="content-area">
+        <!-- 笔记内容 -->
+        <div id="notes" class="tab-content">
+            <div class="notes-grid">
+                <!-- 笔记项 1 -->
+                <div class="note-item" onclick="viewNote(1)">
+                    <div class="note-cover">
+                        <div style="position: absolute; width: 100%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                        <span class="note-type">教程</span>
+                    </div>
+                    <div class="note-info">
+                        <div class="note-title">Vue 3 Composition API 完全指南</div>
+                        <div class="note-stats">
+                            <span class="note-stat">❤️ 2.3k</span>
+                            <span class="note-stat">💬 156</span>
+                            <span class="note-stat">⭐ 892</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 笔记项 2 -->
+                <div class="note-item" onclick="viewNote(2)">
+                    <div class="note-cover">
+                        <div style="position: absolute; width: 100%; height: 100%; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+                        <span class="note-type">项目</span>
+                    </div>
+                    <div class="note-info">
+                        <div class="note-title">从零搭建企业级React项目架构</div>
+                        <div class="note-stats">
+                            <span class="note-stat">❤️ 5.6k</span>
+                            <span class="note-stat">💬 423</span>
+                            <span class="note-stat">⭐ 2.1k</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 笔记项 3 -->
+                <div class="note-item" onclick="viewNote(3)">
+                    <div class="note-cover">
+                        <div style="position: absolute; width: 100%; height: 100%; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);"></div>
+                        <span class="note-type">经验</span>
+                    </div>
+                    <div class="note-info">
+                        <div class="note-title">我的前端学习路线图（2024版）</div>
+                        <div class="note-stats">
+                            <span class="note-stat">❤️ 8.9k</span>
+                            <span class="note-stat">💬 678</span>
+                            <span class="note-stat">⭐ 4.5k</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 笔记项 4 -->
+                <div class="note-item" onclick="viewNote(4)">
+                    <div class="note-cover">
+                        <div style="position: absolute; width: 100%; height: 100%; background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);"></div>
+                        <span class="note-type">面试</span>
+                    </div>
+                    <div class="note-info">
+                        <div class="note-title">前端面试必考的50道算法题</div>
+                        <div class="note-stats">
+                            <span class="note-stat">❤️ 12.3k</span>
+                            <span class="note-stat">💬 892</span>
+                            <span class="note-stat">⭐ 6.7k</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 笔记项 5 -->
+                <div class="note-item" onclick="viewNote(5)">
+                    <div class="note-cover">
+                        <div style="position: absolute; width: 100%; height: 100%; background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);"></div>
+                        <span class="note-type">工具</span>
+                    </div>
+                    <div class="note-info">
+                        <div class="note-title">提升开发效率的VSCode配置</div>
+                        <div class="note-stats">
+                            <span class="note-stat">❤️ 3.2k</span>
+                            <span class="note-stat">💬 234</span>
+                            <span class="note-stat">⭐ 1.8k</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 笔记项 6 -->
+                <div class="note-item" onclick="viewNote(6)">
+                    <div class="note-cover">
+                        <div style="position: absolute; width: 100%; height: 100%; background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);"></div>
+                        <span class="note-type">源码</span>
+                    </div>
+                    <div class="note-info">
+                        <div class="note-title">深入理解Vue3响应式原理</div>
+                        <div class="note-stats">
+                            <span class="note-stat">❤️ 6.7k</span>
+                            <span class="note-stat">💬 445</span>
+                            <span class="note-stat">⭐ 3.2k</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 笔记项 7 -->
+                <div class="note-item" onclick="viewNote(7)">
+                    <div class="note-cover">
+                        <div style="position: absolute; width: 100%; height: 100%; background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);"></div>
+                        <span class="note-type">设计</span>
+                    </div>
+                    <div class="note-info">
+                        <div class="note-title">前端工程师必懂的设计原则</div>
+                        <div class="note-stats">
+                            <span class="note-stat">❤️ 4.1k</span>
+                            <span class="note-stat">💬 312</span>
+                            <span class="note-stat">⭐ 2.3k</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 笔记项 8 -->
+                <div class="note-item" onclick="viewNote(8)">
+                    <div class="note-cover">
+                        <div style="position: absolute; width: 100%; height: 100%; background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);"></div>
+                        <span class="note-type">性能</span>
+                    </div>
+                    <div class="note-info">
+                        <div class="note-title">前端性能优化实战指南</div>
+                        <div class="note-stats">
+                            <span class="note-stat">❤️ 7.8k</span>
+                            <span class="note-stat">💬 567</span>
+                            <span class="note-stat">⭐ 4.1k</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 收藏内容 -->
+        <div id="collections" class="tab-content" style="display: none;">
+            <div class="collection-grid">
+                <div class="collection-item" onclick="viewCollection(1)">
+                    <div class="collection-header">
+                        <h3 class="collection-title">前端进阶</h3>
+                        <span class="collection-count">45篇</span>
+                    </div>
+                    <div class="collection-preview">
+                        <div class="preview-item">
+                            <div style="position: absolute; width: 100%; height: 100%; background: #667eea;"></div>
+                        </div>
+                        <div class="preview-item">
+                            <div style="position: absolute; width: 100%; height: 100%; background: #764ba2;"></div>
+                        </div>
+                        <div class="preview-item">
+                            <div style="position: absolute; width: 100%; height: 100%; background: #f093fb;"></div>
+                        </div>
+                        <div class="preview-item">
+                            <div style="position: absolute; width: 100%; height: 100%; background: #f5576c;"></div>
+                        </div>
+                        <div class="preview-item">
+                            <div style="position: absolute; width: 100%; height: 100%; background: #fa709a;"></div>
+                        </div>
+                        <div class="preview-item">
+                            <div style="position: absolute; width: 100%; height: 100%; background: #fee140;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collection-item" onclick="viewCollection(2)">
+                    <div class="collection-header">
+                        <h3 class="collection-title">面试宝典</h3>
+                        <span class="collection-count">128篇</span>
+                    </div>
+                    <div class="collection-preview">
+                        <div class="preview-item">
+                            <div style="position: absolute; width: 100%; height: 100%; background: #a8edea;"></div>
+                        </div>
+                        <div class="preview-item">
+                            <div style="position: absolute; width: 100%; height: 100%; background: #fed6e3;"></div>
+                        </div>
+                        <div class="preview-item">
+                            <div style="position: absolute; width: 100%; height: 100%; background: #ffecd2;"></div>
+                        </div>
+                        <div class="preview-item">
+                            <div style="position: absolute; width: 100%; height: 100%; background: #fcb69f;"></div>
+                        </div>
+                        <div class="preview-item">
+                            <div style="position: absolute; width: 100%; height: 100%; background: #a1c4fd;"></div>
+                        </div>
+                        <div class="preview-item">
+                            <div style="position: absolute; width: 100%; height: 100%; background: #c2e9fb;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collection-item" onclick="viewCollection(3)">
+                    <div class="collection-header">
+                        <h3 class="collection-title">项目实战</h3>
+                        <span class="collection-count">67篇</span>
+                    </div>
+                    <div class="collection-preview">
+                        <div class="preview-item">
+                            <div style="position: absolute; width: 100%; height: 100%; background: #d299c2;"></div>
+                        </div>
+                        <div class="preview-item">
+                            <div style="position: absolute; width: 100%; height: 100%; background: #fef9d7;"></div>
+                        </div>
+                        <div class="preview-item">
+                            <div style="position: absolute; width: 100%; height: 100%; background: #89f7fe;"></div>
+                        </div>
+                        <div class="preview-item">
+                            <div style="position: absolute; width: 100%; height: 100%; background: #66a6ff;"></div>
+                        </div>
+                        <div class="preview-item">
+                            <div style="position: absolute; width: 100%; height: 100%; background: #fddb92;"></div>
+                        </div>
+                        <div class="preview-item">
+                            <div style="position: absolute; width: 100%; height: 100%; background: #d1fdff;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 点赞内容 -->
+        <div id="likes" class="tab-content" style="display: none;">
+            <div class="likes-list">
+                <div class="like-item" onclick="viewNote(101)">
+                    <div class="like-thumbnail">
+                        <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                    </div>
+                    <div class="like-content">
+                        <div class="like-title">TypeScript 高级类型编程技巧</div>
+                        <div class="like-author">作者：李明 · 前端架构师</div>
+                        <div class="like-stats">
+                            <span>❤️ 15.2k</span>
+                            <span>💬 892</span>
+                            <span>⭐ 6.3k</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="like-item" onclick="viewNote(102)">
+                    <div class="like-thumbnail">
+                        <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+                    </div>
+                    <div class="like-content">
+                        <div class="like-title">微前端架构实践：从理论到落地</div>
+                        <div class="like-author">作者：王芳 · 技术总监</div>
+                        <div class="like-stats">
+                            <span>❤️ 8.7k</span>
+                            <span>💬 456</span>
+                            <span>⭐ 3.2k</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="like-item" onclick="viewNote(103)">
+                    <div class="like-thumbnail">
+                        <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);"></div>
+                    </div>
+                    <div class="like-content">
+                        <div class="like-title">Node.js 性能优化实战</div>
+                        <div class="like-author">作者：赵强 · 全栈工程师</div>
+                        <div class="like-stats">
+                            <span>❤️ 6.4k</span>
+                            <span>💬 312</span>
+                            <span>⭐ 2.8k</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 切换标签页
+        function switchTab(tabName, element) {
+            // 更新标签样式
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            element.classList.add('active');
+            
+            // 显示对应内容
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            document.getElementById(tabName).style.display = 'block';
+        }
+        
+        // 切换关注状态
+        function toggleFollow(button) {
+            if (button.classList.contains('following')) {
+                button.classList.remove('following');
+                button.textContent = '关注';
+            } else {
+                button.classList.add('following');
+                button.textContent = '已关注';
+            }
+        }
+        
+        // 查看笔记详情
+        function viewNote(noteId) {
+            console.log('查看笔记:', noteId);
+            // TODO: 跳转到笔记详情页
+        }
+        
+        // 查看收藏夹
+        function viewCollection(collectionId) {
+            console.log('查看收藏夹:', collectionId);
+            // TODO: 跳转到收藏夹详情页
+        }
+        
+        // 编辑资料
+        function editProfile() {
+            console.log('编辑资料');
+            window.location.href = 'profile-enhanced.html';
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化页面
+            console.log('个人主页加载完成');
+        });
+    </script>
+</body>
+</html>

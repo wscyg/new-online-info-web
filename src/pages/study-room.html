@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习室 - AI学习平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/design-system.css">
+    <link rel="stylesheet" href="../styles/theme.css">
+    <link rel="stylesheet" href="../styles/study-room.css">
+</head>
+<body>
+    <div class="study-room-container">
+        <!-- 头部导航 -->
+        <header class="room-header">
+            <div class="header-left">
+                <button class="back-btn" onclick="history.back()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="room-info">
+                    <h1 id="roomTitle">学习室</h1>
+                    <span id="roomMemberCount">0人在线</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="room-settings-btn" onclick="toggleRoomSettings()">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- 主要内容区 -->
+        <div class="room-content">
+            <!-- 左侧 - 成员列表 -->
+            <aside class="members-sidebar" id="membersSidebar">
+                <div class="sidebar-header">
+                    <h3>在线成员</h3>
+                    <button class="toggle-sidebar" onclick="toggleMembersSidebar()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="members-list" id="membersList">
+                    <!-- 成员列表将通过JS动态生成 -->
+                </div>
+            </aside>
+
+            <!-- 中间 - 聊天区域 -->
+            <main class="chat-area">
+                <div class="chat-container">
+                    <!-- 聊天消息 -->
+                    <div class="messages-container" id="messagesContainer">
+                        <div class="welcome-message">
+                            <div class="welcome-icon">💬</div>
+                            <h3>欢迎来到学习室</h3>
+                            <p>在这里与其他学习者交流讨论，共同进步！</p>
+                        </div>
+                    </div>
+
+                    <!-- 输入区域 -->
+                    <div class="message-input-area">
+                        <div class="input-toolbar">
+                            <button class="toolbar-btn" onclick="insertEmoji()">
+                                <i class="fas fa-smile"></i>
+                            </button>
+                            <button class="toolbar-btn" onclick="uploadImage()">
+                                <i class="fas fa-image"></i>
+                            </button>
+                            <button class="toolbar-btn" onclick="insertCode()">
+                                <i class="fas fa-code"></i>
+                            </button>
+                        </div>
+                        <div class="input-container">
+                            <textarea 
+                                id="messageInput" 
+                                placeholder="输入消息..." 
+                                rows="3"
+                                onkeydown="handleInputKeydown(event)"
+                                oninput="handleInputChange()"
+                            ></textarea>
+                            <button id="sendButton" class="send-btn" onclick="sendMessage()" disabled>
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- 右侧 - 学习工具 -->
+            <aside class="tools-sidebar" id="toolsSidebar">
+                <div class="sidebar-header">
+                    <h3>学习工具</h3>
+                    <button class="toggle-sidebar" onclick="toggleToolsSidebar()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="tools-content">
+                    <!-- 笔记工具 -->
+                    <div class="tool-section">
+                        <h4>共享笔记</h4>
+                        <div class="shared-notes" id="sharedNotes">
+                            <div class="note-item">
+                                <div class="note-author">学习者1</div>
+                                <div class="note-content">
+                                    深度学习中的反向传播算法是通过链式法则计算梯度...
+                                </div>
+                                <div class="note-time">5分钟前</div>
+                            </div>
+                        </div>
+                        <button class="add-note-btn" onclick="addSharedNote()">
+                            <i class="fas fa-plus"></i> 添加笔记
+                        </button>
+                    </div>
+
+                    <!-- 白板工具 -->
+                    <div class="tool-section">
+                        <h4>协作白板</h4>
+                        <div class="whiteboard-preview" onclick="openWhiteboard()">
+                            <i class="fas fa-chalkboard"></i>
+                            <span>打开白板</span>
+                        </div>
+                    </div>
+
+                    <!-- 屏幕共享 -->
+                    <div class="tool-section">
+                        <h4>屏幕共享</h4>
+                        <button class="screen-share-btn" onclick="toggleScreenShare()">
+                            <i class="fas fa-desktop"></i>
+                            <span>开始共享</span>
+                        </button>
+                    </div>
+
+                    <!-- 在线文档 -->
+                    <div class="tool-section">
+                        <h4>协作文档</h4>
+                        <div class="doc-list" id="docList">
+                            <div class="doc-item" onclick="openDocument('doc1')">
+                                <i class="fas fa-file-alt"></i>
+                                <span>学习笔记</span>
+                            </div>
+                        </div>
+                        <button class="add-doc-btn" onclick="createDocument()">
+                            <i class="fas fa-plus"></i> 新建文档
+                        </button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- 移动端底部工具栏 -->
+        <div class="mobile-toolbar">
+            <button class="mobile-tool-btn" onclick="toggleMembersSidebar()">
+                <i class="fas fa-users"></i>
+                <span>成员</span>
+            </button>
+            <button class="mobile-tool-btn" onclick="toggleToolsSidebar()">
+                <i class="fas fa-tools"></i>
+                <span>工具</span>
+            </button>
+            <button class="mobile-tool-btn" onclick="toggleVoiceChat()">
+                <i class="fas fa-microphone"></i>
+                <span>语音</span>
+            </button>
+        </div>
+
+        <!-- 弹窗模态框 -->
+        <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <div class="modal-header">
+                    <h3 id="modalTitle">标题</h3>
+                    <button class="modal-close" onclick="closeModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body" id="modalBody">
+                    <!-- 模态框内容 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 表情选择器 -->
+        <div class="emoji-picker" id="emojiPicker">
+            <div class="emoji-grid">
+                <span class="emoji" onclick="insertEmojiToInput('😀')">😀</span>
+                <span class="emoji" onclick="insertEmojiToInput('😂')">😂</span>
+                <span class="emoji" onclick="insertEmojiToInput('🤔')">🤔</span>
+                <span class="emoji" onclick="insertEmojiToInput('👍')">👍</span>
+                <span class="emoji" onclick="insertEmojiToInput('❤️')">❤️</span>
+                <span class="emoji" onclick="insertEmojiToInput('🎉')">🎉</span>
+                <span class="emoji" onclick="insertEmojiToInput('🔥')">🔥</span>
+                <span class="emoji" onclick="insertEmojiToInput('💡')">💡</span>
+                <span class="emoji" onclick="insertEmojiToInput('📚')">📚</span>
+                <span class="emoji" onclick="insertEmojiToInput('🚀')">🚀</span>
+                <span class="emoji" onclick="insertEmojiToInput('✨')">✨</span>
+                <span class="emoji" onclick="insertEmojiToInput('🎯')">🎯</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 文件上传隐藏input -->
+    <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileUpload(event)">
+
+    <script type="module" src="../scripts/study-room.js"></script>
+</body>
+</html>

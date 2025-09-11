@@ -73,6 +73,31 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
         }
+        
+        /* 价格样式 */
+        .price-original {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 0.9em;
+            margin-right: 8px;
+        }
+        
+        .price-current {
+            color: #ff4757;
+            font-weight: 600;
+            font-size: 1.2em;
+        }
+        
+        .text-danger {
+            color: #ff4757;
+        }
+        
+        .meta-tag.discount {
+            background: #ff4757;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body class="payment-theme">
@@ -80,9 +105,9 @@
     <div class="security-bg">
         <div class="security-grid"></div>
         <div class="floating-locks">
-            <div class="lock-icon">🔒</div>
-            <div class="lock-icon">🛡️</div>
-            <div class="lock-icon">🔐</div>
+            <div class="lock-icon">锁</div>
+            <div class="lock-icon">盾</div>
+            <div class="lock-icon">安全</div>
         </div>
     </div>
 
@@ -94,7 +119,7 @@
             </div>
             <div class="nav-security">
                 <div class="security-badge">
-                    <span class="security-icon">🔒</span>
+                    <span class="security-icon">锁</span>
                     <span>安全支付</span>
                 </div>
             </div>
@@ -132,7 +157,7 @@
                         <div class="section-header">
                             <h2>选择支付方式</h2>
                             <div class="security-tip">
-                                <span class="tip-icon">🔒</span>
+                                <span class="tip-icon">锁</span>
                                 <span>256位SSL加密保护</span>
                             </div>
                         </div>
@@ -152,7 +177,7 @@
 
                             <!-- 微信支付 - 暂时不可用 -->
                             <div class="payment-method disabled" data-method="wechat">
-                                <div class="method-icon wechat">💬</div>
+                                <div class="method-icon wechat">微信</div>
                                 <div class="method-info">
                                     <div class="method-name">微信支付 <span class="coming-soon">（即将开通）</span></div>
                                     <div class="method-desc">微信安全支付，支持零钱、银行卡</div>
@@ -172,29 +197,13 @@
 
                             <!-- 余额支付 - 暂时不可用 -->
                             <div class="payment-method disabled" data-method="balance">
-                                <div class="method-icon balance">💰</div>
+                                <div class="method-icon balance">余额</div>
                                 <div class="method-info">
                                     <div class="method-name">账户余额 <span class="coming-soon">（即将开通）</span></div>
                                     <div class="method-desc">当前余额: ¥1,258.00</div>
                                 </div>
                                 <div class="method-check"></div>
                             </div>
-                        </div>
-                    </section>
-
-                    <!-- 优惠券 -->
-                    <section class="coupons-section">
-                        <div class="section-header">
-                            <h3>优惠券</h3>
-                            <button class="btn-view-coupons" onclick="showAllCoupons()">查看全部</button>
-                        </div>
-                        <div class="coupon-selector">
-                            <select id="couponSelect">
-                                <option value="">请选择优惠券</option>
-                                <option value="1" data-discount="100">新用户专享券 - 减¥100</option>
-                                <option value="2" data-discount="50">学习进步券 - 减¥50</option>
-                                <option value="3" data-discount="20">限时优惠券 - 减¥20</option>
-                            </select>
                         </div>
                     </section>
 
@@ -211,15 +220,15 @@
                         <div class="payment-security">
                             <div class="security-items">
                                 <div class="security-item">
-                                    <span class="security-icon">🔐</span>
+                                    <span class="security-icon">安全</span>
                                     <span>银行级加密</span>
                                 </div>
                                 <div class="security-item">
-                                    <span class="security-icon">🛡️</span>
+                                    <span class="security-icon">保护</span>
                                     <span>实时风控</span>
                                 </div>
                                 <div class="security-item">
-                                    <span class="security-icon">✅</span>
+                                    <span class="security-icon">完成</span>
                                     <span>资金保障</span>
                                 </div>
                             </div>
@@ -235,43 +244,18 @@
                             <div class="order-number">订单号: <span id="orderNumber">202408101234567</span></div>
                         </div>
 
-                        <div class="order-items">
-                            <div class="order-item">
-                                <div class="item-image">
-                                    <div class="course-icon">📚</div>
-                                </div>
-                                <div class="item-info">
-                                    <div class="item-title" id="courseName">深度学习基础与实践</div>
-                                    <div class="item-meta">
-                                        <span class="item-level">中级</span>
-                                        <span class="item-duration">40小时</span>
-                                        <span class="item-instructor">Dr. AI</span>
-                                    </div>
-                                </div>
-                                <div class="item-price">
-                                    <div class="original-price">¥1,299</div>
-                                    <div class="current-price" id="coursePrice">¥899</div>
-                                </div>
-                            </div>
+                        <div class="order-items order-details">
+                            <!-- 订单内容将由JavaScript动态填充 -->
                         </div>
 
-                        <div class="price-breakdown">
-                            <div class="price-item">
-                                <span class="price-label">课程原价</span>
-                                <span class="price-value">¥1,299.00</span>
-                            </div>
-                            <div class="price-item discount">
-                                <span class="price-label">平台优惠</span>
-                                <span class="price-value">-¥400.00</span>
-                            </div>
-                            <div class="price-item coupon" id="couponDiscount" style="display: none;">
-                                <span class="price-label">优惠券优惠</span>
-                                <span class="price-value">-¥0.00</span>
+                        <div class="price-breakdown order-summary">
+                            <div class="summary-items">
+                                <!-- 价格明细将由JavaScript动态填充 -->
                             </div>
                             <div class="price-divider"></div>
-                            <div class="price-item total">
+                            <div class="price-item total summary-total">
                                 <span class="price-label">实付金额</span>
-                                <span class="price-value" id="totalAmount">¥899.00</span>
+                                <span class="price-value total-amount" id="totalAmount">¥0.00</span>
                             </div>
                         </div>
 
@@ -291,7 +275,7 @@
                                     <span>结业认证证书</span>
                                 </div>
                                 <div class="benefit-item">
-                                    <span class="benefit-icon">💬</span>
+                                    <span class="benefit-icon">对话</span>
                                     <span>专属学习群</span>
                                 </div>
                                 <div class="benefit-item">
@@ -306,11 +290,11 @@
                     <section class="security-guarantee">
                         <div class="guarantee-header">
                             <h4>安全保障</h4>
-                            <div class="guarantee-badge">🛡️ 支付安全</div>
+                            <div class="guarantee-badge">支付安全</div>
                         </div>
                         <div class="guarantee-list">
                             <div class="guarantee-item">
-                                <span class="guarantee-icon">🔒</span>
+                                <span class="guarantee-icon">锁</span>
                                 <span>SSL安全传输</span>
                             </div>
                             <div class="guarantee-item">
@@ -320,10 +304,6 @@
                             <div class="guarantee-item">
                                 <span class="guarantee-icon">⚡</span>
                                 <span>极速到账</span>
-                            </div>
-                            <div class="guarantee-item">
-                                <span class="guarantee-icon">🎯</span>
-                                <span>7天退款保障</span>
                             </div>
                         </div>
                     </section>
@@ -364,7 +344,7 @@
     <div id="successModal" class="modal success-modal">
         <div class="modal-content success-content">
             <div class="success-animation">
-                <div class="success-icon">✅</div>
+                <div class="success-icon">成功</div>
                 <div class="success-ripple"></div>
             </div>
             <h2>支付成功！</h2>
@@ -378,6 +358,6 @@
     </div>
 
     <!-- Scripts -->
-    <script src="../utils/payment.js?v=20250813-1920"></script>
+    <script src="../utils/payment.js?v=20250824-1120"></script>
 </body>
 </html>

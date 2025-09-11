@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>章节内容</title>
+    
+    <!-- 预加载所有常用依赖库 -->
+    
+    <!-- KaTeX 数学公式渲染库 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    
+    <!-- GSAP 动画库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
+    
+    <!-- Highlight.js 代码高亮 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    
+    <!-- Three.js 3D渲染 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Chart.js 图表库 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- D3.js 数据可视化 -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    
+    <!-- 通用样式 -->
+    <style>
+        /* 重置样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.7;
+            color: #333;
+            background: #fff;
+            overflow-x: hidden;
+        }
+        
+        /* 容器样式 */
+        .max-w-7xl { max-width: 80rem; margin: 0 auto; }
+        .max-w-6xl { max-width: 72rem; margin: 0 auto; }
+        .max-w-4xl { max-width: 56rem; margin: 0 auto; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .text-center { text-align: center; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .py-24 { padding-top: 6rem; padding-bottom: 6rem; }
+        .pt-20 { padding-top: 5rem; }
+        .mb-16 { margin-bottom: 4rem; }
+        .mb-20 { margin-bottom: 5rem; }
+        .mb-8 { margin-bottom: 2rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .min-h-screen { min-height: 100vh; }
+        .relative { position: relative; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .grid { display: grid; }
+        .gap-8 { gap: 2rem; }
+        .gap-10 { gap: 2.5rem; }
+        
+        /* 响应式网格 */
+        @media (min-width: 768px) {
+            .md\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .lg\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        
+        /* 标题样式 */
+        h1, h2, h3, h4, h5, h6 {
+            margin: 2rem 0 1rem 0;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            color: #1a202c;
+            border-bottom: 3px solid #4299e1;
+            padding-bottom: 0.5rem;
+        }
+        
+        h2 {
+            font-size: 2rem;
+            color: #2d3748;
+        }
+        
+        h3 {
+            font-size: 1.5rem;
+            color: #4a5568;
+        }
+        
+        /* 段落和文本 */
+        p {
+            margin: 1rem 0;
+            line-height: 1.8;
+            color: #4a5568;
+        }
+        
+        /* 区块样式 */
+        section {
+            padding: 3rem 1rem;
+            margin: 2rem 0;
+        }
+        
+        /* 知识卡片样式 */
+        .knowledge-card {
+            background: linear-gradient(145deg, rgba(66, 153, 225, 0.05) 0%, rgba(159, 122, 234, 0.05) 100%);
+            border: 1px solid rgba(66, 153, 225, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem auto;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .knowledge-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 电影级标题样式（用于特殊章节） */
+        .cinematic-title {
+            font-size: clamp(2rem, 6vw, 4rem);
+            font-weight: 900;
+            letter-spacing: 0.05em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        /* 代码块样式 */
+        pre {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        
+        code {
+            background: #edf2f7;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+        }
+        
+        /* 列表样式 */
+        ul, ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+        
+        li {
+            margin: 0.5rem 0;
+            line-height: 1.6;
+        }
+        
+        /* 链接样式 */
+        a {
+            color: #4299e1;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        
+        a:hover {
+            color: #3182ce;
+            text-decoration: underline;
+        }
+        
+        /* 图片样式 */
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        
+        /* 表格样式 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        th {
+            background: #f7fafc;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        /* 引用样式 */
+        blockquote {
+            border-left: 4px solid #4299e1;
+            padding-left: 1rem;
+            margin: 1rem 0;
+            color: #4a5568;
+            font-style: italic;
+            background: #f7fafc;
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        /* 动画和交互 */
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 1s ease-in forwards;
+        }
+        
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+        
+        .slide-up {
+            transform: translateY(20px);
+            opacity: 0;
+            animation: slideUp 0.8s ease-out forwards;
+        }
+        
+        @keyframes slideUp {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        /* 深色主题支持 */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #1a202c;
+                color: #e2e8f0;
+            }
+            
+            .knowledge-card {
+                background: linear-gradient(145deg, rgba(45, 55, 72, 0.8) 0%, rgba(74, 85, 104, 0.8) 100%);
+                border-color: rgba(113, 128, 150, 0.2);
+            }
+            
+            pre {
+                background: #2d3748;
+                border-color: #4a5568;
+            }
+            
+            code {
+                background: #4a5568;
+            }
+            
+            th {
+                background: #2d3748;
+                color: #e2e8f0;
+            }
+            
+            blockquote {
+                background: #2d3748;
+                border-left-color: #63b3ed;
+            }
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            section {
+                padding: 2rem 1rem;
+            }
+            
+            .knowledge-card {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+        
+        /* 加载动画样式 */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top-color: #4299e1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="loadingIndicator" class="loading">
+        <div class="spinner"></div>
+        <p>正在加载章节内容...</p>
+    </div>
+    
+    <div id="chapterContent" style="display: none;">
+        <!-- 章节内容将被动态插入到这里 -->
+    </div>
+
+    <script>
+        // 全局变量
+        let chapterData = null;
+        
+        // 获取URL参数
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+        
+        // 初始化所有依赖库
+        function initializeDependencies() {
+            return new Promise((resolve) => {
+                let loadedCount = 0;
+                const totalLibraries = 4; // KaTeX, GSAP, hljs, 其他
+                
+                function checkComplete() {
+                    loadedCount++;
+                    if (loadedCount >= totalLibraries) {
+                        resolve();
+                    }
+                }
+                
+                // 初始化 KaTeX
+                if (typeof renderMathInElement !== 'undefined') {
+                    console.log('KaTeX 已加载');
+                    checkComplete();
+                } else {
+                    setTimeout(() => {
+                        console.log('KaTeX 延迟检查');
+                        checkComplete();
+                    }, 1000);
+                }
+                
+                // 初始化 GSAP
+                if (typeof gsap !== 'undefined') {
+                    try {
+                        gsap.registerPlugin(ScrollTrigger, TextPlugin);
+                        console.log('GSAP 已初始化');
+                    } catch (e) {
+                        console.warn('GSAP 插件注册失败:', e);
+                    }
+                    checkComplete();
+                } else {
+                    setTimeout(() => {
+                        console.log('GSAP 延迟检查');
+                        checkComplete();
+                    }, 1000);
+                }
+                
+                // 初始化 highlight.js
+                if (typeof hljs !== 'undefined') {
+                    console.log('highlight.js 已加载');
+                    checkComplete();
+                } else {
+                    setTimeout(() => {
+                        console.log('highlight.js 延迟检查');
+                        checkComplete();
+                    }, 1000);
+                }
+                
+                // 其他库检查
+                setTimeout(() => {
+                    console.log('其他依赖库检查完成');
+                    checkComplete();
+                }, 500);
+            });
+        }
+        
+        // 渲染数学公式
+        function renderMathFormulas() {
+            if (typeof renderMathInElement !== 'undefined') {
+                try {
+                    renderMathInElement(document.body, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '$', right: '$', display: false},
+                            {left: '\\\\[', right: '\\\\]', display: true},
+                            {left: '\\\\(', right: '\\\\)', display: false}
+                        ],
+                        throwOnError: false,
+                        errorColor: '#cc0000',
+                        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+                        strict: false, // 关闭严格模式，避免中文字符警告
+                        trust: true,   // 信任内容
+                        macros: {      // 添加对中文的支持
+                            "\\text": "\\textrm"
+                        }
+                    });
+                    console.log('数学公式渲染完成');
+                } catch (error) {
+                    console.warn('数学公式渲染失败:', error);
+                }
+            }
+        }
+        
+        // 高亮代码块
+        function highlightCodeBlocks() {
+            if (typeof hljs !== 'undefined') {
+                try {
+                    hljs.highlightAll();
+                    console.log('代码高亮完成');
+                } catch (error) {
+                    console.warn('代码高亮失败:', error);
+                }
+            }
+        }
+        
+        // 初始化动画 - 只对实际存在的元素执行动画
+        function initializeAnimations() {
+            if (typeof gsap === 'undefined') {
+                console.log('GSAP未加载，跳过动画');
+                return;
+            }
+            
+            try {
+                // 通用内容动画 - 对所有可见的内容元素执行淡入动画
+                const allVisibleElements = document.querySelectorAll('#chapterContent > *, #chapterContent p, #chapterContent h1, #chapterContent h2, #chapterContent h3, #chapterContent section, #chapterContent div');
+                if (allVisibleElements.length > 0) {
+                    // 先设置初始状态
+                    gsap.set(allVisibleElements, { opacity: 0, y: 20 });
+                    
+                    // 然后执行动画
+                    gsap.to(allVisibleElements, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.6,
+                        stagger: 0.05,
+                        ease: "power2.out"
+                    });
+                    console.log('通用内容动画已执行，元素数量:', allVisibleElements.length);
+                } else {
+                    console.log('未找到需要动画的内容元素');
+                }
+                
+                // 检查并执行特定类的动画
+                const fadeInElements = document.querySelectorAll('.fade-in');
+                if (fadeInElements.length > 0) {
+                    gsap.from('.fade-in', {
+                        opacity: 0,
+                        duration: 1,
+                        stagger: 0.2
+                    });
+                    console.log('fade-in动画已执行');
+                }
+                
+                const slideUpElements = document.querySelectorAll('.slide-up');
+                if (slideUpElements.length > 0) {
+                    gsap.from('.slide-up', {
+                        y: 30,
+                        opacity: 0,
+                        duration: 0.8,
+                        stagger: 0.1
+                    });
+                    console.log('slide-up动画已执行');
+                }
+                
+                console.log('动画初始化完成');
+            } catch (error) {
+                console.warn('动画初始化失败:', error);
+            }
+        }
+        
+        // 加载章节内容
+        async function loadChapterContent() {
+            const chapterId = getUrlParameter('chapterId');
+            
+            if (!chapterId) {
+                document.getElementById('loadingIndicator').innerHTML = 
+                    '<div style="text-align: center; color: #e53e3e;"><h2>错误</h2><p>未指定章节ID</p></div>';
+                return;
+            }
+            
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`/api/content/chapters/${chapterId}`, {
+                    headers: {
+                        'Authorization': token ? `Bearer ${token}` : '',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('网络请求失败');
+                }
+                
+                const result = await response.json();
+                
+                if (result.code === 200 && result.data && result.data.content && result.data.content.contentHtml) {
+                    const htmlContent = result.data.content.contentHtml;
+                    const chapterTitle = result.data.chapter ? result.data.chapter.title : '章节内容';
+                    
+                    // 更新页面标题
+                    document.title = chapterTitle;
+                    
+                    // 插入内容
+                    const contentContainer = document.getElementById('chapterContent');
+                    contentContainer.innerHTML = htmlContent;
+                    
+                    // 显示内容
+                    document.getElementById('loadingIndicator').style.display = 'none';
+                    contentContainer.style.display = 'block';
+                    
+                    // 等待一小段时间让内容渲染
+                    setTimeout(() => {
+                        // 渲染数学公式
+                        renderMathFormulas();
+                        
+                        // 高亮代码块
+                        highlightCodeBlocks();
+                        
+                        console.log('章节内容加载完成');
+                    }, 100);
+                    
+                    // 延迟更长时间再执行动画，确保内容完全渲染和布局完成
+                    setTimeout(() => {
+                        // 初始化动画
+                        initializeAnimations();
+                    }, 1000); // 增加延迟到1秒
+                    
+                } else if (result.code === 403) {
+                    document.getElementById('loadingIndicator').innerHTML = 
+                        '<div style="text-align: center; color: #e53e3e;"><h2>权限不足</h2><p>' + (result.message || '需要购买课程才能查看此章节') + '</p></div>';
+                } else if (result.code === 401) {
+                    document.getElementById('loadingIndicator').innerHTML = 
+                        '<div style="text-align: center; color: #e53e3e;"><h2>需要登录</h2><p>请先登录再查看章节内容</p></div>';
+                } else {
+                    throw new Error(result.message || '获取章节内容失败');
+                }
+                
+            } catch (error) {
+                console.error('加载章节内容失败:', error);
+                document.getElementById('loadingIndicator').innerHTML = 
+                    '<div style="text-align: center; color: #e53e3e;"><h2>加载失败</h2><p>' + error.message + '</p><button onclick="location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #4299e1; color: white; border: none; border-radius: 4px; cursor: pointer;">重新加载</button></div>';
+            }
+        }
+        
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('页面加载完成，开始初始化...');
+            
+            // 初始化依赖库
+            await initializeDependencies();
+            console.log('依赖库初始化完成');
+            
+            // 加载章节内容
+            await loadChapterContent();
+        });
+        
+        // 错误处理
+        window.addEventListener('error', function(e) {
+            console.error('页面错误:', e.error);
+        });
+        
+        // 未捕获的 Promise 错误
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('未处理的 Promise 错误:', e.reason);
+        });
+    </script>
+</body>
+</html>

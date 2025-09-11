@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录测试 - AI Master Class</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 100%;
+            margin: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 28px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        
+        .test-info {
+            background: #f0f8ff;
+            border: 1px solid #b0d4ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .test-info h3 {
+            color: #0066cc;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .test-info p {
+            color: #333;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+        
+        .action-buttons {
+            display: grid;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            box-shadow: 0 10px 30px rgba(108, 117, 125, 0.3);
+        }
+        
+        .token-display {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 12px;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎓 登录测试</h1>
+        
+        <div class="test-info">
+            <h3>测试账号信息</h3>
+            <p>
+                用户名: cygws123<br>
+                密码: 123.00.aa
+            </p>
+        </div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">用户名</label>
+                <input type="text" id="username" value="cygws123" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">密码</label>
+                <input type="password" id="password" value="123.00.aa" required>
+            </div>
+            
+            <button type="submit" class="btn" id="loginBtn">登录</button>
+        </form>
+        
+        <div id="message" class="message"></div>
+        
+        <div id="tokenDisplay" class="token-display"></div>
+        
+        <div class="action-buttons" id="actionButtons" style="display: none;">
+            <button class="btn btn-secondary" onclick="viewProfile()">查看个人资料</button>
+            <button class="btn btn-secondary" onclick="viewCourses()">查看课程列表</button>
+            <button class="btn btn-secondary" onclick="viewCourseDetail()">查看课程详情</button>
+            <button class="btn btn-secondary" onclick="logout()">退出登录</button>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'http://42.194.245.66/api';
+        
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const message = document.getElementById('message');
+            
+            loginBtn.disabled = true;
+            loginBtn.textContent = '登录中...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        loginAccount: username,  // 使用正确的参数名
+                        password: password,
+                        loginType: 'password',
+                        deviceType: 'web'
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('登录响应:', data);
+                
+                if (data.code === 200 && data.data) {
+                    // 保存token和用户信息
+                    localStorage.setItem('token', data.data.token);
+                    localStorage.setItem('user', JSON.stringify(data.data.user));
+                    
+                    message.className = 'message success';
+                    message.textContent = '✅ 登录成功！';
+                    
+                    // 显示token
+                    document.getElementById('tokenDisplay').style.display = 'block';
+                    document.getElementById('tokenDisplay').textContent = 'Token: ' + data.data.token.substring(0, 50) + '...';
+                    
+                    // 显示操作按钮
+                    document.getElementById('actionButtons').style.display = 'grid';
+                    
+                    // 禁用登录表单
+                    document.getElementById('username').disabled = true;
+                    document.getElementById('password').disabled = true;
+                    loginBtn.style.display = 'none';
+                } else {
+                    throw new Error(data.message || '登录失败');
+                }
+            } catch (error) {
+                console.error('登录错误:', error);
+                message.className = 'message error';
+                message.textContent = '❌ ' + error.message;
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = '登录';
+            }
+        });
+        
+        function viewProfile() {
+            window.open('/dist/src/pages/profile.html', '_blank');
+        }
+        
+        function viewCourses() {
+            window.open('/dist/src/pages/courses.html', '_blank');
+        }
+        
+        function viewCourseDetail() {
+            window.open('/dist/src/pages/course-detail.html?id=1', '_blank');
+        }
+        
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            location.reload();
+        }
+        
+        // 检查是否已登录
+        window.onload = function() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                document.getElementById('message').className = 'message success';
+                document.getElementById('message').textContent = '✅ 已登录（使用缓存的Token）';
+                document.getElementById('tokenDisplay').style.display = 'block';
+                document.getElementById('tokenDisplay').textContent = 'Token: ' + token.substring(0, 50) + '...';
+                document.getElementById('actionButtons').style.display = 'grid';
+            }
+        };
+    </script>
+</body>
+</html>

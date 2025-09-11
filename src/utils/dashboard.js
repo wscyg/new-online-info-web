@@ -295,7 +295,7 @@ async function loadMyCourses() {
     
     try {
         // 从API获取所有课程（由于订阅系统不完整，暂时显示所有可用课程）
-        const response = await fetch('http://42.194.245.66:8070/api/courses');
+        const response = await fetch('http://42.194.245.66/api/courses');
         const data = await response.json();
         
         if (data.code === 200 && data.data && data.data.length > 0) {
@@ -325,7 +325,7 @@ function renderMyCourses(courses) {
                 <h3 class="course-title">${course.title}</h3>
                 <p class="course-description">${course.description || '探索AI技术的奥秘'}</p>
                 <div class="course-meta">
-                    <span class="course-price">${course.isFree ? '免费' : '¥' + course.price}</span>
+                    <span class="course-price">${course.isFree ? '免费' : '¥' + course.price.toFixed(2)}</span>
                     <span class="course-rating">⭐ ${course.rating || '5.0'}</span>
                 </div>
                 <div class="course-actions">
@@ -384,7 +384,7 @@ function viewCourseDetails(courseId) {
 async function loadUserProgress() {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://42.194.245.66:8070/api/users/progress', {
+        const response = await fetch('http://42.194.245.66/api/users/progress', {
             headers: {
                 'Authorization': token ? `Bearer ${token}` : ''
             }
@@ -411,7 +411,7 @@ async function loadUserProgress() {
 async function loadStudyPlans() {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://42.194.245.66:8070/api/study-plans', {
+        const response = await fetch('http://42.194.245.66/api/study-plans', {
             headers: {
                 'Authorization': token ? `Bearer ${token}` : ''
             }
@@ -437,7 +437,7 @@ async function loadStudyPlans() {
 async function loadUserNotes() {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://42.194.245.66:8070/api/notes', {
+        const response = await fetch('http://42.194.245.66/api/notes', {
             headers: {
                 'Authorization': token ? `Bearer ${token}` : ''
             }
@@ -463,7 +463,7 @@ async function loadUserNotes() {
 async function loadUserAchievements() {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://42.194.245.66:8070/api/users/achievements', {
+        const response = await fetch('http://42.194.245.66/api/users/achievements', {
             headers: {
                 'Authorization': token ? `Bearer ${token}` : ''
             }
@@ -488,7 +488,7 @@ async function loadUserAchievements() {
 // 加载推荐课程
 async function loadRecommendedCourses() {
     try {
-        const response = await fetch('http://42.194.245.66:8070/api/courses/recommended');
+        const response = await fetch('http://42.194.245.66/api/courses/recommended');
         
         if (response.ok) {
             const data = await response.json();
@@ -675,7 +675,7 @@ function renderRecommendedCourses() {
             <div class="recommended-info">
                 <div class="recommended-title">${course.title}</div>
                 <div class="recommended-meta">${course.level} • ${course.duration} • ⭐${course.rating}</div>
-                <div class="recommended-price">¥${course.price}</div>
+                <div class="recommended-price">¥${course.price.toFixed(2)}</div>
             </div>
         </div>
     `).join('');

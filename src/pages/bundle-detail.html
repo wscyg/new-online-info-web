@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课程包详情 - AI学习平台</title>
+    <link rel="stylesheet" href="../styles/main.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0f0f1e;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* 导航栏样式 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: rgba(15, 15, 30, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            padding: 0 5%;
+        }
+
+        .nav-container {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand a {
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: #667eea;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            transform: scaleX(1);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn-login, .btn-register {
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-login {
+            background: transparent;
+            color: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-login:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        /* 主英雄区域 */
+        .hero-section {
+            margin-top: 70px;
+            min-height: 500px;
+            background: linear-gradient(180deg, #1a1a3e 0%, #0f0f1e 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 动态背景效果 */
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+        }
+
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.5;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            top: -150px;
+            left: -150px;
+            animation-delay: 0s;
+        }
+
+        .shape-2 {
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            bottom: -200px;
+            right: -200px;
+            animation-delay: 5s;
+        }
+
+        .shape-3 {
+            width: 250px;
+            height: 250px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            top: 50%;
+            left: 50%;
+            animation-delay: 10s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            33% {
+                transform: translate(100px, -100px) rotate(120deg);
+            }
+            66% {
+                transform: translate(-100px, 100px) rotate(240deg);
+            }
+        }
+
+        /* 主要内容容器 */
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            padding: 80px 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 40px;
+            align-items: start;
+        }
+
+        /* 左侧内容 */
+        .content-left {
+            animation: slideInLeft 0.8s ease;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .bundle-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.5);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 14px;
+            color: #a8b2ff;
+            margin-bottom: 20px;
+        }
+
+        .bundle-badge .badge-icon {
+            font-size: 18px;
+        }
+
+        .bundle-title {
+            font-size: 48px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #a8b2ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .bundle-description {
+            font-size: 18px;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 40px;
+        }
+
+        /* 统计数据 */
+        .stats-container {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .stat-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* 右侧购买卡片 */
+        .purchase-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            position: sticky;
+            top: 100px;
+            animation: slideInRight 0.8s ease;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .price-section {
+            margin-bottom: 25px;
+        }
+
+        .price-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 8px;
+        }
+
+        .price-wrapper {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+
+        .price-current {
+            font-size: 42px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .price-original {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.4);
+            text-decoration: line-through;
+        }
+
+        .discount-tag {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .benefits-list {
+            list-style: none;
+            margin: 25px 0;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .benefit-item:last-child {
+            border-bottom: none;
+        }
+
+        .benefit-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .benefit-text {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 15px;
+        }
+
+        .btn-purchase {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-purchase::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-purchase:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-purchase:hover::before {
+            left: 100%;
+        }
+
+        /* 课程列表部分 */
+        .courses-section {
+            padding: 80px 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            color: #667eea;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .section-title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff, #a8b2ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-desc {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.6);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* 课程网格 */
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .course-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            animation: fadeInUp 0.8s ease backwards;
+        }
+
+        .course-card:nth-child(1) { animation-delay: 0.1s; }
+        .course-card:nth-child(2) { animation-delay: 0.2s; }
+        .course-card:nth-child(3) { animation-delay: 0.3s; }
+        .course-card:nth-child(4) { animation-delay: 0.4s; }
+        .course-card:nth-child(5) { animation-delay: 0.5s; }
+        .course-card:nth-child(6) { animation-delay: 0.6s; }
+
+        .course-card:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(102, 126, 234, 0.5);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .course-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .course-number {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .course-info {
+            flex: 1;
+        }
+
+        .course-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #ffffff;
+        }
+
+        .course-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .course-footer {
+            padding: 15px 20px;
+            background: rgba(102, 126, 234, 0.1);
+            border-top: 1px solid rgba(102, 126, 234, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .course-price {
+            font-size: 18px;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .course-status {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* 特色亮点部分 */
+        .features-section {
+            padding: 80px 5%;
+            background: linear-gradient(180deg, #0f0f1e 0%, #1a1a3e 100%);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.8s ease backwards;
+        }
+
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+        .feature-card:nth-child(4) { animation-delay: 0.4s; }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
+        .feature-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+
+        .feature-desc {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.6;
+        }
+
+        /* 浮动购买按钮 */
+        .floating-purchase {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 999;
+            animation: bounceIn 0.8s ease;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .floating-purchase:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+        }
+
+        .floating-price {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .floating-text {
+            font-size: 16px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .purchase-card {
+                position: static;
+                max-width: 500px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .bundle-title {
+                font-size: 32px;
+            }
+
+            .stats-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .floating-purchase {
+                bottom: 20px;
+                right: 20px;
+                padding: 12px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="../../index.html">AI学习平台</a>
+            </div>
+            <div class="nav-menu">
+                <a href="courses.html" class="nav-link">课程</a>
+                <a href="profile.html" class="nav-link">我的学习</a>
+                <a href="community.html" class="nav-link">社区</a>
+            </div>
+            <div class="nav-actions">
+                <button class="btn-login" onclick="location.href='login.html'">登录</button>
+                <button class="btn-register" onclick="location.href='register.html'">注册</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主英雄区域 -->
+    <section class="hero-section">
+        <!-- 动态背景 -->
+        <div class="hero-bg">
+            <div class="floating-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
+            </div>
+        </div>
+
+        <!-- 主要内容 -->
+        <div class="hero-content">
+            <div class="content-grid">
+                <!-- 左侧内容 -->
+                <div class="content-left">
+                    <div class="bundle-badge">
+                        <span class="badge-icon">🎁</span>
+                        <span>超值课程包</span>
+                    </div>
+                    <h1 class="bundle-title" id="bundleTitle">加载中...</h1>
+                    <p class="bundle-description" id="bundleDescription">正在加载课程包信息...</p>
+                    
+                    <div class="stats-container">
+                        <div class="stat-item">
+                            <div class="stat-icon">📚</div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="courseCount">-</div>
+                                <div class="stat-label">门课程</div>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon">⏱️</div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="totalHours">-</div>
+                                <div class="stat-label">学习时长</div>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon">👥</div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="enrollmentCount">-</div>
+                                <div class="stat-label">人已学习</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧购买卡片 -->
+                <div class="purchase-card">
+                    <div class="price-section">
+                        <div class="price-label">限时优惠价</div>
+                        <div class="price-wrapper">
+                            <span class="price-current" id="currentPrice">¥0</span>
+                            <span class="price-original" id="originalPrice">¥0</span>
+                            <span class="discount-tag" id="discountBadge">省60%</span>
+                        </div>
+                    </div>
+                    
+                    <ul class="benefits-list">
+                        <li class="benefit-item">
+                            <span class="benefit-icon">✓</span>
+                            <span class="benefit-text">永久访问所有课程</span>
+                        </li>
+                        <li class="benefit-item">
+                            <span class="benefit-icon">✓</span>
+                            <span class="benefit-text">免费获取更新内容</span>
+                        </li>
+                        <li class="benefit-item">
+                            <span class="benefit-icon">✓</span>
+                            <span class="benefit-text">专属学习社群</span>
+                        </li>
+                        <li class="benefit-item">
+                            <span class="benefit-icon">✓</span>
+                            <span class="benefit-text">结业证书认证</span>
+                        </li>
+                        <li class="benefit-item">
+                            <span class="benefit-icon">✓</span>
+                            <span class="benefit-text">1对1答疑辅导</span>
+                        </li>
+                    </ul>
+
+                    <button class="btn-purchase" id="btnPurchase" onclick="purchaseBundle()">
+                        立即解锁全部课程
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 课程列表部分 -->
+    <section class="courses-section">
+        <div class="section-header">
+            <div class="section-subtitle">包含课程</div>
+            <h2 class="section-title">精心挑选的学习路径</h2>
+            <p class="section-desc">从基础到进阶，循序渐进掌握核心技能</p>
+        </div>
+        
+        <div class="courses-grid" id="coursesGrid">
+            <!-- 课程列表将通过JavaScript动态生成 -->
+        </div>
+    </section>
+
+    <!-- 特色亮点 -->
+    <section class="features-section">
+        <div class="section-header">
+            <div class="section-subtitle">为什么选择我们</div>
+            <h2 class="section-title">课程包特色亮点</h2>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3 class="feature-title">系统化学习</h3>
+                <p class="feature-desc">精心设计的课程顺序，从基础到进阶，确保学习效果最大化</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💰</div>
+                <h3 class="feature-title">超值优惠</h3>
+                <p class="feature-desc">相比单独购买，节省超过60%的费用，性价比极高</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔄</div>
+                <h3 class="feature-title">持续更新</h3>
+                <p class="feature-desc">课程内容持续更新优化，一次购买永久受益</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🏆</div>
+                <h3 class="feature-title">项目实战</h3>
+                <p class="feature-desc">包含多个实战项目，学以致用，提升实际开发能力</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 浮动购买按钮 -->
+    <div class="floating-purchase" onclick="purchaseBundle()">
+        <span class="floating-price" id="floatingPrice">¥0</span>
+        <span class="floating-text">立即购买</span>
+    </div>
+
+    <script>
+        let bundleData = null;
+        let bundleId = null;
+
+        // 页面加载
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取URL参数中的课程包ID
+            const urlParams = new URLSearchParams(window.location.search);
+            bundleId = urlParams.get('id');
+            
+            if (bundleId) {
+                loadBundleData(bundleId);
+            } else {
+                showError('课程包ID不存在');
+            }
+
+            // 检查用户登录状态
+            checkUserAuth();
+        });
+
+        // 检查用户认证状态
+        function checkUserAuth() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            
+            if (token && user) {
+                // 已登录，更新导航栏
+                const navActions = document.querySelector('.nav-actions');
+                const userData = JSON.parse(user);
+                navActions.innerHTML = `
+                    <span style="color: rgba(255,255,255,0.8); margin-right: 15px;">欢迎，${userData.username}</span>
+                    <button class="btn-login" onclick="logout()">退出</button>
+                `;
+            }
+        }
+
+        // 加载课程包数据
+        async function loadBundleData(id) {
+            try {
+                const response = await fetch(`http://42.194.245.66/api/courses/bundles/${id}`);
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    bundleData = result.data;
+                    displayBundleInfo();
+                    displayCourses();
+                } else {
+                    throw new Error(result.message || '获取课程包信息失败');
+                }
+            } catch (error) {
+                console.error('加载课程包失败:', error);
+                showError('加载课程包信息失败，请稍后重试');
+            }
+        }
+
+        // 显示课程包信息
+        function displayBundleInfo() {
+            // 更新标题和描述
+            document.getElementById('bundleTitle').textContent = bundleData.title || '课程包';
+            document.getElementById('bundleDescription').textContent = bundleData.description || '包含多门精品课程';
+            
+            // 更新统计数据
+            document.getElementById('courseCount').textContent = bundleData.courseCount || 0;
+            document.getElementById('totalHours').textContent = (bundleData.totalHours || 0) + 'h';
+            document.getElementById('enrollmentCount').textContent = formatNumber(bundleData.enrollmentCount || 0);
+            
+            // 更新价格
+            const originalPrice = parseFloat(bundleData.originalPrice) || 0;
+            const currentPrice = parseFloat(bundleData.price) || 0;
+            
+            document.getElementById('originalPrice').textContent = `¥${originalPrice.toFixed(2)}`;
+            document.getElementById('currentPrice').textContent = `¥${currentPrice.toFixed(2)}`;
+            document.getElementById('floatingPrice').textContent = `¥${currentPrice.toFixed(2)}`;
+            
+            // 计算折扣
+            if (originalPrice > currentPrice && originalPrice > 0) {
+                const discount = Math.round((1 - currentPrice / originalPrice) * 100);
+                document.getElementById('discountBadge').textContent = `省${discount}%`;
+            } else {
+                document.getElementById('discountBadge').style.display = 'none';
+            }
+            
+            // 如果价格为0，显示免费
+            if (currentPrice === 0) {
+                document.getElementById('btnPurchase').textContent = '免费解锁全部课程';
+                document.querySelector('.floating-text').textContent = '免费获取';
+            }
+        }
+
+        // 显示课程列表
+        function displayCourses() {
+            const coursesGrid = document.getElementById('coursesGrid');
+            const courses = bundleData.courses || [];
+            
+            if (courses.length === 0) {
+                coursesGrid.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.5);">暂无课程</p>';
+                return;
+            }
+            
+            coursesGrid.innerHTML = courses.map((course, index) => {
+                const difficulty = getDifficultyText(course.difficulty);
+                const duration = course.durationHours || 10;
+                const price = course.price || 0;
+                
+                return `
+                <div class="course-card" onclick="viewCourse(${course.id})">
+                    <div class="course-header">
+                        <div class="course-number">${index + 1}</div>
+                        <div class="course-info">
+                            <h3 class="course-name">${course.title}</h3>
+                            <div class="course-meta">
+                                <span class="meta-item">
+                                    <span>🎯</span>
+                                    <span>${difficulty}</span>
+                                </span>
+                                <span class="meta-item">
+                                    <span>⏱️</span>
+                                    <span>${duration}小时</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="course-footer">
+                        <div class="course-price">原价 ¥${price}</div>
+                        <div class="course-status">已包含</div>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        // 格式化数字
+        function formatNumber(num) {
+            if (num >= 10000) {
+                return (num / 10000).toFixed(1) + 'w';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'k';
+            }
+            return num.toString();
+        }
+
+        // 获取难度文本
+        function getDifficultyText(difficulty) {
+            const levels = {
+                'beginner': '入门',
+                'intermediate': '进阶',
+                'advanced': '高级',
+                'expert': '专家'
+            };
+            return levels[difficulty] || '入门';
+        }
+
+        // 查看课程详情
+        function viewCourse(courseId) {
+            console.log('查看课程:', courseId);
+            // window.location.href = `course-detail.html?id=${courseId}`;
+        }
+
+        // 购买课程包
+        function purchaseBundle() {
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                // 未登录，跳转到登录页
+                alert('请先登录后再购买');
+                window.location.href = `login.html?redirect=${encodeURIComponent(window.location.href)}`;
+                return;
+            }
+            
+            // 跳转到支付页面
+            window.location.href = `payment.html?type=bundle&id=${bundleId}`;
+        }
+
+        // 显示错误信息
+        function showError(message) {
+            document.getElementById('bundleTitle').textContent = '加载失败';
+            document.getElementById('bundleDescription').textContent = message;
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>

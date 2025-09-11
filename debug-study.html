@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习页面调试</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 2rem; }
+        .btn { background: #3b82f6; color: white; border: none; padding: 0.75rem 1.5rem; margin: 0.5rem; border-radius: 4px; cursor: pointer; }
+        .result { margin: 1rem 0; padding: 1rem; background: #f5f5f5; border-radius: 4px; white-space: pre-wrap; max-height: 400px; overflow-y: auto; }
+        iframe { width: 100%; height: 400px; border: 1px solid #ddd; margin-top: 1rem; }
+    </style>
+</head>
+<body>
+    <h1>🔍 学习页面调试工具</h1>
+    <p>调试 study.html?courseId=1&chapterId=100 的问题</p>
+    
+    <div>
+        <button class="btn" onclick="testChapterAPI()">测试章节API</button>
+        <button class="btn" onclick="testContentAPI()">测试内容API</button>
+        <button class="btn" onclick="showOriginalStudy()">显示原始学习页面</button>
+        <button class="btn" onclick="simulateFixedStudy()">模拟修复后的页面</button>
+    </div>
+    
+    <div id="output" class="result">等待操作...</div>
+    <div id="iframe-container"></div>
+
+    <script>
+        const API_BASE = '/api';
+
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            document.getElementById('output').innerHTML += `[${timestamp}] ${message}\n`;
+        }
+
+        async function testChapterAPI() {
+            log('=== 测试章节API ===');
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch(`${API_BASE}/content/courses/1/chapters`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+                log('章节API响应状态: ' + response.status);
+                log('章节API响应数据: ' + JSON.stringify(data, null, 2));
+
+                if (data.success && data.data) {
+                    log(`✅ 找到 ${data.data.length} 个章节`);
+                    
+                    // 检查章节100是否存在
+                    const chapter100 = data.data.find(c => c.id === 100);
+                    if (chapter100) {
+                        log('✅ 章节100存在: ' + JSON.stringify(chapter100, null, 2));
+                    } else {
+                        log('❌ 章节100不存在');
+                    }
+                } else {
+                    log('❌ 章节API返回失败');
+                }
+            } catch (error) {
+                log('❌ 章节API请求失败: ' + error.message);
+            }
+        }
+
+        async function testContentAPI() {
+            log('=== 测试章节内容API ===');
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch(`${API_BASE}/content/chapters/100`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+                log('内容API响应状态: ' + response.status);
+                log('内容API响应数据: ' + JSON.stringify(data, null, 2));
+
+                if (data.success && data.data && data.data.contentHtml) {
+                    log('✅ 章节内容存在，长度: ' + data.data.contentHtml.length);
+                    log('内容预览: ' + data.data.contentHtml.substring(0, 200) + '...');
+                } else {
+                    log('❌ 章节内容不存在或为空');
+                }
+            } catch (error) {
+                log('❌ 内容API请求失败: ' + error.message);
+            }
+        }
+
+        function showOriginalStudy() {
+            log('=== 显示原始学习页面 ===');
+            const iframe = document.createElement('iframe');
+            iframe.src = 'study.html?courseId=1&chapterId=100';
+            iframe.style.width = '100%';
+            iframe.style.height = '500px';
+            iframe.style.border = '1px solid #ddd';
+            
+            const container = document.getElementById('iframe-container');
+            container.innerHTML = '<h3>原始学习页面:</h3>';
+            container.appendChild(iframe);
+        }
+
+        async function simulateFixedStudy() {
+            log('=== 创建修复后的学习页面 ===');
+            
+            const token = localStorage.getItem('token');
+            
+            try {
+                // 获取章节内容
+                const response = await fetch(`${API_BASE}/content/chapters/100`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+                
+                let content = '';
+                if (data.success && data.data && data.data.contentHtml) {
+                    content = data.data.contentHtml;
+                    log('✅ 使用真实章节内容');
+                } else {
+                    // 生成模拟内容
+                    content = `
+                        <!DOCTYPE html>
+                        <html lang="zh-CN">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <title>第1章：为什么需要Transformer</title>
+                            <style>
+                                body {
+                                    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+                                    line-height: 1.8;
+                                    max-width: 800px;
+                                    margin: 0 auto;
+                                    padding: 2rem;
+                                    background: white;
+                                }
+                                h1, h2, h3 { color: #2c3e50; margin-top: 2rem; }
+                                .highlight { background: #fef3cd; padding: 0.2rem 0.5rem; border-radius: 4px; }
+                                .code-block { background: #f8f9fa; padding: 1rem; border-radius: 8px; border-left: 4px solid #007bff; }
+                            </style>
+                        </head>
+                        <body>
+                            <h1>🚀 第1章：为什么需要Transformer</h1>
+                            
+                            <h2>📖 章节概述</h2>
+                            <p>在深度学习发展的历程中，<span class="highlight">Transformer架构</span>的出现标志着自然语言处理领域的重大突破。本章将带您了解Transformer产生的背景和它解决的核心问题。</p>
+                            
+                            <h2>🔍 传统模型的局限性</h2>
+                            <p>在Transformer出现之前，循环神经网络(RNN)和长短期记忆网络(LSTM)是处理序列数据的主要方法，但它们存在以下问题：</p>
+                            <ul>
+                                <li><strong>串行计算限制：</strong>RNN必须逐步处理序列，无法并行化</li>
+                                <li><strong>长依赖问题：</strong>难以捕获长距离的依赖关系</li>
+                                <li><strong>梯度消失：</strong>在长序列中梯度会逐渐消失</li>
+                            </ul>
+                            
+                            <h2>💡 Transformer的创新</h2>
+                            <div class="code-block">
+                                <strong>核心创新：注意力机制 (Attention Mechanism)</strong><br>
+                                "Attention is All You Need" - 这句话概括了Transformer的核心思想
+                            </div>
+                            
+                            <p>Transformer通过<span class="highlight">自注意力机制</span>实现了：</p>
+                            <ol>
+                                <li>并行化计算，大幅提升训练效率</li>
+                                <li>直接建模长距离依赖关系</li>
+                                <li>更好的可解释性和可视化能力</li>
+                            </ol>
+                            
+                            <h2>🎯 学习目标</h2>
+                            <p>通过本章学习，您将掌握：</p>
+                            <ul>
+                                <li>Transformer产生的历史背景</li>
+                                <li>传统序列模型的局限性</li>
+                                <li>注意力机制的基本概念</li>
+                                <li>Transformer的核心优势</li>
+                            </ul>
+                            
+                            <h2>📚 扩展阅读</h2>
+                            <p>推荐阅读原始论文：<em>"Attention Is All You Need"</em> (Vaswani et al., 2017)</p>
+                            
+                            <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: #f8f9fa; border-radius: 12px;">
+                                <h3>🎉 恭喜完成第1章学习！</h3>
+                                <p>接下来我们将深入学习Transformer的数学基础</p>
+                            </div>
+                        </body>
+                        </html>
+                    `;
+                    log('⚠️ 使用模拟章节内容');
+                }
+
+                // 创建修复后的iframe
+                const iframe = document.createElement('iframe');
+                iframe.style.width = '100%';
+                iframe.style.height = '600px';
+                iframe.style.border = '1px solid #28a745';
+                iframe.style.borderRadius = '8px';
+                
+                // 直接设置内容
+                iframe.onload = function() {
+                    iframe.contentDocument.open();
+                    iframe.contentDocument.write(content);
+                    iframe.contentDocument.close();
+                };
+                
+                const container = document.getElementById('iframe-container');
+                container.innerHTML = '<h3>修复后的学习页面:</h3>';
+                container.appendChild(iframe);
+                
+                // 设置空白页先
+                iframe.src = 'about:blank';
+                
+            } catch (error) {
+                log('❌ 创建修复页面失败: ' + error.message);
+            }
+        }
+
+        // 页面加载时自动登录
+        window.onload = async function() {
+            log('🚀 页面加载完成');
+            
+            // 检查是否有token
+            const token = localStorage.getItem('token');
+            if (!token) {
+                log('ℹ️ 未找到token，尝试自动登录...');
+                
+                try {
+                    const response = await fetch(`${API_BASE}/auth/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            loginAccount: 'cygws123',
+                            password: '123.00.aa',
+                            loginType: 'password',
+                            deviceType: 'web'
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (data.code === 200 && data.data && data.data.token) {
+                        localStorage.setItem('token', data.data.token);
+                        log('✅ 自动登录成功');
+                    }
+                } catch (error) {
+                    log('❌ 自动登录失败: ' + error.message);
+                }
+            } else {
+                log('✅ 找到已存储的token');
+            }
+        };
+    </script>
+</body>
+</html>

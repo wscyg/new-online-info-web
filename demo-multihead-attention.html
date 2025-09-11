@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第4章：深入分析 - 多头注意力的诞生 | 完整优化版</title>
+    <meta name="description" content="从单头到多头注意力机制的完整学习之旅，包含详细数学推导、代码实现和交互式可视化">
+    <!-- 使用本地库 -->
+    <link rel="stylesheet" href="/lib/highlightjs/github-dark.min.css">
+    <link rel="stylesheet" href="/lib/katex/katex.min.css">
+    <style>
+        /* ===== CSS变量定义 ===== */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-dark: #0f172a;
+            --bg-section: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent-red: #ef4444;
+            --accent-green: #22c55e;
+            --accent-blue: #06b6d4;
+            --accent-yellow: #fbbf24;
+            --accent-purple: #8b5cf6;
+            --accent-pink: #ec4899;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.3);
+            --animation-duration: 0.3s;
+            --content-max-width: 1200px;
+        }
+
+        /* 亮色主题 */
+        [data-theme="light"] {
+            --bg-dark: #ffffff;
+            --bg-section: #f8fafc;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ===== 全局样式 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background-color var(--animation-duration) ease;
+        }
+
+        /* ===== 布局组件 ===== */
+        .container {
+            max-width: var(--content-max-width);
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* ===== 导航栏 ===== */
+        .nav-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+        }
+
+        .nav-title h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-control {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all var(--animation-duration) ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .btn-control:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: var(--primary-gradient);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* ===== 主内容区 ===== */
+        main {
+            margin-top: 80px;
+            padding-bottom: 4rem;
+        }
+
+        /* ===== 章节卡片 ===== */
+        .chapter-hero {
+            background: var(--primary-gradient);
+            padding: 4rem 0;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chapter-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: pulse 10s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        .chapter-hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: white;
+        }
+
+        .chapter-hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .chapter-hero p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== 内容区块 ===== */
+        .section-card {
+            background: var(--bg-section);
+            border-radius: 1rem;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-lg);
+            transition: transform var(--animation-duration) ease;
+        }
+
+        .section-card:hover {
+            transform: translateY(-2px);
+        }
+
+        /* ===== 可视化容器 ===== */
+        .visualization-container {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .viz-controls {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--animation-duration) ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto;
+            border-radius: 0.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+        }
+
+        /* ===== 数学公式容器 ===== */
+        .math-container {
+            background: rgba(79, 70, 229, 0.1);
+            border: 1px solid rgba(79, 70, 229, 0.3);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        /* ===== 代码容器 ===== */
+        .code-container {
+            margin: 2rem 0;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .code-content {
+            background: #0d1117;
+            overflow-x: auto;
+        }
+
+        .code-content pre {
+            margin: 0;
+            padding: 1.5rem;
+        }
+
+        .code-content code {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* 提示框 */
+        .tip {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin: 1.5rem 0;
+        }
+
+        .tip-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .tip-content {
+            flex: 1;
+        }
+
+        .tip.info {
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+        }
+
+        .tip.success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .chapter-hero h1 {
+                font-size: 2rem;
+            }
+
+            .section-card {
+                padding: 1.5rem;
+            }
+
+            .viz-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="nav-header" role="navigation" aria-label="主导航">
+        <div class="container">
+            <div class="nav-content">
+                <div class="nav-title">
+                    <h1>第4章：多头注意力的诞生</h1>
+                </div>
+                <div class="nav-controls">
+                    <button id="toggle-theme" class="btn-control" aria-label="切换主题">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容 -->
+    <main>
+        <!-- 章节标题 -->
+        <section class="chapter-hero">
+            <div class="container">
+                <div class="chapter-hero-content">
+                    <h1>深入分析：多头注意力的诞生</h1>
+                    <p>从理想到现实的距离 —— 让我们正视问题，寻找突破</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="container">
+            <!-- 动画测试区域 -->
+            <section class="section-card">
+                <h2 style="color: var(--accent-purple); margin-bottom: 1.5rem;">🎨 动画效果测试</h2>
+                
+                <div class="tip info">
+                    <span class="tip-icon">💡</span>
+                    <div class="tip-content">
+                        <strong>测试项目：</strong><br>
+                        1. 背景脉冲动画（章节标题区域）<br>
+                        2. 文字淡入动画<br>
+                        3. 卡片悬停效果<br>
+                        4. 按钮交互动画<br>
+                        5. Canvas可视化动画
+                    </div>
+                </div>
+
+                <!-- 可视化测试 -->
+                <div class="visualization-container">
+                    <h3 style="color: var(--accent-blue); margin-bottom: 1.5rem;">🎯 注意力权重可视化</h3>
+                    
+                    <div class="viz-controls">
+                        <button class="btn btn-primary" onclick="drawAttentionVisualization()">
+                            绘制注意力分布
+                        </button>
+                        <button class="btn btn-primary" onclick="animateAttention()">
+                            播放动画
+                        </button>
+                    </div>
+
+                    <canvas id="attention-canvas" width="800" height="400"></canvas>
+                    
+                    <div id="animation-status" class="tip success" style="margin-top: 1rem; display: none;">
+                        <span class="tip-icon">✅</span>
+                        <div class="tip-content">
+                            动画正在播放！如果你看到了条形图的动画效果，说明JavaScript和Canvas动画都工作正常。
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 数学公式测试 -->
+            <section class="section-card">
+                <h2 style="color: var(--accent-green); margin-bottom: 1.5rem;">📐 数学公式渲染测试</h2>
+                
+                <div class="math-container">
+                    <h4 style="color: var(--accent-yellow); margin-bottom: 1rem;">多头注意力核心公式</h4>
+                    
+                    <div style="text-align: center; margin: 2rem 0;">
+                        <div id="math-formula-1" style="font-size: 1.2rem; margin: 1rem 0;">
+                            MultiHead(Q, K, V) = Concat(head_1, ..., head_h)W^O
+                        </div>
+                        <div id="math-formula-2" style="font-size: 1.1rem; margin: 1rem 0;">
+                            head_i = Attention(QW_i^Q, KW_i^K, VW_i^V)
+                        </div>
+                        <div id="math-formula-3" style="font-size: 1.1rem; margin: 1rem 0;">
+                            Attention(Q, K, V) = softmax(\frac{QK^T}{\sqrt{d_k}})V
+                        </div>
+                    </div>
+                    
+                    <div class="tip success" id="katex-status" style="display: none;">
+                        <span class="tip-icon">✅</span>
+                        <div class="tip-content">
+                            KaTeX 数学公式渲染成功！
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 代码高亮测试 -->
+            <section class="section-card">
+                <h2 style="color: var(--accent-blue); margin-bottom: 1.5rem;">💻 代码高亮测试</h2>
+                
+                <div class="code-container">
+                    <div class="code-content">
+                        <pre><code class="language-python">class MultiHeadAttention(nn.Module):
+    def __init__(self, d_model, num_heads):
+        super().__init__()
+        assert d_model % num_heads == 0
+        
+        self.d_model = d_model
+        self.num_heads = num_heads
+        self.d_k = d_model // num_heads
+        
+        # QKV线性变换
+        self.W_q = nn.Linear(d_model, d_model)
+        self.W_k = nn.Linear(d_model, d_model)
+        self.W_v = nn.Linear(d_model, d_model)
+        self.W_o = nn.Linear(d_model, d_model)
+        
+        self.scale = self.d_k ** -0.5
+
+    def forward(self, x):
+        batch_size, seq_len, _ = x.size()
+        
+        # 线性变换
+        Q = self.W_q(x).view(batch_size, seq_len, self.num_heads, self.d_k)
+        K = self.W_k(x).view(batch_size, seq_len, self.num_heads, self.d_k)
+        V = self.W_v(x).view(batch_size, seq_len, self.num_heads, self.d_k)
+        
+        # 转置以便并行计算
+        Q = Q.transpose(1, 2)  # [B, H, L, d_k]
+        K = K.transpose(1, 2)
+        V = V.transpose(1, 2)
+        
+        # 计算注意力
+        scores = torch.matmul(Q, K.transpose(-2, -1)) * self.scale
+        attn_weights = F.softmax(scores, dim=-1)
+        context = torch.matmul(attn_weights, V)
+        
+        # 拼接多头
+        context = context.transpose(1, 2).contiguous()
+        context = context.view(batch_size, seq_len, self.d_model)
+        
+        # 输出变换
+        output = self.W_o(context)
+        return output</code></pre>
+                    </div>
+                </div>
+                
+                <div class="tip success" id="highlight-status" style="display: none;">
+                    <span class="tip-icon">✅</span>
+                    <div class="tip-content">
+                        Highlight.js 代码高亮渲染成功！
+                    </div>
+                </div>
+            </section>
+
+            <!-- 测试总结 -->
+            <section class="section-card">
+                <h2 style="color: var(--accent-yellow); margin-bottom: 1.5rem;">📊 功能测试总结</h2>
+                <div id="test-summary">
+                    <p>页面加载中，正在检测各项功能...</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- 加载本地JavaScript库 -->
+    <script src="/lib/highlightjs/highlight.min.js"></script>
+    <script src="/lib/katex/katex.min.js"></script>
+    <script src="/lib/katex/auto-render.min.js"></script>
+
+    <script>
+        // 测试状态
+        const testResults = {
+            css: false,
+            javascript: false,
+            highlight: false,
+            katex: false,
+            animation: false
+        };
+
+        // 等待库加载
+        function waitForLibraries() {
+            return new Promise((resolve) => {
+                const checkLibraries = () => {
+                    if (typeof hljs !== 'undefined' && 
+                        typeof katex !== 'undefined') {
+                        resolve();
+                    } else {
+                        setTimeout(checkLibraries, 100);
+                    }
+                };
+                checkLibraries();
+            });
+        }
+
+        // 绘制注意力可视化
+        function drawAttentionVisualization() {
+            const canvas = document.getElementById('attention-canvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = 800;
+            canvas.height = 400;
+            
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制背景
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.8)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 数据
+            const words = ['红色', '苹果', '很', '甜'];
+            const weights = [0.247, 0.251, 0.244, 0.258];
+            
+            // 绘制参数
+            const barWidth = 120;
+            const gap = 40;
+            const startX = (canvas.width - (barWidth * 4 + gap * 3)) / 2;
+            const maxHeight = 200;
+            const baseY = 300;
+            
+            // 绘制柱状图
+            words.forEach((word, i) => {
+                const x = startX + i * (barWidth + gap);
+                const height = weights[i] * maxHeight * 4;
+                
+                // 渐变色
+                const gradient = ctx.createLinearGradient(x, baseY, x, baseY - height);
+                gradient.addColorStop(0, 'rgba(102, 126, 234, 0.8)');
+                gradient.addColorStop(1, 'rgba(118, 75, 162, 0.8)');
+                
+                // 绘制柱子
+                ctx.fillStyle = gradient;
+                ctx.fillRect(x, baseY - height, barWidth, height);
+                
+                // 绘制标签
+                ctx.fillStyle = '#f1f5f9';
+                ctx.font = '16px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(word, x + barWidth / 2, baseY + 25);
+                
+                // 绘制数值
+                ctx.fillStyle = '#fbbf24';
+                ctx.font = 'bold 14px sans-serif';
+                ctx.fillText(weights[i].toFixed(3), x + barWidth / 2, baseY - height - 10);
+            });
+            
+            // 标题
+            ctx.fillStyle = '#f1f5f9';
+            ctx.font = 'bold 20px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('单头注意力权重分布', canvas.width / 2, 40);
+            
+            testResults.animation = true;
+            updateTestSummary();
+        }
+
+        // 动画效果
+        function animateAttention() {
+            const canvas = document.getElementById('attention-canvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            let frame = 0;
+            const maxFrames = 60;
+            
+            function animate() {
+                frame++;
+                const progress = frame / maxFrames;
+                
+                // 清空画布
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // 绘制背景
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.8)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // 数据
+                const words = ['红色', '苹果', '很', '甜'];
+                const weights = [0.247, 0.251, 0.244, 0.258];
+                
+                // 绘制参数
+                const barWidth = 120;
+                const gap = 40;
+                const startX = (canvas.width - (barWidth * 4 + gap * 3)) / 2;
+                const maxHeight = 200;
+                const baseY = 300;
+                
+                // 动画色彩变化
+                const hue = (frame * 3) % 360;
+                
+                words.forEach((word, i) => {
+                    const x = startX + i * (barWidth + gap);
+                    const animatedHeight = (weights[i] * maxHeight * 4) * progress;
+                    
+                    // 动态渐变色
+                    const gradient = ctx.createLinearGradient(x, baseY, x, baseY - animatedHeight);
+                    gradient.addColorStop(0, `hsla(${hue + i * 30}, 70%, 60%, 0.8)`);
+                    gradient.addColorStop(1, `hsla(${hue + i * 30}, 70%, 40%, 0.8)`);
+                    
+                    // 绘制柱子
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(x, baseY - animatedHeight, barWidth, animatedHeight);
+                    
+                    // 标签
+                    ctx.fillStyle = '#f1f5f9';
+                    ctx.font = '16px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(word, x + barWidth / 2, baseY + 25);
+                    
+                    // 数值
+                    if (progress > 0.8) {
+                        ctx.fillStyle = '#fbbf24';
+                        ctx.font = 'bold 14px sans-serif';
+                        ctx.fillText(weights[i].toFixed(3), x + barWidth / 2, baseY - animatedHeight - 10);
+                    }
+                });
+                
+                // 动态标题
+                ctx.fillStyle = '#f1f5f9';
+                ctx.font = 'bold 20px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('多头注意力动画演示', canvas.width / 2, 40);
+                
+                if (frame < maxFrames) {
+                    requestAnimationFrame(animate);
+                } else {
+                    // 动画完成
+                    document.getElementById('animation-status').style.display = 'flex';
+                    testResults.animation = true;
+                    updateTestSummary();
+                }
+            }
+            
+            animate();
+        }
+
+        // 初始化测试
+        async function initializeTests() {
+            try {
+                // 等待库加载
+                await waitForLibraries();
+                
+                // 测试CSS
+                testResults.css = true;
+                
+                // 测试JavaScript
+                testResults.javascript = true;
+                
+                // 测试代码高亮
+                if (typeof hljs !== 'undefined') {
+                    hljs.highlightAll();
+                    document.getElementById('highlight-status').style.display = 'flex';
+                    testResults.highlight = true;
+                }
+                
+                // 测试KaTeX
+                if (typeof katex !== 'undefined') {
+                    katex.render('\\text{MultiHead}(Q, K, V) = \\text{Concat}(\\text{head}_1, \\ldots, \\text{head}_h)W^O', 
+                                document.getElementById('math-formula-1'));
+                    katex.render('\\text{head}_i = \\text{Attention}(QW_i^Q, KW_i^K, VW_i^V)', 
+                                document.getElementById('math-formula-2'));
+                    katex.render('\\text{Attention}(Q, K, V) = \\text{softmax}\\left(\\frac{QK^T}{\\sqrt{d_k}}\\right)V', 
+                                document.getElementById('math-formula-3'));
+                    
+                    document.getElementById('katex-status').style.display = 'flex';
+                    testResults.katex = true;
+                }
+                
+                updateTestSummary();
+                
+                // 自动绘制第一个可视化
+                setTimeout(() => {
+                    drawAttentionVisualization();
+                }, 1000);
+                
+            } catch (error) {
+                console.error('初始化失败:', error);
+            }
+        }
+
+        // 更新测试总结
+        function updateTestSummary() {
+            const summaryEl = document.getElementById('test-summary');
+            const total = Object.keys(testResults).length;
+            const passed = Object.values(testResults).filter(r => r).length;
+            
+            let html = `<h3>测试结果：${passed}/${total} 项通过</h3><br>`;
+            
+            const testNames = {
+                css: 'CSS样式和动画',
+                javascript: 'JavaScript基础功能',
+                highlight: 'Highlight.js代码高亮',
+                katex: 'KaTeX数学公式渲染',
+                animation: 'Canvas动画效果'
+            };
+            
+            for (const [test, result] of Object.entries(testResults)) {
+                const status = result ? '✅' : '❌';
+                const color = result ? 'var(--accent-green)' : 'var(--accent-red)';
+                html += `<div style="color: ${color}; margin: 0.5rem 0;">${status} ${testNames[test]}</div>`;
+            }
+            
+            if (passed === total) {
+                html += '<br><div style="color: var(--accent-green); font-weight: bold; font-size: 1.2rem;">🎉 所有功能完美运行！</div>';
+            }
+            
+            summaryEl.innerHTML = html;
+        }
+
+        // 主题切换
+        document.getElementById('toggle-theme').addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+        });
+
+        // 滚动进度条
+        window.addEventListener('scroll', () => {
+            const scrolled = window.scrollY;
+            const height = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = (scrolled / height) * 100;
+            document.getElementById('progress-bar').style.width = progress + '%';
+        });
+
+        // 启动初始化
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeTests);
+        } else {
+            initializeTests();
+        }
+    </script>
+</body>
+</html>

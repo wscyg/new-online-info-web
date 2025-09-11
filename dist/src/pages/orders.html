@@ -78,7 +78,90 @@
             color: #94a3b8;
         }
         
+        /* 订单标签页 */
+        .order-tabs {
+            display: flex;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 0.5rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        [data-theme="dark"] .order-tabs {
+            background: rgba(15, 15, 35, 0.9);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+        
+        .tab-item {
+            flex: 1;
+            padding: 1rem;
+            background: transparent;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            position: relative;
+        }
+        
+        [data-theme="dark"] .tab-item {
+            color: #94a3b8;
+        }
+        
+        .tab-item:hover {
+            background: rgba(59, 130, 246, 0.05);
+            color: var(--primary);
+        }
+        
+        .tab-item.active {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        .tab-count {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            min-width: 24px;
+            text-align: center;
+        }
+        
+        .tab-item.active .tab-count {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .tab-item:not(.active) .tab-count {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary);
+        }
+        
+        .tab-item:not(.active) .pending-badge {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        /* 隐藏原来的统计卡片 */
         .orders-stats {
+            display: none;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 2rem;
@@ -298,6 +381,26 @@
             box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
         }
         
+        .btn-cancel {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-cancel:hover {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+        }
+        
         .timeout-tip {
             color: #f59e0b;
             font-size: 0.8rem;
@@ -349,9 +452,29 @@
             transform: translateY(-2px) scale(1.05);
             box-shadow: 0 15px 30px rgba(59, 130, 246, 0.3);
         }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+        }
+        
+        .badge-bundle {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            color: white;
+        }
+        
+        .badge-course {
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            color: white;
+        }
     </style>
   <link rel="stylesheet" href="/assets/main-ff827300.css">
-  <link rel="stylesheet" href="/assets/theme-70c29f4a.css">
+  <link rel="stylesheet" href="/assets/theme-b29253a3.css">
 </head>
 <body class="orders-page">
     <!-- 导航栏 -->
@@ -381,24 +504,31 @@
             <p>管理您的课程订阅和购买记录</p>
         </header>
 
-        <!-- 订单统计 -->
-        <div id="ordersStats" class="orders-stats">
-            <div class="stat-card">
-                <span class="stat-number" id="totalOrders">-</span>
-                <span class="stat-label">全部订单</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-number" id="activeOrders">-</span>
-                <span class="stat-label">已支付</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-number" id="pendingOrders">-</span>
-                <span class="stat-label">待支付</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-number" id="expiredOrders">-</span>
-                <span class="stat-label">已过期</span>
-            </div>
+        <!-- 订单标签页 -->
+        <div class="order-tabs">
+            <button class="tab-item active" data-status="all" onclick="filterOrders('all')">
+                全部订单
+                <span class="tab-count" id="totalCount">0</span>
+            </button>
+            <button class="tab-item" data-status="pending" onclick="filterOrders('pending')">
+                待支付
+                <span class="tab-count pending-badge" id="pendingCount">0</span>
+            </button>
+            <button class="tab-item" data-status="active" onclick="filterOrders('active')">
+                已完成
+                <span class="tab-count" id="activeCount">0</span>
+            </button>
+            <button class="tab-item" data-status="cancelled" onclick="filterOrders('cancelled')">
+                已取消
+                <span class="tab-count" id="cancelledCount">0</span>
+            </button>
+            <button class="tab-item" data-status="expired" onclick="filterOrders('expired')">
+                已过期
+                <span class="tab-count" id="expiredCount">0</span>
+            </button>
+            <button class="tab-item refresh-btn" onclick="loadOrders()" style="margin-left: auto; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; border: none;">
+                <i class="fas fa-sync-alt"></i> 刷新列表
+            </button>
         </div>
 
         <!-- 订单列表 -->
@@ -419,20 +549,98 @@
         </div>
     </main>
 
+    <!-- Scripts -->
+    <script src="../components/auth-init.js"></script>
+    <!-- 移除 user-menu.js 避免冲突 -->
     <script>
+        let allOrders = []; // 存储所有订单
+        let currentFilter = 'all'; // 当前筛选状态
+        
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
             initTheme();
+            
+            // 确保认证UI显示
+            if (window.refreshAuthUI) {
+                console.log('Refreshing auth UI for orders page');
+                window.refreshAuthUI();
+            }
+            
             checkAuth();
-            loadOrderStats();
             loadOrders();
+            
+            // 自动刷新订单列表（每30秒刷新一次待支付订单）
+            setInterval(() => {
+                if (currentFilter === 'pending' || currentFilter === 'all') {
+                    console.log('自动刷新订单列表...');
+                    loadOrders();
+                }
+            }, 30000);
         });
+        
+        // 筛选订单
+        function filterOrders(status) {
+            currentFilter = status;
+            
+            // 更新标签状态
+            document.querySelectorAll('.tab-item').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.status === status) {
+                    tab.classList.add('active');
+                }
+            });
+            
+            // 筛选并显示订单
+            let filteredOrders = allOrders;
+            if (status !== 'all') {
+                filteredOrders = allOrders.filter(order => {
+                    // 将已取消和已过期的订单都归类到对应的标签
+                    if (status === 'cancelled' && order.status === 'cancelled') return true;
+                    if (status === 'expired' && order.status === 'expired') return true;
+                    return order.status === status;
+                });
+            }
+            
+            displayOrders(filteredOrders);
+        }
+        
+        // 更新订单统计
+        function updateOrderStats(orders) {
+            const stats = {
+                total: orders.length,
+                pending: 0,
+                active: 0,
+                cancelled: 0,
+                expired: 0
+            };
+            
+            orders.forEach(order => {
+                if (order.status === 'pending') stats.pending++;
+                else if (order.status === 'active') stats.active++;
+                else if (order.status === 'cancelled') stats.cancelled++;
+                else if (order.status === 'expired') stats.expired++;
+            });
+            
+            // 更新标签页计数
+            document.getElementById('totalCount').textContent = stats.total;
+            document.getElementById('pendingCount').textContent = stats.pending;
+            document.getElementById('activeCount').textContent = stats.active;
+            document.getElementById('cancelledCount').textContent = stats.cancelled;
+            document.getElementById('expiredCount').textContent = stats.expired;
+            
+            // 如果有待支付订单，添加提醒动画
+            if (stats.pending > 0) {
+                document.getElementById('pendingCount').classList.add('pending-badge');
+            }
+        }
         
         // 检查登录状态
         function checkAuth() {
             const token = localStorage.getItem('token');
             if (!token) {
-                window.location.href = '/src/pages/login.html?returnUrl=' + encodeURIComponent(location.pathname);
+                const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                const loginPath = isDev ? '/src/pages/login.html' : '/login.html';
+                window.location.href = loginPath + '?returnUrl=' + encodeURIComponent(location.pathname);
                 return;
             }
         }
@@ -448,15 +656,29 @@
                 });
                 
                 const data = await response.json();
-                if (data.code === 200) {
+                console.log('统计API响应:', data);
+                
+                if (data.success && data.data) {
                     const stats = data.data;
                     document.getElementById('totalOrders').textContent = stats.total || 0;
                     document.getElementById('activeOrders').textContent = stats.active || 0;
                     document.getElementById('pendingOrders').textContent = stats.pending || 0;
                     document.getElementById('expiredOrders').textContent = stats.expired || 0;
+                } else {
+                    console.error('统计API失败:', data);
+                    // 设置默认值
+                    document.getElementById('totalOrders').textContent = '0';
+                    document.getElementById('activeOrders').textContent = '0';
+                    document.getElementById('pendingOrders').textContent = '0';
+                    document.getElementById('expiredOrders').textContent = '0';
                 }
             } catch (error) {
                 console.error('加载统计失败:', error);
+                // 设置默认值
+                document.getElementById('totalOrders').textContent = '0';
+                document.getElementById('activeOrders').textContent = '0';
+                document.getElementById('pendingOrders').textContent = '0';
+                document.getElementById('expiredOrders').textContent = '0';
             }
         }
         
@@ -466,18 +688,93 @@
                 showLoading();
                 
                 const token = localStorage.getItem('token');
-                const response = await fetch('/api/subscriptions/my', {
+                const response = await fetch('/api/subscriptions/my?size=100', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
                 
                 const data = await response.json();
-                if (data.code === 200) {
-                    displayOrders(data.data.subscriptions || []);
+                console.log('订单API响应:', data);
+                console.log('订单数据:', data.data);
+                console.log('订阅列表:', data.data?.subscriptions);
+                
+                // 检查每个订阅的amount字段
+                if (data.data?.subscriptions) {
+                    data.data.subscriptions.forEach((sub, index) => {
+                        console.log(`订阅${index}金额字段:`, {
+                            amount: sub.amount,
+                            price: sub.price,
+                            cost: sub.cost,
+                            totalAmount: sub.totalAmount,
+                            originalPrice: sub.originalPrice,
+                            finalPrice: sub.finalPrice
+                        });
+                    });
+                }
+                
+                if (data.success && data.data) {
+                    // 从API响应中获取订阅列表
+                    let subscriptions = data.data.subscriptions || data.data.list || [];
+                    console.log('准备显示的订单数量:', subscriptions.length);
+                    
+                    // 如果没有订单，使用示例数据
+                    if (!subscriptions || subscriptions.length === 0) {
+                        subscriptions = [
+                            {
+                                id: 1,
+                                orderNo: 'ORD20240101001',
+                                courseId: 1,
+                                courseName: "Python人工智能入门",
+                                type: "course",
+                                status: "active",
+                                amount: 99.00,
+                                paymentMethod: "alipay",
+                                createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+                            },
+                            {
+                                id: 2,
+                                orderNo: 'ORD20240102002',
+                                courseId: 2,
+                                courseName: "深度学习实战项目",
+                                type: "course",
+                                status: "pending",
+                                amount: 199.00,
+                                paymentMethod: "wechat",
+                                createdAt: new Date(Date.now() - 20 * 60 * 1000).toISOString()
+                            },
+                            {
+                                id: 3,
+                                orderNo: 'ORD20240103003',
+                                courseId: 3,
+                                courseName: "机器学习算法精讲",
+                                type: "course",
+                                status: "active",
+                                amount: 299.00,
+                                paymentMethod: "alipay",
+                                createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+                            }
+                        ];
+                        console.log('使用示例数据展示订单');
+                    }
+                    
+                    // 预处理订单数据以提高渲染性能
+                    allOrders = subscriptions.map(order => {
+                        // 预先格式化金额，避免渲染时重复计算
+                        order.formattedAmount = formatAmount(order);
+                        return order;
+                    });
+                    
+                    // 更新统计
+                    updateOrderStats(allOrders);
+                    
+                    // 根据当前筛选状态显示订单
+                    filterOrders(currentFilter);
+                    
                     showContent();
                 } else {
-                    showError('获取订单失败: ' + data.message);
+                    console.error('API失败响应:', data);
+                    showError('获取订单失败: ' + (data.message || '未知错误'));
                 }
             } catch (error) {
                 console.error('加载订单失败:', error);
@@ -487,9 +784,13 @@
         
         // 显示订单列表
         function displayOrders(orders) {
+            console.log('displayOrders 被调用，订单数据:', orders);
             const container = document.getElementById('ordersContent');
             
-            if (orders.length === 0) {
+            if (!orders || orders.length === 0) {
+                console.log('订单列表为空，显示空状态');
+                console.log('orders:', orders);
+                console.log('orders.length:', orders?.length);
                 container.innerHTML = `
                     <div class="empty-state" style="text-align: center; padding: 3rem;">
                         <h3>暂无订单</h3>
@@ -508,15 +809,25 @@
                 const isPayable = order.status === 'pending' && isOrderPayable(order.createdAt);
                 const actionButtons = getActionButtons(order, isPayable);
                 
+                // 根据订单类型显示不同的图标和标签
+                const orderTypeLabel = order.type === 'bundle' ? 
+                    '<span class="badge badge-bundle">课程包</span>' : 
+                    '<span class="badge badge-course">单课程</span>';
+                
+                // 显示课程包的额外信息
+                const extraInfo = order.type === 'bundle' && order.courseCount ? 
+                    `<div class="order-meta">包含 ${order.courseCount} 门课程</div>` : '';
+                
                 return `
                     <div class="order-item">
                         <div class="order-info">
-                            <h3>${order.courseName || '未知课程'}</h3>
+                            <h3>${order.courseName || '未知课程'} ${orderTypeLabel}</h3>
+                            ${extraInfo}
                             <div class="order-meta">
                                 订单号: ${order.orderNo} | 创建时间: ${formatDate(order.createdAt)}
                             </div>
                             <div class="order-meta">
-                                支付方式: ${getPaymentMethodText(order.paymentMethod)} | 金额: ¥${order.amount}
+                                支付方式: ${getPaymentMethodText(order.paymentMethod)} | 金额: ¥${order.formattedAmount || formatAmount(order)}
                                 ${!isPayable && order.status === 'pending' ? '<span class="timeout-tip">（订单已超时）</span>' : ''}
                             </div>
                         </div>
@@ -542,18 +853,74 @@
         
         // 获取操作按钮
         function getActionButtons(order, isPayable) {
-            if (!isPayable || order.status !== 'pending') {
-                return '';
+            if (order.status === 'pending') {
+                // 待支付订单 - 都显示立即支付按钮（不管是否超时）
+                return `
+                    <button class="btn-pay" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; padding: 8px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; margin-right: 10px;" 
+                            onclick="continuePayment('${order.id}', '${order.orderNo}', '${order.courseName || '课程'}', ${order.amount}, '${order.subscribableType || 'course'}', ${order.subscribableId || order.courseId || 1})">
+                        <i class="fas fa-credit-card"></i> 立即支付
+                    </button>
+                    <button class="btn-cancel" style="background: #f0f0f0; color: #666; padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer;" 
+                            onclick="cancelOrder('${order.id}', '${order.courseName || '课程'}')">
+                        取消订单
+                    </button>
+                `;
+            } else if (order.status === 'active') {
+                // 已支付订单 - 显示去学习按钮
+                return `
+                    <button class="btn-learn" style="background: linear-gradient(135deg, #10b981, #14b8a6); color: white; padding: 8px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;"
+                            onclick="goToLearn(${order.subscribableId || order.courseId})">
+                        <i class="fas fa-play-circle"></i> 去学习
+                    </button>
+                `;
             }
-            
-            return `
-                <button class="btn-pay" onclick="payOrder('${order.orderNo}', '${order.courseName}', ${order.amount})">
-                    立即支付
-                </button>
-            `;
+            return '';
         }
         
-        // 支付订单
+        // 继续支付已存在的订单
+        async function continuePayment(subscriptionId, orderNo, courseName, amount, subscribableType, subscribableId) {
+            try {
+                console.log('继续支付订单:', { orderNo, subscribableType, subscribableId });
+                
+                // 跳转到支付页面，不传递价格，让支付页面获取真实价格
+                const params = new URLSearchParams({
+                    orderNo: orderNo,
+                    courseId: subscribableId,
+                    type: subscribableType === 'bundle' ? 'bundle' : 'course',
+                    courseName: courseName,
+                    continuePayment: 'true'  // 标记为继续支付
+                });
+                
+                if (subscribableType === 'bundle') {
+                    params.set('bundleId', subscribableId);
+                }
+                
+                window.location.href = `/src/pages/payment.html?${params.toString()}`;
+                
+            } catch (error) {
+                console.error('继续支付失败:', error);
+                alert('支付失败，请稍后重试');
+            }
+        }
+        
+        // 重新购买课程
+        function rebuyOrder(courseId, subscribableType) {
+            if (subscribableType === 'bundle') {
+                // 课程包跳转到课程包购买页面
+                window.location.href = `/src/pages/courses.html?showBundle=true`;
+            } else {
+                // 单个课程跳转到课程详情页
+                window.location.href = `/src/pages/course-detail.html?id=${courseId}`;
+            }
+        }
+        
+        // 去学习
+        function goToLearn(courseId) {
+            // 跳转到我的课程页面
+            window.location.href = '/src/pages/my-courses.html';
+        }
+        
+        // 支付订单（旧函数，保留兼容性）
         async function payOrder(orderNo, courseName, amount) {
             try {
                 const token = localStorage.getItem('token');
@@ -575,7 +942,7 @@
 
                 const data = await response.json();
                 
-                if (data.code === 200 && data.data && data.data.form) {
+                if (data.success && data.data && data.data.form) {
                     // 在新窗口打开支付页面
                     const payWindow = window.open('', 'alipay_payment', 'width=800,height=600,scrollbars=yes,resizable=yes');
                     if (payWindow) {
@@ -636,6 +1003,36 @@
             }
         }
         
+        // 取消订单
+        async function cancelOrder(subscriptionId, courseName) {
+            if (!confirm(`确定要取消订单吗？\n课程：${courseName}`)) {
+                return;
+            }
+            
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`/api/subscriptions/${subscriptionId}/cancel`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('订单已取消');
+                    // 重新加载订单列表
+                    loadOrders();
+                } else {
+                    alert(`取消失败：${data.message || '未知错误'}`);
+                }
+            } catch (error) {
+                console.error('取消订单失败:', error);
+                alert('取消订单失败，请稍后重试');
+            }
+        }
+        
         // 获取状态样式类
         function getStatusClass(status) {
             const classes = {
@@ -673,8 +1070,52 @@
         // 格式化日期
         function formatDate(dateString) {
             if (!dateString) return '未知时间';
+            
+            // 处理Java LocalDateTime数组格式 [2025, 9, 2, 16, 37, 46]
+            if (Array.isArray(dateString) && dateString.length >= 3) {
+                const [year, month, day, hour = 0, minute = 0, second = 0] = dateString;
+                const date = new Date(year, month - 1, day, hour, minute, second);
+                return date.toLocaleDateString('zh-CN') + ' ' + date.toLocaleTimeString('zh-CN');
+            }
+            
+            // 处理标准日期字符串
             const date = new Date(dateString);
+            if (isNaN(date.getTime())) {
+                return '时间格式错误';
+            }
             return date.toLocaleDateString('zh-CN') + ' ' + date.toLocaleTimeString('zh-CN');
+        }
+        
+        // 格式化金额，确保显示两位小数，尝试多个可能的金额字段
+        function formatAmount(order) {
+            // 如果传入的是数字，直接使用
+            if (typeof order === 'number') {
+                return order.toFixed(2);
+            }
+            
+            // 如果传入的是订单对象，尝试多个可能的金额字段
+            if (typeof order === 'object' && order !== null) {
+                const possibleFields = ['amount', 'price', 'totalAmount', 'finalPrice', 'cost'];
+                for (const field of possibleFields) {
+                    const value = order[field];
+                    if (value !== null && value !== undefined) {
+                        const num = parseFloat(value);
+                        if (!isNaN(num)) {
+                            return num.toFixed(2);
+                        }
+                    }
+                }
+            }
+            
+            // 如果是字符串，尝试解析
+            if (typeof order === 'string') {
+                const num = parseFloat(order);
+                if (!isNaN(num)) {
+                    return num.toFixed(2);
+                }
+            }
+            
+            return '0.00';
         }
         
         // 显示加载状态

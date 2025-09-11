@@ -39,7 +39,8 @@ class ProfileManager {
         if (!token || !userData) {
             console.log('登录信息缺失，跳转到登录页');
             alert('检测到登录状态异常，请重新登录');
-            window.location.href = '/src/pages/login.html';
+            const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            window.location.href = isDev ? '/src/pages/login.html' : '/login.html';
             return;
         }
         
@@ -52,7 +53,8 @@ class ProfileManager {
         } catch (error) {
             console.error('Error parsing user data:', error);
             alert('用户信息解析失败，请重新登录');
-            window.location.href = '/src/pages/login.html';
+            const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            window.location.href = isDev ? '/src/pages/login.html' : '/login.html';
         }
     }
 
@@ -502,7 +504,8 @@ class ProfileManager {
         if (confirm('确定要退出登录吗？')) {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
-            window.location.href = '/src/pages/login.html';
+            const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            window.location.href = isDev ? '/src/pages/login.html' : '/login.html';
         }
     }
 }

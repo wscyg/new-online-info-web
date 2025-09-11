@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习笔记 - AI未来学院</title>
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/notes.css">
+</head>
+<body>
+    <header class="page-header">
+        <div class="container">
+            <h1>学习笔记</h1>
+            <button class="btn btn-primary" onclick="createNote()">新建笔记</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="notes-container">
+            <!-- Sidebar -->
+            <aside class="notes-sidebar">
+                <div class="search-box">
+                    <input type="text" placeholder="搜索笔记..." id="searchInput">
+                </div>
+                
+                <div class="filter-section">
+                    <h3>筛选</h3>
+                    <select id="courseFilter">
+                        <option value="">所有课程</option>
+                    </select>
+                    <select id="tagFilter">
+                        <option value="">所有标签</option>
+                    </select>
+                </div>
+
+                <div class="notes-list" id="notesList">
+                    <!-- Notes list will be loaded here -->
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="notes-main">
+                <div id="noteEditor" class="note-editor" style="display: none;">
+                    <input type="text" id="noteTitle" placeholder="笔记标题" class="note-title-input">
+                    <div class="note-meta">
+                        <select id="noteCourse">
+                            <option value="">选择课程</option>
+                        </select>
+                        <input type="text" id="noteTags" placeholder="标签（用逗号分隔）">
+                    </div>
+                    <textarea id="noteContent" placeholder="开始记录..." class="note-content-editor"></textarea>
+                    <div class="editor-toolbar">
+                        <button class="btn btn-primary" onclick="saveNote()">保存</button>
+                        <button class="btn btn-secondary" onclick="cancelEdit()">取消</button>
+                        <button class="btn btn-danger" onclick="deleteNote()" id="deleteBtn" style="display: none;">删除</button>
+                    </div>
+                </div>
+
+                <div id="noteViewer" class="note-viewer">
+                    <div class="empty-state">
+                        <h2>选择或创建笔记</h2>
+                        <p>从左侧选择笔记查看，或创建新笔记开始记录</p>
+                        <button class="btn btn-primary" onclick="createNote()">创建第一个笔记</button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/notes.js"></script>
+</body>
+</html>

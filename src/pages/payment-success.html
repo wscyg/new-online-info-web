@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>支付成功 - 未来信息在线教育</title>
+    <link rel="stylesheet" href="../styles/main.css">
+    <style>
+        .success-container {
+            max-width: 600px;
+            margin: 100px auto;
+            padding: 40px;
+            text-align: center;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            background: #52c41a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: scaleIn 0.5s ease;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-icon svg {
+            width: 50px;
+            height: 50px;
+            fill: white;
+        }
+
+        .success-title {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .success-message {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .order-info {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .order-info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .order-info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .order-info-label {
+            color: #999;
+        }
+
+        .order-info-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: #1890ff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #40a9ff;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #666;
+            border: 1px solid #d9d9d9;
+        }
+
+        .btn-secondary:hover {
+            color: #1890ff;
+            border-color: #1890ff;
+        }
+
+        .loading {
+            color: #999;
+            margin: 20px 0;
+        }
+
+        .error-message {
+            color: #ff4d4f;
+            margin: 20px 0;
+            padding: 15px;
+            background: #fff2f0;
+            border: 1px solid #ffccc7;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-icon">
+            <svg viewBox="0 0 24 24">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+            </svg>
+        </div>
+        
+        <h1 class="success-title">支付成功！</h1>
+        <p class="success-message">您的订单已支付成功，正在为您激活课程...</p>
+        
+        <div class="order-info" id="orderInfo" style="display: none;">
+            <div class="order-info-item">
+                <span class="order-info-label">订单号：</span>
+                <span class="order-info-value" id="orderNo">-</span>
+            </div>
+            <div class="order-info-item">
+                <span class="order-info-label">支付金额：</span>
+                <span class="order-info-value" id="amount">-</span>
+            </div>
+            <div class="order-info-item">
+                <span class="order-info-label">支付时间：</span>
+                <span class="order-info-value" id="payTime">-</span>
+            </div>
+            <div class="order-info-item">
+                <span class="order-info-label">支付方式：</span>
+                <span class="order-info-value">支付宝</span>
+            </div>
+        </div>
+        
+        <div class="loading" id="loading">
+            正在处理订单，请稍候...
+        </div>
+        
+        <div class="error-message" id="errorMessage" style="display: none;">
+        </div>
+        
+        <div class="action-buttons" id="actionButtons" style="display: none;">
+            <a href="my-courses.html" class="btn btn-primary">查看我的课程</a>
+            <a href="../index.html" class="btn btn-secondary">返回首页</a>
+        </div>
+    </div>
+
+    <script>
+        // 获取URL参数
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderNo = urlParams.get('out_trade_no');
+        const totalAmount = urlParams.get('total_amount');
+        const tradeNo = urlParams.get('trade_no');
+        
+        // 显示订单信息
+        if (orderNo) {
+            document.getElementById('orderNo').textContent = orderNo;
+            document.getElementById('orderInfo').style.display = 'block';
+        }
+        
+        if (totalAmount) {
+            document.getElementById('amount').textContent = '¥' + totalAmount;
+        }
+        
+        // 显示支付时间
+        const now = new Date();
+        const timeStr = now.getFullYear() + '-' + 
+                       String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+                       String(now.getDate()).padStart(2, '0') + ' ' + 
+                       String(now.getHours()).padStart(2, '0') + ':' + 
+                       String(now.getMinutes()).padStart(2, '0') + ':' + 
+                       String(now.getSeconds()).padStart(2, '0');
+        document.getElementById('payTime').textContent = timeStr;
+        
+        // 检查订单状态
+        let checkAttempts = 0;
+        const maxAttempts = 10; // 最多重试10次
+        
+        async function checkOrderStatus() {
+            if (!orderNo) {
+                showError('订单号不存在');
+                return;
+            }
+            
+            checkAttempts++;
+            
+            try {
+                const token = localStorage.getItem('token');
+                const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:8070' : '';
+                const response = await fetch(`${apiUrl}/api/payment/status/${orderNo}`, {
+                    headers: {
+                        'Authorization': token ? `Bearer ${token}` : ''
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.code === 200 && data.data) {
+                    const status = data.data.tradeStatus || data.data.status;
+                    
+                    if (status === 'TRADE_SUCCESS' || status === 'TRADE_FINISHED' || status === 'success') {
+                        // 支付成功
+                        document.getElementById('loading').style.display = 'none';
+                        document.getElementById('actionButtons').style.display = 'flex';
+                        
+                        // 检查是否是课程包订阅
+                        if (orderNo.startsWith('BU')) {
+                            document.querySelector('.success-message').textContent = 
+                                '您的课程包已激活成功，包内所有课程已解锁！';
+                        } else {
+                            document.querySelector('.success-message').textContent = 
+                                '您的课程已激活成功，现在可以开始学习了！';
+                        }
+                    } else if (status === 'WAIT_BUYER_PAY' || status === 'pending') {
+                        // 等待支付或处理中，继续重试
+                        if (checkAttempts < maxAttempts) {
+                            document.getElementById('loading').textContent = `正在处理订单，请稍候...(${checkAttempts}/${maxAttempts})`;
+                            setTimeout(() => {
+                                checkOrderStatus();
+                            }, 3000); // 3秒后重试
+                        } else {
+                            showError('订单处理超时，请刷新页面重试或联系客服');
+                        }
+                    } else {
+                        // 支付状态异常
+                        showError('订单状态异常，请联系客服处理');
+                    }
+                } else {
+                    // API返回错误，可能是订单还在处理中
+                    if (checkAttempts < maxAttempts) {
+                        document.getElementById('loading').textContent = `正在确认支付状态...(${checkAttempts}/${maxAttempts})`;
+                        setTimeout(() => {
+                            checkOrderStatus();
+                        }, 3000); // 3秒后重试
+                    } else {
+                        showError('获取订单状态失败，请刷新页面重试');
+                    }
+                }
+            } catch (error) {
+                console.error('检查订单状态失败:', error);
+                if (checkAttempts < maxAttempts) {
+                    document.getElementById('loading').textContent = `网络请求失败，重试中...(${checkAttempts}/${maxAttempts})`;
+                    setTimeout(() => {
+                        checkOrderStatus();
+                    }, 3000); // 3秒后重试
+                } else {
+                    showError('网络错误，请刷新页面重试');
+                }
+            }
+        }
+        
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorMessage').style.display = 'block';
+            document.getElementById('actionButtons').style.display = 'flex';
+        }
+        
+        // 延迟执行，确保订单已处理
+        setTimeout(() => {
+            checkOrderStatus();
+        }, 2000);
+        
+        // 保存支付成功信息到localStorage
+        if (orderNo) {
+            const paymentSuccess = {
+                orderNo: orderNo,
+                amount: totalAmount,
+                tradeNo: tradeNo,
+                timestamp: Date.now()
+            };
+            localStorage.setItem('lastPaymentSuccess', JSON.stringify(paymentSuccess));
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试内容加载</title>
+    <style>
+        body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+        .info { background: #f0f8ff; padding: 15px; margin-bottom: 20px; border-radius: 8px; }
+        iframe { width: 100%; height: 80vh; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <div class="info">
+        <h2>内容加载测试</h2>
+        <p>正在测试从API获取的content_html是否能正确显示...</p>
+        <button onclick="loadContent()">加载章节100内容</button>
+        <div id="status"></div>
+    </div>
+    
+    <iframe id="contentFrame"></iframe>
+
+    <script>
+        async function loadContent() {
+            const statusDiv = document.getElementById('status');
+            const iframe = document.getElementById('contentFrame');
+            
+            try {
+                statusDiv.innerHTML = '正在加载...';
+                
+                const response = await fetch('/api/content/chapters/100');
+                const data = await response.json();
+                
+                if (data.code === 200 && data.data && data.data.content && data.data.content.contentHtml) {
+                    const htmlContent = data.data.content.contentHtml;
+                    statusDiv.innerHTML = `成功获取内容，长度: ${htmlContent.length} 字符`;
+                    
+                    // 直接写入iframe
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                    iframeDoc.open();
+                    iframeDoc.write(htmlContent);
+                    iframeDoc.close();
+                } else {
+                    statusDiv.innerHTML = '获取内容失败: ' + (data.message || '未知错误');
+                }
+            } catch (error) {
+                statusDiv.innerHTML = '加载失败: ' + error.message;
+            }
+        }
+        
+        // 页面加载后自动测试
+        window.onload = function() {
+            loadContent();
+        };
+    </script>
+</body>
+</html>

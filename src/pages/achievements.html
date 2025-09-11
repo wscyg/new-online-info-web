@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成就系统 - AI学习平台</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --white: #ffffff;
+            --gold: #fbbf24;
+            --silver: #9ca3af;
+            --bronze: #d97706;
+            --gradient-gold: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            --gradient-silver: linear-gradient(135deg, #e5e7eb 0%, #9ca3af 100%);
+            --gradient-bronze: linear-gradient(135deg, #fb923c 0%, #d97706 100%);
+            --gradient-platinum: linear-gradient(135deg, #c084fc 0%, #a855f7 100%);
+            --gradient-diamond: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(to bottom right, #0f172a, #1e293b);
+            min-height: 100vh;
+            color: var(--white);
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--white);
+        }
+
+        .nav-link.active {
+            color: var(--white);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #60a5fa, #c084fc);
+        }
+
+        /* 主容器 */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* 页面标题 */
+        .page-header {
+            text-align: center;
+            padding: 3rem 0;
+            position: relative;
+        }
+
+        .page-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #60a5fa 0%, #c084fc 50%, #fbbf24 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s ease infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .page-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+        }
+
+        /* 统计概览 */
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+        }
+
+        .stat-box:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        /* 成就分类标签 */
+        .achievement-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+        }
+
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: var(--white);
+            border: none;
+        }
+
+        /* 成就网格 */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .achievement-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .achievement-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .achievement-card:hover::before {
+            opacity: 1;
+        }
+
+        .achievement-card:hover {
+            transform: translateY(-5px) scale(1.05);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .achievement-card.locked {
+            opacity: 0.5;
+            filter: grayscale(100%);
+        }
+
+        .achievement-card.locked:hover {
+            transform: translateY(-2px);
+        }
+
+        /* 成就徽章 */
+        .achievement-badge {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+
+        .badge-frame {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid;
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .badge-frame.bronze {
+            border-color: var(--bronze);
+            box-shadow: 0 0 20px rgba(217, 119, 6, 0.5);
+        }
+
+        .badge-frame.silver {
+            border-color: var(--silver);
+            box-shadow: 0 0 20px rgba(156, 163, 175, 0.5);
+        }
+
+        .badge-frame.gold {
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+        }
+
+        .badge-frame.platinum {
+            border-image: var(--gradient-platinum) 1;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+        }
+
+        .badge-frame.diamond {
+            border-image: var(--gradient-diamond) 1;
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.7);
+            animation: rotate 10s linear infinite, pulse 2s ease infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .achievement-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .achievement-desc {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+
+        .achievement-progress {
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            color: var(--warning);
+        }
+
+        /* 特别成就展示 */
+        .featured-achievements {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .featured-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .featured-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 24px;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .featured-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
+        }
+
+        .featured-badge {
+            width: 100px;
+            height: 100px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            position: relative;
+        }
+
+        .featured-info {
+            flex: 1;
+        }
+
+        .featured-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .featured-desc {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 1rem;
+        }
+
+        .featured-reward {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .reward-tag {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* 进度条 */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #60a5fa, #c084fc);
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+
+        /* 排行榜预览 */
+        .leaderboard-preview {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .leaderboard-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(5px);
+        }
+
+        .rank-badge {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: 700;
+        }
+
+        .rank-1 { background: var(--gradient-gold); }
+        .rank-2 { background: var(--gradient-silver); }
+        .rank-3 { background: var(--gradient-bronze); }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-points {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+        }
+
+        .achievement-count {
+            text-align: right;
+            font-weight: 600;
+            color: var(--warning);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .achievements-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .featured-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .nav-menu {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">AI学习平台</div>
+            <ul class="nav-menu">
+                <li><a href="courses.html" class="nav-link">课程</a></li>
+                <li><a href="dashboard.html" class="nav-link">仪表盘</a></li>
+                <li><a href="study-plan.html" class="nav-link">学习计划</a></li>
+                <li><a href="achievements.html" class="nav-link active">成就</a></li>
+                <li><a href="leaderboard.html" class="nav-link">排行榜</a></li>
+                <li><a href="profile.html" class="nav-link">个人中心</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <h1 class="page-title">🏆 成就系统</h1>
+            <p class="page-subtitle">收集徽章，解锁成就，见证您的学习成长</p>
+        </div>
+
+        <!-- 统计概览 -->
+        <div class="stats-overview">
+            <div class="stat-box">
+                <div class="stat-icon">🏅</div>
+                <div class="stat-number">42</div>
+                <div class="stat-label">已解锁成就</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon">💎</div>
+                <div class="stat-number">8,560</div>
+                <div class="stat-label">成就积分</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-number">5</div>
+                <div class="stat-label">稀有成就</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-number">68%</div>
+                <div class="stat-label">完成度</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-number">#12</div>
+                <div class="stat-label">全站排名</div>
+            </div>
+        </div>
+
+        <!-- 特别成就 -->
+        <section class="featured-achievements">
+            <h2 class="section-title">
+                <span>✨</span>
+                <span>特别成就</span>
+            </h2>
+            <div class="featured-grid">
+                <div class="featured-card">
+                    <div class="featured-badge">
+                        <div class="badge-frame diamond"></div>
+                        <span>💎</span>
+                    </div>
+                    <div class="featured-info">
+                        <h3 class="featured-title">AI大师</h3>
+                        <p class="featured-desc">完成所有AI相关课程并获得优秀评价</p>
+                        <div class="featured-reward">
+                            <span class="reward-tag">
+                                <span>🎁</span>
+                                <span>+1000积分</span>
+                            </span>
+                            <span class="reward-tag">
+                                <span>🏅</span>
+                                <span>专属徽章</span>
+                            </span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 85%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="featured-card">
+                    <div class="featured-badge">
+                        <div class="badge-frame platinum"></div>
+                        <span>🚀</span>
+                    </div>
+                    <div class="featured-info">
+                        <h3 class="featured-title">学习狂人</h3>
+                        <p class="featured-desc">连续学习100天，每天不少于2小时</p>
+                        <div class="featured-reward">
+                            <span class="reward-tag">
+                                <span>🎁</span>
+                                <span>+500积分</span>
+                            </span>
+                            <span class="reward-tag">
+                                <span>📚</span>
+                                <span>免费课程</span>
+                            </span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 62%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 成就分类 -->
+        <div class="achievement-tabs">
+            <button class="tab-btn active">全部</button>
+            <button class="tab-btn">🎓 学习成就</button>
+            <button class="tab-btn">🏆 竞赛成就</button>
+            <button class="tab-btn">👥 社交成就</button>
+            <button class="tab-btn">⏰ 坚持成就</button>
+            <button class="tab-btn">🎯 特殊成就</button>
+            <button class="tab-btn">🔒 隐藏成就</button>
+        </div>
+
+        <!-- 成就网格 -->
+        <div class="achievements-grid">
+            <!-- 已解锁成就 -->
+            <div class="achievement-card">
+                <div class="achievement-badge">
+                    <div class="badge-frame gold"></div>
+                    <span>🎓</span>
+                </div>
+                <h3 class="achievement-name">初学者</h3>
+                <p class="achievement-desc">完成第一门课程</p>
+            </div>
+
+            <div class="achievement-card">
+                <div class="achievement-badge">
+                    <div class="badge-frame silver"></div>
+                    <span>📚</span>
+                </div>
+                <h3 class="achievement-name">博学者</h3>
+                <p class="achievement-desc">学习5个不同领域的课程</p>
+            </div>
+
+            <div class="achievement-card">
+                <div class="achievement-badge">
+                    <div class="badge-frame gold"></div>
+                    <span>🔥</span>
+                </div>
+                <h3 class="achievement-name">连续登录</h3>
+                <p class="achievement-desc">连续登录30天</p>
+            </div>
+
+            <div class="achievement-card">
+                <div class="achievement-badge">
+                    <div class="badge-frame platinum"></div>
+                    <span>⚡</span>
+                </div>
+                <h3 class="achievement-name">速度学习</h3>
+                <p class="achievement-desc">7天内完成一门课程</p>
+            </div>
+
+            <div class="achievement-card">
+                <div class="achievement-badge">
+                    <div class="badge-frame bronze"></div>
+                    <span>💬</span>
+                </div>
+                <h3 class="achievement-name">活跃讨论</h3>
+                <p class="achievement-desc">发表50条有价值的评论</p>
+            </div>
+
+            <div class="achievement-card">
+                <div class="achievement-badge">
+                    <div class="badge-frame diamond"></div>
+                    <span>👑</span>
+                </div>
+                <h3 class="achievement-name">学霸</h3>
+                <p class="achievement-desc">所有测试均获得90分以上</p>
+            </div>
+
+            <!-- 未解锁成就 -->
+            <div class="achievement-card locked">
+                <div class="achievement-badge">
+                    <div class="badge-frame silver"></div>
+                    <span>🔒</span>
+                </div>
+                <h3 class="achievement-name">未知成就</h3>
+                <p class="achievement-desc">继续努力解锁</p>
+                <p class="achievement-progress">进度: 45/100</p>
+            </div>
+
+            <div class="achievement-card locked">
+                <div class="achievement-badge">
+                    <div class="badge-frame bronze"></div>
+                    <span>🔒</span>
+                </div>
+                <h3 class="achievement-name">神秘成就</h3>
+                <p class="achievement-desc">完成特定条件解锁</p>
+                <p class="achievement-progress">进度: 2/10</p>
+            </div>
+
+            <div class="achievement-card locked">
+                <div class="achievement-badge">
+                    <div class="badge-frame gold"></div>
+                    <span>🔒</span>
+                </div>
+                <h3 class="achievement-name">隐藏成就</h3>
+                <p class="achievement-desc">探索更多内容</p>
+                <p class="achievement-progress">进度: 0/1</p>
+            </div>
+        </div>
+
+        <!-- 排行榜预览 -->
+        <section class="leaderboard-preview">
+            <h2 class="section-title">
+                <span>🏅</span>
+                <span>成就排行榜</span>
+            </h2>
+            <div class="leaderboard-list">
+                <div class="leaderboard-item">
+                    <span class="rank-badge rank-1">1</span>
+                    <span class="user-avatar">A</span>
+                    <div class="user-info">
+                        <div class="user-name">AlexChen</div>
+                        <div class="user-points">12,850 成就积分</div>
+                    </div>
+                    <div class="achievement-count">98 成就</div>
+                </div>
+                <div class="leaderboard-item">
+                    <span class="rank-badge rank-2">2</span>
+                    <span class="user-avatar">S</span>
+                    <div class="user-info">
+                        <div class="user-name">SarahLiu</div>
+                        <div class="user-points">11,200 成就积分</div>
+                    </div>
+                    <div class="achievement-count">92 成就</div>
+                </div>
+                <div class="leaderboard-item">
+                    <span class="rank-badge rank-3">3</span>
+                    <span class="user-avatar">M</span>
+                    <div class="user-info">
+                        <div class="user-name">MikeWang</div>
+                        <div class="user-points">10,560 成就积分</div>
+                    </div>
+                    <div class="achievement-count">88 成就</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // 标签切换
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                // 这里可以添加筛选逻辑
+            });
+        });
+
+        // 成就卡片点击效果
+        document.querySelectorAll('.achievement-card').forEach(card => {
+            card.addEventListener('click', function() {
+                if (!this.classList.contains('locked')) {
+                    // 显示成就详情
+                    console.log('显示成就详情');
+                }
+            });
+        });
+
+        // 动画效果
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeInUp 0.6s ease forwards';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.achievement-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        // 添加动画样式
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

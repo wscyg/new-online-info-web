@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI课程中心 - 探索未来科技</title>
-    <meta name="description" content="最前沿的AI课程，科技感十足的学习体验">
+    <title>课程</title>
+    <meta name="description" content="以人工智能为核心，让每个人在AI时代都能够快速成长">
     
     <!-- 预加载主题切换器 -->
-    <script src="/src/utils/theme-switcher.js"></script>
+    <script src="../utils/theme-switcher.js"></script>
     <style>
         * {
             margin: 0;
@@ -16,20 +16,35 @@
         }
 
         :root {
-            --primary: #3B82F6;
-            --secondary: #8B5CF6;
-            --accent: #10B981;
-            --warning: #F59E0B;
-            --danger: #EF4444;
-            --dark: #1E293B;
-            --darker: #0F172A;
-            --light: #FFFFFF;
-            --gray-100: #F1F5F9;
-            --gray-200: #E2E8F0;
-            --gray-300: #CBD5E1;
-            --gray-400: #94A3B8;
-            --gray-500: #64748B;
+            --primary: #667eea;
+            --primary-light: #764ba2;
+            --secondary: #f093fb;
+            --secondary-light: #f5576c;
+            --accent: #4facfe;
+            --accent-light: #00f2fe;
+            --warning: #ffecd2;
+            --warning-dark: #fcb69f;
+            --success: #a8edea;
+            --success-dark: #fed6e3;
+            --danger: #ff9a9e;
+            --danger-dark: #fecfef;
+            --dark: #2c3e50;
+            --darker: #34495e;
+            --light: #ffffff;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
             --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --shadow-soft: 0 8px 32px rgba(31, 38, 135, 0.37);
+            --shadow-glow: 0 8px 32px rgba(103, 126, 234, 0.15);
+            --blur: backdrop-filter: blur(10px);
         }
 
         /* 深色主题 */
@@ -51,8 +66,8 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--light);
+            font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             color: var(--dark);
             overflow-x: hidden;
             min-height: 100vh;
@@ -60,22 +75,29 @@
         }
 
         [data-theme="dark"] body {
-            background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #2D3748 100%);
         }
 
         [data-theme="light"] body {
-            background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 50%, #F0F9FF 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
         }
 
-        /* 简洁的网格背景 */
+        /* 现代化背景效果 */
         .matrix-bg {
             position: fixed;
             inset: 0;
             z-index: -2;
-            background-image: 
-                linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(240, 147, 251, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(79, 172, 254, 0.15) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(1deg); }
+            66% { transform: translateY(10px) rotate(-1deg); }
         }
 
         /* 导航栏 */
@@ -118,6 +140,8 @@
             display: flex;
             gap: 2rem;
             align-items: center;
+            flex: 1;
+            justify-content: center;
         }
 
         /* 主题切换按钮 */
@@ -231,74 +255,133 @@
             transform: translateY(-1px);
         }
 
-        /* 页面头部 */
-        .page-header {
-            padding: 100px 0 40px;
-            background: linear-gradient(135deg, 
-                rgba(219, 234, 254, 0.4) 0%, 
-                rgba(225, 231, 254, 0.4) 100%);
+        /* Hero Section */
+        .hero-section {
+            padding: 140px 0 40px;
             text-align: center;
-            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        [data-theme="dark"] .page-header {
-            background: linear-gradient(135deg, 
-                rgba(30, 41, 59, 0.6) 0%, 
-                rgba(51, 65, 85, 0.6) 100%);
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
         }
 
-        .page-title {
-            font-size: 2.5rem;
+        .hero-title {
+            font-size: 3rem;
             font-weight: 800;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #2563eb, #9333ea, #059669);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            animation: titleGlow 3s ease-in-out infinite alternate;
         }
 
-        .page-subtitle {
-            color: var(--gray-600);
-            font-size: 1.1rem;
-            margin-bottom: 2rem;
+        @keyframes titleGlow {
+            from { filter: brightness(1); }
+            to { filter: brightness(1.1) saturate(1.2); }
         }
 
-        .stats-row {
+        .hero-subtitle {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.4;
+            letter-spacing: 0.02em;
+        }
+        
+        [data-theme="dark"] .hero-subtitle {
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-stats {
             display: flex;
             justify-content: center;
-            gap: 3rem;
-            margin-top: 2rem;
+            gap: 4rem;
+            margin: 2rem 0;
         }
 
         .stat-item {
             text-align: center;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .stat-item:nth-child(1) { animation-delay: 0.2s; }
+        .stat-item:nth-child(2) { animation-delay: 0.4s; }
+        .stat-item:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .stat-number {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: 800;
             color: var(--primary);
             display: block;
+            margin-bottom: 0.5rem;
         }
 
         .stat-label {
-            font-size: 0.9rem;
+            font-size: 1rem;
             color: var(--gray-500);
-            margin-top: 0.25rem;
         }
 
-        /* 课程筛选 */
-        .course-filters {
-            padding: 40px 0;
-            background: var(--light);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        .hero-features {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
             transition: all 0.3s ease;
         }
 
-        [data-theme="dark"] .course-filters {
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        .feature-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
         }
 
-        .container {
+        .feature-icon {
+            font-size: 1.5rem;
+        }
+
+        /* Advanced Filter Bar */
+        .filter-section {
+            padding: 2rem 0;
+            background: var(--light);
+            border-bottom: 1px solid var(--gray-200);
+            position: sticky;
+            top: 80px;
+            z-index: 999;
+            backdrop-filter: blur(20px);
+        }
+
+        .filter-container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 0 2rem;
@@ -312,49 +395,61 @@
             margin-bottom: 2rem;
         }
 
-        .filter-tab {
-            padding: 0.75rem 1.5rem;
-            background: var(--light);
-            border: 2px solid var(--gray-200);
+        .filter-pill {
+            padding: 0.8rem 1.5rem;
+            background: var(--gray-100);
+            border: 2px solid transparent;
             color: var(--gray-600);
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: 500;
+            position: relative;
         }
 
-        .filter-tab:hover,
-        .filter-tab.active {
-            color: white;
-            border-color: var(--primary);
+        .filter-pill:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary);
+        }
+
+        .filter-pill.active {
             background: var(--primary);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
         }
 
         .filter-controls {
             display: flex;
             justify-content: center;
-            gap: 2rem;
+            gap: 1rem;
             align-items: center;
+            flex-wrap: nowrap;
         }
 
-        .search-box {
+        .search-container {
             position: relative;
         }
 
-        .search-box input {
-            padding: 0.8rem 3rem 0.8rem 1.2rem;
-            background: var(--light);
-            border: 2px solid var(--gray-200);
-            border-radius: 8px;
+        .search-input {
+            padding: 0.9rem 3rem 0.9rem 1.2rem;
+            background: var(--gray-100);
+            border: 2px solid transparent;
+            border-radius: 50px;
             color: var(--dark);
             font-size: 1rem;
-            width: 300px;
+            width: 280px;
+            min-width: 200px;
+            flex: 1 1 auto;
+            max-width: 400px;
             transition: all 0.3s ease;
         }
 
-        .search-box input:focus {
+        .search-input:focus {
             outline: none;
             border-color: var(--primary);
+            background: var(--light);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
         .search-btn {
@@ -362,67 +457,218 @@
             right: 8px;
             top: 50%;
             transform: translateY(-50%);
-            background: none;
+            background: var(--primary);
             border: none;
-            color: var(--primary);
+            color: white;
             cursor: pointer;
             font-size: 1.1rem;
-            padding: 0.5rem;
+            padding: 0.6rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background: #2563EB;
+            transform: translateY(-50%) scale(1.05);
         }
 
         .sort-select {
-            padding: 0.8rem 1.2rem;
-            background: var(--light);
-            border: 2px solid var(--gray-200);
-            border-radius: 8px;
+            padding: 0.9rem 1.5rem;
+            background: var(--gray-100);
+            border: 2px solid transparent;
+            border-radius: 50px;
             color: var(--dark);
             cursor: pointer;
             transition: all 0.3s ease;
+            font-weight: 500;
         }
 
         .sort-select:focus {
             outline: none;
             border-color: var(--primary);
+            background: var(--light);
         }
 
-        /* 课程列表 */
+        /* Loading States */
+        .loading-skeleton {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Courses Section */
         .courses-section {
-            padding: 60px 0;
+            padding: 3rem 0;
             background: var(--light);
-            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+            animation: titleEnter 1s ease-out forwards;
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        .section-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, 
+                #ffffff 0%, 
+                rgba(255,255,255,0.9) 50%,
+                rgba(240,147,251,0.8) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            letter-spacing: -0.03em;
+            text-shadow: 0 0 50px rgba(255,255,255,0.3);
+            position: relative;
+        }
+        
+        @keyframes titleEnter {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: var(--gray-600);
         }
 
         .courses-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 2rem;
+            padding: 2rem 0;
         }
 
         .course-card {
-            background: var(--light);
-            border: 2px solid var(--gray-200);
-            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
             overflow: hidden;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        }
-
-        [data-theme="dark"] .course-card {
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            position: relative;
+            cursor: pointer;
+            max-height: 600px;
+            animation: cardEnter 0.6s ease-out forwards;
+            opacity: 0;
+            transform: translateY(30px);
         }
 
         .course-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
-            border-color: var(--primary);
+            transform: translateY(-16px) scale(1.05);
+            box-shadow: 
+                0 25px 80px rgba(102, 126, 234, 0.3),
+                0 12px 40px rgba(240, 147, 251, 0.2),
+                inset 0 2px 0 rgba(255, 255, 255, 0.5);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+        
+        
+        @keyframes cardEnter {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .course-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(102, 126, 234, 0.05) 0%, 
+                rgba(240, 147, 251, 0.05) 50%,
+                rgba(79, 172, 254, 0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            border-radius: 24px;
+        }
+        
+        .course-card:hover::before {
+            opacity: 1;
         }
 
-        .course-header {
+        .course-image {
+            height: 160px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             position: relative;
-            padding: 1rem;
-            background: linear-gradient(135deg, #DBEAFE, #E9D5FF);
+            overflow: hidden;
+        }
+        
+        .course-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, 
+                transparent 30%, 
+                rgba(255, 255, 255, 0.1) 50%, 
+                transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+        
+        .course-card:hover .course-image::after {
+            transform: translateX(100%);
+        }
+
+        .course-image img {
+            width: 100%;
+            height: 100%;
+            -o-object-fit: cover;
+               object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .course-card:hover .course-image img {
+            transform: scale(1.1);
+        }
+
+        .course-badges {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
             display: flex;
             gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
         .badge {
@@ -430,101 +676,265 @@
             border-radius: 20px;
             font-size: 0.75rem;
             font-weight: 600;
+            backdrop-filter: blur(10px);
         }
 
         .badge-level {
-            background: rgba(59, 130, 246, 0.1);
-            color: var(--primary);
-            border: 1px solid rgba(59, 130, 246, 0.3);
+            background: rgba(59, 130, 246, 0.9);
+            color: white;
         }
 
         .badge-free {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--accent);
-            border: 1px solid rgba(16, 185, 129, 0.3);
+            background: rgba(34, 197, 94, 0.9);
+            color: white;
         }
 
         .badge-hot {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--danger);
-            border: 1px solid rgba(239, 68, 68, 0.3);
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            animation: pulse-glow 2s infinite;
         }
 
-        .course-image {
-            height: 200px;
-            background: linear-gradient(135deg, #DBEAFE, #E9D5FF);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--gray-400);
-            font-size: 3rem;
+        .badge-new {
+            background: rgba(245, 158, 11, 0.9);
+            color: white;
         }
 
-        .course-body {
+        .badge-bestseller {
+            background: rgba(139, 92, 246, 0.9);
+            color: white;
+        }
+
+        .badge-scheduled {
+            background: rgba(148, 163, 184, 0.9);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .badge-scheduled::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .course-content {
             padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 2;
         }
 
         .course-title {
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             font-weight: 700;
             margin-bottom: 0.8rem;
             color: var(--dark);
             line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        [data-theme="dark"] .course-title {
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .course-description {
             color: var(--gray-600);
             line-height: 1.5;
             margin-bottom: 1.2rem;
+            font-size: 0.9rem;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-
-        .course-meta {
-            display: flex;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-            font-size: 0.9rem;
-            color: var(--gray-500);
+        
+        [data-theme="dark"] .course-description {
+            color: rgba(255, 255, 255, 0.7);
         }
 
-        .meta-item {
+        .course-instructor {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 1rem;
+        }
+
+        .instructor-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .instructor-info {
+            flex: 1;
+        }
+
+        .instructor-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        [data-theme="dark"] .instructor-name {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .instructor-title {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+        
+        [data-theme="dark"] .instructor-title {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .course-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            color: var(--gray-500);
+        }
+        
+        [data-theme="dark"] .course-stats {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .stat-item {
             display: flex;
             align-items: center;
             gap: 0.3rem;
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 0.1rem;
+            color: #F59E0B;
         }
 
         .course-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--gray-200);
         }
 
-        .course-price .price-free {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--accent);
+        .course-price {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
         }
 
-        .course-price .price {
+        .price-current {
             font-size: 1.5rem;
             font-weight: 700;
             color: var(--primary);
         }
 
-        .btn-primary.btn-small {
-            padding: 0.6rem 1.2rem;
-            font-size: 0.9rem;
-            border-radius: 8px;
+        .price-original {
+            font-size: 1rem;
+            color: var(--gray-400);
+            text-decoration: line-through;
         }
 
-        /* 空状态 */
+        .price-free {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .discount-badge {
+            background: var(--danger);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .enroll-btn {
+            padding: 0.7rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .enroll-btn:hover {
+            background: #2563EB;
+            transform: translateY(-1px);
+        }
+
+        .enroll-btn:disabled {
+            background: var(--gray-400);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Load More Section */
+        .load-more-section {
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        .load-more-btn {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .load-more-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 4rem 2rem;
             color: var(--gray-500);
+            display: none;
         }
 
         .empty-icon {
@@ -539,140 +949,111 @@
             color: var(--gray-600);
         }
 
-        /* 加载更多 */
-        .load-more {
-            text-align: center;
-            margin-top: 3rem;
-        }
-
-        .btn-load-more {
-            padding: 1rem 2rem;
-            background: var(--light);
-            border: 2px solid var(--primary);
-            color: var(--primary);
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-load-more:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        /* 用户菜单 */
-        .user-profile {
+        /* 用户菜单样式 */
+        .user-menu-container {
             position: relative;
         }
 
-        .user-avatar {
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            background: var(--gray-100);
+            border: 2px solid var(--gray-200);
+            transition: all 0.3s;
+        }
+
+        .user-info:hover {
+            background: var(--light);
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+        }
+
+        .user-info .user-avatar {
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            overflow: hidden;
-            cursor: pointer;
-            border: 2px solid var(--gray-300);
-            transition: all 0.3s ease;
-        }
-
-        .user-avatar:hover {
-            border-color: var(--primary);
-        }
-
-        .user-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .user-menu {
-            display: none;
-            position: absolute;
-            top: calc(100% + 10px);
-            right: 0;
-            background: var(--light);
-            border: 1px solid var(--gray-200);
-            border-radius: 12px;
-            min-width: 250px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            z-index: 1001;
-            transition: all 0.3s ease;
-        }
-
-        [data-theme="dark"] .user-menu {
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .user-info-card {
-            padding: 1rem;
-            background: linear-gradient(135deg, rgba(219, 234, 254, 0.3), rgba(225, 231, 254, 0.3));
-            border-radius: 12px 12px 0 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             display: flex;
             align-items: center;
-            gap: 0.8rem;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            overflow: hidden;
         }
 
-        .user-details {
-            flex: 1;
+        .user-info .user-avatar img {
+            width: 100%;
+            height: 100%;
+            -o-object-fit: cover;
+               object-fit: cover;
         }
 
         .user-name {
             color: var(--dark);
-            font-weight: 600;
-            font-size: 0.95rem;
-            margin-bottom: 0.2rem;
+            font-weight: 500;
         }
 
-        .user-level {
-            color: var(--primary);
-            font-size: 0.8rem;
-            padding: 0.2rem 0.6rem;
-            background: rgba(59, 130, 246, 0.1);
-            border-radius: 10px;
+        .dropdown-arrow {
+            color: var(--gray-600);
+            font-size: 0.75rem;
+            transition: transform 0.3s;
         }
 
-        .user-points {
-            text-align: center;
+        .user-menu-container.active .dropdown-arrow {
+            transform: rotate(180deg);
         }
 
-        .points-count {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--warning);
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 0.5rem);
+            right: 0;
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s;
+            z-index: 10001;
         }
 
-        .points-label {
-            font-size: 0.7rem;
-            color: var(--gray-500);
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
         }
 
-        .menu-item {
+        .dropdown-item {
+            padding: 0.75rem 1rem;
             display: flex;
             align-items: center;
-            padding: 0.8rem 1rem;
-            color: var(--gray-600);
+            gap: 0.75rem;
+            color: #333;
             text-decoration: none;
-            transition: all 0.3s ease;
-            gap: 0.8rem;
+            transition: background 0.2s;
         }
 
-        .menu-item:hover {
-            background: rgba(59, 130, 246, 0.05);
-            color: var(--dark);
+        .dropdown-item:hover {
+            background: #f7fafc;
         }
 
-        .menu-item.logout-item {
-            color: var(--danger);
+        .dropdown-item:first-child {
+            border-radius: 0.5rem 0.5rem 0 0;
         }
 
-        .menu-item.logout-item:hover {
-            background: rgba(239, 68, 68, 0.05);
+        .dropdown-item:last-child {
+            border-radius: 0 0 0.5rem 0.5rem;
         }
 
-        .menu-divider {
+        .dropdown-divider {
             height: 1px;
-            background: var(--gray-200);
+            background: #e2e8f0;
+            margin: 0.25rem 0;
         }
 
         /* Footer */
@@ -683,88 +1064,474 @@
             border-top: 1px solid var(--gray-200);
         }
 
-        .footer-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
-
-        .footer-section h3,
-        .footer-section h4 {
-            color: var(--dark);
-            margin-bottom: 1rem;
-        }
-
-        .footer-section ul {
-            list-style: none;
-        }
-
-        .footer-section li {
-            margin-bottom: 0.5rem;
-            color: var(--gray-600);
-        }
-
-        .footer-section a {
-            color: var(--gray-600);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .footer-section a:hover {
-            color: var(--primary);
-        }
-
-        /* 响应式 */
-        @media (max-width: 968px) {
-            .page-title {
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-title {
                 font-size: 2rem;
             }
 
-            .stats-row {
+            .hero-stats {
+                flex-direction: column;
+                gap: 2rem;
+            }
+
+            .hero-features {
                 flex-direction: column;
                 gap: 1rem;
                 align-items: center;
             }
 
-            .nav-menu {
-                display: none;
-            }
-
             .filter-controls {
-                flex-direction: column;
-                gap: 1rem;
+                gap: 0.8rem;
             }
 
-            .search-box input {
-                width: 250px;
-            }
-
-            .courses-grid {
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            }
-        }
-
-        @media (max-width: 640px) {
-            .page-header {
-                padding: 90px 0 30px;
-            }
-
-            .page-title {
-                font-size: 1.8rem;
+            .search-input {
+                width: 280px;
             }
 
             .courses-grid {
                 grid-template-columns: 1fr;
                 gap: 1.5rem;
             }
+
+            .nav-menu {
+                display: none;
+            }
+        }
+
+        /* Notification System */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            z-index: 10000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .notification.success { background: var(--success); }
+        .notification.error { background: var(--danger); }
+        .notification.warning { background: var(--warning); }
+        .notification.info { background: var(--primary); }
+
+        /* Bundle Card Styles (混合在courses-grid中显示) */
+        .course-card.bundle-card {
+            background: linear-gradient(135deg, 
+                rgba(102, 126, 234, 0.2), 
+                rgba(240, 147, 251, 0.2), 
+                rgba(79, 172, 254, 0.2));
+            backdrop-filter: blur(25px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background-clip: padding-box;
+            position: relative;
+            overflow: visible;
+            transform: scale(1.05);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                0 25px 80px rgba(102, 126, 234, 0.25),
+                0 12px 40px rgba(240, 147, 251, 0.2),
+                inset 0 2px 0 rgba(255, 255, 255, 0.4);
+        }
+
+        .course-card.bundle-card::before {
+            content: "";
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, 
+                rgba(102, 126, 234, 0.8), 
+                rgba(240, 147, 251, 0.8), 
+                rgba(79, 172, 254, 0.8),
+                rgba(168, 237, 234, 0.8));
+            border-radius: 26px;
+            z-index: -1;
+            animation: gradientShift 4s ease-in-out infinite alternate;
+            filter: blur(1px);
+        }
+
+        @keyframes gradientShift {
+            0% { 
+                background: linear-gradient(135deg, 
+                    rgba(102, 126, 234, 0.8), 
+                    rgba(240, 147, 251, 0.8), 
+                    rgba(79, 172, 254, 0.8),
+                    rgba(168, 237, 234, 0.8));
+            }
+            50% { 
+                background: linear-gradient(135deg, 
+                    rgba(240, 147, 251, 0.8), 
+                    rgba(79, 172, 254, 0.8),
+                    rgba(168, 237, 234, 0.8),
+                    rgba(102, 126, 234, 0.8));
+            }
+            100% { 
+                background: linear-gradient(135deg, 
+                    rgba(79, 172, 254, 0.8),
+                    rgba(168, 237, 234, 0.8),
+                    rgba(102, 126, 234, 0.8), 
+                    rgba(240, 147, 251, 0.8));
+            }
+        }
+
+        .course-card.bundle-card:hover {
+            transform: translateY(-12px) scale(1.05);
+            box-shadow: 0 30px 60px rgba(251, 191, 36, 0.3), 0 10px 30px rgba(16, 185, 129, 0.2);
+        }
+
+        /* 课程包标识徽章 */
+        .bundle-badge-container {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .bundle-primary-badge {
+            background: linear-gradient(135deg, #EF4444, #F97316);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+            animation: pulse 2s infinite;
+            transform: rotate(8deg);
+        }
+
+        .bundle-secondary-badge {
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            box-shadow: 0 3px 10px rgba(59, 130, 246, 0.3);
+            transform: rotate(-5deg);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: rotate(8deg) scale(1); }
+            50% { transform: rotate(8deg) scale(1.05); }
+        }
+
+        .course-card.bundle-card .course-image {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-card.bundle-card .course-image img {
+            width: 100%;
+            height: 100%;
+            -o-object-fit: cover;
+               object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .course-card.bundle-card:hover .course-image img {
+            transform: scale(1.1);
+        }
+
+        .course-card.bundle-card .course-image::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, 
+                rgba(255,255,255,0.1) 25%, 
+                transparent 25%, 
+                transparent 75%, 
+                rgba(255,255,255,0.1) 75%);
+            background-size: 30px 30px;
+            animation: slidePattern 3s linear infinite;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        @keyframes slidePattern {
+            0% { transform: translateX(-30px); }
+            100% { transform: translateX(30px); }
+        }
+
+        .course-card.bundle-card .course-title {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            font-size: 1.4rem;
+            position: relative;
+        }
+        
+        [data-theme="dark"] .course-card.bundle-card .course-title {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b, #d97706);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .course-card.bundle-card .course-title::after {
+            content: "💎";
+            position: absolute;
+            right: -25px;
+            top: 0;
+            font-size: 1rem;
+            animation: sparkle 2s ease-in-out infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.2); }
+        }
+
+        .bundle-stats {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.8rem 0;
+            padding: 0.8rem;
+            background: linear-gradient(135deg, 
+                rgba(59, 130, 246, 0.15), 
+                rgba(139, 92, 246, 0.15));
+            border-radius: 12px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .bundle-stat {
+            text-align: center;
+            position: relative;
+        }
+
+        .bundle-stat::before {
+            content: "";
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), #8B5CF6);
+            border-radius: 1px;
+        }
+
+        .bundle-stat-number {
+            font-size: 1rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), #8B5CF6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: block;
+        }
+
+        .bundle-stat-label {
+            font-size: 0.6rem;
+            color: var(--gray-500);
+            margin-top: 0.2rem;
+            font-weight: 500;
+        }
+
+        .bundle-course-preview {
+            margin-top: 0.6rem;
+            padding-top: 0.6rem;
+            border-top: 1px solid rgba(59, 130, 246, 0.15);
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 8px;
+            padding: 0.6rem;
+            position: relative;
+        }
+
+        
+        .bundle-course-list::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 2rem;
+            height: 1.4rem;
+            background: linear-gradient(to right, transparent, rgba(59, 130, 246, 0.05));
+            pointer-events: none;
+        }
+
+        .bundle-course-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            max-height: 3.2rem;
+            overflow: hidden;
+            align-content: flex-start;
+        }
+
+        .bundle-course-item {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.3rem 0.6rem;
+            color: var(--gray-600);
+            font-size: 0.65rem;
+            background: rgba(59, 130, 246, 0.08);
+            border-radius: 10px;
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            white-space: nowrap;
+            flex: 0 0 auto;
+            max-width: calc(50% - 0.2rem);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: all 0.2s ease;
+            height: 1.4rem;
+        }
+
+        .bundle-course-item:hover {
+            background: rgba(59, 130, 246, 0.12);
+            border-color: rgba(59, 130, 246, 0.25);
+            transform: translateY(-1px);
+        }
+        
+        [data-theme="dark"] .bundle-course-item {
+            color: rgba(255, 255, 255, 0.7);
+            background: rgba(59, 130, 246, 0.12);
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+        
+        [data-theme="dark"] .bundle-course-item:hover {
+            background: rgba(59, 130, 246, 0.18);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .bundle-course-item::before {
+            content: "✨";
+            color: var(--success);
+            font-weight: bold;
+            margin-right: 0.5rem;
+            animation: twinkle 2s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* 特惠价格样式 */
+        .course-card.bundle-card .course-footer {
+            background: linear-gradient(135deg, 
+                rgba(16, 185, 129, 0.1), 
+                rgba(59, 130, 246, 0.1));
+            margin: 1rem -1.5rem -1.5rem -1.5rem;
+            padding: 1.5rem;
+            border-top: 2px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .course-card.bundle-card .price-current {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #10B981, #059669);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+        }
+
+        .course-card.bundle-card .price-current::before {
+            content: "价格";
+            position: absolute;
+            left: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+        }
+
+        .course-card.bundle-card .enroll-btn {
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-card.bundle-card .enroll-btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255,255,255,0.3), 
+                transparent);
+            transition: left 0.5s ease;
+        }
+
+        .course-card.bundle-card .enroll-btn:hover::before {
+            left: 100%;
+        }
+
+        .course-card.bundle-card .enroll-btn:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        /* 课程包内容文字样式 - 适配不同主题 */
+        .course-card.bundle-card .course-description {
+            color: var(--dark) !important;
+        }
+
+        .course-card.bundle-card .bundle-stat-number {
+            background: linear-gradient(135deg, var(--primary), #8B5CF6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .course-card.bundle-card .bundle-stat-label {
+            color: var(--gray-600) !important;
+        }
+        
+        /* 深色主题下的课程包样式 */
+        [data-theme="dark"] .course-card.bundle-card .course-description {
+            color: #cbd5e1 !important;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        [data-theme="dark"] .course-card.bundle-card .bundle-stat-number {
+            color: #fbbf24 !important;
+            -webkit-text-fill-color: #fbbf24 !important;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        [data-theme="dark"] .course-card.bundle-card .bundle-stat-label {
+            color: #e2e8f0 !important;
         }
     </style>
-  <script type="module" crossorigin src="/assets/modulepreload-polyfill-3cfb730f.js"></script>
-  <script type="module" crossorigin src="/assets/api-4ed993c7.js"></script>
-  <link rel="stylesheet" href="/assets/theme-70c29f4a.css">
+  <link rel="stylesheet" href="/assets/theme-b29253a3.css">
 </head>
 <body>
     <!-- 简洁背景 -->
@@ -777,127 +1544,94 @@
                 <h1>AI学习平台</h1>
             </div>
             <div class="nav-menu">
-                <a href="/home.html" class="nav-link">首页</a>
                 <a href="courses.html" class="nav-link active">课程</a>
                 <a href="dashboard.html" class="nav-link">学习中心</a>
-                <a href="study.html" class="nav-link">专栏</a>
-                <a href="profile.html" class="nav-link">个人中心</a>
+                <a href="community-square.html" class="nav-link">社区广场</a>
+                <a href="qa.html" class="nav-link">问答</a>
+                <a href="leaderboard.html" class="nav-link">排行榜</a>
+                <a href="my-courses.html" class="nav-link">我的课程</a>
                 
                 <!-- 主题切换按钮 -->
                 <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="切换主题">
-                    <span class="theme-icon sun-icon">☀️</span>
-                    <span class="theme-icon moon-icon">🌙</span>
+                    <span class="theme-icon sun-icon">日间</span>
+                    <span class="theme-icon moon-icon">夜间</span>
                 </button>
-                
-                <!-- 登录状态 -->
-                <div class="auth-container" id="authContainer">
-                    <a href="login.html?returnUrl=courses.html" class="btn btn-outline" id="loginBtn">登录</a>
-                    <a href="register.html?returnUrl=courses.html" class="btn btn-primary" id="registerBtn">注册</a>
-                </div>
-                
-                <!-- 用户头像 (登录后显示) -->
-                <div class="user-profile" id="userProfile" style="display: none;">
-                    <div class="user-avatar" onclick="toggleUserMenu()">
-                        <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><circle cx='20' cy='20' r='18' fill='%234a9eff'/><circle cx='20' cy='16' r='6' fill='white'/><path d='M8 32c0-6.6 5.4-12 12-12s12 5.4 12 12' fill='white'/></svg>" alt="用户头像" id="userAvatar">
-                    </div>
-                    <div class="user-menu" id="userMenu">
-                        <div class="user-info-card">
-                            <div class="user-avatar">
-                                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><circle cx='20' cy='20' r='18' fill='%234a9eff'/><circle cx='20' cy='16' r='6' fill='white'/><path d='M8 32c0-6.6 5.4-12 12-12s12 5.4 12 12' fill='white'/></svg>" alt="用户头像" id="userAvatarSmall">
-                            </div>
-                            <div class="user-details">
-                                <div class="user-name" id="userName">用户名</div>
-                                <div class="user-level">Lv.1 学习者</div>
-                            </div>
-                            <div class="user-points">
-                                <span class="points-count" id="userPoints">0</span>
-                                <span class="points-label">积分</span>
-                            </div>
-                        </div>
-                        <div class="menu-divider"></div>
-                        <div>
-                            <a href="profile.html" class="menu-item">
-                                <span>👤</span>
-                                <span>个人中心</span>
-                            </a>
-                            <a href="courses.html" class="menu-item">
-                                <span>📚</span>
-                                <span>我的课程</span>
-                            </a>
-                            <a href="dashboard.html" class="menu-item">
-                                <span>📊</span>
-                                <span>学习中心</span>
-                            </a>
-                        </div>
-                        <div class="menu-divider"></div>
-                        <div>
-                            <a href="#" class="menu-item logout-item" onclick="logout()">
-                                <span>🚪</span>
-                                <span>退出登录</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
+            </div>
+            
+            <!-- 用户菜单 -->
+            <div class="user-menu-container">
+                <!-- 默认显示登录按钮，如果已登录会被JS替换 -->
+                <a href="login.html" class="login-btn" style="padding: 8px 20px; background: #007bff; color: white; border-radius: 20px; text-decoration: none; margin-left: 10px;">
+                    登录
+                </a>
             </div>
         </div>
     </nav>
 
-    <!-- 页面头部 -->
-    <section class="page-header">
-        <h1 class="page-title">AI课程中心</h1>
-        <p class="page-subtitle">精选优质课程，系统化学习人工智能技术</p>
-        <div class="stats-row">
-            <div class="stat-item">
-                <span class="stat-number">12</span>
-                <span class="stat-label">本周新课程</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-number">限时8折</span>
-                <span class="stat-label">新春特惠活动</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-number">GPT-4实战</span>
-                <span class="stat-label">热门推荐课程</span>
-            </div>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <p class="hero-subtitle">以人工智能为核心，让每个人在AI时代都能够快速成长</p>
         </div>
     </section>
 
-    <!-- 课程筛选 -->
-    <section class="course-filters">
-        <div class="container">
+    <!-- Advanced Filter Section -->
+    <section class="filter-section">
+        <div class="filter-container">
             <div class="filter-tabs">
-                <button class="filter-tab active" data-category="all">全部课程</button>
-                <button class="filter-tab" data-category="1">机器学习</button>
-                <button class="filter-tab" data-category="2">深度学习</button>
-                <button class="filter-tab" data-category="3">自然语言处理</button>
-                <button class="filter-tab" data-category="4">计算机视觉</button>
-                <button class="filter-tab" data-category="5">强化学习</button>
-            </div>
-            <div class="filter-controls">
-                <div class="search-box">
-                    <input type="text" id="courseSearch" placeholder="搜索课程...">
-                    <button class="search-btn">🔍</button>
+                <button class="filter-pill active" data-bundle="all">
+                    全部课程 <span id="allCount">0</span>
+                </button>
+                <div id="bundleFilters">
+                    <!-- 课程包过滤器将通过JavaScript动态加载 -->
                 </div>
+            </div>
+
+            <div class="filter-controls">
+                <div class="search-container">
+                    <input type="text" class="search-input" id="courseSearch" placeholder="搜索课程、讲师或关键词...">
+                    <button class="search-btn" onclick="performSearch()">搜索</button>
+                </div>
+                
                 <select class="sort-select" id="sortSelect">
                     <option value="popular">最受欢迎</option>
                     <option value="newest">最新发布</option>
                     <option value="rating">评分最高</option>
                     <option value="price-low">价格从低到高</option>
                     <option value="price-high">价格从高到低</option>
+                    <option value="free">免费课程</option>
                 </select>
             </div>
         </div>
     </section>
 
-    <!-- 课程列表 -->
+    <!-- Courses Section -->
     <section class="courses-section">
         <div class="container">
+
+            <!-- Loading Skeleton -->
+            <div id="loadingSkeleton" style="display: none;">
+                <div class="courses-grid">
+                    <!-- Skeleton cards will be generated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Courses Grid -->
             <div class="courses-grid" id="coursesGrid">
                 <!-- 课程卡片将通过JavaScript动态加载 -->
             </div>
-            <div class="load-more">
-                <button class="btn-load-more" onclick="loadMoreCourses()">
-                    <span>加载更多</span>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState">
+                <div class="empty-icon">无课程</div>
+                <h3>暂无课程</h3>
+                <p>没有找到符合条件的课程，请尝试调整筛选条件</p>
+            </div>
+
+            <!-- Load More -->
+            <div class="load-more-section">
+                <button class="load-more-btn" id="loadMoreBtn" onclick="loadMoreCourses()">
+                    <span>加载更多课程</span>
                     <div class="loading-spinner" style="display: none;"></div>
                 </button>
             </div>
@@ -906,143 +1640,1296 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>AI学习平台</h3>
-                <p>引领AI教育未来，科技改变学习</p>
-            </div>
-            <div class="footer-section">
-                <h4>技术栈</h4>
-                <ul>
-                    <li><a href="#">TensorFlow</a></li>
-                    <li><a href="#">PyTorch</a></li>
-                    <li><a href="#">Scikit-learn</a></li>
-                    <li><a href="#">OpenCV</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>学习路径</h4>
-                <ul>
-                    <li><a href="#">入门到精通</a></li>
-                    <li><a href="#">工程师进阶</a></li>
-                    <li><a href="#">算法专家</a></li>
-                    <li><a href="#">研究方向</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>联系方式</h4>
-                <ul>
-                    <li>Tech@ailearn.com</li>
-                    <li>AI技术群：tech-ai-2024</li>
-                    <li>GitHub: @ailearn-platform</li>
-                </ul>
+        <div class="container">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+                <div>
+                    <h3>AI学习平台</h3>
+                    <p>引领AI教育未来，科技改变学习</p>
+                </div>
+                <div>
+                    <h4>技术栈</h4>
+                    <ul style="list-style: none;">
+                        <li><a href="#" style="color: var(--gray-600); text-decoration: none;">TensorFlow</a></li>
+                        <li><a href="#" style="color: var(--gray-600); text-decoration: none;">PyTorch</a></li>
+                        <li><a href="#" style="color: var(--gray-600); text-decoration: none;">Scikit-learn</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>学习路径</h4>
+                    <ul style="list-style: none;">
+                        <li><a href="#" style="color: var(--gray-600); text-decoration: none;">入门到精通</a></li>
+                        <li><a href="#" style="color: var(--gray-600); text-decoration: none;">工程师进阶</a></li>
+                        <li><a href="#" style="color: var(--gray-600); text-decoration: none;">算法专家</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>联系方式</h4>
+                    <ul style="list-style: none;">
+                        <li style="color: var(--gray-600);">Tech@ailearn.com</li>
+                        <li style="color: var(--gray-600);">AI技术群：tech-ai-2024</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </footer>
 
+    <!-- Notification Container -->
+    <div id="notification" class="notification"></div>
+
     <!-- Scripts -->
     <script>
-        // 导航栏滚动效果
-        window.addEventListener('scroll', function() {
-            const navbar = document.getElementById('navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
+        // Enhanced Course Manager with Backend Integration
+        class ModernCourseManager {
+            constructor() {
+                this.courses = [];
+                this.allCourses = [];
+                this.bundles = [];
+                this.currentBundle = 'all';
+                this.currentSort = 'popular';
+                this.searchTerm = '';
+                this.currentPage = 1;
+                this.pageSize = 12;
+                this.isLoading = false;
+                this.hasMoreData = true;
+                this.subscriptionStatus = new Map();
+                this.bundleStats = {};
             }
-        });
 
-        // 课程页面用户状态管理
-        function initCoursePageAuth() {
-            const token = localStorage.getItem('token');
-            const user = localStorage.getItem('user');
-            
-            const authContainer = document.getElementById('authContainer');
-            const userProfile = document.getElementById('userProfile');
-            
-            if (token && user) {
-                authContainer.style.display = 'none';
-                userProfile.style.display = 'block';
-                
+            // Initialize the course manager
+            async init() {
                 try {
-                    const userData = JSON.parse(user);
-                    const userName = document.getElementById('userName');
-                    const userPoints = document.getElementById('userPoints');
-                    
-                    if (userName) {
-                        userName.textContent = userData.username || userData.nickname || '用户';
-                    }
-                    if (userPoints) {
-                        userPoints.textContent = userData.points || '0';
-                    }
-                } catch (e) {
-                    console.error('解析用户数据出错:', e);
+                    await this.initAuth();
+                    // 暂时禁用课程包功能，避免500错误
+                    await this.loadBundles();
+                    await this.loadCourses();
+                    this.bindEvents();
+                    this.updateUI();
+                    this.startPeriodicUpdate();
+                } catch (error) {
+                    console.error('初始化失败:', error);
+                    this.showNotification('系统初始化失败', 'error');
                 }
-            } else {
-                authContainer.style.display = 'flex';
-                userProfile.style.display = 'none';
+            }
+
+            // Initialize authentication - handled by user-menu.js
+            async initAuth() {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    // Check subscription status if logged in
+                    await this.loadSubscriptionStatus();
+                    // Load user info for dropdown
+                    await this.loadUserInfo();
+                }
+            }
+
+            // Load user info for dropdown
+            async loadUserInfo() {
+                try {
+                    const savedUser = localStorage.getItem('user');
+                    const token = localStorage.getItem('token');
+                    let user = null;
+                    
+                    // Try to get from API first
+                    if (token) {
+                        try {
+                            const response = await fetch('/api/user/profile', {
+                                headers: {
+                                    'Authorization': `Bearer ${token}`
+                                }
+                            });
+
+                            if (response.ok) {
+                                const data = await response.json();
+                                if (data.success && data.data) {
+                                    user = data.data.user || data.data;
+                                    // Check if authenticated
+                                    if (data.data.authenticated === false) {
+                                        user = null;
+                                    }
+                                }
+                            } else if (response.status === 401) {
+                                // User not logged in or token expired
+                                console.log('User not authenticated');
+                                localStorage.removeItem('token');
+                                localStorage.removeItem('user');
+                            }
+                        } catch (error) {
+                            console.log('Using cached user data');
+                        }
+                    }
+                    
+                    // Fallback to saved user
+                    if (!user && savedUser && token) {
+                        user = JSON.parse(savedUser);
+                    }
+                    
+                    if (user && user.id) {
+                        // Update UI for logged in user
+                        const userMenu = document.querySelector('.user-menu-container');
+                        if (userMenu) {
+                            // Replace login button with user menu
+                            userMenu.innerHTML = `
+                                <div class="user-info" onclick="toggleUserMenu(event)">
+                                    <div class="user-avatar" id="userAvatar">${(user.nickname || user.username || 'U').charAt(0).toUpperCase()}</div>
+                                    <span class="user-name" id="userName">${user.nickname || user.username || '用户'}</span>
+                                    <span class="dropdown-arrow">▼</span>
+                                </div>
+                                <div class="dropdown-menu" id="userDropdown">
+                                    <a href="profile.html" class="dropdown-item">
+                                        <span>用户</span> 个人资料
+                                    </a>
+                                    <a href="dashboard.html" class="dropdown-item">
+                                        <span>学习</span> 学习中心
+                                    </a>
+                                    <a href="my-courses.html" class="dropdown-item">
+                                        <span>🎓</span> 我的课程
+                                    </a>
+                                    <a href="orders.html" class="dropdown-item">
+                                        <span>订单</span> 我的订单
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="#" class="dropdown-item" onclick="logout()">
+                                        <span>退出</span> 退出登录
+                                    </a>
+                                </div>
+                            `;
+                            
+                            // Update avatar if exists
+                            if (user.avatar) {
+                                const avatar = userMenu.querySelector('#userAvatar');
+                                if (avatar) {
+                                    avatar.innerHTML = `<img src="${user.avatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+                                }
+                            }
+                        }
+                    } else {
+                        // Show login button for not logged in users (already shown by default)
+                        // No need to do anything as login button is already in HTML
+                    }
+                } catch (error) {
+                    console.error('Failed to load user info:', error);
+                    // Login button is already shown by default, no need to do anything
+                }
+            }
+
+            // Show auth buttons when not logged in
+            showAuthButtons() {
+                // No longer hiding/showing containers
+            }
+
+            // Load course bundles from backend
+            async loadBundles() {
+                try {
+                    const response = await fetch('/api/courses/bundles?page=1&size=20');
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.success && data.data.bundles) {
+                            this.bundles = data.data.bundles;
+                            this.renderBundleFilters();
+                        }
+                    } else {
+                        console.warn('Failed to load bundles, status:', response.status);
+                        // Continue without bundles instead of crashing
+                        this.bundles = [];
+                    }
+                } catch (error) {
+                    console.warn('加载课程包失败，将继续显示普通课程:', error);
+                    // Continue without bundles instead of crashing
+                    this.bundles = [];
+                }
+            }
+
+            // Render bundle filter buttons
+            renderBundleFilters() {
+                const bundleFilters = document.getElementById('bundleFilters');
+                if (!bundleFilters) return;
+
+                bundleFilters.innerHTML = this.bundles.map(bundle => `
+                    <button class="filter-pill" data-bundle="${bundle.id}">
+                        ${bundle.title} <span id="bundle${bundle.id}Count">0</span>
+                    </button>
+                `).join('');
+            }
+
+            // Load courses from backend (包含课程和课程包)
+            async loadCourses(append = false) {
+                if (this.isLoading) return;
+                
+                this.isLoading = true;
+                this.showLoadingSkeleton();
+
+                try {
+                    // 性能优化：只在首次加载时获取课程包
+                    const loadBundles = !append && !this.bundlesLoaded;
+                    
+                    const requests = [this.loadCoursesData(append)];
+                    if (loadBundles) {
+                        requests.push(this.loadBundlesData());
+                    }
+                    
+                    const responses = await Promise.all(requests);
+                    const coursesResponse = responses[0];
+                    const bundlesResponse = loadBundles ? responses[1] : null;
+
+                    const courses = coursesResponse.courses || [];
+                    
+                    if (append) {
+                        this.courses = [...this.courses, ...courses];
+                        // 对所有课程重新排序
+                        this.courses = this.sortCoursesByStatus(this.courses);
+                    } else {
+                        if (loadBundles && bundlesResponse) {
+                            const bundles = bundlesResponse.courses || [];
+                            // 将课程包转换为课程格式，添加标识
+                            const bundleAsCards = bundles.map(bundle => ({
+                                ...bundle,
+                                isBundle: true,
+                                id: `bundle_${bundle.id}`,
+                                originalId: bundle.id
+                            }));
+                            this.courses = [...bundleAsCards, ...courses];
+                            this.bundlesLoaded = true; // 标记已加载
+                        } else {
+                            this.courses = courses;
+                        }
+                        // 排序：已上线的课程排在前面，然后是待上线的
+                        this.courses = this.sortCoursesByStatus(this.courses);
+                        this.allCourses = this.courses;
+                        this.currentPage = 1;
+                    }
+
+                    this.hasMoreData = coursesResponse.hasMoreData !== false && courses.length === this.pageSize;
+                    
+                    // 性能优化：缓存报名状态，避免重复请求
+                    if (localStorage.getItem('token') && !append) {
+                        if (!this.enrollmentStatusCache || Date.now() - this.enrollmentStatusCache.timestamp > 60000) {
+                            await this.loadEnrollmentStatus();
+                            this.enrollmentStatusCache = { timestamp: Date.now() };
+                        }
+                    }
+
+                    this.renderCourses();
+                } catch (error) {
+                    console.error('加载课程失败:', error);
+                    this.showNotification(`加载课程失败: ${error.message}`, 'error');
+                    this.showEmptyState('加载失败，请稍后重试');
+                } finally {
+                    this.isLoading = false;
+                    this.hideLoadingSkeleton();
+                }
+            }
+
+            // 加载课程数据
+            async loadCoursesData(append = false, retryCount = 0) {
+                const maxRetries = 2;
+                
+                let apiUrl = '/api/courses';
+                let params = new URLSearchParams({
+                    page: append ? this.currentPage : 1,
+                    size: this.pageSize,
+                    search: this.searchTerm,
+                    sort: this.currentSort
+                });
+
+                // 如果选择了特定课程包，获取该课程包的课程
+                if (this.currentBundle !== 'all') {
+                    apiUrl = `/api/courses/bundles/${this.currentBundle}/courses`;
+                }
+
+                try {
+                    const response = await fetch(`${apiUrl}?${params}`);
+                
+                    if (!response.ok) {
+                        // Retry for 502/503 errors (server issues)
+                        if ((response.status === 502 || response.status === 503) && retryCount < maxRetries) {
+                            console.log(`重试第 ${retryCount + 1} 次...`);
+                            await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1))); // Progressive delay
+                            return this.loadCoursesData(append, retryCount + 1);
+                        }
+                        
+                        console.error(`API请求失败: ${response.status} ${response.statusText}`);
+                        
+                        // Show user-friendly error message
+                        if (response.status === 502) {
+                            this.showNotification('服务器暂时不可用，请稍后再试', 'error');
+                        } else if (response.status === 500) {
+                            this.showNotification('服务器内部错误，正在修复中', 'error');
+                        } else if (response.status === 404) {
+                            this.showNotification('请求的资源未找到', 'warning');
+                        } else {
+                            this.showNotification(`网络错误 (${response.status})，请检查网络连接`, 'error');
+                        }
+                        
+                        // Return empty result to prevent crashes
+                        return { courses: [] };
+                    }
+
+                    const data = await response.json();
+                    // console.log('Courses API Response:', data);
+
+                    if (data.success && data.data) {
+                        const courses = Array.isArray(data.data.records) ? data.data.records : 
+                                       Array.isArray(data.data) ? data.data : [];
+                        
+                        return {
+                            courses,
+                            hasMoreData: data.data.hasNextPage !== false
+                        };
+                    } else {
+                        throw new Error(data.message || '课程数据格式错误');
+                    }
+                } catch (error) {
+                    // Network or parsing error
+                    if (retryCount < maxRetries && (error.name === 'TypeError' || error.message.includes('Failed to fetch'))) {
+                        console.log(`网络错误，重试第 ${retryCount + 1} 次...`);
+                        await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
+                        return this.loadCoursesData(append, retryCount + 1);
+                    }
+                    
+                    console.error('课程加载失败:', error);
+                    this.showNotification('课程加载失败，请检查网络连接', 'error');
+                    return { courses: [] };
+                }
+            }
+
+            // 加载课程包数据
+            async loadBundlesData() {
+                if (this.currentBundle !== 'all') {
+                    return { courses: [] }; // 如果过滤了特定课程包，不显示其他课程包
+                }
+
+                try {
+                    const response = await fetch('/api/courses/bundles?page=1&size=10');
+                    
+                    if (!response.ok) {
+                        console.warn('课程包加载失败, status:', response.status);
+                        return { courses: [] };
+                    }
+
+                    const data = await response.json();
+                    // console.log('Bundles API Response:', data);
+
+                    if (data.success && data.data && data.data.bundles) {
+                        return { courses: data.data.bundles };
+                    } else {
+                        return { courses: [] };
+                    }
+                } catch (error) {
+                    console.warn('加载课程包数据出错:', error);
+                    return { courses: [] };
+                }
+            }
+
+            // Load course preview for a bundle
+            async loadBundleCoursePreview(bundleId) {
+                try {
+                    const response = await fetch(`/api/courses/bundles/${bundleId}/courses?page=1&size=5`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.success && data.data) {
+                            const courses = Array.isArray(data.data) ? data.data : data.data.records || [];
+                            displayBundleCourses(bundleId, courses);
+                        }
+                    }
+                } catch (error) {
+                    console.error(`加载课程包 ${bundleId} 预览失败:`, error);
+                }
+            }
+            
+            // 延迟加载课程包预览 - 性能优化
+            loadBundlePreviewsLazy() {
+                if (!this.bundlePreviewsLoaded) {
+                    this.bundlePreviewsLoaded = new Set();
+                }
+                
+                const bundlesToLoad = this.courses.filter(course => 
+                    course.isBundle && 
+                    course.originalId && 
+                    !this.bundlePreviewsLoaded.has(course.originalId)
+                );
+                
+                // 分批加载，避免同时发起过多请求
+                const batchSize = 3;
+                let currentIndex = 0;
+                
+                const loadNextBatch = () => {
+                    if (currentIndex >= bundlesToLoad.length) return;
+                    
+                    const batch = bundlesToLoad.slice(currentIndex, currentIndex + batchSize);
+                    batch.forEach(course => {
+                        this.loadBundleCoursePreview(course.originalId);
+                        this.bundlePreviewsLoaded.add(course.originalId);
+                    });
+                    
+                    currentIndex += batchSize;
+                    
+                    // 延迟加载下一批，避免阻塞UI
+                    if (currentIndex < bundlesToLoad.length) {
+                        setTimeout(loadNextBatch, 100);
+                    }
+                };
+                
+                loadNextBatch();
+            }
+
+            // Load subscription status for authenticated users
+            async loadSubscriptionStatus() {
+                try {
+                    const token = localStorage.getItem('token');
+                    if (!token) return;
+
+                    const response = await fetch('/api/orders/subscriptions', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        // console.log('订阅状态API响应:', data);
+                        
+                        // 适配后端返回格式: {code: 200, data: [...]}
+                        if (data.code === 200 && data.data && Array.isArray(data.data)) {
+                            data.data.forEach(subscription => {
+                                this.subscriptionStatus.set(subscription.courseId, subscription.status);
+                            });
+                        } else if (data.success && data.data && Array.isArray(data.data)) {
+                            // 备用格式
+                            data.data.forEach(subscription => {
+                                this.subscriptionStatus.set(subscription.courseId, subscription.status);
+                            });
+                        }
+                    } else if (response.status === 401) {
+                        // Silently ignore 401 - user not authenticated
+                        console.log('User not authenticated for subscriptions');
+                    } else {
+                        console.log('订阅状态API请求失败:', response.status);
+                    }
+                } catch (error) {
+                    // Silently handle errors for unauthenticated users
+                    console.log('Could not load subscription status');
+                }
+            }
+
+            // Load enrollment status
+            async loadEnrollmentStatus() {
+                const courseIds = this.courses.map(c => c.id);
+                if (courseIds.length === 0) return;
+
+                try {
+                    const token = localStorage.getItem('token');
+                    if (!token) return;
+
+                    const response = await fetch('/api/orders/access-check', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ courseIds })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.success) {
+                            data.data.forEach(access => {
+                                this.subscriptionStatus.set(access.courseId, access.hasAccess);
+                            });
+                        }
+                    } else if (response.status === 401) {
+                        // Silently ignore 401 - user not authenticated
+                        console.log('User not authenticated for enrollment check');
+                    }
+                } catch (error) {
+                    // Silently handle errors for unauthenticated users
+                    console.log('Could not load enrollment status');
+                }
+            }
+
+            // 按状态排序课程：已上线的排在前面，然后是待上线的
+            sortCoursesByStatus(courses) {
+                return courses.sort((a, b) => {
+                    // 优先级：已发布课程 > 待上线课程 > 课程包 > 其他状态课程
+                    const getOverallPriority = (item) => {
+                        if (item.isBundle) {
+                            // 课程包根据状态排序
+                            if (item.status === 'published') return 1;
+                            if (item.status === 'scheduled') return 2;
+                            return 3; // 其他状态课程包
+                        } else {
+                            // 普通课程按状态排序
+                            if (item.status === 'published') return 1;
+                            if (item.status === 'scheduled') return 2;
+                            return 4; // 其他状态课程
+                        }
+                    };
+                    
+                    const aPriority = getOverallPriority(a);
+                    const bPriority = getOverallPriority(b);
+                    
+                    return aPriority - bPriority;
+                });
+            }
+
+            // Render courses - 性能优化版本
+            renderCourses() {
+                const grid = document.getElementById('coursesGrid');
+                if (!grid) return;
+
+                if (this.courses.length === 0) {
+                    this.showEmptyState();
+                    return;
+                }
+
+                this.hideEmptyState();
+
+                // 使用文档片段提高DOM操作性能
+                const fragment = document.createDocumentFragment();
+                const tempDiv = document.createElement('div');
+                
+                // 批量创建课程卡片HTML
+                const coursesHtml = this.courses.map(course => this.createCourseCard(course)).join('');
+                tempDiv.innerHTML = coursesHtml;
+                
+                // 将所有节点移到片段中
+                while (tempDiv.firstChild) {
+                    fragment.appendChild(tempDiv.firstChild);
+                }
+                
+                // 一次性更新DOM
+                grid.innerHTML = '';
+                grid.appendChild(fragment);
+
+                // 性能优化：延迟加载课程包预览，避免阻塞渲染
+                requestAnimationFrame(() => {
+                    this.loadBundlePreviewsLazy();
+                });
+
+                // Update load more button
+                const loadMoreBtn = document.getElementById('loadMoreBtn');
+                if (loadMoreBtn) {
+                    loadMoreBtn.style.display = this.hasMoreData ? 'inline-flex' : 'none';
+                }
+            }
+
+            // Create course card HTML
+            createCourseCard(course) {
+                // 判断是否为课程包
+                if (course.isBundle) {
+                    return this.createBundleCard(course);
+                }
+
+                const isEnrolled = this.subscriptionStatus.get(course.id) === true;
+                const badges = this.generateCourseBadges(course);
+                const instructor = course.instructor || { name: 'AI导师', avatar: '', title: 'AI专家' };
+                const rating = parseFloat(course.rating || 5.0);
+                const enrollmentCount = parseInt(course.enrollmentCount || 0);
+                const price = parseFloat(course.price || 0);
+                const originalPrice = parseFloat(course.originalPrice || price);
+                const discount = originalPrice > price ? Math.round((1 - price / originalPrice) * 100) : 0;
+
+                return `
+                    <div class="course-card" data-course-id="${course.id}">
+                        <div class="course-image">
+                            ${course.coverImage ? 
+                                `<img src="${course.coverImage}" alt="${course.title}" 
+                                     onerror="this.parentElement.innerHTML='${this.getPlaceholderImageHtml()}'">` :
+                                this.getPlaceholderImageHtml()
+                            }
+                            <div class="course-badges">
+                                ${badges}
+                            </div>
+                        </div>
+                        
+                        <div class="course-content">
+                            <h3 class="course-title">${course.title || '未命名课程'}</h3>
+                            <p class="course-description">${course.description || '探索AI技术的奥秘，开启智能学习之旅'}</p>
+                            
+                            <div class="course-instructor">
+                                <div class="instructor-avatar">
+                                    ${instructor.avatar ? 
+                                        `<img src="${instructor.avatar}" alt="${instructor.name}">` :
+                                        instructor.name.charAt(0).toUpperCase()
+                                    }
+                                </div>
+                                <div class="instructor-info">
+                                    <div class="instructor-name">${instructor.name}</div>
+                                    <div class="instructor-title">${instructor.title}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="course-stats">
+                                <div class="stat-item">
+                                    <div class="rating-stars">
+                                        ${this.generateStarRating(rating)}
+                                    </div>
+                                    <span>${rating.toFixed(1)}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span>👥</span>
+                                    <span>${this.formatNumber(enrollmentCount)}人学习</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span>⏱</span>
+                                    <span>${course.duration || '4小时'}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="course-footer">
+                                <div class="course-price">
+                                    ${course.isFree || price === 0 ? 
+                                        '<span class="price-free">免费</span>' :
+                                        `<div>
+                                            <span class="price-current">¥${price.toFixed(2)}</span>
+                                            ${discount > 0 ? 
+                                                `<span class="price-original">¥${originalPrice.toFixed(2)}</span>
+                                                 <span class="discount-badge">-${discount}%</span>` : ''
+                                            }
+                                        </div>`
+                                    }
+                                </div>
+                                <button class="enroll-btn" 
+                                        ${course.status === 'scheduled' ? 
+                                            'disabled style="background: #94A3B8; cursor: not-allowed;"' : 
+                                            `onclick="courseManager.handleEnroll(${course.id})" ${isEnrolled ? 'disabled' : ''}`
+                                        }>
+                                    ${course.status === 'scheduled' ? '敬请期待' : 
+                                      (isEnrolled ? '已报名' : (course.isFree || price === 0 ? '免费学习' : '立即报名'))
+                                    }
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Create bundle card HTML (课程包卡片)
+            createBundleCard(bundle) {
+                const icons = ['机器', '神经', '创意', '科学', '精选', '实战'];
+                const randomIcon = icons[Math.floor(Math.random() * icons.length)];
+                
+                const courseCount = bundle.courseCount || 0;
+                const price = parseFloat(bundle.price || 0);
+                const originalPrice = parseFloat(bundle.originalPrice || price);
+                const estimatedHours = Math.round(courseCount * 2.5);
+                const enrollmentCount = bundle.enrollmentCount || 0;
+
+                // 计算优惠百分比
+                const discount = originalPrice > price ? Math.round((1 - price / originalPrice) * 100) : 30;
+
+                // 预检图片可用性，如果无法加载则直接使用图标
+                const imageContent = bundle.coverImage ? 
+                    `<img src="${bundle.coverImage}" alt="${bundle.title}" 
+                         onload="console.log('Bundle image loaded successfully')"
+                         onerror="console.log('Bundle image failed to load, using fallback'); this.style.display='none'; this.parentElement.innerHTML='<span style=&quot;font-size: 4rem;&quot;>${randomIcon}</span>';"
+                         style="width: 100%; height: 100%; object-fit: cover;">` :
+                    `<span style="font-size: 4rem;">${randomIcon}</span>`;
+
+                return `
+                    <div class="course-card bundle-card" data-course-id="${bundle.id}" data-bundle-id="${bundle.originalId}" style="cursor: pointer;">
+                        <!-- 课程包特惠标识 -->
+                        <div class="bundle-badge-container" onclick="window.viewBundleDetail(${bundle.originalId})">
+                            <div class="bundle-primary-badge">课程包特惠</div>
+                            <div class="bundle-secondary-badge">系统学习</div>
+                        </div>
+                        
+                        <div class="course-image" onclick="window.viewBundleDetail(${bundle.originalId})">
+                            ${imageContent}
+                        </div>
+                        
+                        <div class="course-content" onclick="window.viewBundleDetail(${bundle.originalId})">
+                            <h3 class="course-title">${bundle.title || '未命名课程包'}</h3>
+                            <p class="course-description">${bundle.description || '系统化学习路径，从基础到高级，全面掌握相关技能'}</p>
+                            
+                            <div class="bundle-stats">
+                                <div class="bundle-stat">
+                                    <span class="bundle-stat-number">${courseCount}</span>
+                                    <span class="bundle-stat-label">门课程</span>
+                                </div>
+                                <div class="bundle-stat">
+                                    <span class="bundle-stat-number">${estimatedHours}</span>
+                                    <span class="bundle-stat-label">小时内容</span>
+                                </div>
+                                <div class="bundle-stat">
+                                    <span class="bundle-stat-number">${this.formatNumber(enrollmentCount)}</span>
+                                    <span class="bundle-stat-label">人学习</span>
+                                </div>
+                            </div>
+
+                            <div class="bundle-course-preview" onclick="window.viewBundleDetail(${bundle.originalId})">
+                                <ul class="bundle-course-list" id="bundleCourses${bundle.originalId}">
+                                    <li class="bundle-course-item">正在加载课程列表...</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="course-footer">
+                                <div class="course-price">
+                                    <div>
+                                        <span class="price-current">¥${price.toFixed(2)}</span>
+                                        ${originalPrice > price || discount > 0 ? 
+                                            `<span class="price-original">¥${(originalPrice > price ? originalPrice : price * (100/(100-discount))).toFixed(2)}</span>
+                                             <span class="discount-badge">-${discount}%</span>` : ''
+                                        }
+                                    </div>
+                                </div>
+                                <button class="enroll-btn" 
+                                        onclick="event.stopPropagation(); window.viewBundleDetail(${bundle.originalId})">
+                                    💎 查看详情
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Generate course badges
+            generateCourseBadges(course) {
+                const badges = [];
+                
+                // Difficulty badge
+                const difficultyMap = {
+                    'beginner': '入门',
+                    'intermediate': '进阶',
+                    'advanced': '高级'
+                };
+                const difficulty = difficultyMap[course.difficulty] || '入门';
+                badges.push(`<span class="badge badge-level">${difficulty}</span>`);
+                
+                // Status badge - 待上线状态
+                if (course.status === 'scheduled') {
+                    badges.push('<span class="badge badge-scheduled">待上线</span>');
+                }
+                
+                // Free badge
+                if (course.isFree || course.price == 0) {
+                    badges.push('<span class="badge badge-free">免费</span>');
+                }
+                
+                // Hot badge
+                if (course.isHot || course.enrollmentCount > 1000) {
+                    badges.push('<span class="badge badge-hot">热门</span>');
+                }
+                
+                // New badge
+                if (course.isNew || this.isRecentCourse(course.createdAt)) {
+                    badges.push('<span class="badge badge-new">新课</span>');
+                }
+                
+                // Bestseller badge
+                if (course.isBestseller || course.rating > 4.8) {
+                    badges.push('<span class="badge badge-bestseller">精品</span>');
+                }
+                
+                return badges.join('');
+            }
+
+            // Generate star rating
+            generateStarRating(rating) {
+                const fullStars = Math.floor(rating);
+                const halfStar = rating - fullStars >= 0.5;
+                const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+                
+                return '★'.repeat(fullStars) + 
+                       (halfStar ? '☆' : '') + 
+                       '☆'.repeat(emptyStars);
+            }
+
+            // Check if course is recent (within 30 days)
+            isRecentCourse(createdAt) {
+                if (!createdAt) return false;
+                const courseDate = new Date(createdAt);
+                const now = new Date();
+                const daysDiff = (now - courseDate) / (1000 * 60 * 60 * 24);
+                return daysDiff <= 30;
+            }
+
+            // Format number for display
+            formatNumber(num) {
+                if (num >= 1000000) {
+                    return (num / 1000000).toFixed(1) + 'M';
+                }
+                if (num >= 1000) {
+                    return (num / 1000).toFixed(1) + 'K';
+                }
+                return num.toString();
+            }
+
+            // Get placeholder image HTML
+            getPlaceholderImageHtml() {
+                return `<div style="width: 100%; height: 220px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; font-weight: bold;">🎓 AI课程</div>`;
+            }
+
+            // Handle course enrollment
+            async handleEnroll(courseId) {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    this.showNotification('请先登录才能报名课程', 'warning');
+                    setTimeout(() => {
+                        const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                        const loginPath = isDev ? '/src/pages/login.html' : '/login.html';
+                        window.location.href = `${loginPath}?returnUrl=${encodeURIComponent(window.location.pathname)}`;
+                    }, 1000);
+                    return;
+                }
+
+                const course = this.courses.find(c => c.id === courseId);
+                if (!course) {
+                    this.showNotification('课程不存在', 'error');
+                    return;
+                }
+
+                try {
+                    if (course.isFree || course.price == 0) {
+                        // Free course enrollment
+                        const response = await fetch(`/api/orders/subscribe/course/${courseId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            }
+                        });
+
+                        const data = await response.json();
+                        if (data.success) {
+                            this.subscriptionStatus.set(courseId, true);
+                            this.renderCourses();
+                            this.showNotification('报名成功！开始学习吧', 'success');
+                            
+                            // Redirect to course after delay
+                            setTimeout(() => {
+                                const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                                const detailPath = isDev ? '/src/pages/course-detail.html' : '/course-detail.html';
+                                window.location.href = `${detailPath}?id=${courseId}`;
+                            }, 1500);
+                        } else {
+                            throw new Error(data.message || '报名失败');
+                        }
+                    } else {
+                        // Paid course - redirect to payment
+                        window.location.href = `/src/pages/course-detail.html?id=${courseId}`;
+                    }
+                } catch (error) {
+                    console.error('课程报名失败:', error);
+                    this.showNotification(`报名失败: ${error.message}`, 'error');
+                }
+            }
+
+            // Show/hide loading skeleton
+            showLoadingSkeleton() {
+                const skeleton = document.getElementById('loadingSkeleton');
+                const grid = document.getElementById('coursesGrid');
+                
+                if (skeleton && grid) {
+                    // Generate skeleton cards
+                    const skeletonCards = Array(6).fill().map(() => `
+                        <div class="course-card loading-skeleton" style="min-height: 400px;">
+                            <div style="height: 220px; background: var(--gray-200);"></div>
+                            <div style="padding: 1.5rem;">
+                                <div style="height: 20px; background: var(--gray-200); margin-bottom: 1rem;"></div>
+                                <div style="height: 40px; background: var(--gray-200); margin-bottom: 1rem;"></div>
+                                <div style="height: 60px; background: var(--gray-200);"></div>
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                    skeleton.querySelector('.courses-grid').innerHTML = skeletonCards;
+                    skeleton.style.display = 'block';
+                    grid.style.display = 'none';
+                }
+            }
+
+            hideLoadingSkeleton() {
+                const skeleton = document.getElementById('loadingSkeleton');
+                const grid = document.getElementById('coursesGrid');
+                
+                if (skeleton && grid) {
+                    skeleton.style.display = 'none';
+                    grid.style.display = 'grid';
+                }
+            }
+
+            // Show/hide empty state
+            showEmptyState(message = '暂无课程数据') {
+                const emptyState = document.getElementById('emptyState');
+                const grid = document.getElementById('coursesGrid');
+                
+                if (emptyState && grid) {
+                    emptyState.style.display = 'block';
+                    grid.style.display = 'none';
+                    emptyState.querySelector('p').textContent = message;
+                }
+            }
+
+            hideEmptyState() {
+                const emptyState = document.getElementById('emptyState');
+                const grid = document.getElementById('coursesGrid');
+                
+                if (emptyState && grid) {
+                    emptyState.style.display = 'none';
+                    grid.style.display = 'grid';
+                }
+            }
+
+            // Bind event listeners
+            bindEvents() {
+                // Bundle filter pills
+                document.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('filter-pill') || e.target.closest('.filter-pill')) {
+                        const pill = e.target.classList.contains('filter-pill') ? e.target : e.target.closest('.filter-pill');
+                        
+                        document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+                        pill.classList.add('active');
+                        
+                        this.currentBundle = pill.dataset.bundle;
+                        this.currentPage = 1;
+                        this.loadCourses();
+                    }
+                });
+
+                // Search functionality
+                const searchInput = document.getElementById('courseSearch');
+                if (searchInput) {
+                    let searchTimeout;
+                    searchInput.addEventListener('input', (e) => {
+                        clearTimeout(searchTimeout);
+                        searchTimeout = setTimeout(() => {
+                            this.searchTerm = e.target.value;
+                            this.currentPage = 1;
+                            this.loadCourses();
+                        }, 500);
+                    });
+
+                    // Enter key search
+                    searchInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            clearTimeout(searchTimeout);
+                            this.searchTerm = e.target.value;
+                            this.currentPage = 1;
+                            this.loadCourses();
+                        }
+                    });
+                }
+
+                // Sort dropdown
+                const sortSelect = document.getElementById('sortSelect');
+                if (sortSelect) {
+                    sortSelect.addEventListener('change', (e) => {
+                        this.currentSort = e.target.value;
+                        this.currentPage = 1;
+                        this.loadCourses();
+                    });
+                }
+
+                // Load more button
+                const loadMoreBtn = document.getElementById('loadMoreBtn');
+                if (loadMoreBtn) {
+                    loadMoreBtn.addEventListener('click', () => {
+                        this.currentPage++;
+                        this.loadCourses(true);
+                    });
+                }
+
+                // Navbar scroll effect
+                window.addEventListener('scroll', () => {
+                    const navbar = document.getElementById('navbar');
+                    if (window.scrollY > 50) {
+                        navbar.classList.add('scrolled');
+                    } else {
+                        navbar.classList.remove('scrolled');
+                    }
+                });
+
+                // User menu toggle
+                document.addEventListener('click', (e) => {
+                    const userProfile = document.querySelector('.user-profile');
+                    const userMenu = document.getElementById('userMenu');
+                    if (userProfile && !userProfile.contains(e.target) && userMenu) {
+                        userMenu.style.display = 'none';
+                    }
+                    
+                    // Course card click - navigate to detail page
+                    const courseCard = e.target.closest('.course-card');
+                    if (courseCard && !e.target.closest('.enroll-btn')) {
+                        const courseId = courseCard.dataset.courseId;
+                        if (courseId) {
+                            // Check if it's a bundle card
+                            if (courseCard.classList.contains('bundle-card')) {
+                                // Remove bundle_ prefix for bundle cards
+                                const realBundleId = courseId.replace('bundle_', '');
+                                window.location.href = `course-detail.html?id=${realBundleId}&type=bundle`;
+                            } else {
+                                window.location.href = `course-detail.html?id=${courseId}`;
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Update UI elements
+            updateUI() {
+                // Theme initialization
+                this.initTheme();
+                
+                // Update load more button state
+                const loadMoreBtn = document.getElementById('loadMoreBtn');
+                if (loadMoreBtn) {
+                    const spinner = loadMoreBtn.querySelector('.loading-spinner');
+                    if (this.isLoading) {
+                        spinner.style.display = 'inline-block';
+                        loadMoreBtn.disabled = true;
+                    } else {
+                        spinner.style.display = 'none';
+                        loadMoreBtn.disabled = false;
+                    }
+                }
+            }
+
+            // Initialize theme
+            initTheme() {
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            }
+
+            // Start periodic updates
+            startPeriodicUpdate() {
+                // 这里可以添加定期更新逻辑
+            }
+
+            // Show notification
+            showNotification(message, type = 'info') {
+                const notification = document.getElementById('notification');
+                if (!notification) return;
+
+                notification.textContent = message;
+                notification.className = `notification ${type} show`;
+
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
             }
         }
-        
-        // 页面加载完成后初始化
-        document.addEventListener('DOMContentLoaded', () => {
-            initTheme();
-            initCoursePageAuth();
-        });
-        
-        // 定义用户菜单相关函数
-        window.toggleUserMenu = () => {
-            const userMenu = document.getElementById('userMenu');
-            if (userMenu) {
-                const isVisible = userMenu.style.display === 'block';
-                userMenu.style.display = isVisible ? 'none' : 'block';
-            }
-        };
-        
-        window.logout = () => {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.reload();
-        };
-        
-        // 点击外部关闭菜单
-        document.addEventListener('click', (e) => {
-            const userProfile = document.querySelector('.user-profile');
-            const userMenu = document.getElementById('userMenu');
-            if (userProfile && !userProfile.contains(e.target) && userMenu) {
-                userMenu.style.display = 'none';
-            }
-        });
 
-        // 筛选标签交互
-        document.querySelectorAll('.filter-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
+        // Initialize course manager
+        // 查看课程包详情 - 定义全局函数
+        window.viewBundleDetail = function(bundleId) {
+            console.log('viewBundleDetail called with bundleId:', bundleId);
+            if (!bundleId && bundleId !== 0) {
+                console.error('Bundle ID is missing');
+                return;
+            }
+            // 跳转到课程包详情页面
+            const url = `bundle-detail.html?id=${bundleId}`;
+            console.log('Navigating to:', url);
+            window.location.href = url;
+        };
+        
+        // Also make it available directly
+        function viewBundleDetail(bundleId) {
+            window.viewBundleDetail(bundleId);
+        }
+
+        // 购买课程包（保留以兼容旧代码）
+        window.purchaseBundle = async (bundleId) => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                const courseManager = document.courseManager || window.courseManager;
+                if (courseManager) {
+                    courseManager.showNotification('请先登录', 'warning');
+                }
+                window.location.href = 'login.html?returnUrl=courses.html';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/orders/bundle', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        bundleId: bundleId
+                    })
+                });
+
+                const result = await response.json();
                 
-                // 这里可以添加筛选逻辑
-                const category = this.dataset.category;
-                console.log('筛选分类:', category);
-            });
+                if (result.success) {
+                    // 保存课程包信息到sessionStorage
+                    sessionStorage.setItem('paymentData', JSON.stringify({
+                        type: 'bundle',
+                        bundleId: bundleId
+                    }));
+                    
+                    // 跳转到支付页面
+                    window.location.href = `payment.html?type=bundle&id=${bundleId}`;
+                } else if (result.code === 400 && result.message && result.message.includes('您有未支付的订单')) {
+                    const courseManager = document.courseManager || window.courseManager;
+                    if (courseManager) {
+                        courseManager.showNotification(result.message, 'warning');
+                    }
+                } else {
+                    throw new Error(result.message || '创建订单失败');
+                }
+            } catch (error) {
+                console.error('购买课程包失败:', error);
+                const courseManager = document.courseManager || window.courseManager;
+                if (courseManager) {
+                    courseManager.showNotification('系统异常，请稍后重试', 'error');
+                }
+            }
+        };
+
+        const courseManager = new ModernCourseManager();
+        window.courseManager = courseManager; // Make it globally accessible
+        
+        // Add event delegation for bundle cards
+        document.addEventListener('click', function(e) {
+            // Check if clicked element is within a bundle card
+            const bundleCard = e.target.closest('.bundle-card');
+            if (bundleCard && !e.target.closest('.enroll-btn')) {
+                const bundleId = bundleCard.getAttribute('data-bundle-id');
+                console.log('Bundle card clicked via delegation, bundleId:', bundleId);
+                if (bundleId) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.viewBundleDetail(bundleId);
+                }
+            }
+        }, true); // Use capture phase
+
+        // Add event delegation for course cards
+        document.addEventListener('click', function(e) {
+            // Check if clicked element is within a course card (but not a bundle card)
+            const courseCard = e.target.closest('.course-card:not(.bundle-card)');
+            if (courseCard && !e.target.closest('.enroll-btn')) {
+                const courseId = courseCard.getAttribute('data-course-id');
+                // Check if course is scheduled (待上线)
+                const scheduledBadge = courseCard.querySelector('.badge-scheduled');
+                
+                if (scheduledBadge) {
+                    // Prevent navigation for scheduled courses
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Clicked on scheduled course - navigation prevented');
+                    return;
+                }
+                
+                if (courseId) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.location.href = `/src/pages/course-detail.html?id=${courseId}`;
+                }
+            }
+        }, true); // Use capture phase
+
+        // Toggle user menu
+        function toggleUserMenu(event) {
+            console.log('toggleUserMenu called'); // Debug log
+            if (event) {
+                event.stopPropagation();
+            }
+            const dropdown = document.getElementById('userDropdown');
+            const container = document.querySelector('.user-menu-container');
+            console.log('Dropdown found:', !!dropdown, 'Container found:', !!container); // Debug log
+            if (dropdown && container) {
+                dropdown.classList.toggle('show');
+                container.classList.toggle('active');
+                console.log('Dropdown classes:', dropdown.className); // Debug log
+            }
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const userMenu = document.querySelector('.user-menu-container');
+            if (userMenu && !userMenu.contains(event.target)) {
+                const dropdown = document.getElementById('userDropdown');
+                if (dropdown) {
+                    dropdown.classList.remove('show');
+                    userMenu.classList.remove('active');
+                }
+            }
         });
 
-        // 加载更多课程
-        function loadMoreCourses() {
-            const btn = document.querySelector('.btn-load-more');
-            const spinner = btn.querySelector('.loading-spinner');
-            
-            spinner.style.display = 'inline-block';
-            btn.disabled = true;
-            
-            // 模拟加载
-            setTimeout(() => {
-                spinner.style.display = 'none';
-                btn.disabled = false;
-            }, 2000);
+        // Global functions
+        window.performSearch = () => {
+            const searchInput = document.getElementById('courseSearch');
+            if (searchInput) {
+                courseManager.searchTerm = searchInput.value;
+                courseManager.currentPage = 1;
+                courseManager.loadCourses();
+            }
+        };
+
+        window.toggleUserMenu = toggleUserMenu;
+
+        window.loadMoreCourses = () => {
+            if (!courseManager.isLoading && courseManager.hasMoreData) {
+                courseManager.currentPage++;
+                courseManager.loadCourses(true);
+            }
+        };
+
+        window.logout = () => {
+            if (confirm('确定要退出登录吗？')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                localStorage.removeItem('refreshToken');
+                courseManager.showNotification('已退出登录', 'success');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            }
+        };
+
+        window.toggleTheme = () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        };
+
+        // Bundle-related functions (duplicates removed - defined earlier)
+
+        window.viewBundleDetails = async (bundleId) => {
+            try {
+                // Load and display bundle courses
+                const response = await fetch(`/api/courses/bundles/${bundleId}/courses`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.data) {
+                        const courses = Array.isArray(data.data) ? data.data : data.data.records || [];
+                        displayBundleCourses(bundleId, courses);
+                    }
+                }
+            } catch (error) {
+                console.error('加载课程包详情失败:', error);
+                courseManager.showNotification('加载失败', 'error');
+            }
+        };
+
+        // Display bundle courses in the preview area
+        function displayBundleCourses(bundleId, courses) {
+            const coursesList = document.getElementById(`bundleCourses${bundleId}`);
+            if (!coursesList) return;
+
+            if (courses.length === 0) {
+                coursesList.innerHTML = '<li class="bundle-course-item">暂无课程</li>';
+                return;
+            }
+
+            coursesList.innerHTML = courses.slice(0, 5).map(course => 
+                `<li class="bundle-course-item">${course.title}</li>`
+            ).join('') + (courses.length > 5 ? 
+                `<li class="bundle-course-item">还有 ${courses.length - 5} 门课程...</li>` : '');
+        }
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => courseManager.init());
+        } else {
+            courseManager.init();
         }
     </script>
-    <!-- 先加载API服务 -->
-    
-    <script src="/src/scripts/courses-page.js"></script>
 </body>
 </html>

@@ -11,9 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
   <script type="module" crossorigin src="/assets/modulepreload-polyfill-3cfb730f.js"></script>
-  <script type="module" crossorigin src="/assets/api-4ed993c7.js"></script>
-  <script type="module" crossorigin src="/assets/homepage-4ed993c7.js"></script>
-  <link rel="stylesheet" href="/assets/home-3470f155.css">
+  <link rel="stylesheet" href="/assets/home-65fc4d4b.css">
 </head>
 <body>
     <!-- 背景系统 -->
@@ -70,15 +68,15 @@
                         <!-- 个人中心相关 -->
                         <div class="menu-section">
                             <a href="src/pages/profile.html" class="menu-item">
-                                <i class="menu-icon">👤</i>
+                                <i class="menu-icon">用户</i>
                                 <span>个人中心</span>
                             </a>
                             <a href="src/pages/profile.html?tab=personal-info" class="menu-item">
-                                <i class="menu-icon">📝</i>
+                                <i class="menu-icon">编辑</i>
                                 <span>个人信息</span>
                             </a>
                             <a href="src/pages/profile.html?tab=orders" class="menu-item">
-                                <i class="menu-icon">📦</i>
+                                <i class="menu-icon">订单</i>
                                 <span>我的订单</span>
                                 <span class="menu-badge" id="orderBadge" style="display: none;">3</span>
                             </a>
@@ -89,15 +87,15 @@
                         <!-- 学习相关 -->
                         <div class="menu-section">
                             <a href="src/pages/courses.html" class="menu-item">
-                                <i class="menu-icon">📚</i>
+                                <i class="menu-icon">课程</i>
                                 <span>我的课程</span>
                             </a>
                             <a href="src/pages/dashboard.html" class="menu-item">
-                                <i class="menu-icon">📊</i>
+                                <i class="menu-icon">统计</i>
                                 <span>学习中心</span>
                             </a>
                             <a href="src/pages/profile.html?tab=certificates" class="menu-item">
-                                <i class="menu-icon">📜</i>
+                                <i class="menu-icon">证书</i>
                                 <span>我的证书</span>
                             </a>
                         </div>
@@ -107,11 +105,11 @@
                         <!-- 设置相关 -->
                         <div class="menu-section">
                             <div class="menu-item avatar-selector" onclick="showAvatarSelector()">
-                                <i class="menu-icon">🎨</i>
+                                <i class="menu-icon">设置</i>
                                 <span>更换头像</span>
                             </div>
                             <a href="src/pages/profile.html?tab=settings" class="menu-item">
-                                <i class="menu-icon">⚙️</i>
+                                <i class="menu-icon">配置</i>
                                 <span>账号设置</span>
                             </a>
                         </div>
@@ -121,7 +119,7 @@
                         <!-- 退出登录 -->
                         <div class="menu-section">
                             <a href="#" class="menu-item logout-item" onclick="logout()">
-                                <i class="menu-icon">🚪</i>
+                                <i class="menu-icon">退出</i>
                                 <span>退出登录</span>
                             </a>
                         </div>
@@ -331,13 +329,13 @@
 
         <div class="features-grid">
             <a href="src/pages/courses.html#all" class="feature-card featured-bundle" style="grid-column: span 2;">
-                <div class="bundle-badge">🎆 超值全套</div>
+                <div class="bundle-badge">超值全套</div>
                 <div class="feature-icon" style="font-size: 2.5rem;"><i class="fas fa-robot" style="color: #4a9eff;"></i></div>
                 <h3 class="feature-title" style="color: var(--accent-light);">AI全套专栏</h3>
                 <p class="feature-description">
-                    <strong>🔥 一次订阅，全部解锁</strong>：包含机器学习、深度学习、Transformer、NLP 全部内容<br>
-                    <strong>💰 超级优惠</strong>：原价￥456，现价仅需<span style="color: #e74c3c; font-size: 1.3em; font-weight: bold;">￥299</span>，节省157元<br>
-                    <strong>🎯 从入门到专家</strong>：系统学习路径，38个章节全面覆盖AI核心技术
+                    <strong>一次订阅，全部解锁</strong>：包含机器学习、深度学习、Transformer、NLP 全部内容<br>
+                    <strong>超级优惠</strong>：原价￥456，现价仅需<span style="color: #e74c3c; font-size: 1.3em; font-weight: bold;">￥299</span>，节省157元<br>
+                    <strong>从入门到专家</strong>：系统学习路径，38个章节全面覆盖AI核心技术
                 </p>
             </a>
 
@@ -345,8 +343,8 @@
                 <div class="feature-icon"><i class="fas fa-brain" style="color: #ff6b6b;"></i></div>
                 <h3 class="feature-title">深度学习进阶</h3>
                 <p class="feature-description">
-                    <strong>🎯 神经网络可视化</strong>：前向传播、反向传播全流程动画展示<br>
-                    <strong>📐 数学推导详解</strong>：激活函数、权重更新公式逐行解析<br>
+                    <strong>神经网络可视化</strong>：前向传播、反向传播全流程动画展示<br>
+                    <strong>数学推导详解</strong>：激活函数、权重更新公式逐行解析<br>
                     从CNN到RNN，从理论基础到PyTorch实战，精通深度学习核心技术
                 </p>
             </a>
@@ -355,8 +353,8 @@
                 <div class="feature-icon"><i class="fas fa-bolt" style="color: #ffd93d;"></i></div>
                 <h3 class="feature-title">Transformer架构</h3>
                 <p class="feature-description">
-                    <strong>🎯 从可视化全过程到手撕源码</strong>：注意力机制动态图解，逐行代码实现<br>
-                    <strong>📐 数学公式拆解</strong>：Self-Attention、Position Encoding公式推导<br>
+                    <strong>从可视化全过程到手撕源码</strong>：注意力机制动态图解，逐行代码实现<br>
+                    <strong>数学公式拆解</strong>：Self-Attention、Position Encoding公式推导<br>
                     深度掌握BERT、GPT核心原理，构建自己的大语言模型
                 </p>
             </a>
@@ -365,8 +363,8 @@
                 <div class="feature-icon"><i class="fas fa-chart-line" style="color: #4ecdc4;"></i></div>
                 <h3 class="feature-title">机器学习基础</h3>
                 <p class="feature-description">
-                    <strong>🎯 可视化算法过程</strong>：线性回归、K-Means聚类、决策树等核心算法动态演示<br>
-                    <strong>📐 公式拆解分析</strong>：梯度下降、损失函数逐步推导，数学原理清晰呈现<br>
+                    <strong>可视化算法过程</strong>：线性回归、K-Means聚类、决策树等核心算法动态演示<br>
+                    <strong>公式拆解分析</strong>：梯度下降、损失函数逐步推导，数学原理清晰呈现<br>
                     从线性回归到集成学习，全面掌握机器学习核心算法
                 </p>
             </a>
@@ -375,18 +373,18 @@
                 <div class="feature-icon"><i class="fas fa-comments" style="color: #9b59b6;"></i></div>
                 <h3 class="feature-title">自然语言处理</h3>
                 <p class="feature-description">
-                    <strong>🎯 文本处理可视化</strong>：词向量空间、语义相似度计算过程展示<br>
-                    <strong>📐 NLP算法拆解</strong>：TF-IDF、Word2Vec、BERT原理公式推导<br>
+                    <strong>文本处理可视化</strong>：词向量空间、语义相似度计算过程展示<br>
+                    <strong>NLP算法拆解</strong>：TF-IDF、Word2Vec、BERT原理公式推导<br>
                     从文本分析到对话系统，构建智能NLP应用
                 </p>
             </a>
 
             <div class="feature-card">
-                <div class="feature-icon">🚀</div>
+                <div class="feature-icon">实战</div>
                 <h3 class="feature-title">项目实战</h3>
                 <p class="feature-description">
-                    <strong>🎯 端到端可视化</strong>：从数据预处理到模型部署全流程图示<br>
-                    <strong>📐 工程化实践</strong>：模型优化、性能调优、生产环境部署<br>
+                    <strong>端到端可视化</strong>：从数据预处理到模型部署全流程图示<br>
+                    <strong>工程化实践</strong>：模型优化、性能调优、生产环境部署<br>
                     真实企业级项目案例，完整的AI项目开发体验
                 </p>
             </div>

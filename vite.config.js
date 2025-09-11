@@ -27,11 +27,21 @@ export default defineConfig({
         login: 'src/pages/login.html',
         register: 'src/pages/register.html',
         orders: 'src/pages/orders.html',
-        'course-detail': 'src/pages/course-detail.html'
+        'course-detail': 'src/pages/course-detail.html',
+        leaderboard: 'src/pages/leaderboard.html',
+        notes: 'src/pages/notes.html',
+        'community-square': 'src/pages/community-square.html',
+        qa: 'src/pages/qa.html'
       }
     },
     copyPublicDir: true
   },
   publicDir: false,
-  assetsInclude: ['**/*.js']
+  assetsInclude: ['**/*.js'],
+  css: {
+    postcss: './postcss.config.js'
+  },
+  optimizeDeps: {
+    include: ['zustand', 'date-fns', '@floating-ui/dom']
+  }
 })

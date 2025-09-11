@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习中心 - AI未来学院</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #f8fafc;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .study-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0;
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+        }
+
+        .content-area {
+            background: white;
+            border-radius: 0;
+            border: none;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .content-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+        }
+
+        .error-state {
+            text-align: center;
+            padding: 60px 20px;
+            font-family: sans-serif;
+            background: white;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .error-content {
+            max-width: 500px;
+        }
+
+        .error-icon {
+            font-size: 4rem;
+            margin-bottom: 24px;
+            color: #ef4444;
+        }
+
+        .error-title {
+            color: #333;
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .error-message {
+            color: #666;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .retry-btn {
+            padding: 12px 24px;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .retry-btn:hover {
+            background: #4338ca;
+        }
+
+        .loading-state {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: white;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e5e7eb;
+            border-left-color: #4f46e5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="study-container">
+        <div class="content-area">
+            <!-- 加载状态 -->
+            <div id="loadingState" class="loading-state">
+                <div class="loading-spinner"></div>
+            </div>
+            
+            <!-- 错误状态 -->
+            <div id="errorState" class="error-state" style="display: none;">
+                <div class="error-content">
+                    <div class="error-icon">❌</div>
+                    <div class="error-title" id="errorTitle">加载失败</div>
+                    <div class="error-message" id="errorMessage">无法加载章节内容</div>
+                    <button class="retry-btn" onclick="location.reload()">重新加载</button>
+                </div>
+            </div>
+            
+            <!-- 内容iframe -->
+            <iframe id="contentIframe" class="content-iframe" style="display: none;"></iframe>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+
+        // 获取URL参数
+        function getUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return {
+                courseId: urlParams.get('courseId') || '1',
+                chapterId: urlParams.get('chapterId') || '100'
+            };
+        }
+
+        // 显示错误
+        function showError(title, message) {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('contentIframe').style.display = 'none';
+            document.getElementById('errorState').style.display = 'flex';
+            document.getElementById('errorTitle').textContent = title;
+            document.getElementById('errorMessage').textContent = message;
+        }
+
+        // 显示内容
+        function showContent() {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('errorState').style.display = 'none';
+            document.getElementById('contentIframe').style.display = 'block';
+        }
+
+        // 获取章节HTML内容
+        async function getChapterHTML(chapterId) {
+            try {
+                console.log('📥 开始获取章节内容，ID:', chapterId);
+                
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/content/chapters/${chapterId}`, {
+                    headers: {
+                        'Authorization': token ? `Bearer ${token}` : '',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                console.log('📦 API响应数据:', data);
+                
+                if (data.code === 200 && data.success) {
+                    // 检查数据结构
+                    if (data.data && data.data.content && data.data.content.contentHtml) {
+                        console.log('✅ 找到HTML内容，长度:', data.data.content.contentHtml.length);
+                        return data.data.content.contentHtml;
+                    } else {
+                        console.log('⚠️ 未找到contentHtml，生成默认内容');
+                        return generateDefaultHTML(data.data?.chapter || { title: '章节内容' });
+                    }
+                } else if (data.code === 403) {
+                    return generatePermissionDeniedHTML(chapterId, data.message);
+                } else if (data.code === 401) {
+                    return generateLoginRequiredHTML(chapterId);
+                } else {
+                    console.warn('❌ API返回错误:', data.message);
+                    return generateErrorHTML(chapterId, data.message || '获取内容失败');
+                }
+            } catch (error) {
+                console.error('❌ 获取章节内容失败:', error);
+                return generateErrorHTML(chapterId, '网络错误，请检查连接');
+            }
+        }
+
+        // 生成默认HTML
+        function generateDefaultHTML(chapter) {
+            return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${chapter.title || '章节内容'}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: white;
+        }
+        h1 { color: #4f46e5; margin-bottom: 2rem; }
+        .coming-soon {
+            text-align: center;
+            padding: 3rem;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+        .icon { font-size: 4rem; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <h1>${chapter.title || '章节内容'}</h1>
+    <div class="coming-soon">
+        <div class="icon">📚</div>
+        <h2>内容制作中</h2>
+        <p>该章节的详细内容正在制作中，敬请期待！</p>
+        <p>${chapter.description || '我们正在为您准备高质量的学习内容。'}</p>
+    </div>
+</body>
+</html>`;
+        }
+
+        // 生成权限错误HTML
+        function generatePermissionDeniedHTML(chapterId, message) {
+            return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>需要权限</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container { max-width: 500px; }
+        .icon { font-size: 4rem; margin-bottom: 2rem; }
+        h1 { color: #ef4444; margin-bottom: 1rem; }
+        .btn {
+            padding: 12px 24px;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🔒</div>
+        <h1>需要购买课程</h1>
+        <p>${message || '该章节需要购买课程后才能观看'}</p>
+        <a href="/src/pages/course-detail.html?id=1" class="btn">购买课程</a>
+    </div>
+</body>
+</html>`;
+        }
+
+        // 生成登录错误HTML
+        function generateLoginRequiredHTML(chapterId) {
+            return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>需要登录</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container { max-width: 500px; }
+        .icon { font-size: 4rem; margin-bottom: 2rem; }
+        h1 { color: #f59e0b; margin-bottom: 1rem; }
+        .btn {
+            padding: 12px 24px;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">👤</div>
+        <h1>需要登录</h1>
+        <p>需要登录后才能观看课程内容</p>
+        <a href="/src/pages/login.html" class="btn">立即登录</a>
+    </div>
+</body>
+</html>`;
+        }
+
+        // 生成通用错误HTML
+        function generateErrorHTML(chapterId, message) {
+            return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加载错误</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container { max-width: 500px; }
+        .icon { font-size: 4rem; margin-bottom: 2rem; }
+        h1 { color: #ef4444; margin-bottom: 1rem; }
+        .btn {
+            padding: 12px 24px;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">❌</div>
+        <h1>加载失败</h1>
+        <p>${message}</p>
+        <p>章节ID: ${chapterId}</p>
+        <button class="btn" onclick="parent.location.reload()">重新加载</button>
+    </div>
+</body>
+</html>`;
+        }
+
+        // 加载章节内容
+        async function loadChapterContent() {
+            const { courseId, chapterId } = getUrlParams();
+            
+            console.log('🚀 开始加载章节内容');
+            console.log('📋 参数:', { courseId, chapterId });
+            
+            try {
+                // 获取HTML内容
+                const htmlContent = await getChapterHTML(chapterId);
+                console.log('📄 获取到HTML内容，长度:', htmlContent.length);
+                
+                // 设置iframe内容
+                const iframe = document.getElementById('contentIframe');
+                iframe.onload = function() {
+                    console.log('✅ iframe加载完成');
+                    showContent();
+                };
+                
+                // 方法1：使用srcDoc (推荐)
+                if ('srcDoc' in iframe) {
+                    console.log('📝 使用srcDoc设置内容');
+                    iframe.srcDoc = htmlContent;
+                } else {
+                    // 方法2：使用data URL (兼容性)
+                    console.log('📝 使用data URL设置内容');
+                    const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
+                    iframe.src = dataUrl;
+                }
+                
+            } catch (error) {
+                console.error('❌ 加载章节内容失败:', error);
+                showError('加载失败', error.message || '无法加载章节内容');
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 页面加载完成，开始初始化');
+            loadChapterContent();
+        });
+    </script>
+</body>
+</html>

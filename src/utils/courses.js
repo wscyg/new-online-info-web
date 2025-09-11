@@ -271,7 +271,7 @@ function initializeParticles() {
 // 从API加载课程数据
 async function loadCoursesFromAPI() {
     try {
-        const response = await fetch('http://42.194.245.66:8070/api/courses');
+        const response = await fetch('http://42.194.245.66/api/courses');
         const data = await response.json();
         
         if (data.code === 200 && data.data) {
@@ -474,8 +474,8 @@ function createCourseCard(course, index) {
                 <span class="rating-score">${course.rating}</span>
             </div>
             <div class="course-price">
-                <span class="original-price">¥${course.originalPrice}</span>
-                <span class="current-price">¥${course.currentPrice}</span>
+                <span class="original-price">¥${course.originalPrice.toFixed(2)}</span>
+                <span class="current-price">¥${course.currentPrice.toFixed(2)}</span>
             </div>
             <button class="btn-view-course" onclick="showCourseModal(${course.id})">
                 查看详情
@@ -538,8 +538,8 @@ async function showCourseModal(courseId) {
     document.getElementById('courseLevel').textContent = course.level;
     document.getElementById('courseDuration').textContent = course.duration;
     document.getElementById('courseRating').textContent = course.rating;
-    document.getElementById('originalPrice').textContent = `¥${course.originalPrice}`;
-    document.getElementById('currentPrice').textContent = `¥${course.currentPrice}`;
+    document.getElementById('originalPrice').textContent = `¥${course.originalPrice.toFixed(2)}`;
+    document.getElementById('currentPrice').textContent = `¥${course.currentPrice.toFixed(2)}`;
     document.getElementById('courseBadge').textContent = course.badge;
 
     // 渲染章节列表
@@ -576,7 +576,7 @@ async function showCourseModal(courseId) {
 // 加载课程章节
 async function loadCourseChapters(courseId) {
     try {
-        const response = await fetch(`http://42.194.245.66:8070/api/content/courses/${courseId}/chapters`);
+        const response = await fetch(`http://42.194.245.66/api/content/courses/${courseId}/chapters`);
         const data = await response.json();
         
         if (data.code === 200 && data.data) {

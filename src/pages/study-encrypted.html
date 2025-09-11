@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习中心 - AI未来学院</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #0f172a;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        #contentContainer {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .loading-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+            font-size: 1.5rem;
+            background: #0f172a;
+        }
+        
+        .content-wrapper {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: white;
+            overflow-y: auto;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+        
+        /* 防止右键和选择 */
+        .content-wrapper {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* 防止拖拽 */
+        .content-wrapper * {
+            -webkit-user-drag: none;
+            user-drag: none;
+        }
+        
+        /* 水印效果 */
+        .watermark {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            background-image: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 200px,
+                rgba(0,0,0,0.02) 200px,
+                rgba(0,0,0,0.02) 250px
+            );
+        }
+        
+        .watermark::before {
+            content: attr(data-watermark);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 3rem;
+            color: rgba(0,0,0,0.05);
+            white-space: nowrap;
+            z-index: 1001;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading" class="loading-container">🚀 正在加载章节内容...</div>
+    <div id="contentContainer" style="display: none;">
+        <div class="content-wrapper" id="contentWrapper"></div>
+        <div class="watermark" id="watermark" data-watermark="AI未来学院"></div>
+    </div>
+
+    <script>
+        // 简单的加密/解密工具
+        class SimpleEncrypt {
+            static encrypt(text, key = 'aifl2024') {
+                let result = '';
+                for (let i = 0; i < text.length; i++) {
+                    const keyChar = key[i % key.length];
+                    const encryptedChar = String.fromCharCode(text.charCodeAt(i) ^ keyChar.charCodeAt(0));
+                    result += encryptedChar;
+                }
+                return btoa(result);
+            }
+            
+            static decrypt(encryptedText, key = 'aifl2024') {
+                try {
+                    const text = atob(encryptedText);
+                    let result = '';
+                    for (let i = 0; i < text.length; i++) {
+                        const keyChar = key[i % key.length];
+                        const decryptedChar = String.fromCharCode(text.charCodeAt(i) ^ keyChar.charCodeAt(0));
+                        result += decryptedChar;
+                    }
+                    return result;
+                } catch (e) {
+                    console.error('解密失败:', e);
+                    return null;
+                }
+            }
+        }
+
+        // 高级防调试措施
+        (function() {
+            'use strict';
+            
+            // 检测调试器
+            let isDebugging = false;
+            function detectDebugger() {
+                const start = new Date();
+                debugger;
+                const end = new Date();
+                if (end - start > 100) {
+                    isDebugging = true;
+                    document.body.innerHTML = '<div style="color: white; text-align: center; margin-top: 50vh;">检测到调试行为，内容已被保护</div>';
+                    return true;
+                }
+                return false;
+            }
+            
+            // 定期检测
+            setInterval(() => {
+                if (!isDebugging) {
+                    detectDebugger();
+                }
+            }, 3000);
+            
+            // 禁用右键菜单
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // 禁用开发者工具快捷键
+            document.addEventListener('keydown', function(e) {
+                const forbiddenKeys = [
+                    123, // F12
+                    {ctrl: true, shift: true, key: 73}, // Ctrl+Shift+I
+                    {ctrl: true, shift: true, key: 67}, // Ctrl+Shift+C
+                    {ctrl: true, key: 85}, // Ctrl+U
+                    {ctrl: true, key: 83}, // Ctrl+S
+                    {ctrl: true, key: 65}, // Ctrl+A (全选)
+                    {ctrl: true, key: 67}, // Ctrl+C (复制)
+                ];
+                
+                if (e.keyCode === 123) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                if ((e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 67)) ||
+                    (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83 || e.keyCode === 65 || e.keyCode === 67))) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            // 检测窗口大小变化（开发者工具打开）
+            let windowHeight = window.innerHeight;
+            let windowWidth = window.innerWidth;
+            
+            setInterval(() => {
+                if (window.innerHeight < windowHeight * 0.7 || 
+                    window.innerWidth < windowWidth * 0.7) {
+                    if (!isDebugging) {
+                        isDebugging = true;
+                        document.body.innerHTML = '<div style="color: white; text-align: center; margin-top: 50vh;">请关闭开发者工具</div>';
+                    }
+                }
+            }, 1000);
+            
+            // 禁用选择和拖拽
+            document.onselectstart = () => false;
+            document.ondragstart = () => false;
+            
+        })();
+
+        // 内容保护的替换函数
+        function replaceExternalLibs(htmlContent) {
+            const replacements = {
+                'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css': '/lib/highlightjs/github-dark.min.css',
+                'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css': '/lib/katex/katex.min.css',
+                'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js': '/lib/highlightjs/highlight.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js': '/lib/katex/katex.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js': '/lib/katex/auto-render.min.js',
+                'https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css': '/lib/highlightjs/github-dark.min.css',
+                'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css': '/lib/katex/katex.min.css',
+                'https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/highlight.min.js': '/lib/highlightjs/highlight.min.js',
+                'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js': '/lib/katex/katex.min.js',
+                'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js': '/lib/katex/auto-render.min.js'
+            };
+            
+            let modifiedHtml = htmlContent;
+            for (const [cdnUrl, localUrl] of Object.entries(replacements)) {
+                modifiedHtml = modifiedHtml.split(cdnUrl).join(localUrl);
+            }
+            
+            return modifiedHtml;
+        }
+
+        // 分片渲染函数，避免一次性暴露全部内容
+        function renderContentInChunks(htmlContent) {
+            const contentWrapper = document.getElementById('contentWrapper');
+            
+            // 清理内容，移除脚本标签
+            const cleanedContent = htmlContent
+                .replace(/<script(?!.*src=)[^>]*>[\s\S]*?<\/script>/gi, '') // 只移除内联脚本
+                .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '') // 移除事件处理器
+                .replace(/javascript:/gi, 'blocked:'); // 阻止javascript协议
+            
+            // 分片处理内容
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(cleanedContent, 'text/html');
+            const elements = Array.from(doc.body.children);
+            
+            // 分批渲染，防止一次性暴露所有内容
+            let index = 0;
+            const renderBatch = () => {
+                if (index >= elements.length) {
+                    // 渲染完成后执行必要的脚本
+                    setTimeout(executeScripts, 100);
+                    return;
+                }
+                
+                const batchSize = Math.min(5, elements.length - index);
+                for (let i = 0; i < batchSize; i++) {
+                    const element = elements[index + i];
+                    if (element) {
+                        contentWrapper.appendChild(element.cloneNode(true));
+                    }
+                }
+                
+                index += batchSize;
+                setTimeout(renderBatch, 50); // 延迟渲染下一批
+            };
+            
+            renderBatch();
+        }
+
+        // 执行必要的脚本
+        function executeScripts() {
+            const contentWrapper = document.getElementById('contentWrapper');
+            
+            // 执行代码高亮
+            if (typeof hljs !== 'undefined') {
+                hljs.highlightAll();
+            }
+            
+            // 执行数学公式渲染
+            if (typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(contentWrapper, {
+                    delimiters: [
+                        {left: "$$", right: "$$", display: true},
+                        {left: "$", right: "$", display: false}
+                    ],
+                    throwOnError: false
+                });
+            }
+            
+            // 重新应用样式
+            setTimeout(() => {
+                const styles = contentWrapper.querySelectorAll('style');
+                styles.forEach(style => {
+                    if (style.textContent.includes('animation') || 
+                        style.textContent.includes('keyframes')) {
+                        const newStyle = document.createElement('style');
+                        newStyle.textContent = style.textContent;
+                        document.head.appendChild(newStyle);
+                    }
+                });
+            }, 200);
+        }
+
+        // 主加载函数
+        (async function () {
+            const loadingIndicator = document.getElementById('loading');
+            const contentContainer = document.getElementById('contentContainer');
+            const watermark = document.getElementById('watermark');
+            
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const chapterId = urlParams.get('chapterId');
+                if (!chapterId) {
+                    throw new Error('URL中未找到章节ID (chapterId)');
+                }
+                
+                // 设置用户水印
+                const userInfo = localStorage.getItem('userInfo');
+                if (userInfo) {
+                    try {
+                        const user = JSON.parse(userInfo);
+                        watermark.setAttribute('data-watermark', 
+                            `AI未来学院 - ${user.username || '用户'} - ${new Date().toLocaleDateString()}`);
+                    } catch (e) {
+                        // 使用默认水印
+                    }
+                }
+                
+                const response = await fetch(`/api/content/chapters/${chapterId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`无法获取章节内容，服务器状态: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.code === 200 && data.data && data.data.content) {
+                    let htmlContent;
+                    
+                    // 检查内容是否加密
+                    if (data.data.content.encrypted && data.data.content.encryptedHtml) {
+                        // 解密内容
+                        htmlContent = SimpleEncrypt.decrypt(data.data.content.encryptedHtml);
+                        if (!htmlContent) {
+                            throw new Error('内容解密失败');
+                        }
+                    } else if (data.data.content.contentHtml) {
+                        // 使用原始内容
+                        htmlContent = data.data.content.contentHtml;
+                    } else {
+                        throw new Error('未找到有效内容');
+                    }
+                    
+                    // 替换外部库
+                    const processedHtml = replaceExternalLibs(htmlContent);
+                    
+                    // 分片渲染内容
+                    renderContentInChunks(processedHtml);
+                    
+                    // 显示内容
+                    loadingIndicator.style.display = 'none';
+                    contentContainer.style.display = 'block';
+                    
+                } else {
+                    throw new Error(data.message || '未找到章节内容');
+                }
+                
+            } catch (error) {
+                console.error('加载章节失败:', error);
+                loadingIndicator.textContent = `❌ 加载失败: ${error.message}`;
+            }
+        })();
+
+        // 清理措施
+        window.addEventListener('beforeunload', function() {
+            // 清理敏感数据
+            document.getElementById('contentWrapper').innerHTML = '';
+        });
+        
+        // 防止通过console获取内容
+        (function() {
+            const originalLog = console.log;
+            console.log = function(...args) {
+                // 过滤敏感信息
+                const filteredArgs = args.map(arg => 
+                    typeof arg === 'string' && arg.length > 1000 ? '[内容已过滤]' : arg
+                );
+                originalLog.apply(console, filteredArgs);
+            };
+        })();
+        
+    </script>
+    
+    <!-- 预加载必要的库 -->
+    <link rel="stylesheet" href="/lib/katex/katex.min.css">
+    <link rel="stylesheet" href="/lib/highlightjs/github-dark.min.css">
+    <script src="/lib/highlightjs/highlight.min.js"></script>
+    <script src="/lib/katex/katex.min.js"></script>
+    <script src="/lib/katex/auto-render.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>笔记详情 - 社区广场</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f8f8f8;
+            color: #333;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            z-index: 1000;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .nav-back {
+            font-size: 20px;
+            cursor: pointer;
+            margin-right: 20px;
+            padding: 8px;
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        /* 主容器 */
+        .main-container {
+            max-width: 1200px;
+            margin: 80px auto 20px;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 20px;
+            padding: 0 20px;
+        }
+
+        /* 左侧内容 */
+        .content-left {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        /* 图片轮播 */
+        .image-carousel {
+            position: relative;
+            background: #f5f5f5;
+            min-height: 400px;
+        }
+
+        .carousel-image {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .carousel-indicators {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+
+        .indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+        }
+
+        .indicator.active {
+            background: white;
+            width: 20px;
+            border-radius: 4px;
+        }
+
+        /* 内容区 */
+        .note-content {
+            padding: 24px;
+        }
+
+        .note-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            line-height: 1.4;
+        }
+
+        .note-meta {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .note-body {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .note-body h2 {
+            font-size: 20px;
+            margin: 24px 0 12px;
+            font-weight: 600;
+        }
+
+        .note-body h3 {
+            font-size: 18px;
+            margin: 20px 0 10px;
+            font-weight: 600;
+        }
+
+        .note-body p {
+            margin-bottom: 16px;
+        }
+
+        .note-body ul, .note-body ol {
+            margin: 0 0 16px 20px;
+        }
+
+        .note-body li {
+            margin-bottom: 8px;
+        }
+
+        .note-body code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .note-body pre {
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 16px;
+        }
+
+        /* 标签 */
+        .note-tags {
+            margin-top: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: #f0f0f0;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tag:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        /* 操作栏 */
+        .action-bar {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            border-top: 1px solid #f0f0f0;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 24px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            color: #ff6b6b;
+        }
+
+        .action-btn.active {
+            color: #ff6b6b;
+        }
+
+        .action-btn .icon {
+            font-size: 20px;
+        }
+
+        .share-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ff8787);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* 右侧边栏 */
+        .sidebar {
+            position: sticky;
+            top: 80px;
+            height: fit-content;
+        }
+
+        /* 作者信息 */
+        .author-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .author-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .author-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .author-info {
+            flex: 1;
+        }
+
+        .author-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .author-bio {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .follow-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .follow-btn.following {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .author-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            text-align: center;
+            padding-top: 16px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .stat {
+            cursor: pointer;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* 相关推荐 */
+        .related-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .related-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .related-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            cursor: pointer;
+        }
+
+        .related-image {
+            width: 80px;
+            height: 60px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+
+        .related-content {
+            flex: 1;
+        }
+
+        .related-item-title {
+            font-size: 14px;
+            margin-bottom: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .related-item-meta {
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* 评论区 */
+        .comments-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 20px;
+        }
+
+        .comments-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .comment-input {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .comment-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            flex-shrink: 0;
+        }
+
+        .comment-form {
+            flex: 1;
+        }
+
+        .comment-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            resize: none;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .comment-submit {
+            margin-top: 12px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            float: right;
+        }
+
+        .comment-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .comment-item.reply {
+            margin-left: 48px;
+            margin-bottom: 15px;
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+        
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .comment-author {
+            font-weight: 500;
+        }
+        
+        .comment-time {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .comment-text {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 8px;
+            word-wrap: break-word;
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 20px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .comment-action {
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #999;
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.3s;
+        }
+        
+        .comment-action:hover {
+            color: #667eea;
+        }
+        
+        .reply-box {
+            margin-top: 15px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .reply-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 60px;
+        }
+        
+        .reply-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .reply-cancel, .reply-submit {
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .reply-cancel {
+            background: #fff;
+            border: 1px solid #e1e4e8;
+            color: #666;
+        }
+        
+        .reply-submit {
+            background: #667eea;
+            color: white;
+        }
+        
+        .comment-replies {
+            margin-top: 15px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .comment-action:hover {
+            color: #ff6b6b;
+        }
+
+        /* 响应式 */
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <div class="navbar">
+        <div class="nav-back" onclick="goBack()">←</div>
+        <div class="nav-title">笔记详情</div>
+    </div>
+
+    <!-- 主容器 -->
+    <div class="main-container">
+        <!-- 左侧内容 -->
+        <div class="content-left">
+            <!-- 图片轮播 -->
+            <div class="image-carousel" id="imageCarousel">
+                <img class="carousel-image" src="" alt="笔记图片" id="mainImage">
+                <div class="carousel-indicators" id="indicators"></div>
+            </div>
+
+            <!-- 内容区 -->
+            <div class="note-content">
+                <h1 class="note-title" id="noteTitle">加载中...</h1>
+                
+                <div class="note-meta">
+                    <div class="meta-item">
+                        <span>👁</span>
+                        <span id="viewCount">0</span>
+                    </div>
+                    <div class="meta-item">
+                        <span>❤️</span>
+                        <span id="likeCount">0</span>
+                    </div>
+                    <div class="meta-item">
+                        <span>💬</span>
+                        <span id="commentCount">0</span>
+                    </div>
+                    <div class="meta-item">
+                        <span id="publishTime">2024-01-01</span>
+                    </div>
+                </div>
+
+                <div class="note-body" id="noteContent">
+                    <!-- 内容将通过JavaScript加载 -->
+                </div>
+
+                <div class="note-tags" id="noteTags">
+                    <!-- 标签将通过JavaScript加载 -->
+                </div>
+            </div>
+
+            <!-- 操作栏 -->
+            <div class="action-bar">
+                <div class="action-buttons">
+                    <div class="action-btn" id="likeBtn" onclick="toggleLike()">
+                        <span class="icon">❤️</span>
+                        <span>点赞</span>
+                        <span id="likeText">0</span>
+                    </div>
+                    <div class="action-btn" id="collectBtn" onclick="toggleCollect()">
+                        <span class="icon">⭐</span>
+                        <span>收藏</span>
+                        <span id="collectText">0</span>
+                    </div>
+                    <div class="action-btn" onclick="focusComment()">
+                        <span class="icon">💬</span>
+                        <span>评论</span>
+                    </div>
+                </div>
+                <button class="share-btn" onclick="shareNote()">分享</button>
+            </div>
+
+            <!-- 评论区 -->
+            <div class="comments-section">
+                <div class="comments-header">
+                    评论 <span id="commentTotal">0</span>
+                </div>
+                
+                <div class="comment-input">
+                    <div class="comment-avatar"></div>
+                    <div class="comment-form">
+                        <textarea class="comment-textarea" id="commentInput" placeholder="写下你的评论..." rows="3"></textarea>
+                        <button class="comment-submit" onclick="submitComment()">发布</button>
+                    </div>
+                </div>
+
+                <div id="commentsList">
+                    <!-- 评论列表 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧边栏 -->
+        <div class="sidebar">
+            <!-- 作者信息 -->
+            <div class="author-card">
+                <div class="author-header">
+                    <div class="author-avatar" id="authorAvatar">U</div>
+                    <div class="author-info">
+                        <div class="author-name" id="authorName">用户</div>
+                        <div class="author-bio">分享技术，记录成长</div>
+                    </div>
+                </div>
+                <button class="follow-btn" id="followBtn" onclick="toggleFollow()">关注</button>
+                
+                <div class="author-stats">
+                    <div class="stat">
+                        <div class="stat-value" id="authorNotes">0</div>
+                        <div class="stat-label">笔记</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="authorFollowers">0</div>
+                        <div class="stat-label">粉丝</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="authorLikes">0</div>
+                        <div class="stat-label">获赞</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 相关推荐 -->
+            <div class="related-card">
+                <div class="related-title">相关推荐</div>
+                <div id="relatedNotes">
+                    <!-- 相关笔记列表 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let noteId = null;
+        let noteData = null;
+        let isLiked = false;
+        let isCollected = false;
+        let isFollowing = false;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 从URL获取笔记ID
+            const params = new URLSearchParams(window.location.search);
+            noteId = params.get('id') || 1;
+            
+            loadNoteDetail();
+        });
+
+        // 加载笔记详情
+        async function loadNoteDetail() {
+            try {
+                const token = localStorage.getItem('token');
+                const headers = {};
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                
+                const response = await fetch(`/api/community/notes/${noteId}`, { headers });
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    noteData = result.data;
+                    renderNoteDetail();
+                } else {
+                    // 使用模拟数据
+                    loadMockData();
+                }
+            } catch (error) {
+                console.error('加载失败:', error);
+                // 使用模拟数据
+                loadMockData();
+            }
+        }
+
+        // 渲染笔记详情
+        function renderNoteDetail() {
+            // 标题和元信息
+            document.getElementById('noteTitle').textContent = noteData.title || '';
+            document.getElementById('viewCount').textContent = formatNumber(noteData.viewCount || noteData.view_count || 0);
+            document.getElementById('likeCount').textContent = formatNumber(noteData.likeCount || noteData.like_count || 0);
+            document.getElementById('likeText').textContent = formatNumber(noteData.likeCount || noteData.like_count || 0);
+            document.getElementById('commentCount').textContent = formatNumber(noteData.commentCount || noteData.comment_count || 0);
+            document.getElementById('collectText').textContent = formatNumber(noteData.collectCount || noteData.collect_count || 0);
+            document.getElementById('publishTime').textContent = formatDate(noteData.createdAt || noteData.created_at);
+            
+            // 内容（支持Markdown）
+            const content = noteData.content || '';
+            document.getElementById('noteContent').innerHTML = convertMarkdown(content);
+            
+            // 标签
+            const tags = noteData.tags || [];
+            document.getElementById('noteTags').innerHTML = tags.map(tag => 
+                `<span class="tag">#${tag}</span>`
+            ).join('');
+            
+            // 作者信息
+            if (noteData.author) {
+                const author = noteData.author;
+                document.getElementById('authorName').textContent = author.nickname || author.username || '用户';
+                document.getElementById('authorAvatar').textContent = (author.nickname || author.username || 'U').charAt(0).toUpperCase();
+            }
+            
+            // 图片
+            const images = noteData.coverImages || noteData.cover_images || [];
+            if (images.length > 0) {
+                document.getElementById('mainImage').src = images[0];
+                // 添加指示器
+                if (images.length > 1) {
+                    const indicators = images.map((_, index) => 
+                        `<div class="indicator ${index === 0 ? 'active' : ''}" onclick="switchImage(${index})"></div>`
+                    ).join('');
+                    document.getElementById('indicators').innerHTML = indicators;
+                }
+            } else {
+                // 没有图片时隐藏轮播区
+                document.getElementById('imageCarousel').style.display = 'none';
+            }
+            
+            // 点赞和收藏状态
+            isLiked = noteData.isLiked || false;
+            isCollected = noteData.isCollected || false;
+            updateActionButtons();
+            
+            // 相关推荐
+            if (noteData.relatedNotes) {
+                renderRelatedNotes(noteData.relatedNotes);
+            }
+            
+            // 加载评论
+            loadComments();
+        }
+
+        // 加载模拟数据
+        function loadMockData() {
+            noteData = {
+                id: noteId,
+                title: '字节跳动算法岗面经：从简历到Offer全流程',
+                content: `## 面试流程
+
+### 一面（70分钟）
+1. **自我介绍**（5分钟）
+2. **项目深挖**（20分钟）
+   - 重点问了推荐系统的召回策略
+   - 特征工程的具体实现
+3. **算法题**（45分钟）
+   - LeetCode 146: LRU缓存
+   - 二叉树的最近公共祖先
+
+### 二面（80分钟）
+1. **系统设计**（40分钟）
+   - 设计一个短视频推荐系统
+2. **机器学习**（40分钟）
+   - XGBoost原理
+   - 过拟合解决方案
+
+## 准备建议
+- 刷题至少200道
+- 项目一定要有亮点
+- 系统设计很重要`,
+                tags: ['算法面试', '字节跳动', '大厂面经'],
+                viewCount: 15234,
+                likeCount: 892,
+                commentCount: 56,
+                collectCount: 234,
+                createdAt: new Date(),
+                author: {
+                    id: 1,
+                    username: 'techmaster',
+                    nickname: '技术达人'
+                },
+                relatedNotes: [
+                    { id: 2, title: '美团后端一面经验', viewCount: 8901, likeCount: 456 },
+                    { id: 3, title: '腾讯算法岗面经', viewCount: 12456, likeCount: 789 },
+                    { id: 4, title: '阿里巴巴面试总结', viewCount: 10234, likeCount: 567 }
+                ]
+            };
+            
+            renderNoteDetail();
+        }
+
+        // Markdown转HTML（简单实现）
+        function convertMarkdown(text) {
+            return text
+                .replace(/### (.*)/g, '<h3>$1</h3>')
+                .replace(/## (.*)/g, '<h2>$1</h2>')
+                .replace(/# (.*)/g, '<h1>$1</h1>')
+                .replace(/\*\*(.*)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*)\*/g, '<em>$1</em>')
+                .replace(/```([^`]*)```/g, '<pre><code>$1</code></pre>')
+                .replace(/`([^`]*)`/g, '<code>$1</code>')
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/^/, '<p>')
+                .replace(/$/, '</p>')
+                .replace(/- (.*)/g, '<li>$1</li>')
+                .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
+        }
+
+        // 格式化数字
+        function formatNumber(num) {
+            if (num >= 10000) {
+                return (num / 10000).toFixed(1) + 'w';
+            }
+            if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'k';
+            }
+            return num.toString();
+        }
+
+        // 格式化日期
+        function formatDate(date) {
+            const d = new Date(date);
+            const now = new Date();
+            const diff = (now - d) / 1000; // 秒
+            
+            if (diff < 60) return '刚刚';
+            if (diff < 3600) return Math.floor(diff / 60) + '分钟前';
+            if (diff < 86400) return Math.floor(diff / 3600) + '小时前';
+            if (diff < 604800) return Math.floor(diff / 86400) + '天前';
+            
+            return d.toLocaleDateString();
+        }
+
+        // 切换点赞
+        async function toggleLike() {
+            if (!checkLogin()) return;
+            
+            try {
+                const response = await fetch(`/api/community/notes/${noteId}/like`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    isLiked = !isLiked;
+                    const likeCount = parseInt(document.getElementById('likeCount').textContent.replace(/[wk]/g, '')) || 0;
+                    const newCount = isLiked ? likeCount + 1 : likeCount - 1;
+                    document.getElementById('likeCount').textContent = formatNumber(newCount);
+                    document.getElementById('likeText').textContent = formatNumber(newCount);
+                    updateActionButtons();
+                }
+            } catch (error) {
+                console.error('操作失败:', error);
+            }
+        }
+
+        // 切换收藏
+        async function toggleCollect() {
+            if (!checkLogin()) return;
+            
+            try {
+                const response = await fetch(`/api/community/notes/${noteId}/collect`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    isCollected = !isCollected;
+                    const collectCount = parseInt(document.getElementById('collectText').textContent.replace(/[wk]/g, '')) || 0;
+                    const newCount = isCollected ? collectCount + 1 : collectCount - 1;
+                    document.getElementById('collectText').textContent = formatNumber(newCount);
+                    updateActionButtons();
+                }
+            } catch (error) {
+                console.error('操作失败:', error);
+            }
+        }
+
+        // 更新操作按钮状态
+        function updateActionButtons() {
+            const likeBtn = document.getElementById('likeBtn');
+            const collectBtn = document.getElementById('collectBtn');
+            
+            if (isLiked) {
+                likeBtn.classList.add('active');
+            } else {
+                likeBtn.classList.remove('active');
+            }
+            
+            if (isCollected) {
+                collectBtn.classList.add('active');
+            } else {
+                collectBtn.classList.remove('active');
+            }
+        }
+
+        // 检查登录
+        function checkLogin() {
+            if (!localStorage.getItem('token')) {
+                alert('请先登录');
+                window.location.href = 'login.html';
+                return false;
+            }
+            return true;
+        }
+
+        // 关注作者
+        function toggleFollow() {
+            if (!checkLogin()) return;
+            
+            isFollowing = !isFollowing;
+            const btn = document.getElementById('followBtn');
+            if (isFollowing) {
+                btn.textContent = '已关注';
+                btn.classList.add('following');
+            } else {
+                btn.textContent = '关注';
+                btn.classList.remove('following');
+            }
+        }
+
+        // 渲染相关推荐
+        function renderRelatedNotes(notes) {
+            const html = notes.map(note => `
+                <div class="related-item" onclick="location.href='note-detail.html?id=${note.id}'">
+                    <div class="related-image"></div>
+                    <div class="related-content">
+                        <div class="related-item-title">${note.title}</div>
+                        <div class="related-item-meta">
+                            ${formatNumber(note.viewCount || note.view_count || 0)} 浏览 · 
+                            ${formatNumber(note.likeCount || note.like_count || 0)} 点赞
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('relatedNotes').innerHTML = html;
+        }
+
+        // 加载评论
+        async function loadComments() {
+            const noteId = new URLSearchParams(window.location.search).get('id');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/community/notes/${noteId}/comments?page=1&size=50`);
+                const data = await response.json();
+                
+                if (data.success && data.data) {
+                    const comments = data.data.items || [];
+                    renderComments(comments);
+                    document.getElementById('commentTotal').textContent = data.data.total || 0;
+                }
+            } catch (error) {
+                console.error('加载评论失败:', error);
+                // 显示空评论列表
+                document.getElementById('commentsList').innerHTML = '<div class="empty-state">暂无评论，快来抢沙发吧！</div>';
+            }
+        }
+        
+        // 渲染评论列表
+        function renderComments(comments) {
+            if (!comments || comments.length === 0) {
+                document.getElementById('commentsList').innerHTML = '<div class="empty-state">暂无评论，快来抢沙发吧！</div>';
+                return;
+            }
+            
+            const html = comments.map(comment => {
+                const user = comment.user || {};
+                const time = formatTime(comment.created_at || comment.createdAt);
+                
+                return `
+                    <div class="comment-item" data-comment-id="${comment.id}">
+                        <div class="comment-avatar">${user.avatar ? 
+                            `<img src="${user.avatar}" alt="">` : 
+                            (user.nickname || user.username || 'U').charAt(0).toUpperCase()
+                        }</div>
+                        <div class="comment-content">
+                            <div class="comment-header">
+                                <span class="comment-author">${user.nickname || user.username || '匿名用户'}</span>
+                                <span class="comment-time">${time}</span>
+                            </div>
+                            <div class="comment-text">${escapeHtml(comment.content)}</div>
+                            <div class="comment-actions">
+                                <button class="comment-action" onclick="likeComment(${comment.id})">
+                                    <span>👍</span>
+                                    <span id="comment-like-${comment.id}">${comment.like_count || comment.likeCount || 0}</span>
+                                </button>
+                                <button class="comment-action" onclick="toggleReplyBox(${comment.id})">回复</button>
+                            </div>
+                            <div class="reply-box" id="reply-box-${comment.id}" style="display: none;">
+                                <textarea class="reply-input" id="reply-input-${comment.id}" placeholder="回复 ${user.nickname || user.username}..."></textarea>
+                                <div class="reply-actions">
+                                    <button class="reply-cancel" onclick="hideReplyBox(${comment.id})">取消</button>
+                                    <button class="reply-submit" onclick="submitComment(${comment.id})">回复</button>
+                                </div>
+                            </div>
+                            ${comment.replies ? renderReplies(comment.replies, comment.id) : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('commentsList').innerHTML = html;
+        }
+        
+        // 渲染回复
+        function renderReplies(replies, parentId) {
+            if (!replies || replies.length === 0) return '';
+            
+            return '<div class="comment-replies">' + replies.map(reply => {
+                const user = reply.user || {};
+                const time = formatTime(reply.created_at || reply.createdAt);
+                
+                return `
+                    <div class="comment-item reply" data-comment-id="${reply.id}">
+                        <div class="comment-avatar small">${user.avatar ? 
+                            `<img src="${user.avatar}" alt="">` : 
+                            (user.nickname || user.username || 'U').charAt(0).toUpperCase()
+                        }</div>
+                        <div class="comment-content">
+                            <div class="comment-header">
+                                <span class="comment-author">${user.nickname || user.username || '匿名用户'}</span>
+                                <span class="comment-time">${time}</span>
+                            </div>
+                            <div class="comment-text">${escapeHtml(reply.content)}</div>
+                            <div class="comment-actions">
+                                <button class="comment-action" onclick="likeComment(${reply.id})">
+                                    <span>👍</span>
+                                    <span id="comment-like-${reply.id}">${reply.like_count || reply.likeCount || 0}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('') + '</div>';
+        }
+
+        // 提交评论
+        async function submitComment(parentId = null) {
+            if (!checkLogin()) return;
+            
+            const input = parentId ? document.querySelector(`#reply-input-${parentId}`) : document.getElementById('commentInput');
+            const content = input.value.trim();
+            
+            if (!content) {
+                alert('请输入评论内容');
+                return;
+            }
+            
+            const noteId = new URLSearchParams(window.location.search).get('id');
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/community/notes/${noteId}/comments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        content: content,
+                        parentId: parentId
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // 清空输入框
+                    input.value = '';
+                    
+                    // 立即添加新评论到列表
+                    const newComment = data.data;
+                    addCommentToList(newComment);
+                    
+                    // 更新评论数
+                    const count = parseInt(document.getElementById('commentCount').textContent) + 1;
+                    document.getElementById('commentCount').textContent = count;
+                    document.getElementById('commentTotal').textContent = count;
+                    
+                    // 如果是回复，隐藏回复框
+                    if (parentId) {
+                        hideReplyBox(parentId);
+                    }
+                    
+                    // 显示成功提示
+                    showNotification('评论发布成功！', 'success');
+                } else {
+                    alert(data.message || '评论发布失败');
+                }
+            } catch (error) {
+                console.error('发布评论失败:', error);
+                alert('评论发布失败，请稍后重试');
+            }
+        }
+        
+        // 添加评论到列表
+        function addCommentToList(comment) {
+            const commentsList = document.getElementById('commentsList');
+            const user = comment.user || {};
+            const time = formatTime(comment.createdAt || new Date());
+            
+            // 移除空状态提示
+            const emptyState = commentsList.querySelector('.empty-state');
+            if (emptyState) {
+                emptyState.remove();
+            }
+            
+            // 创建评论HTML
+            const commentHtml = `
+                <div class="comment-item" data-comment-id="${comment.id}">
+                    <div class="comment-avatar">${user.avatar ? 
+                        `<img src="${user.avatar}" alt="">` : 
+                        (user.nickname || user.username || 'U').charAt(0).toUpperCase()
+                    }</div>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <span class="comment-author">${user.nickname || user.username || '匿名用户'}</span>
+                            <span class="comment-time">${time}</span>
+                        </div>
+                        <div class="comment-text">
+                            ${comment.replyTo ? `<span style="color: #667eea;">@${comment.replyTo.nickname || comment.replyTo.username}</span> ` : ''}
+                            ${escapeHtml(comment.content)}
+                        </div>
+                        <div class="comment-actions">
+                            <button class="comment-action" onclick="likeComment(${comment.id})">
+                                <span>👍</span>
+                                <span id="comment-like-${comment.id}">${comment.likeCount || 0}</span>
+                            </button>
+                            <button class="comment-action" onclick="toggleReplyBox(${comment.id})">回复</button>
+                        </div>
+                        <div class="reply-box" id="reply-box-${comment.id}" style="display: none;">
+                            <textarea class="reply-input" id="reply-input-${comment.id}" placeholder="回复 ${user.nickname || user.username}..."></textarea>
+                            <div class="reply-actions">
+                                <button class="reply-cancel" onclick="hideReplyBox(${comment.id})">取消</button>
+                                <button class="reply-submit" onclick="submitComment(${comment.id})">回复</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 如果是回复，找到父评论并添加到其下方
+            if (comment.parentId) {
+                const parentComment = document.querySelector(`[data-comment-id="${comment.parentId}"]`);
+                if (parentComment) {
+                    // 查找或创建回复容器
+                    let repliesContainer = parentComment.querySelector('.comment-replies');
+                    if (!repliesContainer) {
+                        repliesContainer = document.createElement('div');
+                        repliesContainer.className = 'comment-replies';
+                        parentComment.querySelector('.comment-content').appendChild(repliesContainer);
+                    }
+                    repliesContainer.insertAdjacentHTML('beforeend', commentHtml.replace('comment-item', 'comment-item reply'));
+                } else {
+                    // 如果找不到父评论，添加到列表开头
+                    commentsList.insertAdjacentHTML('afterbegin', commentHtml);
+                }
+            } else {
+                // 添加到评论列表开头
+                commentsList.insertAdjacentHTML('afterbegin', commentHtml);
+            }
+        }
+        
+        // 显示/隐藏回复框
+        function toggleReplyBox(commentId) {
+            const replyBox = document.getElementById(`reply-box-${commentId}`);
+            if (replyBox) {
+                replyBox.style.display = replyBox.style.display === 'none' ? 'block' : 'none';
+                if (replyBox.style.display === 'block') {
+                    document.getElementById(`reply-input-${commentId}`).focus();
+                }
+            }
+        }
+        
+        function hideReplyBox(commentId) {
+            const replyBox = document.getElementById(`reply-box-${commentId}`);
+            if (replyBox) {
+                replyBox.style.display = 'none';
+            }
+        }
+        
+        // HTML转义
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // 格式化时间
+        function formatTime(time) {
+            const date = new Date(time);
+            const now = new Date();
+            const diff = now - date;
+            
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            
+            if (minutes < 1) return '刚刚';
+            if (minutes < 60) return `${minutes}分钟前`;
+            if (hours < 24) return `${hours}小时前`;
+            if (days < 30) return `${days}天前`;
+            
+            return date.toLocaleDateString('zh-CN');
+        }
+        
+        // 点赞评论
+        async function likeComment(commentId) {
+            if (!checkLogin()) return;
+            
+            // TODO: 实现点赞功能
+            const likeCount = document.getElementById(`comment-like-${commentId}`);
+            if (likeCount) {
+                const count = parseInt(likeCount.textContent) + 1;
+                likeCount.textContent = count;
+            }
+        }
+        
+        // 显示通知
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#10b981' : '#ef4444'};
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // 聚焦评论
+        function focusComment() {
+            document.getElementById('commentInput').focus();
+            document.querySelector('.comments-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 分享
+        function shareNote() {
+            if (navigator.share) {
+                navigator.share({
+                    title: noteData.title,
+                    text: noteData.summary || '',
+                    url: window.location.href
+                });
+            } else {
+                // 复制链接
+                navigator.clipboard.writeText(window.location.href);
+                alert('链接已复制到剪贴板');
+            }
+        }
+
+        // 返回
+        function goBack() {
+            window.history.back();
+        }
+
+        // 切换图片
+        function switchImage(index) {
+            const images = noteData.coverImages || noteData.cover_images || [];
+            if (images[index]) {
+                document.getElementById('mainImage').src = images[index];
+                
+                // 更新指示器
+                document.querySelectorAll('.indicator').forEach((ind, i) => {
+                    if (i === index) {
+                        ind.classList.add('active');
+                    } else {
+                        ind.classList.remove('active');
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>

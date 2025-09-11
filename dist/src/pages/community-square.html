@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>社区广场 - AI学习平台</title>
+    <meta name="description" content="分享学习心得，探索AI世界">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f8f8f8;
+            color: #333;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            z-index: 1000;
+            padding: 0 20px;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #ff6b6b, #ff8787);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-search {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 40px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            border: 1px solid #e8e8e8;
+            border-radius: 20px;
+            background: #f5f5f5;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            background: white;
+            border-color: #ff6b6b;
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .publish-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ff8787);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: transform 0.2s;
+        }
+
+        .publish-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* 主内容区 */
+        .main-container {
+            max-width: 1200px;
+            margin: 80px auto 20px;
+            padding: 0 20px;
+        }
+
+        /* 分类标签 */
+        .category-tabs {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .category-tab {
+            padding: 8px 20px;
+            border-radius: 20px;
+            background: #f5f5f5;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .category-tab:hover {
+            background: #ffe4e4;
+        }
+
+        .category-tab.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8787);
+            color: white;
+        }
+
+        /* 瀑布流布局 */
+        .waterfall-container {
+            -moz-column-count: 5;
+                 column-count: 5;
+            -moz-column-gap: 15px;
+                 column-gap: 15px;
+        }
+
+        @media (max-width: 1200px) {
+            .waterfall-container { -moz-column-count: 4; column-count: 4; }
+        }
+
+        @media (max-width: 900px) {
+            .waterfall-container { -moz-column-count: 3; column-count: 3; }
+        }
+
+        @media (max-width: 600px) {
+            .waterfall-container { -moz-column-count: 2; column-count: 2; }
+        }
+
+        /* 笔记卡片 */
+        .note-card {
+            -moz-column-break-inside: avoid;
+                 break-inside: avoid;
+            margin-bottom: 15px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .note-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .note-cover {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .note-cover img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .note-type-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+
+        .note-content {
+            padding: 12px;
+        }
+
+        .note-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .note-desc {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .note-author {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 10px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .author-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .author-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .author-name {
+            font-size: 13px;
+            color: #333;
+        }
+
+        .note-likes {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #999;
+            font-size: 13px;
+        }
+
+        .like-icon {
+            transition: color 0.3s;
+        }
+
+        .note-likes:hover .like-icon {
+            color: #ff6b6b;
+        }
+
+        /* 发布弹窗 */
+        .publish-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .publish-modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #ff6b6b;
+        }
+
+        .form-textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .image-upload {
+            border: 2px dashed #e8e8e8;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .image-upload:hover {
+            border-color: #ff6b6b;
+            background: #fff5f5;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #ccc;
+            margin-bottom: 10px;
+        }
+
+        .upload-text {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .tag-input-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            min-height: 44px;
+        }
+
+        .tag-item {
+            background: #f5f5f5;
+            padding: 4px 12px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-default {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b6b, #ff8787);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* 加载动画 */
+        .loading-spinner {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #ff6b6b;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        .empty-desc {
+            color: #999;
+        }
+    </style>
+  <link rel="stylesheet" href="/assets/theme-b29253a3.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">社区广场</div>
+            
+            <div class="nav-search">
+                <div class="search-box">
+                    <input type="text" class="search-input" placeholder="搜索笔记、用户、标签...">
+                    <button class="search-btn">🔍</button>
+                </div>
+            </div>
+            
+            <div class="nav-actions">
+                <button class="publish-btn" onclick="showPublishModal()">
+                    ✨ 发布笔记
+                </button>
+                <a href="courses.html" style="text-decoration: none; color: #666;">返回课程</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容 -->
+    <div class="main-container">
+        <!-- 分类标签和排序 -->
+        <div class="category-tabs">
+            <button class="category-tab active" data-category="all">推荐</button>
+            <button class="category-tab" data-category="interview">面试经验</button>
+            <button class="category-tab" data-category="offer">Offer薪资</button>
+            <button class="category-tab" data-category="tech">技术文章</button>
+            <button class="category-tab" data-category="qa">热门讨论</button>
+        </div>
+        
+        <!-- 排序选项 -->
+        <div style="margin: 15px 0; text-align: right;">
+            <select class="sort-select" style="padding: 8px 16px; border: 1px solid #e8e8e8; border-radius: 20px; background: white; cursor: pointer;" onchange="handleSortChange()">
+                <option value="hot">🔥 最热门</option>
+                <option value="latest">🕐 最新发布</option>
+                <option value="likes">❤️ 最多点赞</option>
+                <option value="views">👁 最多浏览</option>
+            </select>
+        </div>
+
+        <!-- 瀑布流内容 -->
+        <div class="waterfall-container" id="notesContainer">
+            <!-- 笔记卡片将通过JavaScript动态加载 -->
+        </div>
+
+        <!-- 加载更多 -->
+        <div class="loading-spinner" id="loadingSpinner" style="display: none;">
+            <div class="spinner"></div>
+            <p>加载中...</p>
+        </div>
+    </div>
+
+    <!-- 发布弹窗 -->
+    <div class="publish-modal" id="publishModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">发布笔记</h3>
+                <button class="close-btn" onclick="hidePublishModal()">×</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">标题</label>
+                    <input type="text" class="form-input" id="noteTitle" placeholder="输入笔记标题...">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">内容</label>
+                    <textarea class="form-textarea" id="noteContent" placeholder="分享你的学习心得..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">封面图片</label>
+                    <div class="image-upload" onclick="selectImage()">
+                        <div class="upload-icon">📷</div>
+                        <div class="upload-text">点击上传图片</div>
+                    </div>
+                    <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">标签</label>
+                    <div class="tag-input-container" id="tagContainer">
+                        <input type="text" placeholder="添加标签..." style="border: none; outline: none; flex: 1; min-width: 100px;">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">分类</label>
+                    <select class="form-input" id="noteCategory">
+                        <option value="ai">人工智能</option>
+                        <option value="ml">机器学习</option>
+                        <option value="dl">深度学习</option>
+                        <option value="nlp">自然语言处理</option>
+                        <option value="cv">计算机视觉</option>
+                        <option value="project">项目实战</option>
+                        <option value="interview">面试经验</option>
+                        <option value="resource">学习资源</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="hidePublishModal()">取消</button>
+                <button class="btn btn-primary" onclick="publishNote()">发布</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟数据
+        const mockNotes = [
+            {
+                id: 1,
+                title: "深度学习入门：从零开始理解神经网络",
+                description: "本文详细介绍了神经网络的基本概念，包括感知机、多层感知机、反向传播算法等核心知识点...",
+                cover: "",
+                author: "AI小达人",
+                avatar: "A",
+                likes: 1234,
+                category: "dl",
+                type: "article"
+            },
+            {
+                id: 2,
+                title: "ChatGPT原理解析：Transformer架构深度剖析",
+                description: "深入理解Transformer模型的自注意力机制、位置编码、多头注意力等关键技术...",
+                cover: "",
+                author: "技术极客",
+                avatar: "T",
+                likes: 2891,
+                category: "nlp",
+                type: "video"
+            },
+            {
+                id: 3,
+                title: "Python机器学习实战项目：房价预测系统",
+                description: "使用scikit-learn构建完整的房价预测系统，包括数据预处理、特征工程、模型训练与优化...",
+                cover: "",
+                author: "代码侠",
+                avatar: "C",
+                likes: 567,
+                category: "ml",
+                type: "project"
+            },
+            {
+                id: 4,
+                title: "计算机视觉入门：OpenCV图像处理基础",
+                description: "从零开始学习OpenCV，掌握图像读取、显示、基础变换等操作...",
+                cover: "",
+                author: "视觉达人",
+                avatar: "V",
+                likes: 892,
+                category: "cv",
+                type: "tutorial"
+            },
+            {
+                id: 5,
+                title: "AI面试必备：常见算法题解析",
+                description: "整理了大厂AI岗位面试中的高频算法题，包括动态规划、贪心算法、图算法等...",
+                cover: "",
+                author: "面试官",
+                avatar: "M",
+                likes: 3456,
+                category: "interview",
+                type: "article"
+            },
+            {
+                id: 6,
+                title: "YOLO目标检测实战：训练自己的数据集",
+                description: "手把手教你使用YOLOv5训练自定义数据集，实现目标检测功能...",
+                cover: "",
+                author: "实战派",
+                avatar: "Y",
+                likes: 1789,
+                category: "cv",
+                type: "project"
+            },
+            {
+                id: 7,
+                title: "强化学习入门：Q-Learning算法详解",
+                description: "通过简单的例子理解Q-Learning算法的原理和实现过程...",
+                cover: "",
+                author: "RL爱好者",
+                avatar: "R",
+                likes: 654,
+                category: "ai",
+                type: "article"
+            },
+            {
+                id: 8,
+                title: "大模型微调技术：LoRA原理与实践",
+                description: "详解LoRA技术原理，教你如何高效微调大语言模型...",
+                cover: "",
+                author: "模型专家",
+                avatar: "L",
+                likes: 2234,
+                category: "dl",
+                type: "tutorial"
+            }
+        ];
+
+        let currentCategory = 'all';
+        let isLoading = false;
+        let page = 1;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadNotesFromAPI();
+            bindEvents();
+        });
+
+        // 从API加载笔记
+        async function loadNotesFromAPI() {
+            try {
+                const token = localStorage.getItem('token');
+                const headers = {};
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                
+                // 获取排序参数
+                const sort = document.querySelector('.sort-select')?.value || 'hot';
+                
+                const response = await fetch(`/api/community/notes?category=${currentCategory}&sort=${sort}&page=${page}&size=20`, {
+                    headers: headers
+                });
+                const data = await response.json();
+                
+                if (data.success && data.data) {
+                    const container = document.getElementById('notesContainer');
+                    
+                    // 如果是第一页，清空容器
+                    if (page === 1) {
+                        container.innerHTML = '';
+                    }
+                    
+                    // 渲染笔记
+                    data.data.items.forEach(note => {
+                        container.innerHTML += createNoteCardFromAPI(note);
+                    });
+                    
+                    // 更新分页状态
+                    if (!data.data.hasNext) {
+                        page = -1; // 没有更多数据
+                    }
+                } else {
+                    // API失败，使用模拟数据
+                    loadNotes();
+                }
+            } catch (error) {
+                console.error('加载笔记失败:', error);
+                // 使用模拟数据
+                loadNotes();
+            }
+        }
+
+        // HTML escaping function to prevent XSS
+        function escapeHtml(unsafe) {
+            if (unsafe == null) return '';
+            return String(unsafe)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Sanitize URL to prevent XSS
+        function sanitizeUrl(url) {
+            if (!url) return '';
+            // Only allow http, https, and data URLs
+            if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+                return url;
+            }
+            return '';
+        }
+
+        // 创建笔记卡片（API数据）
+        function createNoteCardFromAPI(note) {
+            const typeLabels = {
+                'article': '📝 文章',
+                'experience': '💼 面经',
+                'salary': '💰 薪资',
+                'discussion': '💬 讨论',
+                'video': '📹 视频',
+                'project': '💻 项目',
+                'tutorial': '📚 教程'
+            };
+
+            const categoryLabels = {
+                'interview': '面试',
+                'offer': 'Offer',
+                'tech': '技术',
+                'qa': '问答'
+            };
+
+            // 处理封面图片
+            let coverImage = '';
+            if (note.coverImages && note.coverImages.length > 0) {
+                coverImage = sanitizeUrl(note.coverImages[0]);
+            }
+
+            // 处理作者信息
+            const author = note.author || {};
+            const authorName = escapeHtml(author.nickname || author.username || '用户' + (note.userId || note.user_id));
+            const authorAvatar = escapeHtml(author.avatar || authorName.charAt(0).toUpperCase());
+            
+            // Safely encode values
+            const noteId = parseInt(note.id, 10) || 0;
+
+            return `
+                <div class="note-card" onclick="viewNoteDetail(${noteId})">
+                    <div class="note-cover">
+                        <img src="${coverImage}" alt="${escapeHtml(note.title)}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y1ZjVmNSIvPjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjIwMCIgeT0iMTUwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM5OTkiPkFJPC90ZXh0Pjwvc3ZnPg=='">
+                        <div class="note-type-badge">${typeLabels[escapeHtml(note.type)] || '📝 笔记'}</div>
+                        ${note.isHot || note.is_hot ? '<div class="hot-badge" style="position: absolute; top: 10px; right: 10px; background: #ff4444; color: white; padding: 4px 10px; border-radius: 15px; font-size: 12px;">🔥 热门</div>' : ''}
+                    </div>
+                    <div class="note-content">
+                        <h3 class="note-title">${escapeHtml(note.title)}</h3>
+                        <p class="note-desc">${escapeHtml(note.summary || note.description || '')}</p>
+                        <div class="note-author">
+                            <div class="author-info">
+                                <div class="author-avatar">${authorAvatar}</div>
+                                <span class="author-name">${authorName}</span>
+                            </div>
+                            <div class="note-likes">
+                                <span class="like-icon">❤️</span>
+                                <span>${formatNumber(note.likeCount || note.like_count || 0)}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 格式化数字
+        function formatNumber(num) {
+            if (num >= 10000) {
+                return (num / 10000).toFixed(1) + 'w';
+            }
+            if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'k';
+            }
+            return num.toString();
+        }
+
+        // 查看笔记详情
+        function viewNoteDetail(id) {
+            window.location.href = `note-detail.html?id=${id}`;
+        }
+
+        // 绑定事件
+        function bindEvents() {
+            // 分类切换
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    currentCategory = this.dataset.category;
+                    page = 1;
+                    loadNotesFromAPI();
+                });
+            });
+
+            // 滚动加载更多
+            window.addEventListener('scroll', () => {
+                if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+                    if (!isLoading && page < 3) {  // 限制最多加载3页
+                        loadMoreNotes();
+                    }
+                }
+            });
+
+            // 图片上传
+            document.getElementById('imageInput').addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const fileName = e.target.files[0].name;
+                    document.querySelector('.upload-text').textContent = fileName;
+                }
+            });
+        }
+
+        // 加载笔记
+        function loadNotes() {
+            const container = document.getElementById('notesContainer');
+            
+            // 根据分类筛选
+            let filteredNotes = currentCategory === 'all' 
+                ? mockNotes 
+                : mockNotes.filter(note => note.category === currentCategory);
+            
+            // 只生成一次数据，避免重复
+            const extendedNotes = [];
+            filteredNotes.forEach(note => {
+                extendedNotes.push({
+                    ...note,
+                    id: note.id,
+                    cover: note.cover || '',
+                    likes: Math.floor(Math.random() * 5000)
+                });
+            });
+            
+            // 渲染笔记
+            extendedNotes.forEach(note => {
+                container.innerHTML += createNoteCard(note);
+            });
+        }
+
+        // 创建笔记卡片
+        function createNoteCard(note) {
+            const typeLabels = {
+                'article': '📝 文章',
+                'video': '📹 视频',
+                'project': '💻 项目',
+                'tutorial': '📚 教程'
+            };
+            
+            return `
+                <div class="note-card" onclick="viewNote(${note.id})">
+                    <div class="note-cover">
+                        <img src="${note.cover}" alt="${note.title}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y1ZjVmNSIvPjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjIwMCIgeT0iMTUwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM5OTkiPkFJPC90ZXh0Pjwvc3ZnPg=='">
+                        <div class="note-type-badge">${typeLabels[note.type] || '📝 笔记'}</div>
+                    </div>
+                    <div class="note-content">
+                        <h3 class="note-title">${note.title}</h3>
+                        <p class="note-desc">${note.description}</p>
+                        <div class="note-author">
+                            <div class="author-info">
+                                <div class="author-avatar">${note.avatar}</div>
+                                <span class="author-name">${note.author}</span>
+                            </div>
+                            <div class="note-likes">
+                                <span class="like-icon">❤️</span>
+                                <span>${note.likes}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 加载更多
+        function loadMoreNotes() {
+            if (isLoading || page === -1) return;
+            
+            isLoading = true;
+            document.getElementById('loadingSpinner').style.display = 'block';
+            
+            // 增加页码并加载
+            page++;
+            
+            // 调用API加载更多
+            loadNotesFromAPI().finally(() => {
+                isLoading = false;
+                document.getElementById('loadingSpinner').style.display = 'none';
+            });
+        }
+
+        // 查看笔记
+        function viewNote(id) {
+            // Validate ID to prevent injection
+            const noteId = parseInt(id, 10);
+            if (!noteId || noteId < 1) {
+                console.error('Invalid note ID');
+                return;
+            }
+            console.log('查看笔记:', noteId);
+            window.location.href = `note-detail.html?id=${noteId}`;
+        }
+
+        // 处理排序变化
+        function handleSortChange() {
+            page = 1;
+            loadNotesFromAPI();
+        }
+
+        // 显示发布弹窗
+        function showPublishModal() {
+            document.getElementById('publishModal').classList.add('show');
+        }
+
+        // 隐藏发布弹窗
+        function hidePublishModal() {
+            document.getElementById('publishModal').classList.remove('show');
+        }
+
+        // 选择图片
+        function selectImage() {
+            document.getElementById('imageInput').click();
+        }
+
+        // 发布笔记
+        function publishNote() {
+            const title = document.getElementById('noteTitle').value;
+            const content = document.getElementById('noteContent').value;
+            const category = document.getElementById('noteCategory').value;
+            
+            if (!title || !content) {
+                alert('请填写标题和内容');
+                return;
+            }
+            
+            // 这里调用API发布笔记
+            console.log('发布笔记:', { title, content, category });
+            
+            // 模拟发布成功
+            alert('发布成功！');
+            hidePublishModal();
+            
+            // 清空表单
+            document.getElementById('noteTitle').value = '';
+            document.getElementById('noteContent').value = '';
+            document.getElementById('noteCategory').value = 'ai';
+        }
+    </script>
+</body>
+</html>

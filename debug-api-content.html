@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API内容调试工具</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #f1f5f9;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .debug-section {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid #334155;
+        }
+        .debug-title {
+            color: #06b6d4;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        .content-preview {
+            background: #0f172a;
+            border: 1px solid #374151;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .test-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            transition: background 0.2s;
+        }
+        .test-button:hover {
+            background: #2563eb;
+        }
+        .status {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            margin: 0.5rem 0;
+            font-weight: bold;
+        }
+        .success { background: #22c55e; color: white; }
+        .error { background: #ef4444; color: white; }
+        .warning { background: #f59e0b; color: white; }
+        .info { background: #06b6d4; color: white; }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .stat-card {
+            background: #374151;
+            padding: 1rem;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #06b6d4;
+        }
+        .iframe-container {
+            border: 2px solid #374151;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 API内容调试工具</h1>
+        
+        <!-- 1. 获取并分析API内容 -->
+        <div class="debug-section">
+            <div class="debug-title">1. 📡 获取API原始内容</div>
+            <div>
+                <input type="number" id="chapter-id" placeholder="章节ID" value="103" style="background: #374151; color: white; border: 1px solid #4b5563; padding: 0.5rem; border-radius: 4px; margin-right: 0.5rem;">
+                <button class="test-button" onclick="fetchContent()">获取内容</button>
+                <button class="test-button" onclick="clearResults()">清空结果</button>
+            </div>
+            <div id="fetch-status"></div>
+            <div class="stats" id="content-stats" style="display: none;">
+                <div class="stat-card">
+                    <div class="stat-number" id="content-length">0</div>
+                    <div>内容长度</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="cdn-count">0</div>
+                    <div>CDN链接数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="script-count">0</div>
+                    <div>脚本标签数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="style-count">0</div>
+                    <div>样式标签数</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. 内容预览 -->
+        <div class="debug-section">
+            <div class="debug-title">2. 👀 原始内容预览</div>
+            <div class="content-preview" id="original-content">
+                点击"获取内容"按钮查看API返回的原始HTML...
+            </div>
+        </div>
+
+        <!-- 3. 替换测试 -->
+        <div class="debug-section">
+            <div class="debug-title">3. 🔄 CDN替换测试</div>
+            <button class="test-button" onclick="testReplacement()" id="replace-btn" disabled>测试替换</button>
+            <div id="replace-status"></div>
+            <div class="content-preview" id="replaced-content" style="display: none;">
+            </div>
+        </div>
+
+        <!-- 4. 实时预览 -->
+        <div class="debug-section">
+            <div class="debug-title">4. 🖼️ 内容实时预览</div>
+            <button class="test-button" onclick="previewOriginal()" id="preview-original-btn" disabled>预览原始内容</button>
+            <button class="test-button" onclick="previewReplaced()" id="preview-replaced-btn" disabled>预览替换后内容</button>
+            <div class="iframe-container" id="preview-container" style="display: none;">
+                <iframe id="preview-iframe"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let originalContent = '';
+        let replacedContent = '';
+
+        // CDN替换函数（与study.html中相同）
+        function replaceExternalLibs(htmlContent) {
+            console.log('🔍 开始替换外部库...');
+            
+            const replacements = {
+                'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css': '/lib/highlightjs/github-dark.min.css',
+                'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css': '/lib/katex/katex.min.css',
+                'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js': '/lib/highlightjs/highlight.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js': '/lib/katex/katex.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js': '/lib/katex/auto-render.min.js',
+                'https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css': '/lib/highlightjs/github-dark.min.css',
+                'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css': '/lib/katex/katex.min.css',
+                'https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/highlight.min.js': '/lib/highlightjs/highlight.min.js',
+                'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js': '/lib/katex/katex.min.js',
+                'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js': '/lib/katex/auto-render.min.js'
+            };
+            
+            let modifiedHtml = htmlContent;
+            let replacementCount = 0;
+            
+            for (const [cdnUrl, localUrl] of Object.entries(replacements)) {
+                const beforeReplace = modifiedHtml.length;
+                modifiedHtml = modifiedHtml.split(cdnUrl).join(localUrl);
+                if (modifiedHtml.length !== beforeReplace) {
+                    replacementCount++;
+                    console.log(`✅ 替换成功: ${cdnUrl.substring(0, 50)}... → ${localUrl}`);
+                }
+            }
+            
+            console.log(`📊 总共替换了 ${replacementCount} 个CDN链接`);
+            return { content: modifiedHtml, count: replacementCount };
+        }
+
+        // 获取API内容
+        async function fetchContent() {
+            const chapterId = document.getElementById('chapter-id').value || '103';
+            const statusDiv = document.getElementById('fetch-status');
+            const originalDiv = document.getElementById('original-content');
+            
+            statusDiv.innerHTML = '<div class="info">正在获取章节内容...</div>';
+            
+            try {
+                const response = await fetch(`/api/content/chapters/${chapterId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.code === 200 && data.data?.content?.contentHtml) {
+                    originalContent = data.data.content.contentHtml;
+                    
+                    // 显示统计信息
+                    document.getElementById('content-length').textContent = originalContent.length.toLocaleString();
+                    document.getElementById('cdn-count').textContent = countCDNLinks(originalContent);
+                    document.getElementById('script-count').textContent = countMatches(originalContent, /<script/gi);
+                    document.getElementById('style-count').textContent = countMatches(originalContent, /<link.*stylesheet/gi);
+                    document.getElementById('content-stats').style.display = 'grid';
+                    
+                    // 显示内容预览（前2000字符）
+                    const preview = originalContent.length > 2000 ? 
+                        originalContent.substring(0, 2000) + '\n\n... (内容已截断，总长度: ' + originalContent.length + ' 字符)' :
+                        originalContent;
+                    originalDiv.textContent = preview;
+                    
+                    statusDiv.innerHTML = '<div class="success">✅ 成功获取章节内容</div>';
+                    
+                    // 启用按钮
+                    document.getElementById('replace-btn').disabled = false;
+                    document.getElementById('preview-original-btn').disabled = false;
+                    
+                } else {
+                    throw new Error(data.message || '获取内容失败');
+                }
+                
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="error">❌ 获取失败: ${error.message}</div>`;
+                console.error('获取内容失败:', error);
+            }
+        }
+
+        // 测试替换
+        function testReplacement() {
+            if (!originalContent) {
+                alert('请先获取内容');
+                return;
+            }
+
+            const statusDiv = document.getElementById('replace-status');
+            const replacedDiv = document.getElementById('replaced-content');
+            
+            statusDiv.innerHTML = '<div class="info">正在测试CDN替换...</div>';
+            
+            const result = replaceExternalLibs(originalContent);
+            replacedContent = result.content;
+            
+            // 显示替换结果
+            const beforeCDN = countCDNLinks(originalContent);
+            const afterCDN = countCDNLinks(replacedContent);
+            const localLib = countMatches(replacedContent, /\/lib\//gi);
+            
+            let statusHtml = `<div class="success">✅ 替换完成</div>`;
+            statusHtml += `<div class="info">原始CDN链接: ${beforeCDN} 个</div>`;
+            statusHtml += `<div class="info">替换后CDN链接: ${afterCDN} 个</div>`;
+            statusHtml += `<div class="info">本地库引用: ${localLib} 个</div>`;
+            statusHtml += `<div class="info">实际替换: ${result.count} 个</div>`;
+            
+            if (afterCDN === 0 && localLib > 0) {
+                statusHtml += '<div class="success">🎉 替换成功！所有CDN链接已替换为本地库</div>';
+            } else if (afterCDN > 0) {
+                statusHtml += '<div class="warning">⚠️ 仍有CDN链接未替换</div>';
+            }
+            
+            statusDiv.innerHTML = statusHtml;
+            
+            // 显示替换后内容预览
+            const preview = replacedContent.length > 2000 ? 
+                replacedContent.substring(0, 2000) + '\n\n... (内容已截断)' :
+                replacedContent;
+            replacedDiv.textContent = preview;
+            replacedDiv.style.display = 'block';
+            
+            // 启用预览按钮
+            document.getElementById('preview-replaced-btn').disabled = false;
+        }
+
+        // 预览原始内容
+        function previewOriginal() {
+            if (!originalContent) return;
+            
+            const iframe = document.getElementById('preview-iframe');
+            const container = document.getElementById('preview-container');
+            
+            const blob = new Blob([originalContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            
+            iframe.src = url;
+            container.style.display = 'block';
+            
+            // 清理URL
+            iframe.onload = () => {
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+            };
+        }
+
+        // 预览替换后内容
+        function previewReplaced() {
+            if (!replacedContent) return;
+            
+            const iframe = document.getElementById('preview-iframe');
+            const container = document.getElementById('preview-container');
+            
+            const blob = new Blob([replacedContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            
+            iframe.src = url;
+            container.style.display = 'block';
+            
+            // 清理URL
+            iframe.onload = () => {
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+            };
+        }
+
+        // 工具函数
+        function countCDNLinks(content) {
+            const cdnPatterns = [
+                /https:\/\/cdnjs\.cloudflare\.com/gi,
+                /https:\/\/cdn\.jsdelivr\.net/gi,
+                /https:\/\/unpkg\.com/gi
+            ];
+            
+            let total = 0;
+            cdnPatterns.forEach(pattern => {
+                const matches = content.match(pattern);
+                total += matches ? matches.length : 0;
+            });
+            
+            return total;
+        }
+
+        function countMatches(content, pattern) {
+            const matches = content.match(pattern);
+            return matches ? matches.length : 0;
+        }
+
+        function clearResults() {
+            originalContent = '';
+            replacedContent = '';
+            
+            document.getElementById('original-content').textContent = '点击"获取内容"按钮查看API返回的原始HTML...';
+            document.getElementById('replaced-content').style.display = 'none';
+            document.getElementById('content-stats').style.display = 'none';
+            document.getElementById('preview-container').style.display = 'none';
+            document.getElementById('fetch-status').innerHTML = '';
+            document.getElementById('replace-status').innerHTML = '';
+            
+            // 禁用按钮
+            document.getElementById('replace-btn').disabled = true;
+            document.getElementById('preview-original-btn').disabled = true;
+            document.getElementById('preview-replaced-btn').disabled = true;
+        }
+    </script>
+</body>
+</html>
