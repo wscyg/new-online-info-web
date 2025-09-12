@@ -1562,7 +1562,14 @@
     <script src="../utils/realtime-sync.js"></script>
     <script>
         // Global variables
-        const API_BASE_URL = '/api';
+        const API_BASE_URL = (function() {
+            const hostname = window.location.hostname;
+            console.log('[API] 当前hostname:', hostname);
+            // 使用相对路径，避免跨域问题
+            const apiUrl = '/api';
+            console.log('[API] 使用API地址:', apiUrl);
+            return apiUrl;
+        })();
         let currentPage = 1;
         let currentFilters = {
             search: '',

@@ -144,6 +144,54 @@
             justify-content: center;
         }
 
+        .online-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 0.5rem 0.8rem;
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] .online-indicator {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--gray-400);
+        }
+
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            background: #10B981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+
+        .online-count {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .online-text {
+            font-size: 0.85rem;
+        }
+
         /* 主题切换按钮 */
         .theme-toggle {
             background: var(--light);
@@ -1551,6 +1599,13 @@
                 <a href="leaderboard.html" class="nav-link">排行榜</a>
                 <a href="my-courses.html" class="nav-link">我的课程</a>
                 
+                <!-- 在线用户统计 -->
+                <div class="online-indicator">
+                    <div class="online-dot"></div>
+                    <span class="online-count" id="onlineCount">0</span>
+                    <span class="online-text">人在线</span>
+                </div>
+                
                 <!-- 主题切换按钮 -->
                 <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="切换主题">
                     <span class="theme-icon sun-icon">日间</span>
@@ -2924,11 +2979,73 @@
                 `<li class="bundle-course-item">还有 ${courses.length - 5} 门课程...</li>` : '');
         }
 
+        // 在线用户管理
+        class OnlineUserManager {
+            constructor() {
+                this.onlineUsers = [];
+                this.currentCount = 0;
+                this.updateInterval = null;
+            }
+            
+            init() {
+                // 立即获取在线用户数
+                this.fetchOnlineUsers();
+                
+                // 每30秒更新一次在线用户数
+                this.updateInterval = setInterval(() => {
+                    this.fetchOnlineUsers();
+                }, 30000);
+            }
+            
+            async fetchOnlineUsers() {
+                try {
+                    // 调用真实API获取在线用户数
+                    const response = await fetch('/api/online-users');
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.code === 200 && data.data) {
+                            this.currentCount = data.data.count || 0;
+                            this.onlineUsers = data.data.users || [];
+                            this.updateOnlineCount();
+                        }
+                    } else {
+                        // API不可用时显示默认值
+                        this.currentCount = 0;
+                        this.updateOnlineCount();
+                    }
+                } catch (error) {
+                    console.warn('获取在线用户数失败:', error);
+                    // 网络错误时显示默认值
+                    this.currentCount = 0;
+                    this.updateOnlineCount();
+                }
+            }
+            
+            updateOnlineCount() {
+                const countEl = document.getElementById('onlineCount');
+                if (countEl) {
+                    countEl.textContent = this.currentCount;
+                }
+            }
+            
+            // 获取在线用户详细信息（用于头像显示）
+            getOnlineUsers() {
+                return this.onlineUsers;
+            }
+        }
+        
+        // 初始化在线用户管理器
+        const onlineManager = new OnlineUserManager();
+
         // Initialize when DOM is ready
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => courseManager.init());
+            document.addEventListener('DOMContentLoaded', () => {
+                courseManager.init();
+                onlineManager.init();
+            });
         } else {
             courseManager.init();
+            onlineManager.init();
         }
     </script>
 </body>
