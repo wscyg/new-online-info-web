@@ -388,6 +388,11 @@
             background: #e5e7eb;
         }
 
+        .calendar-day.today {
+            border: 2px solid #3b82f6;
+            font-weight: 600;
+        }
+
         /* Action Buttons */
         .action-buttons {
             display: grid;
@@ -588,8 +593,15 @@
             }
         }
     </style>
+
+    <!-- UX Enhancement Styles -->
+    
+  <link rel="stylesheet" href="/assets/ux-enhancements-2fb285cd.css">
 </head>
 <body>
+    <!-- 全局登录状态 -->
+    <div id="auth-header"></div>
+
     <!-- Background Pattern -->
     <div class="bg-pattern"></div>
 
@@ -751,6 +763,9 @@
     </main>
 
     <!-- Scripts -->
+    <!-- UX Enhancement Scripts -->
+    <script src="../utils/ux-utils.js"></script>
+
     <script>
         // Global variables
         const API_BASE_URL = 'http://42.194.245.66/api';
@@ -777,6 +792,9 @@
 
         async function initializeProfile() {
             try {
+                // Initialize UX enhancements first
+                initUXEnhancements();
+
                 await loadUserProfile();
                 await loadUserProgress();
                 await loadUserActivity();
@@ -788,13 +806,37 @@
             }
         }
 
+        // Initialize UX enhancements
+        function initUXEnhancements() {
+            // Initialize lazy loading for images
+            if (window.UXUtils && window.UXUtils.LazyLoader) {
+                const lazyImages = document.querySelectorAll('img.lazy-image');
+                if (lazyImages.length > 0) {
+                    const loader = new window.UXUtils.LazyLoader();
+                    loader.observe(lazyImages);
+                }
+            }
+
+            // Initialize animation triggers
+            if (window.UXUtils && window.UXUtils.AnimationTrigger) {
+                window.UXUtils.AnimationTrigger.init();
+            }
+
+            // Initialize smooth scroll
+            if (window.UXUtils && window.UXUtils.smoothScroll) {
+                window.UXUtils.smoothScroll.init();
+            }
+
+            console.log('✅ Profile UX enhancements initialized');
+        }
+
         // Check authentication and redirect if needed
         function checkAuthAndRedirect() {
             const token = localStorage.getItem('token');
             if (!token) {
                 showNotification('请先登录', 'warning');
                 setTimeout(() => {
-                    window.location.href = 'login.html?returnUrl=' + encodeURIComponent(window.location.href);
+                    window.location.href = '/src/pages/login.html?returnUrl=' + encodeURIComponent(window.location.href);
                 }, 1500);
             }
         }
@@ -875,28 +917,58 @@
                 avatarImage.style.display = 'none';
             }
 
-            // Update stats
+            // Update basic stats from user profile
             document.getElementById('studyDays').textContent = user.studyDays || 0;
-            document.getElementById('completedCourses').textContent = user.completedCourses || 0;
-            document.getElementById('averageRating').textContent = user.averageRating || '0.0';
             document.getElementById('certificates').textContent = user.certificates || 0;
-            
-            // Format study hours
-            const hours = user.studyHours || 0;
-            let hoursText = hours.toString();
-            if (hours >= 1000) {
-                hoursText = (hours / 1000).toFixed(1) + 'K';
-            }
-            document.getElementById('studyHours').textContent = hoursText;
+
+            // Fetch additional statistics
+            fetchUserStatistics();
         }
 
-        // Load user progress
+        // Fetch user statistics from learning progress API
+        async function fetchUserStatistics() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/learning/statistics`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.data) {
+                        // Update statistics UI
+                        const stats = data.data;
+                        document.getElementById('studyDays').textContent = stats.totalStudyDays || 0;
+                        document.getElementById('completedCourses').textContent = stats.completedCourses || 0;
+                        document.getElementById('averageRating').textContent = (stats.averageRating || 0).toFixed(1);
+                        document.getElementById('certificates').textContent = stats.totalCertificates || 0;
+
+                        // Format study hours
+                        const hours = stats.totalStudyHours || 0;
+                        let hoursText = hours.toString();
+                        if (hours >= 1000) {
+                            hoursText = (hours / 1000).toFixed(1) + 'K';
+                        }
+                        document.getElementById('studyHours').textContent = hoursText;
+                    }
+                }
+            } catch (error) {
+                console.log('Failed to fetch statistics:', error);
+            }
+        }
+
+        // Load user progress - fetch user's subscribed courses
         async function loadUserProgress() {
             const token = localStorage.getItem('token');
-            
+
             try {
                 if (token) {
-                    const response = await fetch(`${API_BASE_URL}/user/courses`, {
+                    // Fetch user's subscriptions
+                    const response = await fetch(`${API_BASE_URL}/subscriptions/my?page=1&size=20`, {
                         headers: {
                             'Authorization': `Bearer ${token}`
                         }
@@ -904,71 +976,88 @@
 
                     if (response.ok) {
                         const data = await response.json();
-                        if (data.success && data.data && data.data.length > 0) {
-                            renderUserProgress(data.data);
+                        if (data.success && data.data && data.data.list && data.data.list.length > 0) {
+                            // Process subscription data to show course progress
+                            await processSubscriptionProgress(data.data.list);
                             return;
                         }
-                    } else if (response.status === 401) {
-                        console.log('Authentication failed for courses');
-                        // Don't redirect, just use demo data
-                    } else if (response.status === 500) {
-                        console.log('User courses API not implemented, using demo data');
                     }
-                }
 
-                // Use demo data
-                const demoProgress = [
-                    {
-                        title: 'Python高级编程',
-                        progress: 75,
-                        completedChapters: 12,
-                        totalChapters: 16,
-                        estimatedDays: 3
-                    },
-                    {
-                        title: '机器学习实战',
-                        progress: 60,
-                        completedChapters: 9,
-                        totalChapters: 15,
-                        estimatedDays: 5
-                    },
-                    {
-                        title: '深度学习框架',
-                        progress: 45,
-                        completedChapters: 6,
-                        totalChapters: 13,
-                        estimatedDays: 7
-                    }
-                ];
-                renderUserProgress(demoProgress);
+                // No subscriptions yet - show empty state
+                renderUserProgress([]);
             } catch (error) {
-                console.log('Could not load user progress');
-                // Use demo data even on error
-                const demoProgress = [
-                    {
-                        title: 'Python高级编程',
-                        progress: 75,
-                        completedChapters: 12,
-                        totalChapters: 16,
-                        estimatedDays: 3
-                    },
-                    {
-                        title: '机器学习实战',
-                        progress: 60,
-                        completedChapters: 9,
-                        totalChapters: 15,
-                        estimatedDays: 5
-                    },
-                    {
-                        title: '深度学习框架',
-                        progress: 45,
-                        completedChapters: 6,
-                        totalChapters: 13,
-                        estimatedDays: 7
-                    }
-                ];
-                renderUserProgress(demoProgress);
+                console.log('Could not load user progress:', error);
+                renderUserProgress([]);
             }
+        }
+
+        // Process subscription data and fetch progress for each course
+        async function processSubscriptionProgress(subscriptions) {
+            const token = localStorage.getItem('token');
+            const progressData = [];
+
+            for (const sub of subscriptions) {
+                try {
+                    // Check if it's a course subscription
+                    if (sub.subscribableType === 'course' && sub.courseId) {
+                        // Fetch course details and progress
+                        const [courseResponse, progressResponse] = await Promise.all([
+                            fetch(`${API_BASE_URL}/courses/${sub.courseId}`, {
+                                headers: {
+                                    'Authorization': `Bearer ${token}`
+                                }
+                            }),
+                            fetch(`${API_BASE_URL}/learning/progress/course/${sub.courseId}`, {
+                                headers: {
+                                    'Authorization': `Bearer ${token}`
+                                }
+                            })
+                        ]);
+
+                        if (courseResponse.ok && progressResponse.ok) {
+                            const courseData = await courseResponse.json();
+                            const progressDataResponse = await progressResponse.json();
+
+                            if (courseData.success && courseData.data && progressDataResponse.success && progressDataResponse.data) {
+                                const course = courseData.data;
+                                const progress = progressDataResponse.data;
+
+                                progressData.push({
+                                    title: course.title,
+                                    progress: progress.progressPercentage || 0,
+                                    completedChapters: progress.completedChapters || 0,
+                                    totalChapters: progress.totalChapters || course.chapterCount || 0,
+                                    estimatedDays: calculateEstimatedDays(progress.progressPercentage || 0)
+                                });
+                            }
+                        }
+                    } else if (sub.subscribableType === 'bundle' && sub.bundleId) {
+                        // For bundle subscriptions, we need to get all courses in the bundle
+                        // For now, just show the bundle name
+                        progressData.push({
+                            title: sub.bundleName || `套餐订阅 #${sub.bundleId}`,
+                            progress: 0,
+                            completedChapters: 0,
+                            totalChapters: 0,
+                            estimatedDays: 0
+                        });
+                    }
+                } catch (error) {
+                    console.log(`Failed to fetch progress for subscription ${sub.id}:`, error);
+                }
+            }
+
+            renderUserProgress(progressData);
+        }
+
+        // Calculate estimated days to complete based on progress
+        function calculateEstimatedDays(progressPercentage) {
+            if (progressPercentage >= 100) return 0;
+            if (progressPercentage >= 80) return 1;
+            if (progressPercentage >= 60) return 3;
+            if (progressPercentage >= 40) return 5;
+            if (progressPercentage >= 20) return 7;
+            return 10;
         }
 
         // Render user progress
@@ -1017,13 +1106,14 @@
             }, 100);
         }
 
-        // Load user activity
+        // Load user activity - fetch real activity logs
         async function loadUserActivity() {
             const token = localStorage.getItem('token');
-            
+
             try {
                 if (token) {
-                    const response = await fetch(`${API_BASE_URL}/user/activity`, {
+                    // Try to fetch user activity from the API
+                    const response = await fetch(`${API_BASE_URL}/points/history?page=1&size=10`, {
                         headers: {
                             'Authorization': `Bearer ${token}`
                         }
@@ -1031,68 +1121,65 @@
 
                     if (response.ok) {
                         const data = await response.json();
-                        if (data.success && data.data && data.data.length > 0) {
-                            renderUserActivity(data.data);
+                        if (data.success && data.data && data.data.list && data.data.list.length > 0) {
+                            // Transform points history into activity format
+                            const activities = data.data.list.map(item => ({
+                                type: getActivityType(item.type),
+                                title: item.description || getActivityTitle(item.type, item.points),
+                                time: formatRelativeTime(item.createdAt)
+                            }));
+                            renderUserActivity(activities);
                             return;
                         }
-                    } else if (response.status === 401) {
-                        console.log('Authentication failed for activity');
-                        // Don't redirect, just use demo data
-                    } else if (response.status === 500) {
-                        console.log('User activity API not implemented, using demo data');
                     }
                 }
 
-                // Use demo data
-                const demoActivity = [
-                    {
-                        type: 'course',
-                        title: '完成章节测试',
-                        time: '2小时前'
-                    },
-                    {
-                        type: 'achievement',
-                        title: '解锁成就：连续学习7天',
-                        time: '昨天'
-                    },
-                    {
-                        type: 'certificate',
-                        title: '获得Python进阶证书',
-                        time: '3天前'
-                    },
-                    {
-                        type: 'course',
-                        title: '开始新课程：深度学习',
-                        time: '5天前'
-                    }
-                ];
-                renderUserActivity(demoActivity);
+                // No activity data - show empty state
+                renderUserActivity([]);
             } catch (error) {
-                console.log('Could not load user activity');
-                // Use demo data even on error
-                const demoActivity = [
-                    {
-                        type: 'course',
-                        title: '完成章节测试',
-                        time: '2小时前'
-                    },
-                    {
-                        type: 'achievement',
-                        title: '解锁成就：连续学习7天',
-                        time: '昨天'
-                    },
-                    {
-                        type: 'certificate',
-                        title: '获得Python进阶证书',
-                        time: '3天前'
-                    },
-                    {
-                        type: 'course',
-                        title: '开始新课程：深度学习',
-                        time: '5天前'
-                    }
-                ];
-                renderUserActivity(demoActivity);
+                console.log('Could not load user activity:', error);
+                renderUserActivity([]);
+            }
+        }
+
+        // Get activity type from points type
+        function getActivityType(pointsType) {
+            if (pointsType === 'DAILY_CHECKIN') return 'achievement';
+            if (pointsType === 'COURSE_COMPLETION') return 'certificate';
+            if (pointsType === 'QUIZ_COMPLETION') return 'course';
+            return 'course';
+        }
+
+        // Get activity title from points type
+        function getActivityTitle(pointsType, points) {
+            if (pointsType === 'DAILY_CHECKIN') return `每日签到，获得${points}积分`;
+            if (pointsType === 'COURSE_COMPLETION') return '完成课程学习';
+            if (pointsType === 'QUIZ_COMPLETION') return '完成章节测试';
+            return `获得${points}积分`;
+        }
+
+        // Format relative time
+        function formatRelativeTime(dateStr) {
+            if (!dateStr) return '刚刚';
+
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffSeconds = Math.floor(diffMs / 1000);
+            const diffMinutes = Math.floor(diffSeconds / 60);
+            const diffHours = Math.floor(diffMinutes / 60);
+            const diffDays = Math.floor(diffHours / 24);
+
+            if (diffDays > 7) {
+                return date.toLocaleDateString('zh-CN');
+            } else if (diffDays > 0) {
+                return `${diffDays}天前`;
+            } else if (diffHours > 0) {
+                return `${diffHours}小时前`;
+            } else if (diffMinutes > 0) {
+                return `${diffMinutes}分钟前`;
+            } else {
+                return '刚刚';
             }
         }
 
@@ -1137,39 +1224,105 @@
             return icons[type] || icons.default;
         }
 
-        // Generate calendar
-        function generateCalendar() {
+        // Generate calendar with real check-in data
+        async function generateCalendar() {
             const calendarGrid = document.getElementById('calendarGrid');
             const now = new Date();
             const year = now.getFullYear();
             const month = now.getMonth();
-            
+
             // Update month display
             const monthNames = [
                 '1月', '2月', '3月', '4月', '5月', '6月',
                 '7月', '8月', '9月', '10月', '11月', '12月'
             ];
             document.getElementById('calendarMonth').textContent = `${year}年${monthNames[month]}`;
-            
+
+            // Fetch check-in data for this month
+            const token = localStorage.getItem('token');
+            let checkinDays = [];
+            let streakDays = 0;
+
+            if (token) {
+                try {
+                    // Fetch points history to find check-in days
+                    const response = await fetch(`${API_BASE_URL}/points/history?page=1&size=100`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.success && data.data && data.data.list) {
+                            // Filter check-in activities for this month
+                            const checkIns = data.data.list.filter(item => {
+                                if (item.type !== 'DAILY_CHECKIN') return false;
+                                const itemDate = new Date(item.createdAt);
+                                return itemDate.getMonth() === month && itemDate.getFullYear() === year;
+                            });
+
+                            // Extract days
+                            checkinDays = checkIns.map(item => new Date(item.createdAt).getDate());
+
+                            // Calculate streak
+                            streakDays = calculateStreak(checkinDays, now.getDate());
+                        }
+                    }
+                } catch (error) {
+                    console.log('Failed to fetch check-in data:', error);
+                }
+            }
+
             // Generate calendar days
             const dayNames = ['日', '一', '二', '三', '四', '五', '六'];
             let calendarHTML = '';
-            
+
             // Add day headers
             dayNames.forEach(day => {
                 calendarHTML += `<div class="calendar-day">${day}</div>`;
             });
-            
-            // Add days for demo (showing some active days)
-            for (let i = 1; i <= 21; i++) {
-                const isActive = i <= 15; // Show first 15 days as active for demo
-                calendarHTML += `<div class="calendar-day ${isActive ? 'active' : ''}">${i}</div>`;
+
+            // Get first day of month and total days
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = now.getDate();
+
+            // Add empty cells for days before month starts
+            for (let i = 0; i < firstDay; i++) {
+                calendarHTML += `<div class="calendar-day"></div>`;
             }
-            
+
+            // Add days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const isCheckedIn = checkinDays.includes(day);
+                const isToday = day === today && month === now.getMonth() && year === now.getFullYear();
+                const classes = ['calendar-day'];
+                if (isCheckedIn) classes.push('active');
+                if (isToday) classes.push('today');
+
+                calendarHTML += `<div class="${classes.join(' ')}">${day}</div>`;
+            }
+
             calendarGrid.innerHTML = calendarHTML;
-            
+
             // Update streak counter
-            document.getElementById('streakDays').textContent = '已连续15天';
+            document.getElementById('streakDays').textContent = `已连续${streakDays}天`;
+        }
+
+        // Calculate streak days
+        function calculateStreak(checkinDays, today) {
+            if (!checkinDays.includes(today)) return 0;
+
+            let streak = 1;
+            let currentDay = today - 1;
+
+            while (currentDay > 0 && checkinDays.includes(currentDay)) {
+                streak++;
+                currentDay--;
+            }
+
+            return streak;
         }
 
         // Setup event listeners
@@ -1289,7 +1442,7 @@
                 localStorage.removeItem('refreshToken');
                 showNotification('已退出登录', 'success');
                 setTimeout(() => {
-                    window.location.href = 'login.html';
+                    window.location.href = '/src/pages/login.html';
                 }, 1000);
             }
         }
@@ -1330,6 +1483,16 @@
         window.triggerAvatarUpload = triggerAvatarUpload;
         window.toggleUserMenu = toggleUserMenu;
         window.logout = logout;
+    </script>
+    <!-- 全局登录状态组件 -->
+    <script src="../utils/auth-header.js"></script>
+    <script>
+        // 初始化登录状态组件
+        document.addEventListener('DOMContentLoaded', () => {
+            AuthHeader.init('auth-header', {
+                showLinks: false
+            });
+        });
     </script>
 </body>
 </html>

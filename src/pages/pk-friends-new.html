@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>好友管理 - 在线学习平台</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../styles/pk-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- 外部依赖 -->
+    <script src="https://cdn.jsdelivr.net/npm/zustand@4.4.1/index.umd.js"></script>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="pk-navbar">
+        <div class="pk-nav-container">
+            <a href="../pages/dashboard.html" class="pk-nav-brand">🎓 在线学习平台</a>
+            <ul class="pk-nav-menu">
+                <li><a href="dashboard.html" class="pk-nav-link">仪表盘</a></li>
+                <li><a href="courses.html" class="pk-nav-link">课程</a></li>
+                <li><a href="pk-arena-new.html" class="pk-nav-link">PK竞技场</a></li>
+                <li><a href="pk-rankings-new.html" class="pk-nav-link">排行榜</a></li>
+                <li><a href="pk-friends-new.html" class="pk-nav-link active">好友</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 主容器 -->
+    <div class="pk-container">
+        <!-- 页面标题 -->
+        <div class="pk-page-header">
+            <h1 class="pk-page-title">👥 好友管理</h1>
+            <p class="pk-page-subtitle">管理你的PK好友，邀请他们一起对战！</p>
+        </div>
+
+        <!-- 搜索用户 -->
+        <div class="pk-card pk-mb-4">
+            <h3 class="pk-card-title pk-mb-3">🔍 搜索用户</h3>
+            <div class="pk-flex pk-flex-gap">
+                <input
+                    type="text"
+                    class="pk-form-input"
+                    id="searchInput"
+                    placeholder="输入用户名或昵称搜索..."
+                    style="flex: 1;"
+                >
+                <button class="pk-btn pk-btn-primary" id="searchBtn">
+                    搜索
+                </button>
+            </div>
+
+            <!-- 搜索结果 -->
+            <div class="pk-mt-3" id="searchResults">
+                <!-- 动态加载 -->
+            </div>
+        </div>
+
+        <!-- 好友请求 -->
+        <div class="pk-card pk-mb-4">
+            <div class="pk-flex pk-flex-between pk-mb-3">
+                <h3 class="pk-card-title">📬 好友请求</h3>
+                <span class="pk-badge" id="requestCount">0</span>
+            </div>
+            <div id="friendRequestsList">
+                <div class="pk-empty-state">
+                    <div class="pk-empty-icon">📭</div>
+                    <p class="pk-empty-text">暂无好友请求</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 好友列表标签页 -->
+        <div class="pk-card">
+            <div class="pk-friends-tabs pk-mb-3">
+                <button class="pk-friends-tab active" data-tab="all">
+                    全部好友 <span id="allFriendsCount">(0)</span>
+                </button>
+                <button class="pk-friends-tab" data-tab="online">
+                    在线好友 <span id="onlineFriendsCount">(0)</span>
+                </button>
+            </div>
+
+            <!-- 好友列表 -->
+            <div id="friendsListContainer">
+                <!-- 动态加载 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 用户详情模态框 -->
+    <div class="pk-modal" id="userDetailModal">
+        <div class="pk-modal-content">
+            <div class="pk-modal-header">
+                <h3 class="pk-modal-title">用户详情</h3>
+                <button class="pk-modal-close" id="closeUserDetailModal">&times;</button>
+            </div>
+            <div class="pk-modal-body">
+                <div class="pk-user-detail-card">
+                    <div class="pk-text-center pk-mb-4">
+                        <div class="pk-player-avatar-lg" id="detailAvatar"></div>
+                        <div class="pk-player-name pk-mt-2" id="detailName"></div>
+                        <span class="pk-player-tier pk-mt-2" id="detailTier"></span>
+                    </div>
+
+                    <div class="pk-user-stats-grid pk-mb-4">
+                        <div class="pk-stat-box">
+                            <div class="pk-stat-value" id="detailElo">1200</div>
+                            <div class="pk-stat-label">ELO分数</div>
+                        </div>
+                        <div class="pk-stat-box">
+                            <div class="pk-stat-value" id="detailWins">0</div>
+                            <div class="pk-stat-label">胜场</div>
+                        </div>
+                        <div class="pk-stat-box">
+                            <div class="pk-stat-value" id="detailLosses">0</div>
+                            <div class="pk-stat-label">负场</div>
+                        </div>
+                        <div class="pk-stat-box">
+                            <div class="pk-stat-value" id="detailWinRate">0%</div>
+                            <div class="pk-stat-label">胜率</div>
+                        </div>
+                    </div>
+
+                    <div class="pk-flex pk-flex-gap">
+                        <button class="pk-btn pk-btn-primary pk-btn-full" id="inviteBattleBtn">
+                            ⚔️ 邀请PK
+                        </button>
+                        <button class="pk-btn pk-btn-outline pk-btn-full" id="viewProfileBtn">
+                            👤 查看主页
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除好友确认模态框 -->
+    <div class="pk-modal" id="deleteFriendModal">
+        <div class="pk-modal-content">
+            <div class="pk-modal-header">
+                <h3 class="pk-modal-title">⚠️ 删除好友</h3>
+                <button class="pk-modal-close" id="closeDeleteModal">&times;</button>
+            </div>
+            <div class="pk-modal-body">
+                <p class="pk-mb-3">确定要删除好友 <strong id="deleteFriendName"></strong> 吗？</p>
+                <p class="pk-text-muted pk-mb-4">删除后需要重新添加才能成为好友</p>
+                <div class="pk-flex pk-flex-gap">
+                    <button class="pk-btn pk-btn-outline pk-btn-full" id="cancelDeleteBtn">
+                        取消
+                    </button>
+                    <button class="pk-btn pk-btn-danger pk-btn-full" id="confirmDeleteBtn">
+                        确认删除
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript模块 -->
+    <script type="module">
+        import { PKFriends } from './pk/friends.js';
+
+        // 初始化好友管理
+        const friends = new PKFriends();
+
+        // 页面加载后初始化
+        document.addEventListener('DOMContentLoaded', async () => {
+            await friends.init();
+        });
+
+        // 全局导出用于调试
+        window.pkFriends = friends;
+    </script>
+
+    <style>
+        /* 好友请求项 */
+        .pk-friend-request-item {
+            background: var(--pk-bg-glass);
+            border: 1px solid var(--pk-border-glass);
+            border-radius: var(--pk-radius-md);
+            padding: var(--pk-spacing-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--pk-spacing-md);
+        }
+
+        .pk-friend-request-info {
+            display: flex;
+            align-items: center;
+            gap: var(--pk-spacing-md);
+            flex: 1;
+        }
+
+        .pk-friend-request-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--pk-radius-full);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .pk-friend-request-details {
+            flex: 1;
+        }
+
+        .pk-friend-request-name {
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .pk-friend-request-time {
+            font-size: 0.875rem;
+            color: var(--pk-text-muted);
+        }
+
+        .pk-friend-request-actions {
+            display: flex;
+            gap: var(--pk-spacing-sm);
+        }
+
+        /* 好友标签页 */
+        .pk-friends-tabs {
+            display: flex;
+            gap: var(--pk-spacing-md);
+            border-bottom: 2px solid var(--pk-border-glass);
+        }
+
+        .pk-friends-tab {
+            padding: var(--pk-spacing-md) var(--pk-spacing-lg);
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            transition: var(--pk-transition-fast);
+            font-weight: 600;
+            color: var(--pk-text-secondary);
+            margin-bottom: -2px;
+        }
+
+        .pk-friends-tab:hover {
+            color: var(--pk-text-primary);
+        }
+
+        .pk-friends-tab.active {
+            color: var(--pk-primary);
+            border-bottom-color: var(--pk-primary);
+        }
+
+        /* 好友列表 */
+        .pk-friends-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: var(--pk-spacing-md);
+            margin-top: var(--pk-spacing-lg);
+        }
+
+        .pk-friend-card {
+            background: var(--pk-bg-glass);
+            border: 1px solid var(--pk-border-glass);
+            border-radius: var(--pk-radius-lg);
+            padding: var(--pk-spacing-lg);
+            transition: var(--pk-transition);
+        }
+
+        .pk-friend-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .pk-friend-card-header {
+            display: flex;
+            align-items: center;
+            gap: var(--pk-spacing-md);
+            margin-bottom: var(--pk-spacing-md);
+        }
+
+        .pk-friend-card-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--pk-radius-full);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.5rem;
+            position: relative;
+        }
+
+        .pk-friend-online-indicator {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 16px;
+            height: 16px;
+            background: var(--pk-success);
+            border: 3px solid var(--pk-bg-darker);
+            border-radius: var(--pk-radius-full);
+        }
+
+        .pk-friend-card-info {
+            flex: 1;
+        }
+
+        .pk-friend-card-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .pk-friend-card-status {
+            font-size: 0.875rem;
+            color: var(--pk-text-muted);
+        }
+
+        .pk-friend-card-status.online {
+            color: var(--pk-success);
+        }
+
+        .pk-friend-card-stats {
+            display: flex;
+            gap: var(--pk-spacing-md);
+            margin-bottom: var(--pk-spacing-md);
+            padding: var(--pk-spacing-md);
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: var(--pk-radius-sm);
+        }
+
+        .pk-friend-card-stat {
+            flex: 1;
+            text-align: center;
+        }
+
+        .pk-friend-card-stat-value {
+            font-weight: 700;
+            color: var(--pk-primary);
+        }
+
+        .pk-friend-card-stat-label {
+            font-size: 0.75rem;
+            color: var(--pk-text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .pk-friend-card-actions {
+            display: flex;
+            gap: var(--pk-spacing-sm);
+        }
+
+        /* 搜索结果 */
+        .pk-search-results {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .pk-search-result-item {
+            background: var(--pk-bg-glass);
+            border: 1px solid var(--pk-border-glass);
+            border-radius: var(--pk-radius-md);
+            padding: var(--pk-spacing-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--pk-spacing-md);
+        }
+
+        .pk-search-result-info {
+            display: flex;
+            align-items: center;
+            gap: var(--pk-spacing-md);
+            flex: 1;
+        }
+
+        /* 徽章 */
+        .pk-badge {
+            background: var(--pk-danger);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--pk-radius-full);
+            font-size: 0.875rem;
+            font-weight: 700;
+        }
+
+        /* 用户详情卡片 */
+        .pk-user-detail-card {
+            padding: var(--pk-spacing-lg);
+        }
+
+        .pk-user-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--pk-spacing-md);
+        }
+
+        /* 响应式 */
+        @media (max-width: 968px) {
+            .pk-friends-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pk-friend-request-item {
+                flex-direction: column;
+                gap: var(--pk-spacing-md);
+            }
+
+            .pk-friend-request-actions {
+                width: 100%;
+            }
+
+            .pk-friend-request-actions .pk-btn {
+                flex: 1;
+            }
+        }
+    </style>
+</body>
+</html>

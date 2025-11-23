@@ -26,6 +26,12 @@
         const statusContainer = document.getElementById('status');
         const contentFrame = document.getElementById('contentFrame');
 
+        // 学习会话跟踪变量
+        let currentSessionId = null;
+        let heartbeatInterval = null;
+        let currentCourseId = null;
+        let currentChapterId = null;
+
         function showStatus(title, message = '', error = null) {
             let html = `<h1>${title}</h1>`;
             if (message) html += `<p>${message}</p>`;
@@ -33,42 +39,175 @@
             statusContainer.innerHTML = html;
         }
 
+        // 获取API Base URL
+        function getApiBase() {
+            return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                ? 'http://localhost:8080/api'
+                : 'http://42.194.245.66/api';
+        }
+
+        // 开始学习会话
+        async function startStudySession(courseId, chapterId) {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    console.log('用户未登录，跳过会话跟踪');
+                    return;
+                }
+
+                const response = await fetch(`${getApiBase()}/study-sessions/start`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        courseId: courseId,
+                        chapterId: chapterId,
+                        deviceType: 'web'
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.code === 200 && data.data) {
+                        currentSessionId = data.data.sessionId;
+                        console.log('✅ 学习会话已开始:', currentSessionId);
+
+                        // 启动心跳定时器（每2分钟）
+                        startHeartbeat();
+                    }
+                }
+            } catch (error) {
+                console.error('开始学习会话失败:', error);
+            }
+        }
+
+        // 心跳保持会话活跃
+        async function sendHeartbeat() {
+            if (!currentSessionId) return;
+
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return;
+
+                await fetch(`${getApiBase()}/study-sessions/heartbeat`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        sessionId: currentSessionId
+                    })
+                });
+            } catch (error) {
+                console.error('心跳发送失败:', error);
+            }
+        }
+
+        // 启动心跳定时器
+        function startHeartbeat() {
+            if (heartbeatInterval) {
+                clearInterval(heartbeatInterval);
+            }
+
+            // 每2分钟发送一次心跳
+            heartbeatInterval = setInterval(() => {
+                sendHeartbeat();
+            }, 120000); // 120秒 = 2分钟
+        }
+
+        // 结束学习会话
+        async function endStudySession() {
+            if (!currentSessionId) return;
+
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return;
+
+                // 使用 keepalive 确保请求在页面卸载时也能发送
+                await fetch(`${getApiBase()}/study-sessions/end`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        sessionId: currentSessionId
+                    }),
+                    keepalive: true
+                });
+
+                console.log('✅ 学习会话已结束');
+
+                // 清理
+                if (heartbeatInterval) {
+                    clearInterval(heartbeatInterval);
+                    heartbeatInterval = null;
+                }
+                currentSessionId = null;
+            } catch (error) {
+                console.error('结束学习会话失败:', error);
+            }
+        }
+
+        // 页面卸载时结束会话
+        window.addEventListener('beforeunload', () => {
+            endStudySession();
+        });
+
+        // 页面隐藏时也结束会话（用户切换标签页或最小化）
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                endStudySession();
+            }
+        });
+
         (async function loadChapter() {
             try {
                 // 1. 获取 chapterId
                 const urlParams = new URLSearchParams(window.location.search);
                 const chapterId = urlParams.get('chapterId');
+                const courseId = urlParams.get('courseId');
+
                 if (!chapterId) throw new Error('URL中缺少 chapterId 参数');
 
+                // 保存当前课程和章节ID
+                currentChapterId = chapterId;
+                currentCourseId = courseId;
+
                 showStatus('🚀 正在获取章节内容...', `章节ID: ${chapterId}`);
-                
+
                 // 2. 获取后端的JSON响应
-                // 使用完整的API路径
-                const apiBase = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-                    ? 'http://localhost:8080/api'
-                    : 'http://42.194.245.66/api';
+                const apiBase = getApiBase();
                 const response = await fetch(`${apiBase}/content/chapters/${chapterId}`, {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('token') || ''}` }
                 });
                 if (!response.ok) throw new Error(`服务器请求失败，状态: ${response.status}`);
-                
+
                 const data = await response.json();
                 console.log('API响应数据:', data);
-                
+
                 if (data.code !== 200 || !data.data?.content?.contentHtml) {
                     console.error('API响应格式不正确:', data);
                     throw new Error(data.message || 'API响应格式不正确或未包含HTML内容');
                 }
-                
+
+                // 如果返回的数据中包含courseId，使用它
+                if (data.data.courseId) {
+                    currentCourseId = data.data.courseId;
+                }
+
                 let htmlText = data.data.content.contentHtml;
                 console.log('获取到HTML内容长度:', htmlText.length);
 
                 // 3. 处理后端返回的HTML内容
                 let processedHtml = htmlText;
-                
+
                 // 添加安全的CSP头部
                 const cspMeta = `<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:;">`;
-                
+
                 // 注入base标签和导航修复脚本
                 const baseTag = `<base href="${window.location.origin}/">`;
                 const navFixScript = `
@@ -90,7 +229,7 @@
                                     }
                                 });
                             });
-                            
+
                             // 处理可能导致页面跳转的其他链接
                             const allLinks = document.querySelectorAll('a[href]');
                             allLinks.forEach(link => {
@@ -105,7 +244,7 @@
                     </script>
                 `;
                 processedHtml = processedHtml.replace(/<head>/i, `<head>\n    ${cspMeta}\n    ${baseTag}\n    ${navFixScript}`);
-                
+
                 // 5. 创建 Blob 并加载到 iframe
                 const blob = new Blob([processedHtml], { type: 'text/html' });
                 const blobUrl = URL.createObjectURL(blob);
@@ -115,6 +254,11 @@
                     statusContainer.style.display = 'none';
                     contentFrame.style.display = 'block';
                     console.log('✅ 章节内容加载完成');
+
+                    // 章节加载完成后，开始学习会话
+                    if (currentCourseId && currentChapterId) {
+                        startStudySession(currentCourseId, currentChapterId);
+                    }
                 };
 
             } catch (error) {

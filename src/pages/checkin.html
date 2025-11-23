@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日签到 - AI学习平台</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --white: #ffffff;
+            --gold: #fbbf24;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(to bottom right, #0f172a, #1e293b);
+            min-height: 100vh;
+            color: var(--white);
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .stat-card .label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .checkin-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .checkin-btn {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 1.25rem 3rem;
+            border-radius: 3rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+            margin-top: 1rem;
+        }
+
+        .checkin-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.6);
+        }
+
+        .checkin-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .checkin-animation {
+            display: none;
+            font-size: 4rem;
+            animation: bounce 0.6s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
+        .calendar-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .calendar-section h2 {
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .calendar-day.header {
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .calendar-day.checked {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .calendar-day.today {
+            border: 2px solid var(--gold);
+        }
+
+        .rewards-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .rewards-section h2 {
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .rewards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .reward-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .reward-card.milestone {
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+        }
+
+        .reward-card.achieved {
+            opacity: 0.6;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .reward-card .days {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .reward-card .points {
+            font-size: 1.2rem;
+            color: var(--success);
+            margin-bottom: 0.5rem;
+        }
+
+        .reward-card .description {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .leaderboard-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.5rem;
+            padding: 2rem;
+        }
+
+        .leaderboard-section h2 {
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .leaderboard-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .leaderboard-item .rank {
+            font-size: 1.5rem;
+            font-weight: 700;
+            min-width: 3rem;
+            text-align: center;
+        }
+
+        .leaderboard-item.rank-1 .rank {
+            color: #fbbf24;
+        }
+
+        .leaderboard-item.rank-2 .rank {
+            color: #9ca3af;
+        }
+
+        .leaderboard-item.rank-3 .rank {
+            color: #d97706;
+        }
+
+        .leaderboard-item .user-info {
+            flex: 1;
+        }
+
+        .leaderboard-item .username {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .leaderboard-item .days {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            color: var(--danger);
+            margin-bottom: 1rem;
+        }
+
+        .success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            color: var(--success);
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .rewards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .calendar {
+                gap: 0.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>每日签到</h1>
+            <p>坚持签到，解锁更多奖励</p>
+        </div>
+
+        <div id="message-area"></div>
+
+        <!-- 统计卡片 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="label">连续签到</div>
+                <div class="value" id="consecutive-days">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">累计签到</div>
+                <div class="value" id="total-days">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">最长连续</div>
+                <div class="value" id="max-days">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">签到积分</div>
+                <div class="value" id="total-points">0</div>
+            </div>
+        </div>
+
+        <!-- 签到区域 -->
+        <div class="checkin-section">
+            <div class="checkin-animation" id="checkin-animation">🎉</div>
+            <h2 id="checkin-title">今日签到</h2>
+            <p id="checkin-message">点击下方按钮完成今日签到</p>
+            <button class="checkin-btn" id="checkin-btn" onclick="doCheckIn()">
+                立即签到
+            </button>
+        </div>
+
+        <!-- 签到日历 -->
+        <div class="calendar-section">
+            <h2>本月签到日历</h2>
+            <div class="calendar" id="calendar">
+                <div class="calendar-day header">日</div>
+                <div class="calendar-day header">一</div>
+                <div class="calendar-day header">二</div>
+                <div class="calendar-day header">三</div>
+                <div class="calendar-day header">四</div>
+                <div class="calendar-day header">五</div>
+                <div class="calendar-day header">六</div>
+            </div>
+        </div>
+
+        <!-- 签到奖励 -->
+        <div class="rewards-section">
+            <h2>签到奖励</h2>
+            <div class="rewards-grid" id="rewards-grid">
+                <!-- 动态加载 -->
+            </div>
+        </div>
+
+        <!-- 排行榜 -->
+        <div class="leaderboard-section">
+            <h2>签到排行榜</h2>
+            <div class="leaderboard-list" id="leaderboard-list">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../utils/api.js"></script>
+    <script type="module">
+        import { checkinAPI } from '../utils/api.js';
+
+        let currentStats = null;
+
+        // 初始化页面
+        async function init() {
+            await loadStats();
+            await loadCalendar();
+            await loadRewards();
+            await loadLeaderboard();
+        }
+
+        // 加载统计数据
+        async function loadStats() {
+            try {
+                const response = await checkinAPI.getStats();
+                if (response.success) {
+                    currentStats = response.data.stats;
+                    updateStatsUI(currentStats);
+
+                    // 更新签到状态
+                    if (response.data.checkedInToday) {
+                        document.getElementById('checkin-btn').disabled = true;
+                        document.getElementById('checkin-btn').textContent = '今日已签到';
+                        document.getElementById('checkin-message').textContent = '明天再来吧！';
+                    }
+                }
+            } catch (error) {
+                showMessage('加载统计失败: ' + error.message, 'error');
+            }
+        }
+
+        // 更新统计UI
+        function updateStatsUI(stats) {
+            document.getElementById('consecutive-days').textContent = stats.currentConsecutiveDays || 0;
+            document.getElementById('total-days').textContent = stats.totalCheckinDays || 0;
+            document.getElementById('max-days').textContent = stats.maxConsecutiveDays || 0;
+            document.getElementById('total-points').textContent = stats.totalPointsEarned || 0;
+        }
+
+        // 执行签到
+        window.doCheckIn = async function() {
+            const btn = document.getElementById('checkin-btn');
+            const animation = document.getElementById('checkin-animation');
+
+            btn.disabled = true;
+            btn.textContent = '签到中...';
+
+            try {
+                const response = await checkinAPI.dailyCheckIn();
+
+                if (response.success) {
+                    // 显示动画
+                    animation.style.display = 'block';
+                    setTimeout(() => {
+                        animation.style.display = 'none';
+                    }, 1000);
+
+                    // 显示成功消息
+                    const msg = `签到成功！连续${response.data.consecutiveDays}天，获得${response.data.pointsEarned}积分`;
+                    showMessage(msg, 'success');
+
+                    // 更新UI
+                    await loadStats();
+                    await loadCalendar();
+
+                    btn.textContent = '今日已签到';
+                    document.getElementById('checkin-message').textContent = '明天再来吧！';
+                } else {
+                    showMessage(response.message, 'error');
+                    btn.disabled = false;
+                    btn.textContent = '立即签到';
+                }
+            } catch (error) {
+                showMessage('签到失败: ' + error.message, 'error');
+                btn.disabled = false;
+                btn.textContent = '立即签到';
+            }
+        };
+
+        // 加载日历
+        async function loadCalendar() {
+            try {
+                const now = new Date();
+                const response = await checkinAPI.getCalendar(now.getFullYear(), now.getMonth() + 1);
+
+                if (response.success) {
+                    renderCalendar(response.data);
+                }
+            } catch (error) {
+                console.error('加载日历失败:', error);
+            }
+        }
+
+        // 渲染日历
+        function renderCalendar(data) {
+            const calendar = document.getElementById('calendar');
+            const checkinDays = data.checkinDays || [];
+
+            // 获取本月第一天是星期几
+            const firstDay = new Date(data.year, data.month - 1, 1).getDay();
+            const daysInMonth = new Date(data.year, data.month, 0).getDate();
+            const today = new Date().getDate();
+            const currentMonth = new Date().getMonth() + 1;
+            const currentYear = new Date().getFullYear();
+
+            // 清空日历（保留表头）
+            while (calendar.children.length > 7) {
+                calendar.removeChild(calendar.lastChild);
+            }
+
+            // 填充空白天
+            for (let i = 0; i < firstDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day';
+                calendar.appendChild(emptyDay);
+            }
+
+            // 填充日期
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = day;
+
+                // 标记已签到
+                if (checkinDays.includes(day)) {
+                    dayElement.classList.add('checked');
+                }
+
+                // 标记今天
+                if (day === today && data.month === currentMonth && data.year === currentYear) {
+                    dayElement.classList.add('today');
+                }
+
+                calendar.appendChild(dayElement);
+            }
+        }
+
+        // 加载奖励配置
+        async function loadRewards() {
+            try {
+                const response = await checkinAPI.getRewards();
+
+                if (response.success) {
+                    renderRewards(response.data);
+                }
+            } catch (error) {
+                console.error('加载奖励失败:', error);
+            }
+        }
+
+        // 渲染奖励
+        function renderRewards(rewards) {
+            const grid = document.getElementById('rewards-grid');
+            grid.innerHTML = '';
+
+            const consecutiveDays = currentStats?.currentConsecutiveDays || 0;
+
+            rewards.forEach(reward => {
+                const card = document.createElement('div');
+                card.className = 'reward-card';
+
+                if (reward.milestoneDays === consecutiveDays) {
+                    card.classList.add('milestone');
+                } else if (reward.milestoneDays < consecutiveDays) {
+                    card.classList.add('achieved');
+                }
+
+                let bonusText = '';
+                if (reward.treasureBox) bonusText += reward.treasureBox + ' ';
+                if (reward.badgeName) bonusText += reward.badgeName + ' ';
+                if (reward.titleName) bonusText += reward.titleName;
+
+                card.innerHTML = `
+                    <div class="days">Day ${reward.milestoneDays}</div>
+                    <div class="points">+${reward.points} 积分</div>
+                    <div class="description">${bonusText || reward.description}</div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        // 加载排行榜
+        async function loadLeaderboard() {
+            try {
+                const response = await checkinAPI.getLeaderboard(10);
+
+                if (response.success) {
+                    renderLeaderboard(response.data.leaderboard);
+                }
+            } catch (error) {
+                console.error('加载排行榜失败:', error);
+                document.getElementById('leaderboard-list').innerHTML =
+                    '<div class="loading">加载失败</div>';
+            }
+        }
+
+        // 渲染排行榜
+        function renderLeaderboard(leaderboard) {
+            const list = document.getElementById('leaderboard-list');
+            list.innerHTML = '';
+
+            if (!leaderboard || leaderboard.length === 0) {
+                list.innerHTML = '<div class="loading">暂无数据</div>';
+                return;
+            }
+
+            leaderboard.forEach((item, index) => {
+                const rank = index + 1;
+                const element = document.createElement('div');
+                element.className = `leaderboard-item rank-${rank}`;
+
+                element.innerHTML = `
+                    <div class="rank">#${rank}</div>
+                    <div class="user-info">
+                        <div class="username">${item.user?.nickname || item.user?.username || '用户' + item.userId}</div>
+                        <div class="days">连续签到 ${item.currentConsecutiveDays} 天</div>
+                    </div>
+                `;
+
+                list.appendChild(element);
+            });
+        }
+
+        // 显示消息
+        function showMessage(message, type = 'info') {
+            const messageArea = document.getElementById('message-area');
+            const div = document.createElement('div');
+            div.className = type;
+            div.textContent = message;
+            messageArea.appendChild(div);
+
+            setTimeout(() => {
+                div.remove();
+            }, 3000);
+        }
+
+        // 页面加载时初始化
+        init();
+    </script>
+</body>
+</html>

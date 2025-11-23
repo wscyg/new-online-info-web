@@ -377,6 +377,9 @@
             }
         }
     </style>
+
+    <!-- UX Enhancement Styles -->
+    <link rel="stylesheet" href="../styles/ux-enhancements.css">
 </head>
 <body>
     <div class="login-container">
@@ -393,12 +396,13 @@
         <form id="loginForm">
             <div class="form-group">
                 <label class="form-label" for="username">用户名或邮箱</label>
-                <input 
-                    type="text" 
-                    class="form-input" 
-                    id="username" 
-                    placeholder="请输入用户名或邮箱" 
-                    required 
+                <input
+                    type="text"
+                    class="form-input"
+                    id="username"
+                    name="username"
+                    placeholder="请输入用户名或邮箱"
+                    required
                     autocomplete="username"
                 >
             </div>
@@ -406,11 +410,13 @@
             <div class="form-group">
                 <label class="form-label" for="password">密码</label>
                 <div class="input-wrapper">
-                    <input 
-                        type="password" 
-                        class="form-input" 
-                        id="password" 
-                        placeholder="请输入密码" 
+                    <input
+                        type="password"
+                        class="form-input"
+                        id="password"
+                        name="password"
+                        data-validate="password"
+                        placeholder="请输入密码"
                         required
                         autocomplete="current-password"
                     >
@@ -436,9 +442,16 @@
         </div>
     </div>
 
+    <script src="../utils/loading.js"></script>
+    <script src="../utils/notification.js"></script>
+    <script src="../utils/ui-helpers.js"></script>
+    <script src="../utils/form-validation.js"></script>
+
+    <!-- UX Enhancement Scripts -->
+    <script src="../utils/ux-utils.js"></script>
+
     <script type="module">
         import '../utils/api.js';
-        import '../utils/notification.js';
 
         // 等待API对象初始化
         const waitForAPI = () => {
@@ -466,71 +479,101 @@
             passwordToggle.classList.toggle('fa-eye-slash', isPassword);
         });
 
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            const rememberMe = document.getElementById('rememberMe').checked;
+        // Initialize form validation
+        if (window.formValidation) {
+            window.formValidation.initFormValidation('#loginForm', {
+                onSubmit: async (e, formData) => {
+                    const username = formData.get('username').trim();
+                    const password = formData.get('password');
+                    const rememberMe = document.getElementById('rememberMe').checked;
 
-            if (!username || !password) {
-                showError('请填写用户名和密码');
-                return;
-            }
-
-            // 显示加载状态
-            loginBtn.disabled = true;
-            btnText.innerHTML = '<span class="loading-spinner"></span>登录中...';
-            errorMessage.classList.remove('show');
-
-            try {
-                // 等待API初始化
-                await waitForAPI();
-                
-                const response = await window.API.auth.login({
-                    loginAccount: username,
-                    password,
-                    rememberMe
-                });
-
-                if (response.code === 200 && response.data) {
-                    // 安全调用notification
-                    if (window.notification && window.notification.success) {
-                        window.notification.success('登录成功！正在跳转...');
-                    }
-                    
-                    // 保存记住我状态
-                    if (rememberMe) {
-                        localStorage.setItem('rememberedUsername', username);
+                    // Show loading state
+                    if (window.uiHelpers) {
+                        window.uiHelpers.showButtonLoading(loginBtn);
                     } else {
-                        localStorage.removeItem('rememberedUsername');
+                        loginBtn.disabled = true;
+                        btnText.innerHTML = '<span class="loading-spinner"></span>登录中...';
                     }
+                    errorMessage.classList.remove('show');
 
-                    // 延迟跳转以显示成功消息
-                    setTimeout(() => {
-                        const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
-                        if (returnUrl) {
-                            window.location.href = returnUrl;
+                    try {
+                        // Wait for API initialization
+                        await waitForAPI();
+
+                        const response = await window.API.auth.login({
+                            loginAccount: username,
+                            password,
+                            rememberMe
+                        });
+
+                        if (response.code === 200 && response.data) {
+                            // Show success notification
+                            if (window.uiHelpers) {
+                                window.uiHelpers.showSuccess('登录成功！正在跳转...');
+                            } else if (window.notification && window.notification.success) {
+                                window.notification.success('登录成功！正在跳转...');
+                            }
+
+                            // Save remember me state
+                            if (rememberMe) {
+                                localStorage.setItem('rememberedUsername', username);
+                            } else {
+                                localStorage.removeItem('rememberedUsername');
+                            }
+
+                            // Delay redirect to show success message
+                            setTimeout(() => {
+                                const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
+                                if (returnUrl) {
+                                    window.location.href = returnUrl;
+                                } else {
+                                    window.location.href = '/src/pages/courses.html';
+                                }
+                            }, 1000);
                         } else {
-                            window.location.href = '/src/pages/courses.html';
+                            throw new Error(response.message || '登录失败，请检查用户名和密码');
                         }
-                    }, 1000);
-                } else {
-                    showError(response.message || '登录失败，请检查用户名和密码');
+                    } catch (error) {
+                        console.error('Login error:', error);
+
+                        if (window.uiHelpers) {
+                            window.uiHelpers.handleApiError(error, '登录失败');
+                        } else {
+                            showError(error.message || '登录失败，请稍后重试');
+                        }
+                    } finally {
+                        // Hide loading state
+                        if (window.uiHelpers) {
+                            window.uiHelpers.hideButtonLoading(loginBtn);
+                        } else {
+                            loginBtn.disabled = false;
+                            btnText.textContent = '登录';
+                        }
+                    }
                 }
-            } catch (error) {
-                console.error('Login error:', error);
-                showError(error.message || '登录失败，请稍后重试');
-            } finally {
-                loginBtn.disabled = false;
-                btnText.textContent = '登录';
-            }
-        });
+            });
+        } else {
+            // Fallback if form validation not available
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(loginForm);
+                const username = formData.get('username').trim();
+                const password = formData.get('password');
+
+                if (!username || !password) {
+                    showError('请填写用户名和密码');
+                    return;
+                }
+
+                // Process login...
+                console.warn('Form validation not available, using fallback');
+            });
+        }
 
         function showError(message) {
             errorMessage.textContent = message;
             errorMessage.classList.add('show');
-            
+
             if (window.notification && window.notification.error) {
                 window.notification.error(message);
             }

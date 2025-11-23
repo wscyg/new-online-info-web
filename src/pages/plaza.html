@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习广场 - AI学习平台</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(to bottom right, #0f172a, #1e293b);
+            min-height: 100vh;
+            color: var(--white);
+            overflow-x: hidden;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+        }
+
+        .nav-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--white);
+        }
+
+        /* 主容器 */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* 页面头部 */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #60a5fa 0%, #c084fc 50%, #fbbf24 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+
+        /* 在线用户网格 */
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .user-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .user-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 0.75rem;
+            position: relative;
+        }
+
+        .status-indicator {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid var(--dark);
+        }
+
+        .status-learning { background: var(--success); animation: pulse 2s infinite; }
+        .status-chatting { background: var(--primary); animation: pulse 2s infinite; }
+        .status-idle { background: var(--gray); }
+        .status-pk { background: var(--danger); animation: pulse 2s infinite; }
+        .status-team { background: var(--warning); animation: pulse 2s infinite; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .user-level {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-emoji {
+            font-size: 1.2rem;
+        }
+
+        .user-streak {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 0.75rem;
+        }
+
+        /* 聊天抽屉 */
+        .chat-drawer {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            transition: right 0.3s ease;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-drawer.open {
+            right: 0;
+        }
+
+        .chat-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .close-btn:hover {
+            opacity: 1;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .chat-message {
+            margin-bottom: 1rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-user {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .message-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .message-username {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .message-level {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .message-content {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.75rem;
+            border-radius: 12px;
+            margin-left: 36px;
+            font-size: 0.9rem;
+        }
+
+        .message-time {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.7rem;
+            margin-left: 36px;
+            margin-top: 0.25rem;
+        }
+
+        .chat-input-container {
+            padding: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 0.75rem;
+            color: var(--white);
+            font-size: 0.9rem;
+            resize: none;
+            outline: none;
+        }
+
+        .chat-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .chat-input-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+
+        .char-count {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.75rem;
+        }
+
+        .send-btn {
+            background: var(--primary);
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1.5rem;
+            color: var(--white);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .send-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 聊天按钮 */
+        .chat-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: var(--white);
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .chat-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(99, 102, 241, 0.6);
+        }
+
+        .chat-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: var(--white);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        /* 用户详情弹窗 */
+        .user-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+
+        .user-modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
+        }
+
+        .modal-username {
+            font-size: 1.75rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .modal-stat {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .modal-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .modal-stat-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-greeting {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+        }
+
+        .btn-greeting:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-close {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+        }
+
+        .btn-close:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* 加载状态 */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .users-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 1rem;
+            }
+
+            .chat-drawer {
+                width: 100%;
+                right: -100%;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .header-stats {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">AI学习平台</div>
+            <ul class="nav-menu">
+                <li><a href="dashboard.html" class="nav-link">仪表盘</a></li>
+                <li><a href="plaza.html" class="nav-link active">学习广场</a></li>
+                <li><a href="leaderboard.html" class="nav-link">排行榜</a></li>
+                <li><a href="achievements.html" class="nav-link">成就</a></li>
+                <li><a href="profile.html" class="nav-link">个人中心</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- 页面头部 -->
+        <div class="page-header">
+            <h1 class="page-title">📚 学习广场</h1>
+            <div class="header-stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="onlineCount">0</div>
+                    <div class="stat-label">在线用户</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="messageCount">0</div>
+                    <div class="stat-label">今日消息</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 在线用户网格 -->
+        <div class="users-grid" id="usersGrid">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <p>加载在线用户...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 聊天抽屉 -->
+    <div class="chat-drawer" id="chatDrawer">
+        <div class="chat-header">
+            <h3 class="chat-title">💬 广场聊天</h3>
+            <button class="close-btn" onclick="toggleChat()">×</button>
+        </div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input-container">
+            <textarea
+                class="chat-input"
+                id="chatInput"
+                placeholder="说点什么吧... (最多50字)"
+                maxlength="50"
+                rows="2"
+            ></textarea>
+            <div class="chat-input-footer">
+                <span class="char-count"><span id="charCount">0</span>/50</span>
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()">发送</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 聊天切换按钮 -->
+    <button class="chat-toggle" onclick="toggleChat()">
+        💬
+        <span class="chat-badge" id="chatBadge" style="display: none;">0</span>
+    </button>
+
+    <!-- 用户详情弹窗 -->
+    <div class="user-modal" id="userModal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-avatar" id="modalAvatar">U</div>
+            <h2 class="modal-username" id="modalUsername">用户名</h2>
+            <div style="text-align: center; color: rgba(255, 255, 255, 0.6); margin-bottom: 1rem;">
+                <span id="modalLevel">Lv.1</span> ·
+                <span id="modalStatus">🟢 在线</span>
+            </div>
+            <div class="modal-stats">
+                <div class="modal-stat">
+                    <div class="modal-stat-value" id="modalPoints">0</div>
+                    <div class="modal-stat-label">积分</div>
+                </div>
+                <div class="modal-stat">
+                    <div class="modal-stat-value" id="modalStreak">0</div>
+                    <div class="modal-stat-label">连续学习</div>
+                </div>
+                <div class="modal-stat">
+                    <div class="modal-stat-value" id="modalPK">0</div>
+                    <div class="modal-stat-label">PK胜率</div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn btn-greeting" onclick="sendGreeting()">👋 打招呼 (+2积分)</button>
+                <button class="modal-btn btn-close" onclick="closeModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../utils/websocket-client.js"></script>
+    <script>
+        // 全局变量
+        let wsClient = null;
+        let currentUser = null;
+        let selectedUser = null;
+        let unreadCount = 0;
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePlaza();
+        });
+
+        // 初始化广场
+        function initializePlaza() {
+            // 检查用户登录
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+            if (!token || !user.id) {
+                alert('请先登录');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            currentUser = user;
+
+            // 加载初始数据
+            loadOnlineUsers();
+            loadRecentMessages();
+
+            // 连接WebSocket
+            connectWebSocket();
+
+            // 绑定事件
+            bindEvents();
+        }
+
+        // 连接WebSocket
+        function connectWebSocket() {
+            const wsUrl = window.location.protocol === 'https:'
+                ? 'wss://' + window.location.host + '/api/ws/plaza'
+                : 'ws://' + window.location.host.replace(':5173', ':8070') + '/api/ws/plaza';
+
+            wsClient = new WebSocketClient(wsUrl, { debug: true });
+
+            // 连接打开
+            wsClient.on('open', () => {
+                console.log('广场WebSocket连接成功');
+            });
+
+            // 接收在线用户列表
+            wsClient.on('online_users', (data) => {
+                renderOnlineUsers(data.users);
+                document.getElementById('onlineCount').textContent = data.total || data.users.length;
+            });
+
+            // 新用户上线
+            wsClient.on('user_joined', (data) => {
+                console.log('新用户上线:', data.user);
+                // 重新加载在线用户列表
+                loadOnlineUsers();
+            });
+
+            // 用户离线
+            wsClient.on('user_left', (data) => {
+                console.log('用户离线:', data.userId);
+                document.getElementById('onlineCount').textContent = data.onlineCount;
+                // 从网格中移除用户
+                const userCard = document.querySelector(`[data-user-id="${data.userId}"]`);
+                if (userCard) {
+                    userCard.remove();
+                }
+            });
+
+            // 接收聊天消息
+            wsClient.on('chat_message', (data) => {
+                addChatMessage(data);
+
+                // 如果聊天抽屉未打开，增加未读数
+                if (!document.getElementById('chatDrawer').classList.contains('open')) {
+                    unreadCount++;
+                    updateChatBadge();
+                }
+            });
+
+            // 用户状态变化
+            wsClient.on('user_status_changed', (data) => {
+                updateUserStatus(data.userId, data.status, data.emoji);
+            });
+
+            // 收到打招呼
+            wsClient.on('greeting_received', (data) => {
+                showNotification(`👋 ${data.fromUsername} 向你打招呼了！(+${data.points}积分)`, 'success');
+            });
+
+            // 打招呼成功
+            wsClient.on('greeting_sent', (data) => {
+                showNotification(`打招呼成功！(+${data.points}积分)`, 'success');
+                closeModal();
+            });
+
+            // 错误消息
+            wsClient.on('error', (data) => {
+                showNotification(data.error, 'error');
+            });
+
+            wsClient.connect();
+        }
+
+        // 加载在线用户
+        async function loadOnlineUsers() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/plaza/online-users?limit=100', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.code === 200 && data.data) {
+                        renderOnlineUsers(data.data.users || data.data);
+                        document.getElementById('onlineCount').textContent = data.data.total || data.data.users?.length || 0;
+                    }
+                }
+            } catch (error) {
+                console.error('加载在线用户失败:', error);
+            }
+        }
+
+        // 渲染在线用户
+        function renderOnlineUsers(users) {
+            const grid = document.getElementById('usersGrid');
+
+            if (!users || users.length === 0) {
+                grid.innerHTML = '<div class="loading">暂无在线用户</div>';
+                return;
+            }
+
+            let html = '';
+            users.forEach(user => {
+                const statusClass = `status-${user.status || 'idle'}`;
+                const firstLetter = (user.username || '?')[0].toUpperCase();
+
+                html += `
+                    <div class="user-card" data-user-id="${user.userId}" onclick="showUserDetails(${user.userId})">
+                        ${user.streak ? `<div class="user-streak">🔥${user.streak}</div>` : ''}
+                        <div class="user-avatar">
+                            ${user.avatar ?
+                                `<img src="${user.avatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">` :
+                                firstLetter
+                            }
+                            <div class="status-indicator ${statusClass}"></div>
+                        </div>
+                        <div class="user-name">${user.username || '未知用户'}</div>
+                        <div class="user-level">Lv.${user.level || 1}</div>
+                        <div class="status-emoji">${user.emoji || '📚'}</div>
+                    </div>
+                `;
+            });
+
+            grid.innerHTML = html;
+        }
+
+        // 加载最近消息
+        async function loadRecentMessages() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/plaza/chat/messages?limit=50', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.code === 200 && Array.isArray(data.data)) {
+                        data.data.reverse().forEach(msg => {
+                            addChatMessage(msg, false);
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('加载聊天消息失败:', error);
+            }
+        }
+
+        // 添加聊天消息
+        function addChatMessage(data, animate = true) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = animate ? 'chat-message' : 'chat-message';
+
+            const time = new Date(data.timestamp || data.createdAt || Date.now());
+            const timeStr = time.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+
+            messageDiv.innerHTML = `
+                <div class="message-user">
+                    <div class="message-avatar">${(data.username || '?')[0].toUpperCase()}</div>
+                    <span class="message-username">${data.username || '未知用户'}</span>
+                    <span class="message-level">Lv.${data.level || 1}</span>
+                </div>
+                <div class="message-content">${data.content}</div>
+                <div class="message-time">${timeStr}</div>
+            `;
+
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // 发送消息
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const content = input.value.trim();
+
+            if (!content) return;
+
+            if (content.length > 50) {
+                showNotification('消息长度不能超过50字', 'error');
+                return;
+            }
+
+            // 通过WebSocket发送
+            wsClient.send('chat', { content });
+
+            // 清空输入框
+            input.value = '';
+            updateCharCount();
+        }
+
+        // 发送打招呼
+        function sendGreeting() {
+            if (!selectedUser) return;
+
+            wsClient.send('greeting', {
+                targetUserId: selectedUser.userId
+            });
+        }
+
+        // 显示用户详情
+        async function showUserDetails(userId) {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`/api/plaza/user/${userId}/preview`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.code === 200 && data.data) {
+                        selectedUser = data.data;
+
+                        // 更新弹窗内容
+                        const firstLetter = (selectedUser.username || '?')[0].toUpperCase();
+                        document.getElementById('modalAvatar').textContent = firstLetter;
+                        document.getElementById('modalUsername').textContent = selectedUser.username || '未知用户';
+                        document.getElementById('modalLevel').textContent = `Lv.${selectedUser.level || 1}`;
+                        document.getElementById('modalStatus').textContent = getStatusText(selectedUser.status);
+                        document.getElementById('modalPoints').textContent = selectedUser.pointsBalance || 0;
+                        document.getElementById('modalStreak').textContent = selectedUser.currentStreak || 0;
+                        document.getElementById('modalPK').textContent = (selectedUser.pkWinRate || 0) + '%';
+
+                        // 显示弹窗
+                        document.getElementById('userModal').classList.add('show');
+                    }
+                }
+            } catch (error) {
+                console.error('加载用户详情失败:', error);
+            }
+        }
+
+        // 获取状态文本
+        function getStatusText(status) {
+            const statusMap = {
+                'learning': '🟢 学习中',
+                'chatting': '🔵 聊天中',
+                'idle': '⚪ 在线',
+                'pk': '🔴 PK中',
+                'team': '🟡 组队中'
+            };
+            return statusMap[status] || '⚪ 在线';
+        }
+
+        // 切换聊天抽屉
+        function toggleChat() {
+            const drawer = document.getElementById('chatDrawer');
+            drawer.classList.toggle('open');
+
+            if (drawer.classList.contains('open')) {
+                unreadCount = 0;
+                updateChatBadge();
+            }
+        }
+
+        // 更新未读徽章
+        function updateChatBadge() {
+            const badge = document.getElementById('chatBadge');
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        // 关闭弹窗
+        function closeModal(event) {
+            if (!event || event.target.id === 'userModal') {
+                document.getElementById('userModal').classList.remove('show');
+                selectedUser = null;
+            }
+        }
+
+        // 更新用户状态
+        function updateUserStatus(userId, status, emoji) {
+            const userCard = document.querySelector(`[data-user-id="${userId}"]`);
+            if (userCard) {
+                const indicator = userCard.querySelector('.status-indicator');
+                if (indicator) {
+                    indicator.className = `status-indicator status-${status}`;
+                }
+                const emojiDiv = userCard.querySelector('.status-emoji');
+                if (emojiDiv) {
+                    emojiDiv.textContent = emoji || '📚';
+                }
+            }
+        }
+
+        // 绑定事件
+        function bindEvents() {
+            const chatInput = document.getElementById('chatInput');
+
+            // 字符计数
+            chatInput.addEventListener('input', updateCharCount);
+
+            // 回车发送
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+        }
+
+        // 更新字符计数
+        function updateCharCount() {
+            const input = document.getElementById('chatInput');
+            const count = input.value.length;
+            document.getElementById('charCount').textContent = count;
+        }
+
+        // 显示通知
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#6366f1'};
+                color: white;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // 页面卸载时断开连接
+        window.addEventListener('beforeunload', () => {
+            if (wsClient) {
+                wsClient.disconnect();
+            }
+        });
+    </script>
+</body>
+</html>

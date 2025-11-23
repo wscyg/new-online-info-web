@@ -597,99 +597,9 @@
     </div>
 
     <script>
-        // 模拟数据
-        const mockNotes = [
-            {
-                id: 1,
-                title: "深度学习入门：从零开始理解神经网络",
-                description: "本文详细介绍了神经网络的基本概念，包括感知机、多层感知机、反向传播算法等核心知识点...",
-                cover: "",
-                author: "AI小达人",
-                avatar: "A",
-                likes: 1234,
-                category: "dl",
-                type: "article"
-            },
-            {
-                id: 2,
-                title: "ChatGPT原理解析：Transformer架构深度剖析",
-                description: "深入理解Transformer模型的自注意力机制、位置编码、多头注意力等关键技术...",
-                cover: "",
-                author: "技术极客",
-                avatar: "T",
-                likes: 2891,
-                category: "nlp",
-                type: "video"
-            },
-            {
-                id: 3,
-                title: "Python机器学习实战项目：房价预测系统",
-                description: "使用scikit-learn构建完整的房价预测系统，包括数据预处理、特征工程、模型训练与优化...",
-                cover: "",
-                author: "代码侠",
-                avatar: "C",
-                likes: 567,
-                category: "ml",
-                type: "project"
-            },
-            {
-                id: 4,
-                title: "计算机视觉入门：OpenCV图像处理基础",
-                description: "从零开始学习OpenCV，掌握图像读取、显示、基础变换等操作...",
-                cover: "",
-                author: "视觉达人",
-                avatar: "V",
-                likes: 892,
-                category: "cv",
-                type: "tutorial"
-            },
-            {
-                id: 5,
-                title: "AI面试必备：常见算法题解析",
-                description: "整理了大厂AI岗位面试中的高频算法题，包括动态规划、贪心算法、图算法等...",
-                cover: "",
-                author: "面试官",
-                avatar: "M",
-                likes: 3456,
-                category: "interview",
-                type: "article"
-            },
-            {
-                id: 6,
-                title: "YOLO目标检测实战：训练自己的数据集",
-                description: "手把手教你使用YOLOv5训练自定义数据集，实现目标检测功能...",
-                cover: "",
-                author: "实战派",
-                avatar: "Y",
-                likes: 1789,
-                category: "cv",
-                type: "project"
-            },
-            {
-                id: 7,
-                title: "强化学习入门：Q-Learning算法详解",
-                description: "通过简单的例子理解Q-Learning算法的原理和实现过程...",
-                cover: "",
-                author: "RL爱好者",
-                avatar: "R",
-                likes: 654,
-                category: "ai",
-                type: "article"
-            },
-            {
-                id: 8,
-                title: "大模型微调技术：LoRA原理与实践",
-                description: "详解LoRA技术原理，教你如何高效微调大语言模型...",
-                cover: "",
-                author: "模型专家",
-                avatar: "L",
-                likes: 2234,
-                category: "dl",
-                type: "tutorial"
-            }
-        ];
-
+        // 全局变量
         let currentCategory = 'all';
+        let currentSort = 'hot';
         let isLoading = false;
         let page = 1;
 
@@ -701,46 +611,62 @@
 
         // 从API加载笔记
         async function loadNotesFromAPI() {
+            const container = document.getElementById('notesContainer');
+
+            // 显示加载状态
+            if (page === 1) {
+                container.innerHTML = '<div class="loading-spinner" style="grid-column: 1 / -1;"><div class="spinner"></div><p>加载中...</p></div>';
+            }
+
             try {
                 const token = localStorage.getItem('token');
                 const headers = {};
                 if (token) {
                     headers['Authorization'] = `Bearer ${token}`;
                 }
-                
-                // 获取排序参数
-                const sort = document.querySelector('.sort-select')?.value || 'hot';
-                
-                const response = await fetch(`/api/community/notes?category=${currentCategory}&sort=${sort}&page=${page}&size=20`, {
+
+                const response = await fetch(`/api/community/notes?category=${currentCategory}&sort=${currentSort}&page=${page}&size=20`, {
                     headers: headers
                 });
+
+                if (!response.ok) {
+                    throw new Error('API请求失败');
+                }
+
                 const data = await response.json();
-                
-                if (data.success && data.data) {
-                    const container = document.getElementById('notesContainer');
-                    
+
+                if (data.code === 200 && data.data) {
                     // 如果是第一页，清空容器
                     if (page === 1) {
                         container.innerHTML = '';
                     }
-                    
+
                     // 渲染笔记
-                    data.data.items.forEach(note => {
-                        container.innerHTML += createNoteCardFromAPI(note);
-                    });
-                    
+                    if (data.data.items && data.data.items.length > 0) {
+                        data.data.items.forEach(note => {
+                            container.innerHTML += createNoteCardFromAPI(note);
+                        });
+                    } else if (page === 1) {
+                        container.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;"><div class="empty-icon">📝</div><div class="empty-title">暂无笔记</div><div class="empty-desc">还没有人发布笔记，快来成为第一个吧！</div></div>';
+                    }
+
                     // 更新分页状态
                     if (!data.data.hasNext) {
                         page = -1; // 没有更多数据
                     }
                 } else {
-                    // API失败，使用模拟数据
-                    loadNotes();
+                    if (page === 1) {
+                        container.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;"><div class="empty-icon">⚠️</div><div class="empty-title">加载失败</div><div class="empty-desc">无法加载笔记，请稍后重试</div></div>';
+                    }
                 }
             } catch (error) {
                 console.error('加载笔记失败:', error);
-                // 使用模拟数据
-                loadNotes();
+                if (page === 1) {
+                    container.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;"><div class="empty-icon">⚠️</div><div class="empty-title">网络错误</div><div class="empty-desc">请检查网络连接后重试</div></div>';
+                }
+            } finally {
+                isLoading = false;
+                document.getElementById('loadingSpinner').style.display = 'none';
             }
         }
 
@@ -960,6 +886,7 @@
 
         // 处理排序变化
         function handleSortChange() {
+            currentSort = document.querySelector('.sort-select').value;
             page = 1;
             loadNotesFromAPI();
         }

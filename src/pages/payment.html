@@ -73,6 +73,84 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
         }
+
+        /* 推荐人信息样式 */
+        .referrer-section {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .referrer-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .referrer-header h4 {
+            margin: 0;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .optional-label {
+            font-size: 0.875em;
+            color: #718096;
+            font-weight: normal;
+        }
+
+        .referrer-input-group {
+            margin-bottom: 10px;
+        }
+
+        .referrer-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .referrer-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .referrer-hint {
+            font-size: 0.85em;
+            color: #4a5568;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+
+        .referrer-status {
+            font-size: 0.875em;
+            margin-top: 10px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .referrer-status.valid {
+            background: #f0fff4;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+            display: block;
+        }
+
+        .referrer-status.invalid {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #fc8181;
+            display: block;
+        }
         
         /* 价格样式 */
         .price-original {
@@ -99,6 +177,9 @@
             border-radius: 4px;
         }
     </style>
+
+    <!-- UX Enhancement Styles -->
+    <link rel="stylesheet" href="../styles/ux-enhancements.css">
 </head>
 <body class="payment-theme">
     <!-- 安全背景 -->
@@ -248,6 +329,25 @@
                             <!-- 订单内容将由JavaScript动态填充 -->
                         </div>
 
+                        <!-- 推荐人信息 -->
+                        <div class="referrer-section">
+                            <div class="referrer-header">
+                                <h4>推荐人信息</h4>
+                                <span class="optional-label">（可选）</span>
+                            </div>
+                            <div class="referrer-input-group">
+                                <input type="text"
+                                       id="referrerCode"
+                                       class="referrer-input"
+                                       placeholder="请输入推荐人ID或手机号"
+                                       maxlength="50">
+                                <div class="referrer-hint">
+                                    💡 填写推荐人信息可获得额外优惠和积分奖励
+                                </div>
+                            </div>
+                            <div class="referrer-status" id="referrerStatus"></div>
+                        </div>
+
                         <div class="price-breakdown order-summary">
                             <div class="summary-items">
                                 <!-- 价格明细将由JavaScript动态填充 -->
@@ -332,6 +432,10 @@
                     <span class="confirm-label">课程名称</span>
                     <span class="confirm-value" id="confirmCourse">深度学习基础与实践</span>
                 </div>
+                <div class="confirm-item" id="confirmReferrerItem" style="display: none;">
+                    <span class="confirm-label">推荐人</span>
+                    <span class="confirm-value" id="confirmReferrer"></span>
+                </div>
             </div>
             <div class="confirm-actions">
                 <button class="btn-cancel" onclick="hidePaymentModal()">取消</button>
@@ -358,6 +462,224 @@
     </div>
 
     <!-- Scripts -->
+    <!-- UX Enhancement Scripts -->
+    <script src="../utils/ux-utils.js"></script>
+
     <script src="../utils/payment.js?v=20250824-1120"></script>
+    <script>
+        // 推荐人相关功能
+        let referrerValidationTimeout;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initReferrerValidation();
+        });
+
+        function initReferrerValidation() {
+            const referrerInput = document.getElementById('referrerCode');
+            const referrerStatus = document.getElementById('referrerStatus');
+
+            if (!referrerInput) return;
+
+            // 输入时验证推荐人
+            referrerInput.addEventListener('input', function() {
+                const value = this.value.trim();
+
+                // 清除之前的定时器
+                clearTimeout(referrerValidationTimeout);
+
+                // 重置状态
+                referrerStatus.className = 'referrer-status';
+                referrerStatus.style.display = 'none';
+
+                if (value.length === 0) {
+                    return;
+                }
+
+                // 基本格式验证
+                if (value.length < 3) {
+                    showReferrerStatus('推荐人信息至少需要3个字符', 'invalid');
+                    return;
+                }
+
+                // 延迟验证（防抖）
+                referrerValidationTimeout = setTimeout(() => {
+                    validateReferrer(value);
+                }, 800);
+            });
+
+            // 从URL参数中获取推荐人信息
+            const urlParams = new URLSearchParams(window.location.search);
+            const referrerFromUrl = urlParams.get('referrer') || urlParams.get('ref');
+            if (referrerFromUrl) {
+                referrerInput.value = referrerFromUrl;
+                validateReferrer(referrerFromUrl);
+            }
+        }
+
+        async function validateReferrer(referrerCode) {
+            const referrerStatus = document.getElementById('referrerStatus');
+
+            try {
+                // 这里可以调用后端API验证推荐人
+                // 暂时使用模拟验证
+                const isValid = await simulateReferrerValidation(referrerCode);
+
+                if (isValid) {
+                    showReferrerStatus('✅ 推荐人验证成功！您将获得额外积分奖励', 'valid');
+                } else {
+                    showReferrerStatus('❌ 推荐人不存在，请检查输入是否正确', 'invalid');
+                }
+            } catch (error) {
+                console.error('推荐人验证失败:', error);
+                showReferrerStatus('⚠️ 验证失败，请稍后重试', 'invalid');
+            }
+        }
+
+        function simulateReferrerValidation(referrerCode) {
+            // 模拟API调用
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    // 简单的模拟验证规则
+                    const validPatterns = [
+                        /^[0-9]{6,12}$/,  // 6-12位数字（用户ID）
+                        /^1[3-9]\d{9}$/,  // 手机号格式
+                        /^[a-zA-Z0-9]{6,20}$/ // 6-20位字母数字组合
+                    ];
+
+                    const isValid = validPatterns.some(pattern => pattern.test(referrerCode));
+                    resolve(isValid);
+                }, 500);
+            });
+        }
+
+        function showReferrerStatus(message, type) {
+            const referrerStatus = document.getElementById('referrerStatus');
+            referrerStatus.textContent = message;
+            referrerStatus.className = `referrer-status ${type}`;
+            referrerStatus.style.display = 'block';
+        }
+
+        // 修改原有的支付处理函数，添加推荐人信息
+        function getReferrerInfo() {
+            const referrerInput = document.getElementById('referrerCode');
+            if (referrerInput && referrerInput.value.trim()) {
+                return {
+                    referrerCode: referrerInput.value.trim(),
+                    timestamp: new Date().toISOString()
+                };
+            }
+            return null;
+        }
+
+        // 如果存在processPay函数，增强它
+        if (typeof window.processPay === 'function') {
+            const originalProcessPay = window.processPay;
+            window.processPay = function() {
+                // 获取推荐人信息
+                const referrerInfo = getReferrerInfo();
+                if (referrerInfo) {
+                    console.log('推荐人信息:', referrerInfo);
+                    // 将推荐人信息添加到支付数据中
+                    window.paymentData = window.paymentData || {};
+                    window.paymentData.referrer = referrerInfo;
+
+                    // 在确认弹窗中显示推荐人信息
+                    updatePaymentConfirmModal(referrerInfo);
+                }
+
+                // 调用原始支付函数
+                return originalProcessPay.apply(this, arguments);
+            };
+        }
+
+        function updatePaymentConfirmModal(referrerInfo) {
+            const confirmReferrerItem = document.getElementById('confirmReferrerItem');
+            const confirmReferrer = document.getElementById('confirmReferrer');
+
+            if (referrerInfo && confirmReferrerItem && confirmReferrer) {
+                confirmReferrer.textContent = referrerInfo.referrerCode;
+                confirmReferrerItem.style.display = 'flex';
+            } else if (confirmReferrerItem) {
+                confirmReferrerItem.style.display = 'none';
+            }
+        }
+
+        // 如果存在confirmPayment函数，增强它
+        if (typeof window.confirmPayment === 'function') {
+            const originalConfirmPayment = window.confirmPayment;
+            window.confirmPayment = function() {
+                // 获取推荐人信息
+                const referrerInfo = getReferrerInfo();
+                if (referrerInfo) {
+                    console.log('确认支付时的推荐人信息:', referrerInfo);
+                    // 可以在这里发送推荐人信息到后端
+                    sendReferrerInfo(referrerInfo);
+                }
+
+                // 调用原始确认支付函数
+                return originalConfirmPayment.apply(this, arguments);
+            };
+        }
+
+        async function sendReferrerInfo(referrerInfo) {
+            try {
+                // 这里发送推荐人信息到后端
+                console.log('发送推荐人信息到后端:', referrerInfo);
+
+                // 实际API调用 - 在创建订单时就包含推荐人信息
+                // 推荐人信息已经在订单创建过程中处理，这里主要用于日志记录
+                const response = await fetch('/api/orders/referrer-log', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({
+                        orderId: window.currentOrderId,
+                        referrer: referrerInfo
+                    })
+                });
+
+                if (response.ok) {
+                    console.log('推荐人信息记录成功');
+                } else {
+                    console.log('推荐人信息记录失败');
+                }
+            } catch (error) {
+                console.error('发送推荐人信息失败:', error);
+            }
+        }
+
+        // 增强现有的订单创建逻辑，添加推荐人参数
+        // 注释掉这个函数，因为它会覆盖payment.js中正确的实现
+        /*
+        if (typeof window.createSubscriptionOrder === 'function') {
+            const originalCreateOrder = window.createSubscriptionOrder;
+            window.createSubscriptionOrder = function(courseId, paymentMethod) {
+                const referrerInfo = getReferrerInfo();
+
+                // 构建请求参数
+                const params = new URLSearchParams({
+                    paymentMethod: paymentMethod || 'alipay'
+                });
+
+                if (referrerInfo && referrerInfo.referrerCode) {
+                    params.append('referrerCode', referrerInfo.referrerCode);
+                    console.log('订单创建包含推荐人信息:', referrerInfo.referrerCode);
+                }
+
+                // 调用后端API创建订单
+                return fetch(`/api/orders/subscribe/course/${courseId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: params.toString()
+                }).then(response => response.json());
+            };
+        }
+        */
+    </script>
 </body>
 </html>

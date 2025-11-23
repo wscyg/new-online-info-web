@@ -1316,8 +1316,14 @@
             }
         }
     </style>
+
+    <!-- UX Enhancement Styles -->
+    <link rel="stylesheet" href="../styles/ux-enhancements.css">
 </head>
 <body>
+    <!-- 全局登录状态 -->
+    <div id="auth-header"></div>
+
     <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="nav-container">
@@ -1552,6 +1558,9 @@
     </div>
 
     <!-- Scripts -->
+    <!-- UX Enhancement Scripts -->
+    <script src="../utils/ux-utils.js"></script>
+
     <script src="../components/auth-init.js"></script>
     <script src="../components/user-auth.js"></script>
     <script src="../utils/realtime-sync.js"></script>
@@ -2136,7 +2145,7 @@
             if (!token) {
                 showNotification('请先登录后再提问', 'warning');
                 setTimeout(() => {
-                    window.location.href = 'login.html?returnUrl=qa.html';
+                    window.location.href = '/src/pages/login.html?returnUrl=qa.html';
                 }, 1500);
                 return;
             }
@@ -2606,6 +2615,17 @@
         window.logout = logout;
         window.removeImage = removeImage;
         window.triggerAnswerImageUpload = triggerAnswerImageUpload;
+    </script>
+
+    <!-- 全局登录状态组件 -->
+    <script src="../utils/auth-header.js"></script>
+    <script>
+        // 初始化登录状态组件
+        document.addEventListener('DOMContentLoaded', () => {
+            AuthHeader.init('auth-header', {
+                showLinks: false  // qa页面已有自己的导航
+            });
+        });
     </script>
 </body>
 </html>

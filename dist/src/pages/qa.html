@@ -1320,9 +1320,16 @@
             }
         }
     </style>
+
+    <!-- UX Enhancement Styles -->
+    
   <link rel="stylesheet" href="/assets/theme-b29253a3.css">
+  <link rel="stylesheet" href="/assets/ux-enhancements-2fb285cd.css">
 </head>
 <body>
+    <!-- 全局登录状态 -->
+    <div id="auth-header"></div>
+
     <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="nav-container">
@@ -1557,19 +1564,15 @@
     </div>
 
     <!-- Scripts -->
+    <!-- UX Enhancement Scripts -->
+    <script src="../utils/ux-utils.js"></script>
+
     <script src="../components/auth-init.js"></script>
     <script src="../components/user-auth.js"></script>
     <script src="../utils/realtime-sync.js"></script>
     <script>
         // Global variables
-        const API_BASE_URL = (function() {
-            const hostname = window.location.hostname;
-            console.log('[API] 当前hostname:', hostname);
-            // 使用相对路径，避免跨域问题
-            const apiUrl = '/api';
-            console.log('[API] 使用API地址:', apiUrl);
-            return apiUrl;
-        })();
+        const API_BASE_URL = '/api';
         let currentPage = 1;
         let currentFilters = {
             search: '',
@@ -2148,7 +2151,7 @@
             if (!token) {
                 showNotification('请先登录后再提问', 'warning');
                 setTimeout(() => {
-                    window.location.href = 'login.html?returnUrl=qa.html';
+                    window.location.href = '/src/pages/login.html?returnUrl=qa.html';
                 }, 1500);
                 return;
             }
@@ -2618,6 +2621,17 @@
         window.logout = logout;
         window.removeImage = removeImage;
         window.triggerAnswerImageUpload = triggerAnswerImageUpload;
+    </script>
+
+    <!-- 全局登录状态组件 -->
+    <script src="../utils/auth-header.js"></script>
+    <script>
+        // 初始化登录状态组件
+        document.addEventListener('DOMContentLoaded', () => {
+            AuthHeader.init('auth-header', {
+                showLinks: false  // qa页面已有自己的导航
+            });
+        });
     </script>
 </body>
 </html>

@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PK竞技场 - AI学习平台</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #6366f1;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --dark: #1e293b;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to bottom right, #0f172a, #1e293b);
+            min-height: 100vh;
+            color: var(--white);
+        }
+
+        .navbar {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active { color: var(--white); }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            text-align: center;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ef4444, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        /* PK对战区域 */
+        .battle-arena {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .battle-vs {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 3rem;
+            align-items: center;
+            width: 100%;
+        }
+
+        .player-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .player-card.active {
+            border-color: var(--primary);
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .player-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0 auto 1rem;
+        }
+
+        .player-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .player-stats {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--warning);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 0.25rem;
+        }
+
+        .vs-badge {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ef4444, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+
+        /* 创建对战表单 */
+        .create-battle {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-select, .form-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            color: var(--white);
+            font-size: 1rem;
+        }
+
+        .form-select option {
+            background: var(--dark);
+            color: var(--white);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: var(--white);
+        }
+
+        /* 对战列表 */
+        .battles-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .battle-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .battle-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .battle-info {
+            flex: 1;
+        }
+
+        .battle-code {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--warning);
+            margin-bottom: 0.5rem;
+        }
+
+        .battle-details {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+
+        .battle-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .status-pending { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .status-in-progress { background: rgba(99, 102, 241, 0.2); color: var(--primary); }
+        .status-completed { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+
+        /* 计时器 */
+        .battle-timer {
+            font-size: 3rem;
+            font-weight: 800;
+            text-align: center;
+            background: linear-gradient(135deg, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 2rem 0;
+        }
+
+        /* 进度条 */
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            height: 10px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            transition: width 0.3s ease;
+        }
+
+        /* 响应式 */
+        @media (max-width: 968px) {
+            .battle-vs {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .vs-badge {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 全局登录状态 -->
+    <div id="auth-header"></div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">AI学习平台</div>
+            <ul class="nav-menu">
+                <li><a href="dashboard.html" class="nav-link">仪表盘</a></li>
+                <li><a href="plaza.html" class="nav-link">学习广场</a></li>
+                <li><a href="pk-arena.html" class="nav-link active">PK竞技场</a></li>
+                <li><a href="leaderboard.html" class="nav-link">排行榜</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">⚔️ PK竞技场</h1>
+            <p style="color: rgba(255, 255, 255, 0.7);">挑战你的对手，赢取积分奖励！</p>
+        </div>
+
+        <!-- 对战区域 -->
+        <div class="battle-arena" id="battleArena">
+            <!-- 未开始状态：创建对战表单 -->
+            <div class="create-battle" id="createBattleForm" style="max-width: 600px; width: 100%;">
+                <h2 style="margin-bottom: 1.5rem;">发起PK挑战</h2>
+
+                <div class="form-group">
+                    <label class="form-label">选择对手</label>
+                    <select class="form-select" id="opponentSelect">
+                        <option value="">随机匹配</option>
+                        <!-- 动态加载在线用户 -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">选择课程</label>
+                    <select class="form-select" id="courseSelect">
+                        <option value="">请选择课程</option>
+                        <!-- 动态加载课程 -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">对战时长</label>
+                    <select class="form-select" id="durationSelect">
+                        <option value="30">30分钟</option>
+                        <option value="45">45分钟</option>
+                        <option value="60">60分钟</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">赌注积分（0-500）</label>
+                    <input type="number" class="form-input" id="betPointsInput" value="0" min="0" max="500">
+                    <p style="font-size: 0.75rem; color: rgba(255, 255, 255, 0.5); margin-top: 0.5rem;">
+                        ⚠️ 失败方将失去赌注积分
+                    </p>
+                </div>
+
+                <button class="btn btn-primary" onclick="createBattle()">
+                    🔥 发起挑战
+                </button>
+            </div>
+
+            <!-- 对战中状态 -->
+            <div class="battle-vs" id="battleInProgress" style="display: none;">
+                <!-- 玩家1 -->
+                <div class="player-card" id="player1Card">
+                    <div class="player-avatar" id="player1Avatar">P1</div>
+                    <div class="player-name" id="player1Name">玩家1</div>
+                    <div class="player-stats">
+                        <div class="stat-box">
+                            <div class="stat-value" id="player1Chapters">0</div>
+                            <div class="stat-label">章节</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="player1Time">00:00</div>
+                            <div class="stat-label">用时</div>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="player1Progress" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="vs-badge">VS</div>
+
+                <!-- 玩家2 -->
+                <div class="player-card" id="player2Card">
+                    <div class="player-avatar" id="player2Avatar">P2</div>
+                    <div class="player-name" id="player2Name">玩家2</div>
+                    <div class="player-stats">
+                        <div class="stat-box">
+                            <div class="stat-value" id="player2Chapters">0</div>
+                            <div class="stat-label">章节</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="player2Time">00:00</div>
+                            <div class="stat-label">用时</div>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="player2Progress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 计时器 -->
+            <div class="battle-timer" id="battleTimer" style="display: none;">45:00</div>
+        </div>
+
+        <!-- 进行中的对战列表 -->
+        <div style="margin-top: 2rem;">
+            <h2 style="margin-bottom: 1rem;">🔴 进行中的对战</h2>
+            <div class="battles-list" id="activeBattles">
+                <p style="text-align: center; color: rgba(255, 255, 255, 0.5); padding: 2rem;">
+                    暂无进行中的对战
+                </p>
+            </div>
+        </div>
+
+        <!-- 历史对战记录 -->
+        <div style="margin-top: 2rem;">
+            <h2 style="margin-bottom: 1rem;">📊 历史对战</h2>
+            <div class="battles-list" id="historyBattles">
+                <p style="text-align: center; color: rgba(255, 255, 255, 0.5); padding: 2rem;">
+                    暂无历史对战
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentBattle = null;
+        let timerInterval = null;
+
+        // 页面加载
+        document.addEventListener('DOMContentLoaded', () => {
+            loadOnlineUsers();
+            loadCourses();
+            loadActiveBattles();
+            loadHistoryBattles();
+        });
+
+        // 加载在线用户
+        async function loadOnlineUsers() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/plaza/online-users?limit=50', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const select = document.getElementById('opponentSelect');
+                    const users = data.data?.users || data.data || [];
+
+                    users.forEach(user => {
+                        const option = document.createElement('option');
+                        option.value = user.userId;
+                        option.textContent = `${user.username} (Lv.${user.level || 1})`;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('加载用户失败:', error);
+            }
+        }
+
+        // 加载课程
+        async function loadCourses() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/courses?page=1&size=20', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const select = document.getElementById('courseSelect');
+                    const courses = data.data?.items || data.data || [];
+
+                    courses.forEach(course => {
+                        const option = document.createElement('option');
+                        option.value = course.id;
+                        option.textContent = course.title;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('加载课程失败:', error);
+            }
+        }
+
+        // 创建对战
+        async function createBattle() {
+            const player2Id = document.getElementById('opponentSelect').value;
+            const courseId = document.getElementById('courseSelect').value;
+            const duration = document.getElementById('durationSelect').value;
+            const betPoints = document.getElementById('betPointsInput').value;
+
+            if (!courseId) {
+                alert('请选择课程');
+                return;
+            }
+
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/pk/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        player2Id: player2Id || null,
+                        courseId: parseInt(courseId),
+                        durationMinutes: parseInt(duration),
+                        betPoints: parseInt(betPoints)
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    currentBattle = data.data;
+                    showBattleInProgress(currentBattle);
+                    startBattleTimer(parseInt(duration) * 60);
+                } else {
+                    const error = await response.json();
+                    alert(error.message || '创建对战失败');
+                }
+            } catch (error) {
+                console.error('创建对战失败:', error);
+                alert('网络错误，请稍后重试');
+            }
+        }
+
+        // 显示对战进行中界面
+        function showBattleInProgress(battle) {
+            document.getElementById('createBattleForm').style.display = 'none';
+            document.getElementById('battleInProgress').style.display = 'grid';
+            document.getElementById('battleTimer').style.display = 'block';
+
+            // 更新玩家信息
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            document.getElementById('player1Name').textContent = user.username || '我';
+            document.getElementById('player2Name').textContent = battle.player2Name || '对手';
+        }
+
+        // 开始对战计时器
+        function startBattleTimer(seconds) {
+            let remaining = seconds;
+
+            timerInterval = setInterval(() => {
+                const minutes = Math.floor(remaining / 60);
+                const secs = remaining % 60;
+                document.getElementById('battleTimer').textContent =
+                    `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+                remaining--;
+
+                if (remaining < 0) {
+                    clearInterval(timerInterval);
+                    endBattle();
+                }
+            }, 1000);
+        }
+
+        // 结束对战
+        async function endBattle() {
+            if (!currentBattle) return;
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`/api/pk/${currentBattle.id}/settle`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showBattleResult(data.data);
+                }
+            } catch (error) {
+                console.error('结算对战失败:', error);
+            }
+        }
+
+        // 显示对战结果
+        function showBattleResult(result) {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const isWinner = result.winnerId === user.id;
+
+            alert(isWinner ? `🎉 恭喜获胜！奖励 ${result.pointsEarned} 积分` : `😔 很遗憾失败了`);
+
+            // 重置界面
+            document.getElementById('createBattleForm').style.display = 'block';
+            document.getElementById('battleInProgress').style.display = 'none';
+            document.getElementById('battleTimer').style.display = 'none';
+            currentBattle = null;
+
+            // 刷新列表
+            loadActiveBattles();
+            loadHistoryBattles();
+        }
+
+        // 加载进行中的对战
+        async function loadActiveBattles() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/pk/active', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    renderBattles('activeBattles', data.data || [], true);
+                }
+            } catch (error) {
+                console.error('加载进行中对战失败:', error);
+            }
+        }
+
+        // 加载历史对战
+        async function loadHistoryBattles() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/pk/history?page=1&size=10', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    renderBattles('historyBattles', data.data?.items || data.data || [], false);
+                }
+            } catch (error) {
+                console.error('加载历史对战失败:', error);
+            }
+        }
+
+        // 渲染对战列表
+        function renderBattles(containerId, battles, isActive) {
+            const container = document.getElementById(containerId);
+
+            if (!battles || battles.length === 0) {
+                container.innerHTML = `
+                    <p style="text-align: center; color: rgba(255, 255, 255, 0.5); padding: 2rem;">
+                        ${isActive ? '暂无进行中的对战' : '暂无历史对战'}
+                    </p>
+                `;
+                return;
+            }
+
+            container.innerHTML = battles.map(battle => `
+                <div class="battle-item">
+                    <div class="battle-info">
+                        <div class="battle-code">#${battle.battleCode}</div>
+                        <div class="battle-details">
+                            ${battle.player1Name} vs ${battle.player2Name} ·
+                            ${battle.durationMinutes}分钟 ·
+                            赌注 ${battle.betPoints} 积分
+                        </div>
+                    </div>
+                    <div class="battle-status status-${battle.status}">
+                        ${getStatusText(battle.status)}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 获取状态文本
+        function getStatusText(status) {
+            const map = {
+                'pending': '等待接受',
+                'in_progress': '进行中',
+                'completed': '已完成'
+            };
+            return map[status] || status;
+        }
+    </script>
+    <!-- 全局登录状态组件 -->
+    <script src="../utils/auth-header.js"></script>
+    <script>
+        // 初始化登录状态组件
+        document.addEventListener('DOMContentLoaded', () => {
+            AuthHeader.init('auth-header', {
+                showLinks: false
+            });
+        });
+    </script>
+</body>
+</html>

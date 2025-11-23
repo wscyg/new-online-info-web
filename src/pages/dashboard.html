@@ -459,6 +459,105 @@
             opacity: 0.5;
         }
 
+        /* Check-in Widget */
+        .checkin-widget {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            color: white;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+        }
+
+        .checkin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .checkin-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .checkin-streak {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.875rem;
+        }
+
+        .checkin-content {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .checkin-info {
+            flex: 1;
+        }
+
+        .checkin-stats {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .checkin-stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .checkin-stat-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            margin-bottom: 0.25rem;
+        }
+
+        .checkin-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .checkin-button {
+            background: white;
+            color: #f5576c;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .checkin-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .checkin-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .checkin-animation {
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .checkin-icon {
+            font-size: 3rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .nav-links {
@@ -479,8 +578,14 @@
             }
         }
     </style>
+
+    <!-- UX Enhancement Styles -->
+    <link rel="stylesheet" href="../styles/ux-enhancements.css">
 </head>
 <body>
+    <!-- 全局登录状态 -->
+    <div id="auth-header"></div>
+
     <!-- Top Navigation -->
     <nav class="top-nav">
         <div class="nav-container">
@@ -491,7 +596,13 @@
                     <a href="courses.html" class="nav-link">课程</a>
                     <a href="qa.html" class="nav-link">问答</a>
                     <a href="notes.html" class="nav-link">笔记</a>
+                    <a href="invitation.html" class="nav-link">🎁 邀请</a>
+                    <a href="lottery.html" class="nav-link">🎰 抽奖</a>
+                    <a href="points-shop.html" class="nav-link">💎 积分商城</a>
                     <a href="achievements.html" class="nav-link">成就</a>
+                    <a href="season.html" class="nav-link">🏆 PK赛季</a>
+                    <a href="annual-report.html" class="nav-link">📊 年度报告</a>
+                    <a href="checkin-milestones.html" class="nav-link">📆 签到里程碑</a>
                 </div>
             </div>
             <div class="user-menu-container">
@@ -503,6 +614,9 @@
                 <div class="dropdown-menu" id="userDropdown">
                     <a href="profile.html" class="dropdown-item">
                         <span>👤</span> 个人资料
+                    </a>
+                    <a href="invitation.html" class="dropdown-item">
+                        <span>🎁</span> 邀请好友
                     </a>
                     <a href="orders.html" class="dropdown-item">
                         <span>📦</span> 我的订单
@@ -563,6 +677,40 @@
                 </div>
             </div>
 
+            <!-- Check-in Widget -->
+            <div class="checkin-widget" id="checkinWidget">
+                <div class="checkin-header">
+                    <div class="checkin-title">📅 每日签到</div>
+                    <div class="checkin-streak" id="checkinStreak">
+                        🔥 连续签到 <span id="consecutiveDays">0</span> 天
+                    </div>
+                </div>
+                <div class="checkin-content">
+                    <div class="checkin-info">
+                        <div class="checkin-stats">
+                            <div class="checkin-stat-item">
+                                <span class="checkin-stat-label">累计签到</span>
+                                <span class="checkin-stat-value" id="totalCheckinDays">0</span>
+                            </div>
+                            <div class="checkin-stat-item">
+                                <span class="checkin-stat-label">今日积分</span>
+                                <span class="checkin-stat-value" id="todayPoints">+10</span>
+                            </div>
+                            <div class="checkin-stat-item">
+                                <span class="checkin-stat-label">累计积分</span>
+                                <span class="checkin-stat-value" id="totalCheckinPoints">0</span>
+                            </div>
+                        </div>
+                        <button class="checkin-button" id="checkinButton" onclick="performCheckIn()">
+                            立即签到
+                        </button>
+                    </div>
+                    <div class="checkin-animation">
+                        <div class="checkin-icon">📆</div>
+                    </div>
+                </div>
+            </div>
+
             <!-- My Courses -->
             <section class="content-section">
                 <div class="section-header">
@@ -589,6 +737,13 @@
         </main>
     </div>
 
+    <script src="../utils/loading.js"></script>
+    <script src="../utils/notification.js"></script>
+    <script src="../utils/ui-helpers.js"></script>
+
+    <!-- UX Enhancement Scripts -->
+    <script src="../utils/ux-utils.js"></script>
+
     <script>
         // Configuration
         const hostname = window.location.hostname;
@@ -600,19 +755,47 @@
         // Initialize Dashboard
         document.addEventListener('DOMContentLoaded', function() {
             if (!checkAuth()) return;
-            
+
+            // Initialize UX enhancements
+            initUXEnhancements();
+
             loadUserInfo();
             loadStatistics();
+            loadCheckinStats();
             loadMyCourses();
             loadRecentActivity();
         });
+
+        // Initialize UX enhancements
+        function initUXEnhancements() {
+            // Initialize lazy loading for images
+            if (window.UXUtils && window.UXUtils.LazyLoader) {
+                const lazyImages = document.querySelectorAll('img.lazy-image');
+                if (lazyImages.length > 0) {
+                    const loader = new window.UXUtils.LazyLoader();
+                    loader.observe(lazyImages);
+                }
+            }
+
+            // Initialize animation triggers
+            if (window.UXUtils && window.UXUtils.AnimationTrigger) {
+                window.UXUtils.AnimationTrigger.init();
+            }
+
+            // Initialize smooth scroll
+            if (window.UXUtils && window.UXUtils.smoothScroll) {
+                window.UXUtils.smoothScroll.init();
+            }
+
+            console.log('✅ Dashboard UX enhancements initialized');
+        }
 
         // Check Authentication
         function checkAuth() {
             const token = localStorage.getItem('token');
             if (!token) {
                 const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-                window.location.href = isDev ? '/src/pages/login.html' : '/login.html';
+                window.location.href = '/src/pages/login.html';
                 return false;
             }
             return true;
@@ -707,7 +890,12 @@
         // Load My Courses
         async function loadMyCourses() {
             const container = document.getElementById('coursesGrid');
-            
+
+            // Show loading skeleton
+            if (window.uiHelpers) {
+                window.uiHelpers.showSkeleton(container, { type: 'card', count: 3 });
+            }
+
             try {
                 const response = await fetch(`${API_BASE}/user/courses`, {
                     headers: {
@@ -757,14 +945,22 @@
                     throw new Error('Failed to load courses');
                 }
             } catch (error) {
-                // Silently handle errors
+                // Handle errors with notification
                 console.log('Could not load courses');
+                if (window.uiHelpers && error.status !== 401) {
+                    window.uiHelpers.handleApiError(error, '加载课程失败');
+                }
                 container.innerHTML = `
                     <div style="grid-column:1/-1;text-align:center;padding:3rem;">
                         <p style="color:#718096;margin-bottom:1rem;">请登录后查看课程</p>
                         <a href="login.html" class="btn btn-primary">立即登录</a>
                     </div>
                 `;
+            } finally {
+                // Hide loading skeleton
+                if (window.uiHelpers) {
+                    window.uiHelpers.hideSkeleton(container);
+                }
             }
         }
 
@@ -890,9 +1086,113 @@
             if (confirm('确定要退出登录吗？')) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
-                window.location.href = 'login.html';
+                window.location.href = '/src/pages/login.html';
             }
         }
+
+        // Load Check-in Statistics
+        async function loadCheckinStats() {
+            try {
+                const response = await fetch(`${API_BASE}/checkin/stats`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.stats) {
+                        const stats = data.stats;
+
+                        // Update UI
+                        document.getElementById('consecutiveDays').textContent = stats.currentConsecutiveDays || 0;
+                        document.getElementById('totalCheckinDays').textContent = stats.totalCheckinDays || 0;
+                        document.getElementById('totalCheckinPoints').textContent = stats.totalPointsEarned || 0;
+
+                        // Check if already checked in today
+                        if (data.checkedInToday) {
+                            const btn = document.getElementById('checkinButton');
+                            btn.textContent = '今日已签到';
+                            btn.disabled = true;
+                            document.querySelector('.checkin-icon').textContent = '✅';
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load checkin stats:', error);
+            }
+        }
+
+        // Perform Check-in
+        async function performCheckIn() {
+            const btn = document.getElementById('checkinButton');
+            const originalText = btn.textContent;
+
+            try {
+                btn.disabled = true;
+                btn.textContent = '签到中...';
+
+                const response = await fetch(`${API_BASE}/checkin/checkin`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Show success animation
+                    document.querySelector('.checkin-icon').textContent = '✅';
+                    btn.textContent = '今日已签到';
+
+                    // Update stats
+                    document.getElementById('consecutiveDays').textContent = data.consecutiveDays || 0;
+                    document.getElementById('todayPoints').textContent = '+' + (data.pointsEarned || 10);
+                    document.getElementById('totalCheckinDays').textContent = data.totalCheckinDays || 0;
+
+                    // Show success message
+                    if (window.Notification) {
+                        window.Notification.success(`签到成功！连续${data.consecutiveDays}天，获得${data.pointsEarned}积分`);
+                    } else {
+                        alert(`签到成功！连续${data.consecutiveDays}天，获得${data.pointsEarned}积分`);
+                    }
+
+                    // Reload statistics to update total points
+                    loadStatistics();
+                } else {
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+
+                    if (window.Notification) {
+                        window.Notification.error(data.message || '签到失败');
+                    } else {
+                        alert(data.message || '签到失败');
+                    }
+                }
+            } catch (error) {
+                console.error('Check-in failed:', error);
+                btn.textContent = originalText;
+                btn.disabled = false;
+
+                if (window.Notification) {
+                    window.Notification.error('签到失败，请稍后重试');
+                } else {
+                    alert('签到失败，请稍后重试');
+                }
+            }
+        }
+    </script>
+    <!-- 全局登录状态组件 -->
+    <script src="../utils/auth-header.js"></script>
+    <script>
+        // 初始化登录状态组件
+        document.addEventListener('DOMContentLoaded', () => {
+            AuthHeader.init('auth-header', {
+                showLinks: false
+            });
+        });
     </script>
 </body>
 </html>

@@ -389,8 +389,12 @@
             }
         }
     </style>
-  <script type="module" crossorigin src="/assets/login-5e16f5c3.js"></script>
+
+    <!-- UX Enhancement Styles -->
+    
+  <script type="module" crossorigin src="/assets/login-c56f0f3d.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-3cfb730f.js">
+  <link rel="stylesheet" href="/assets/ux-enhancements-2fb285cd.css">
 </head>
 <body>
     <div class="login-container">
@@ -407,12 +411,13 @@
         <form id="loginForm">
             <div class="form-group">
                 <label class="form-label" for="username">用户名或邮箱</label>
-                <input 
-                    type="text" 
-                    class="form-input" 
-                    id="username" 
-                    placeholder="请输入用户名或邮箱" 
-                    required 
+                <input
+                    type="text"
+                    class="form-input"
+                    id="username"
+                    name="username"
+                    placeholder="请输入用户名或邮箱"
+                    required
                     autocomplete="username"
                 >
             </div>
@@ -420,11 +425,13 @@
             <div class="form-group">
                 <label class="form-label" for="password">密码</label>
                 <div class="input-wrapper">
-                    <input 
-                        type="password" 
-                        class="form-input" 
-                        id="password" 
-                        placeholder="请输入密码" 
+                    <input
+                        type="password"
+                        class="form-input"
+                        id="password"
+                        name="password"
+                        data-validate="password"
+                        placeholder="请输入密码"
                         required
                         autocomplete="current-password"
                     >
@@ -449,6 +456,14 @@
             还没有账号？<a href="register.html">立即注册</a>
         </div>
     </div>
+
+    <script src="../utils/loading.js"></script>
+    <script src="../utils/notification.js"></script>
+    <script src="../utils/ui-helpers.js"></script>
+    <script src="../utils/form-validation.js"></script>
+
+    <!-- UX Enhancement Scripts -->
+    <script src="../utils/ux-utils.js"></script>
 
     
 </body>

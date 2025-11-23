@@ -1,0 +1,51 @@
+
+> online-info-web@1.0.0 dev
+> vite
+
+
+  VITE v4.5.14  ready in 361 ms
+
+  ➜  Local:   http://localhost:3000/
+  ➜  Network: http://10.1.24.12:3000/
+  ➜  Network: http://172.17.0.1:3000/
+  ➜  Network: http://192.168.192.1:3000/
+(node:1572428) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///newopt/new-online-info-web/postcss.config.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /newopt/new-online-info-web/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+4:19:50 PM [vite] page reload src/pages/courses.html
+4:20:11 PM [vite] page reload src/pages/courses.html
+4:20:41 PM [vite] page reload src/pages/qa.html
+4:21:02 PM [vite] page reload src/pages/qa.html
+4:28:16 PM [vite] page reload src/pages/notes.html
+4:28:16 PM [vite] page reload src/pages/achievements.html
+4:28:16 PM [vite] page reload src/pages/team-learning.html
+4:28:16 PM [vite] page reload src/pages/pk-arena.html
+4:28:16 PM [vite] page reload src/pages/profile.html
+4:28:16 PM [vite] page reload src/pages/my-courses.html
+4:28:16 PM [vite] page reload src/pages/leaderboard.html
+4:28:16 PM [vite] page reload src/pages/certificates.html
+4:28:16 PM [vite] page reload src/pages/orders.html
+4:28:16 PM [vite] page reload src/pages/dashboard.html
+4:28:33 PM [vite] page reload dist/home.html
+10:02:41 AM [vite] page reload src/pages/achievements.html
+1:29:59 PM [vite] page reload src/pages/course-detail.html
+1:30:15 PM [vite] page reload src/pages/course-detail.html
+1:31:09 PM [vite] page reload src/pages/course-detail.html
+7:30:16 AM [vite] page reload dist/home.html
+7:55:38 AM [vite] page reload src/pages/dashboard.html
+7:55:58 AM [vite] page reload src/pages/dashboard.html
+7:56:18 AM [vite] page reload src/pages/dashboard.html
+7:57:03 AM [vite] page reload src/pages/dashboard.html
+8:16:44 AM [vite] page reload src/pages/dashboard.html
+8:16:58 AM [vite] page reload src/pages/dashboard.html
+8:35:50 AM [vite] page reload src/pages/dashboard.html
+8:50:41 AM [vite] page reload src/pages/lottery.html
+9:48:23 AM [vite] page reload src/pages/lottery.html
+9:49:31 AM [vite] page reload src/pages/lottery.html
+9:49:51 AM [vite] page reload src/pages/lottery.html
+9:50:17 AM [vite] page reload src/pages/lottery.html
+10:13:02 AM [vite] page reload src/pages/dashboard.html
+10:19:32 AM [vite] page reload src/pages/dashboard.html
+10:36:04 AM [vite] page reload src/pages/dashboard.html
+9:52:37 PM [vite] page reload src/pages/dashboard.html

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PK竞技场 - 在线学习平台</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../styles/pk-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- 外部依赖 -->
+    <script src="https://cdn.jsdelivr.net/npm/zustand@4.4.1/index.umd.js"></script>
+    <script src="https://unpkg.com/dompurify@3.0.6/dist/purify.min.js"></script>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="pk-navbar">
+        <div class="pk-nav-container">
+            <a href="../pages/dashboard.html" class="pk-nav-brand">🎓 在线学习平台</a>
+            <ul class="pk-nav-menu">
+                <li><a href="dashboard.html" class="pk-nav-link">仪表盘</a></li>
+                <li><a href="courses.html" class="pk-nav-link">课程</a></li>
+                <li><a href="pk-arena-new.html" class="pk-nav-link active">PK竞技场</a></li>
+                <li><a href="pk-rankings-new.html" class="pk-nav-link">排行榜</a></li>
+                <li><a href="pk-friends-new.html" class="pk-nav-link">好友</a></li>
+                <li><a href="profile.html" class="pk-nav-link">个人中心</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 主容器 -->
+    <div class="pk-container">
+        <!-- 页面标题 -->
+        <div class="pk-page-header">
+            <h1 class="pk-page-title">⚔️ PK竞技场</h1>
+            <p class="pk-page-subtitle">挑战你的对手，展现你的实力！</p>
+        </div>
+
+        <!-- 用户统计信息 -->
+        <div class="pk-card pk-mb-4" id="userStatsCard">
+            <div class="pk-flex pk-flex-between">
+                <div>
+                    <h3 class="pk-card-title">我的战绩</h3>
+                    <div class="pk-flex pk-flex-gap pk-mt-2">
+                        <div class="pk-stat-box">
+                            <div class="pk-stat-value" id="userElo">1200</div>
+                            <div class="pk-stat-label">ELO分数</div>
+                        </div>
+                        <div class="pk-stat-box">
+                            <div class="pk-stat-value" id="userWins">0</div>
+                            <div class="pk-stat-label">胜场</div>
+                        </div>
+                        <div class="pk-stat-box">
+                            <div class="pk-stat-value" id="userLosses">0</div>
+                            <div class="pk-stat-label">负场</div>
+                        </div>
+                        <div class="pk-stat-box">
+                            <div class="pk-stat-value" id="userWinRate">0%</div>
+                            <div class="pk-stat-label">胜率</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <span class="pk-player-tier" id="userTier"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 对战模式选择 -->
+        <div class="pk-card pk-mb-4">
+            <h3 class="pk-card-title pk-mb-3">选择对战模式</h3>
+            <div class="pk-grid pk-grid-3 pk-grid-gap">
+                <div class="pk-mode-card" data-mode="QUICK">
+                    <div class="pk-mode-icon">⚡</div>
+                    <div class="pk-mode-name">快速模式</div>
+                    <div class="pk-mode-desc">5题 · 10分钟</div>
+                </div>
+                <div class="pk-mode-card active" data-mode="STANDARD">
+                    <div class="pk-mode-icon">🎯</div>
+                    <div class="pk-mode-name">标准模式</div>
+                    <div class="pk-mode-desc">10题 · 20分钟</div>
+                </div>
+                <div class="pk-mode-card" data-mode="LONG">
+                    <div class="pk-mode-icon">🔥</div>
+                    <div class="pk-mode-name">长篇模式</div>
+                    <div class="pk-mode-desc">20题 · 40分钟</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 匹配区域 -->
+        <div class="pk-card pk-mb-4">
+            <div id="matchingIdleView">
+                <h3 class="pk-card-title pk-mb-3">开始匹配</h3>
+
+                <!-- 课程选择 -->
+                <div class="pk-form-group">
+                    <label class="pk-form-label">选择课程</label>
+                    <select class="pk-form-select" id="courseSelect">
+                        <option value="">加载中...</option>
+                    </select>
+                </div>
+
+                <!-- 匹配按钮 -->
+                <div class="pk-flex pk-flex-gap">
+                    <button class="pk-btn pk-btn-primary pk-btn-lg pk-btn-full" id="quickMatchBtn">
+                        <span>🎲</span>
+                        <span>快速匹配</span>
+                    </button>
+                    <button class="pk-btn pk-btn-outline pk-btn-lg" id="inviteFriendBtn">
+                        <span>👥</span>
+                        <span>邀请好友</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 匹配中视图 -->
+            <div id="matchingView" class="pk-hidden">
+                <div class="pk-matching-animation">
+                    <h3 class="pk-card-title">正在匹配对手...</h3>
+                    <div class="pk-matching-dots">
+                        <div class="pk-matching-dot"></div>
+                        <div class="pk-matching-dot"></div>
+                        <div class="pk-matching-dot"></div>
+                    </div>
+                    <p class="pk-text-muted">
+                        已匹配 <span id="matchingDuration">0</span> 秒
+                    </p>
+                    <button class="pk-btn pk-btn-danger" id="cancelMatchBtn">取消匹配</button>
+                </div>
+            </div>
+
+            <!-- 匹配成功视图 -->
+            <div id="matchFoundView" class="pk-hidden">
+                <h3 class="pk-card-title pk-text-center pk-mb-3">找到对手！</h3>
+                <div class="pk-grid pk-grid-3 pk-grid-gap" style="align-items: center;">
+                    <!-- 玩家1 -->
+                    <div class="pk-player-card">
+                        <div class="pk-player-avatar" id="player1Avatar"></div>
+                        <div class="pk-player-name" id="player1Name"></div>
+                        <span class="pk-player-tier" id="player1Tier"></span>
+                    </div>
+
+                    <!-- VS -->
+                    <div class="pk-vs-badge">VS</div>
+
+                    <!-- 玩家2 -->
+                    <div class="pk-player-card">
+                        <div class="pk-player-avatar" id="player2Avatar"></div>
+                        <div class="pk-player-name" id="player2Name"></div>
+                        <span class="pk-player-tier" id="player2Tier"></span>
+                    </div>
+                </div>
+                <div class="pk-text-center pk-mt-4">
+                    <p class="pk-text-muted pk-mb-2">对战将在 <span id="countdownTimer">5</span> 秒后开始</p>
+                    <button class="pk-btn pk-btn-primary pk-btn-lg" id="startBattleBtn">立即开始</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 在线好友列表 -->
+        <div class="pk-card pk-mb-4">
+            <h3 class="pk-card-title pk-mb-3">在线好友 <span id="onlineFriendsCount" class="pk-text-muted">(0)</span></h3>
+            <div id="onlineFriendsList" class="pk-grid pk-grid-3 pk-grid-gap">
+                <!-- 动态加载 -->
+            </div>
+        </div>
+
+        <!-- 最近对战 -->
+        <div class="pk-card">
+            <h3 class="pk-card-title pk-mb-3">最近对战</h3>
+            <div id="recentBattlesList" class="pk-battles-list">
+                <!-- 动态加载 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 好友邀请模态框 -->
+    <div class="pk-modal" id="inviteModal">
+        <div class="pk-modal-content">
+            <div class="pk-modal-header">
+                <h3 class="pk-modal-title">邀请好友PK</h3>
+                <button class="pk-modal-close" id="closeInviteModal">&times;</button>
+            </div>
+            <div class="pk-modal-body">
+                <div id="friendsListForInvite">
+                    <!-- 动态加载好友列表 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript模块 -->
+    <script type="module">
+        import { PKArena } from './pk/arena.js';
+
+        // 初始化PK竞技场
+        const arena = new PKArena();
+
+        // 页面加载后初始化
+        document.addEventListener('DOMContentLoaded', async () => {
+            await arena.init();
+        });
+
+        // 全局导出用于调试
+        window.pkArena = arena;
+    </script>
+
+    <style>
+        /* 模式卡片样式 */
+        .pk-mode-card {
+            background: var(--pk-bg-glass);
+            border: 2px solid var(--pk-border-glass);
+            border-radius: var(--pk-radius-lg);
+            padding: var(--pk-spacing-xl);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--pk-transition);
+        }
+
+        .pk-mode-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-4px);
+        }
+
+        .pk-mode-card.active {
+            border-color: var(--pk-primary);
+            box-shadow: var(--pk-shadow-glow);
+        }
+
+        .pk-mode-icon {
+            font-size: 3rem;
+            margin-bottom: var(--pk-spacing-md);
+        }
+
+        .pk-mode-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: var(--pk-spacing-sm);
+        }
+
+        .pk-mode-desc {
+            color: var(--pk-text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* 好友卡片 */
+        .pk-friend-card {
+            background: var(--pk-bg-glass);
+            border: 1px solid var(--pk-border-glass);
+            border-radius: var(--pk-radius-md);
+            padding: var(--pk-spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--pk-spacing-md);
+            cursor: pointer;
+            transition: var(--pk-transition);
+        }
+
+        .pk-friend-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .pk-friend-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--pk-radius-full);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .pk-friend-info {
+            flex: 1;
+        }
+
+        .pk-friend-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .pk-friend-status {
+            font-size: 0.875rem;
+            color: var(--pk-text-muted);
+        }
+
+        .pk-friend-status.online {
+            color: var(--pk-success);
+        }
+
+        .pk-friend-status.online::before {
+            content: "●";
+            margin-right: 0.25rem;
+        }
+    </style>
+</body>
+</html>

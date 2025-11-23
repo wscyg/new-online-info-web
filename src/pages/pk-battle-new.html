@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PK对战中 - 在线学习平台</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../styles/pk-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- 代码高亮 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- 外部依赖 -->
+    <script src="https://cdn.jsdelivr.net/npm/zustand@4.4.1/index.umd.js"></script>
+    <script src="https://unpkg.com/dompurify@3.0.6/dist/purify.min.js"></script>
+</head>
+<body>
+    <!-- 对战状态栏 -->
+    <div class="pk-battle-statusbar">
+        <div class="pk-container">
+            <div class="pk-grid pk-grid-3" style="align-items: center;">
+                <!-- 玩家1 -->
+                <div class="pk-player-compact">
+                    <div class="pk-player-avatar-sm" id="player1Avatar"></div>
+                    <div class="pk-player-info-sm">
+                        <div class="pk-player-name-sm" id="player1Name"></div>
+                        <div class="pk-player-progress-sm">
+                            <span id="player1Progress">0</span> / <span id="totalQuestions">10</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 计时器 -->
+                <div class="pk-timer-compact">
+                    <div class="pk-timer-icon">⏱️</div>
+                    <div class="pk-timer-value" id="battleTimer">20:00</div>
+                </div>
+
+                <!-- 玩家2 -->
+                <div class="pk-player-compact" style="justify-content: flex-end;">
+                    <div class="pk-player-info-sm" style="text-align: right;">
+                        <div class="pk-player-name-sm" id="player2Name"></div>
+                        <div class="pk-player-progress-sm">
+                            <span id="player2Progress">0</span> / <span id="totalQuestions2">10</span>
+                        </div>
+                    </div>
+                    <div class="pk-player-avatar-sm" id="player2Avatar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主容器 -->
+    <div class="pk-container" style="padding-top: 2rem;">
+        <!-- 进度条 -->
+        <div class="pk-progress-track pk-mb-4">
+            <div class="pk-progress-bar-battle">
+                <div class="pk-progress-fill-battle" id="myProgress" style="width: 0%"></div>
+            </div>
+            <div class="pk-progress-bar-battle opponent">
+                <div class="pk-progress-fill-battle opponent" id="opponentProgress" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- 题目容器 -->
+        <div class="pk-question-container" id="questionContainer">
+            <!-- 题目头部 -->
+            <div class="pk-question-header">
+                <div class="pk-question-number">
+                    题目 <span id="currentQuestionNumber">1</span> / <span id="totalQuestionsHeader">10</span>
+                </div>
+                <div class="pk-flex pk-flex-gap">
+                    <span class="pk-question-difficulty" id="questionDifficulty"></span>
+                    <span class="pk-question-type" id="questionType"></span>
+                </div>
+            </div>
+
+            <!-- 题目内容 -->
+            <div class="pk-question-content" id="questionContent">
+                <!-- 动态加载题目HTML -->
+            </div>
+
+            <!-- 选项列表 -->
+            <div class="pk-options-list" id="optionsList">
+                <!-- 动态加载选项 -->
+            </div>
+
+            <!-- 操作按钮 -->
+            <div class="pk-flex pk-flex-between pk-mt-4">
+                <button class="pk-btn pk-btn-outline" id="prevQuestionBtn" disabled>
+                    ← 上一题
+                </button>
+                <div class="pk-flex pk-flex-gap">
+                    <button class="pk-btn pk-btn-danger" id="forfeitBtn">
+                        认输离开
+                    </button>
+                    <button class="pk-btn pk-btn-primary pk-btn-lg" id="submitAnswerBtn" disabled>
+                        提交答案 →
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 实时动态 -->
+        <div class="pk-card pk-mt-4" id="battleFeed">
+            <h3 class="pk-card-title pk-mb-2">实时动态</h3>
+            <div class="pk-feed-list" id="feedList">
+                <div class="pk-feed-item">
+                    <span class="pk-feed-time">00:00</span>
+                    <span class="pk-feed-text">对战开始！</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 认输确认模态框 -->
+    <div class="pk-modal" id="forfeitModal">
+        <div class="pk-modal-content">
+            <div class="pk-modal-header">
+                <h3 class="pk-modal-title">⚠️ 确认认输？</h3>
+                <button class="pk-modal-close" id="closeForfeitModal">&times;</button>
+            </div>
+            <div class="pk-modal-body">
+                <p class="pk-mb-3">认输将会：</p>
+                <ul style="list-style: none; padding-left: 0;">
+                    <li class="pk-mb-2">❌ 直接判负，对手获胜</li>
+                    <li class="pk-mb-2">📉 ELO分数双倍扣除</li>
+                    <li class="pk-mb-2">📊 计入逃跑次数统计</li>
+                </ul>
+                <p class="pk-text-muted pk-mt-3">确定要认输吗？</p>
+                <div class="pk-flex pk-flex-gap pk-mt-4">
+                    <button class="pk-btn pk-btn-outline pk-btn-full" id="cancelForfeitBtn">
+                        继续对战
+                    </button>
+                    <button class="pk-btn pk-btn-danger pk-btn-full" id="confirmForfeitBtn">
+                        确认认输
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript模块 -->
+    <script type="module">
+        import { PKBattle } from './pk/battle.js';
+
+        // 获取battleId参数
+        const urlParams = new URLSearchParams(window.location.search);
+        const battleId = urlParams.get('battleId');
+
+        if (!battleId) {
+            alert('无效的对战ID');
+            window.location.href = 'pk-arena-new.html';
+        } else {
+            // 初始化PK对战
+            const battle = new PKBattle(battleId);
+
+            // 页面加载后初始化
+            document.addEventListener('DOMContentLoaded', async () => {
+                await battle.init();
+            });
+
+            // 页面卸载时清理
+            window.addEventListener('beforeunload', () => {
+                battle.cleanup();
+            });
+
+            // 全局导出用于调试
+            window.pkBattle = battle;
+        }
+    </script>
+
+    <style>
+        /* 对战状态栏 */
+        .pk-battle-statusbar {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--pk-border-glass);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: var(--pk-spacing-lg) 0;
+        }
+
+        .pk-player-compact {
+            display: flex;
+            align-items: center;
+            gap: var(--pk-spacing-md);
+        }
+
+        .pk-player-avatar-sm {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--pk-radius-full);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .pk-player-name-sm {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .pk-player-progress-sm {
+            font-size: 0.875rem;
+            color: var(--pk-text-muted);
+        }
+
+        .pk-timer-compact {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--pk-spacing-sm);
+        }
+
+        .pk-timer-icon {
+            font-size: 1.5rem;
+        }
+
+        .pk-timer-value {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .pk-timer-value.warning {
+            background: linear-gradient(135deg, var(--pk-danger), var(--pk-warning));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pk-timer-pulse 1s infinite;
+        }
+
+        /* 进度轨道 */
+        .pk-progress-track {
+            display: flex;
+            flex-direction: column;
+            gap: var(--pk-spacing-sm);
+        }
+
+        .pk-progress-bar-battle {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--pk-radius-full);
+            height: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .pk-progress-fill-battle {
+            height: 100%;
+            background: linear-gradient(90deg, var(--pk-primary), var(--pk-success));
+            border-radius: var(--pk-radius-full);
+            transition: width 0.5s ease;
+        }
+
+        .pk-progress-fill-battle.opponent {
+            background: linear-gradient(90deg, var(--pk-danger), var(--pk-warning));
+        }
+
+        /* 题目类型标签 */
+        .pk-question-type {
+            padding: var(--pk-spacing-sm) var(--pk-spacing-md);
+            border-radius: var(--pk-radius-full);
+            font-weight: 600;
+            font-size: 0.875rem;
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--pk-info);
+        }
+
+        /* 实时动态 */
+        .pk-feed-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .pk-feed-item {
+            padding: var(--pk-spacing-sm) 0;
+            border-bottom: 1px solid var(--pk-border-glass);
+            font-size: 0.9rem;
+            display: flex;
+            gap: var(--pk-spacing-md);
+        }
+
+        .pk-feed-item:last-child {
+            border-bottom: none;
+        }
+
+        .pk-feed-time {
+            color: var(--pk-text-muted);
+            font-weight: 600;
+            min-width: 50px;
+        }
+
+        .pk-feed-text {
+            flex: 1;
+        }
+
+        .pk-feed-item.opponent {
+            color: var(--pk-warning);
+        }
+
+        /* 选项选中效果 */
+        .pk-option.selected .pk-option-label {
+            background: var(--pk-primary);
+            color: white;
+            border-radius: var(--pk-radius-sm);
+            padding: 0.25rem 0.5rem;
+        }
+
+        /* 响应式 */
+        @media (max-width: 968px) {
+            .pk-timer-value {
+                font-size: 1.5rem;
+            }
+
+            .pk-player-name-sm {
+                font-size: 0.875rem;
+            }
+
+            .pk-question-container {
+                padding: var(--pk-spacing-lg);
+            }
+        }
+    </style>
+</body>
+</html>

@@ -277,4 +277,5 @@ const notification = new NotificationSystem();
 
 window.notification = notification;
 
-export default notification;
+// Export removed - using window.notification for global access
+// export default notification;

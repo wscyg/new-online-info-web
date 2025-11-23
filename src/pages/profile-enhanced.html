@@ -528,6 +528,7 @@
         <div class="profile-tabs">
             <div class="tab-item active" onclick="switchTab('basic')">基本信息</div>
             <div class="tab-item" onclick="switchTab('learning')">学习记录</div>
+            <div class="tab-item" onclick="switchTab('pk')">🎮 PK战绩</div>
             <div class="tab-item" onclick="switchTab('achievements')">成就勋章</div>
             <div class="tab-item" onclick="switchTab('certificates')">我的证书</div>
             <div class="tab-item" onclick="switchTab('security')">账号安全</div>
@@ -738,6 +739,91 @@
                 </div>
                 
                 <button class="btn btn-primary" style="margin-top: 30px;">查看全部记录</button>
+            </div>
+
+            <!-- PK战绩 -->
+            <div class="tab-content" id="pk">
+                <h2 class="section-title">PK战绩统计</h2>
+
+                <!-- PK统计卡片 -->
+                <div class="stats-grid" style="margin-bottom: 30px;">
+                    <div class="stat-card" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                        <div class="stat-trend">🏆</div>
+                        <div class="stat-value" id="pkTotalBattles">0</div>
+                        <div class="stat-label">总场次</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #10b981 0%, #065f46 100%);">
+                        <div class="stat-trend">✓</div>
+                        <div class="stat-value" id="pkWins">0</div>
+                        <div class="stat-label">胜利</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <div class="stat-trend">📊</div>
+                        <div class="stat-value" id="pkWinRate">0%</div>
+                        <div class="stat-label">胜率</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                        <div class="stat-trend">🔥</div>
+                        <div class="stat-value" id="pkStreak">0</div>
+                        <div class="stat-label">连胜</div>
+                    </div>
+                </div>
+
+                <!-- 段位信息 -->
+                <div class="form-section" style="margin-bottom: 30px;">
+                    <h2 class="section-title">当前段位</h2>
+                    <div style="display: flex; align-items: center; gap: 30px; padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; color: white;">
+                        <div style="font-size: 96px;" id="pkRankIcon">🥉</div>
+                        <div style="flex: 1;">
+                            <h2 style="font-size: 36px; margin-bottom: 10px;" id="pkRankName">青铜</h2>
+                            <p style="font-size: 18px; opacity: 0.9; margin-bottom: 15px;">
+                                ELO积分: <span id="pkEloRating">1200</span>
+                            </p>
+                            <div style="background: rgba(255,255,255,0.2); border-radius: 20px; height: 30px; overflow: hidden;">
+                                <div id="pkRankProgress" style="background: white; height: 100%; width: 0%; transition: width 0.5s;"></div>
+                            </div>
+                            <p style="margin-top: 10px; font-size: 14px; opacity: 0.8;">
+                                距离下一段位还需 <span id="pkPointsToNext">300</span> 积分
+                            </p>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 14px; opacity: 0.8; margin-bottom: 5px;">本赛季排名</div>
+                            <div style="font-size: 48px; font-weight: bold;" id="pkSeasonRank">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 战绩详情 -->
+                <div class="form-section">
+                    <h2 class="section-title">详细数据</h2>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+                        <div style="background: white; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px; text-align: center;">
+                            <div style="font-size: 14px; color: #6b7280; margin-bottom: 8px;">答题准确率</div>
+                            <div style="font-size: 32px; font-weight: bold; color: #667eea;" id="pkAccuracy">0%</div>
+                        </div>
+                        <div style="background: white; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px; text-align: center;">
+                            <div style="font-size: 14px; color: #6b7280; margin-bottom: 8px;">平均用时</div>
+                            <div style="font-size: 32px; font-weight: bold; color: #10b981;" id="pkAvgTime">0s</div>
+                        </div>
+                        <div style="background: white; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px; text-align: center;">
+                            <div style="font-size: 14px; color: #6b7280; margin-bottom: 8px;">最佳连胜</div>
+                            <div style="font-size: 32px; font-weight: bold; color: #f59e0b;" id="pkBestStreak">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 最近对战 -->
+                <div class="form-section" style="margin-top: 30px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 class="section-title" style="margin-bottom: 0;">最近对战</h2>
+                        <a href="/src/pages/pk-arena-new.html" class="btn btn-primary">前往PK竞技场</a>
+                    </div>
+                    <div id="pkRecentBattles" style="display: grid; gap: 15px;">
+                        <div style="text-align: center; padding: 40px; color: #6b7280;">
+                            暂无对战记录
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- 成就勋章 -->
@@ -993,12 +1079,17 @@
                 tab.classList.remove('active');
             });
             event.target.classList.add('active');
-            
+
             // 更新内容显示
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
             });
             document.getElementById(tabName).classList.add('active');
+
+            // 如果切换到PK标签，加载PK统计
+            if (tabName === 'pk') {
+                loadPKStats();
+            }
         }
         
         // 上传头像
@@ -1091,13 +1182,175 @@
         function updateProfileDisplay() {
             // 根据用户数据更新页面各个部分
             const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-            
+
             if (userData.name) {
                 document.getElementById('profileName').textContent = userData.name;
                 document.getElementById('realName').value = userData.name;
             }
-            
+
             // 更新其他字段...
+        }
+
+        // 加载PK统计数据
+        async function loadPKStats() {
+            try {
+                const API_BASE = window.location.hostname === 'localhost'
+                    ? 'http://localhost:8080/api'
+                    : `${window.location.protocol}//${window.location.host}/api`;
+
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    console.warn('用户未登录');
+                    return;
+                }
+
+                // 获取PK统计
+                const response = await fetch(`${API_BASE}/pk/stats/my`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load PK stats');
+                }
+
+                const result = await response.json();
+                if (result.success && result.data) {
+                    updatePKDisplay(result.data);
+                }
+
+                // 获取最近对战
+                const battlesRes = await fetch(`${API_BASE}/pk/battles/recent?limit=5`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (battlesRes.ok) {
+                    const battlesResult = await battlesRes.json();
+                    if (battlesResult.success && battlesResult.data) {
+                        displayRecentBattles(battlesResult.data);
+                    }
+                }
+            } catch (error) {
+                console.error('加载PK统计失败:', error);
+            }
+        }
+
+        // 更新PK统计显示
+        function updatePKDisplay(stats) {
+            // 基础统计
+            document.getElementById('pkTotalBattles').textContent = stats.totalBattles || 0;
+            document.getElementById('pkWins').textContent = stats.wins || 0;
+            document.getElementById('pkWinRate').textContent = (stats.winRate || 0).toFixed(1) + '%';
+            document.getElementById('pkStreak').textContent = stats.currentStreak || 0;
+
+            // 段位信息
+            const rankInfo = getRankInfo(stats.rankTier || 'BRONZE');
+            document.getElementById('pkRankIcon').textContent = rankInfo.icon;
+            document.getElementById('pkRankName').textContent = rankInfo.name;
+            document.getElementById('pkEloRating').textContent = stats.eloRating || 1200;
+
+            // 计算段位进度
+            const progress = calculateRankProgress(stats.eloRating || 1200, stats.rankTier || 'BRONZE');
+            document.getElementById('pkRankProgress').style.width = progress.percent + '%';
+            document.getElementById('pkPointsToNext').textContent = progress.pointsToNext;
+
+            // 赛季排名 (如果有)
+            document.getElementById('pkSeasonRank').textContent = stats.seasonRank || '-';
+
+            // 详细数据
+            document.getElementById('pkAccuracy').textContent = (stats.accuracyRate || 0).toFixed(1) + '%';
+            document.getElementById('pkAvgTime').textContent = (stats.avgAnswerTime || 0) + 's';
+            document.getElementById('pkBestStreak').textContent = stats.bestStreak || 0;
+        }
+
+        // 显示最近对战
+        function displayRecentBattles(battles) {
+            const container = document.getElementById('pkRecentBattles');
+            if (!battles || battles.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 40px; color: #6b7280;">暂无对战记录</div>';
+                return;
+            }
+
+            container.innerHTML = battles.map(battle => {
+                const userId = JSON.parse(localStorage.getItem('user') || '{}').id;
+                const isWinner = battle.winnerId === userId;
+                const opponent = battle.player1Id === userId ? battle.player2 : battle.player1;
+                const myScore = battle.player1Id === userId ? battle.player1Score : battle.player2Score;
+                const opponentScore = battle.player1Id === userId ? battle.player2Score : battle.player1Score;
+
+                return `
+                    <div style="background: white; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="width: 50px; height: 50px; border-radius: 50%; background: ${isWinner ? '#10b981' : '#ef4444'}; color: white; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                                ${isWinner ? '✓' : '✗'}
+                            </div>
+                            <div>
+                                <div style="font-weight: bold; margin-bottom: 5px;">
+                                    VS ${opponent.username}
+                                </div>
+                                <div style="font-size: 14px; color: #6b7280;">
+                                    ${new Date(battle.createdAt).toLocaleString()}
+                                </div>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 24px; font-weight: bold; margin-bottom: 5px;">
+                                ${myScore} : ${opponentScore}
+                            </div>
+                            <div style="font-size: 12px; color: #6b7280;">
+                                ${getModeText(battle.mode)}
+                            </div>
+                        </div>
+                        <a href="/src/pages/pk-replay.html?battleId=${battle.id}" class="btn btn-secondary" style="margin-left: 15px;">查看回放</a>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 获取段位信息
+        function getRankInfo(tier) {
+            const ranks = {
+                'BRONZE': { icon: '🥉', name: '青铜' },
+                'SILVER': { icon: '🥈', name: '白银' },
+                'GOLD': { icon: '🥇', name: '黄金' },
+                'PLATINUM': { icon: '💎', name: '铂金' },
+                'DIAMOND': { icon: '💠', name: '钻石' },
+                'KING': { icon: '👑', name: '王者' }
+            };
+            return ranks[tier] || ranks['BRONZE'];
+        }
+
+        // 计算段位进度
+        function calculateRankProgress(elo, tier) {
+            const ranges = {
+                'BRONZE': { min: 0, max: 999 },
+                'SILVER': { min: 1000, max: 1499 },
+                'GOLD': { min: 1500, max: 1999 },
+                'PLATINUM': { min: 2000, max: 2499 },
+                'DIAMOND': { min: 2500, max: 2999 },
+                'KING': { min: 3000, max: 9999 }
+            };
+
+            const range = ranges[tier] || ranges['BRONZE'];
+            const current = elo - range.min;
+            const total = range.max - range.min;
+            const percent = Math.min(100, (current / total) * 100);
+            const pointsToNext = tier === 'KING' ? 0 : range.max + 1 - elo;
+
+            return { percent, pointsToNext };
+        }
+
+        // 模式文本
+        function getModeText(mode) {
+            const modes = {
+                'QUICK': '快速模式',
+                'STANDARD': '标准模式',
+                'LONG': '长篇模式'
+            };
+            return modes[mode] || mode;
         }
     </script>
 </body>

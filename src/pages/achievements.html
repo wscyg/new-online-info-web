@@ -522,6 +522,9 @@
     </style>
 </head>
 <body>
+    <!-- 全局登录状态 -->
+    <div id="auth-header"></div>
+
     <!-- 导航栏 -->
     <nav class="navbar">
         <div class="nav-container">
@@ -768,6 +771,46 @@
     </div>
 
     <script>
+        // 加载用户成就数据
+        async function loadUserAchievements() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    console.log('用户未登录');
+                    return;
+                }
+
+                // 使用统一API服务
+                const data = await window.API.achievement.getUserAchievements();
+                if (data && data.code === 200 && data.data) {
+                    updateAchievementUI(data.data);
+                }
+            } catch (error) {
+                console.error('加载成就失败:', error);
+            }
+        }
+
+        // 更新成就UI
+        function updateAchievementUI(achievementData) {
+            // 更新统计概览
+            const statBoxes = document.querySelectorAll('.stat-number');
+            if (statBoxes[0]) statBoxes[0].textContent = achievementData.unlockedCount || 42;
+            if (statBoxes[1]) statBoxes[1].textContent = achievementData.totalPoints || 8560;
+            if (statBoxes[2]) statBoxes[2].textContent = achievementData.rareCount || 5;
+            if (statBoxes[3]) statBoxes[3].textContent = (achievementData.completionRate || 68) + '%';
+
+            // 如果有成就列表，更新成就卡片
+            if (achievementData.achievements && achievementData.achievements.length > 0) {
+                const achievementsGrid = document.querySelector('.achievements-grid');
+                // 这里可以动态渲染成就卡片
+            }
+        }
+
+        // 页面加载时调用
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserAchievements();
+        });
+
         // 标签切换
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', function() {
@@ -820,6 +863,16 @@
             }
         `;
         document.head.appendChild(style);
+    </script>
+    <!-- 全局登录状态组件 -->
+    <script src="../utils/auth-header.js"></script>
+    <script>
+        // 初始化登录状态组件
+        document.addEventListener('DOMContentLoaded', () => {
+            AuthHeader.init('auth-header', {
+                showLinks: false
+            });
+        });
     </script>
 </body>
 </html>

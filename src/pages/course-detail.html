@@ -12,43 +12,80 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- 添加必要的JavaScript库 -->
-    <!-- Three.js - 3D图形库 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    
-    <!-- Three.js扩展 - OrbitControls等 -->
-    <script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="https://unpkg.com/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
-    
-    <!-- GSAP - 动画库 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
-    
-    <!-- KaTeX - 数学公式渲染 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
-    
-    <!-- Highlight.js - 代码高亮 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
-    
-    <!-- Chart.js - 图表库 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-    
-    <!-- Typed.js - 打字机效果 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.16/typed.umd.js"></script>
-    
-    <!-- Particles.js - 粒子效果 -->
-    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-    
-    <!-- Tailwind CSS - 工具类CSS框架 -->
+
+    <!-- Tailwind CSS - 工具类CSS框架 (优先加载) -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- 延迟加载的资源 -->
+    <script>
+        // 延迟加载重型库以优化初始加载性能
+        function loadLazyResources() {
+            const scripts = [
+                'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
+                'https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js',
+                'https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js',
+                'https://unpkg.com/three@0.128.0/examples/js/loaders/OBJLoader.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.16/typed.umd.js',
+                'https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js'
+            ];
+
+            const links = [
+                'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css',
+                'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css'
+            ];
+
+            // 延迟加载脚本
+            let scriptIndex = 0;
+            function loadNextScript() {
+                if (scriptIndex < scripts.length) {
+                    const script = document.createElement('script');
+                    script.src = scripts[scriptIndex];
+                    script.async = true;
+                    script.onload = () => setTimeout(loadNextScript, 50);
+                    script.onerror = () => setTimeout(loadNextScript, 50);
+                    document.head.appendChild(script);
+                    scriptIndex++;
+                }
+            }
+
+            // 延迟加载样式表
+            links.forEach(href => {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = href;
+                document.head.appendChild(link);
+            });
+
+            // 开始加载脚本
+            setTimeout(loadNextScript, 300);
+        }
+
+        // 页面加载完成后再加载重型资源
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadLazyResources);
+        } else {
+            loadLazyResources();
+        }
+    </script>
+
+    <!-- 保留必要的立即加载的脚本 -->
+    <script src="../utils/loading.js"></script>
+    <script src="../utils/notification.js"></script>
+    <script src="../utils/ui-helpers.js"></script>
+
+    <!-- UX Enhancement Scripts -->
+    <link rel="stylesheet" href="../styles/ux-enhancements.css">
+    <script src="../utils/ux-utils.js"></script>
+    <script src="../components/enhanced-search.js"></script>
 
     <style>
         * {
@@ -623,6 +660,36 @@
             display: flex;
             flex-direction: column;
             gap: 1rem;
+        }
+
+        .load-more-btn {
+            width: 100%;
+            padding: 1rem;
+            border: 2px dashed var(--gray-300);
+            background: transparent;
+            color: var(--gray-600);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            margin-top: 1rem;
+        }
+
+        .load-more-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary);
+            background-opacity: 0.05;
+        }
+
+        [data-theme="dark"] .load-more-btn {
+            border-color: var(--gray-600);
+            color: var(--gray-400);
+        }
+
+        [data-theme="dark"] .load-more-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
         }
 
         .chapter-item {
@@ -1659,7 +1726,8 @@
     <!-- 加载状态 -->
     <div id="loadingState" class="loading">
         <div class="loading-spinner"></div>
-        正在加载课程信息...
+        <div class="loading-text">正在加载课程信息...</div>
+        <div id="courseLoadingSkeleton"></div>
     </div>
 
     <!-- 错误状态 -->
@@ -1749,7 +1817,13 @@
                 <div class="content-card">
                     <h3>课程章节</h3>
                     <div id="chaptersList" class="chapters-list">
-                        <div class="loading">正在加载章节...</div>
+                        <div id="initialChapters">
+                            <div class="loading">正在加载章节...</div>
+                        </div>
+                        <div id="lazyChapters" style="display: none;"></div>
+                        <button id="loadMoreChapters" class="load-more-btn" style="display: none;">
+                            <i class="fas fa-chevron-down"></i> 加载更多章节
+                        </button>
                     </div>
                 </div>
 
@@ -2115,17 +2189,11 @@
         
         window.paymentCheckInterval = setInterval(async () => {
             checkCount++;
-            
+
             try {
-                const response = await fetch(`${API_BASE}/orders/status/${orderNo}`, {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
-                
-                const data = await response.json();
-                
-                if (data.success && data.data && data.data.status === 'paid') {
+                const data = await window.API.order.getOrderStatus(orderNo);
+
+                if (data.code === 200 && data.data && data.data.status === 'paid') {
                     clearInterval(window.paymentCheckInterval);
                     window.paymentCheckInterval = null;
                     closePaymentDialog();
@@ -2138,7 +2206,7 @@
             } catch (error) {
                 console.log('检查支付状态失败:', error);
             }
-            
+
             // 超过最大检查次数后停止
             if (checkCount >= maxChecks) {
                 clearInterval(window.paymentCheckInterval);
@@ -2160,16 +2228,10 @@
             const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 检查中...';
             btn.disabled = true;
-            
-            const response = await fetch(`${API_BASE}/orders/status/${orderNo}`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-            
-            const data = await response.json();
-            
-            if (data.success && data.data && data.data.status === 'paid') {
+
+            const data = await window.API.order.getOrderStatus(orderNo);
+
+            if (data.code === 200 && data.data && data.data.status === 'paid') {
                 closePaymentDialog();
                 showNotification('支付成功！正在激活订阅...', 'success');
                 setTimeout(() => {
@@ -2191,12 +2253,33 @@
     }
 
     function showNotification(message, type = 'success') {
+        if (window.uiHelpers) {
+            switch (type) {
+                case 'error':
+                    window.uiHelpers.showError(message);
+                    break;
+                case 'warning':
+                    window.uiHelpers.showWarning(message);
+                    break;
+                case 'info':
+                    window.uiHelpers.showInfo(message);
+                    break;
+                default:
+                    window.uiHelpers.showSuccess(message);
+            }
+            return;
+        }
+
         const notification = document.getElementById('notification');
         const messageEl = document.getElementById('notificationMessage');
-        
+
+        if (!notification || !messageEl) {
+            return;
+        }
+
         messageEl.textContent = message;
         notification.className = `notification ${type} show`;
-        
+
         setTimeout(() => {
             notification.classList.remove('show');
         }, 3000);
@@ -2351,11 +2434,15 @@
             }
         } catch (error) {
             console.error('加载课程失败:', error);
-            
+
+            if (window.uiHelpers) {
+                window.uiHelpers.handleApiError(error, '加载课程详情失败');
+            }
+
             // 显示更详细的错误信息
-            if (error.message.includes('网络')) {
+            if (error.message && error.message.includes('网络')) {
                 showError('网络连接失败，请检查网络并刷新页面');
-            } else if (error.message.includes('登录')) {
+            } else if (error.message && error.message.includes('登录')) {
                 showError('请先登录再查看课程详情');
             } else {
                 showError(error.message || '加载课程失败');
@@ -2401,7 +2488,16 @@
 
         const imageEl = document.getElementById('courseImage');
         if (course.coverImage) {
-            imageEl.innerHTML = `<img src="${course.coverImage}" alt="${course.title}">`;
+            imageEl.innerHTML = `<img class="lazy-image" data-src="${course.coverImage}" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400'%3E%3Crect fill='%23f0f0f0' width='600' height='400'/%3E%3C/svg%3E" alt="${course.title}">`;
+
+            // Initialize lazy loading for this image
+            if (window.UXUtils && window.UXUtils.LazyLoader) {
+                const img = imageEl.querySelector('img.lazy-image');
+                if (img) {
+                    const loader = new window.UXUtils.LazyLoader();
+                    loader.observe([img]);
+                }
+            }
         }
     }
 
@@ -2431,6 +2527,14 @@
 
     // 加载章节列表
     async function loadChapters(courseId) {
+        const initialContainer = document.getElementById('initialChapters');
+
+        if (window.uiHelpers && initialContainer) {
+            window.uiHelpers.showSkeleton(initialContainer, { type: 'list', count: 4 });
+        } else if (initialContainer) {
+            initialContainer.innerHTML = '<div class="loading">正在加载章节...</div>';
+        }
+
         try {
             const response = await fetch(`${API_BASE}/content/courses/${courseId}/chapters`, {
                 headers: {
@@ -2451,31 +2555,92 @@
             }
         } catch (error) {
             console.error('Error loading chapters:', error);
+            if (window.uiHelpers) {
+                window.uiHelpers.handleApiError(error, '加载课程章节失败');
+            }
             displayNoChapters();
+        } finally {
+            if (window.uiHelpers && initialContainer) {
+                window.uiHelpers.hideSkeleton(initialContainer);
+            }
         }
     }
 
+    // 初始显示数量
+    const INITIAL_CHAPTERS_DISPLAY = 3;
+    let allChapters = [];
+    let displayedChapters = 0;
+
     // 显示章节
     function displayChapters(chapters) {
-        const chaptersList = document.getElementById('chaptersList');
-        
+        allChapters = chapters;
+        displayedChapters = 0;
+
+        const initialContainer = document.getElementById('initialChapters');
+        const lazyContainer = document.getElementById('lazyChapters');
+        const loadMoreBtn = document.getElementById('loadMoreChapters');
+
+        if (!initialContainer || !lazyContainer || !loadMoreBtn) {
+            return;
+        }
+
+        if (window.uiHelpers) {
+            window.uiHelpers.hideSkeleton(initialContainer);
+        }
+
+        // 清空之前的内容
+        initialContainer.innerHTML = '';
+        lazyContainer.innerHTML = '';
+        lazyContainer.style.display = 'none';
+
+        if (chapters.length === 0) {
+            showNoChaptersMessage();
+            return;
+        }
+
+        // 显示初始章节
+        const initialDisplayCount = Math.min(INITIAL_CHAPTERS_DISPLAY, chapters.length);
+        displayChapterBatch(0, initialDisplayCount);
+        displayedChapters = initialDisplayCount;  // 设置已显示的章节数量
+
+        // 如果章节数量大于初始显示数量，显示加载更多按钮
+        if (chapters.length > INITIAL_CHAPTERS_DISPLAY) {
+            const remaining = chapters.length - displayedChapters;
+            loadMoreBtn.innerHTML = `<i class="fas fa-chevron-down"></i> 加载更多章节 (还有 ${remaining} 章)`;
+            loadMoreBtn.style.display = 'block';
+            loadMoreBtn.onclick = loadMoreChapters;
+        } else {
+            loadMoreBtn.style.display = 'none';
+        }
+    }
+
+    // 显示指定范围的章节
+    function displayChapterBatch(startIndex, endIndex) {
+        const isInitialBatch = startIndex === 0;
+        const targetContainer = isInitialBatch ?
+            document.getElementById('initialChapters') :
+            document.getElementById('lazyChapters');
+
         let chaptersHTML = '';
-        chapters.forEach((chapter, index) => {
+
+        for (let index = startIndex; index < endIndex; index++) {
+            const chapter = allChapters[index];
+            if (!chapter) continue;
+
             // 检查章节访问权限
-            // 对于免费章节，直接允许访问
             const isFree = chapter.is_free || chapter.isFree;
             let canAccess = false;
-            
+
             if (isFree) {
-                canAccess = true; // 免费章节总是可以访问
+                canAccess = true;
             } else {
                 canAccess = chapter.canAccess !== undefined ? chapter.canAccess : false;
             }
-            
+
             const isLocked = !canAccess;
             const accessReason = chapter.accessReason || '';
-            
-            // 生成徽章HTML
+
+            // 构建章节徽章
             let badgesHTML = '';
             if (isFree) {
                 badgesHTML += '<span class="chapter-badge badge-free">免费试看</span>';
@@ -2485,10 +2650,10 @@
                 badgesHTML += '<span class="chapter-badge badge-locked">🔒 需订阅</span>';
             }
             badgesHTML += `<span class="chapter-badge badge-duration">${chapter.duration_minutes || chapter.durationMinutes || 30}分钟</span>`;
-            
-            // 生成章节HTML - 确保 data-can-access 是字符串形式的布尔值
+
+            // 生成章节HTML
             chaptersHTML += `
-                <div class="chapter-item ${isLocked ? 'chapter-locked' : 'chapter-unlocked'}" 
+                <div class="chapter-item ${isLocked ? 'chapter-locked' : 'chapter-unlocked'}"
                      data-chapter-id="${chapter.id}" data-can-access="${canAccess ? 'true' : 'false'}">
                     <div class="chapter-header">
                         <div class="chapter-number">第${index + 1}章</div>
@@ -2500,17 +2665,30 @@
                         </div>
                     </div>
                     <div class="chapter-description">${chapter.description || '本章节将深入讲解相关知识点'}</div>
-                    ${!canAccess && accessReason === '需要订阅' ? 
+                    ${!canAccess && accessReason === '需要订阅' ?
                         '<div class="chapter-lock-hint">订阅课程后即可学习本章节</div>' : ''}
                 </div>
             `;
-        });
-        
-        chaptersList.innerHTML = chaptersHTML;
-        
-        // 绑定章节点击事件
-        const chapterItems = chaptersList.querySelectorAll('.chapter-item');
+        }
+
+        if (isInitialBatch) {
+            targetContainer.innerHTML = chaptersHTML;
+        } else {
+            targetContainer.innerHTML += chaptersHTML;
+            targetContainer.style.display = 'block';
+        }
+
+        displayedChapters = endIndex;
+
+        // 绑定新添加章节的点击事件
+        bindChapterEvents(targetContainer);
+    }
+
+    // 绑定章节点击事件
+    function bindChapterEvents(container) {
+        const chapterItems = container.querySelectorAll('.chapter-item:not([data-event-bound])');
         chapterItems.forEach(item => {
+            item.setAttribute('data-event-bound', 'true');
             item.addEventListener('click', function() {
                 const chapterId = this.dataset.chapterId;
                 const canAccess = this.dataset.canAccess === 'true';
@@ -2521,6 +2699,47 @@
                 }
             });
         });
+    }
+
+    // 加载更多章节
+    function loadMoreChapters() {
+        const loadMoreBtn = document.getElementById('loadMoreChapters');
+        const originalText = loadMoreBtn.innerHTML;
+
+        // 显示加载状态
+        loadMoreBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 加载中...';
+        loadMoreBtn.disabled = true;
+
+        // 模拟加载延迟，提供更好的用户体验
+        setTimeout(() => {
+            const remainingChapters = allChapters.length - displayedChapters;
+            const nextBatchSize = Math.min(3, remainingChapters);
+            const nextEndIndex = displayedChapters + nextBatchSize;
+
+            // 显示下一批章节
+            displayChapterBatch(displayedChapters, nextEndIndex);
+
+            // 更新已显示的章节数量
+            displayedChapters = nextEndIndex;
+
+            // 恢复按钮状态
+            loadMoreBtn.innerHTML = originalText;
+            loadMoreBtn.disabled = false;
+
+            // 更新按钮文本，显示剩余章节数
+            const remaining = allChapters.length - displayedChapters;
+            if (remaining > 0) {
+                loadMoreBtn.innerHTML = `<i class="fas fa-chevron-down"></i> 加载更多章节 (还有 ${remaining} 章)`;
+                loadMoreBtn.style.display = 'block';
+            } else {
+                // 所有章节都已加载，显示不同的文本
+                loadMoreBtn.innerHTML = '<i class="fas fa-check-circle"></i> 已加载全部章节';
+                loadMoreBtn.disabled = true;
+                loadMoreBtn.style.opacity = '0.7';
+                // 保持按钮可见，但禁用状态
+                loadMoreBtn.style.display = 'block';
+            }
+        }, 500);
     }
     
     // 获取课程ID从URL
@@ -2540,7 +2759,7 @@
         if (!token || !user) {
             // 未登录，提示登录
             if (confirm('请先登录后再订阅课程')) {
-                window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
+                window.location.href = '/src/pages/login.html?redirect=' + encodeURIComponent(window.location.href);
             }
         } else {
             // 已登录，显示订阅对话框
@@ -2989,29 +3208,48 @@
 
     // 显示无章节消息
     function displayNoChapters() {
-        const chaptersList = document.getElementById('chaptersList');
-        chaptersList.innerHTML = `
+        const initialContainer = document.getElementById('initialChapters');
+        const lazyContainer = document.getElementById('lazyChapters');
+        const loadMoreBtn = document.getElementById('loadMoreChapters');
+
+        if (!initialContainer || !lazyContainer || !loadMoreBtn) {
+            return;
+        }
+
+        if (window.uiHelpers) {
+            window.uiHelpers.hideSkeleton(initialContainer);
+        }
+
+        initialContainer.innerHTML = `
             <div class="no-chapters-message" style="text-align: center; padding: 3rem 2rem; color: var(--gray-500);">
                 <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                 <h3 style="color: var(--gray-600); margin-bottom: 1rem; font-size: 1.2rem;">暂无章节内容</h3>
                 <p style="line-height: 1.6; color: var(--gray-500);">
                     该课程暂无可用章节，请联系客服了解详情。
                 </p>
-                <button id="reloadChaptersBtn" data-course-id="${new URLSearchParams(window.location.search).get('id') || 1}" 
+                <button id="reloadChaptersBtn" data-course-id="${new URLSearchParams(window.location.search).get('id') || 1}"
                         style="margin-top: 1.5rem; padding: 0.8rem 1.5rem; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer;">
                     重新加载章节
                 </button>
             </div>
         `;
-        
+
+        lazyContainer.style.display = 'none';
+        loadMoreBtn.style.display = 'none';
+
         // 绑定重新加载章节按钮事件
-        const reloadChaptersBtn = chaptersList.querySelector('#reloadChaptersBtn');
+        const reloadChaptersBtn = initialContainer.querySelector('#reloadChaptersBtn');
         if (reloadChaptersBtn) {
             reloadChaptersBtn.addEventListener('click', function() {
                 const courseId = this.dataset.courseId;
                 loadChapters(courseId);
             });
         }
+    }
+
+    // 显示无章节消息 - 兼容性函数
+    function showNoChaptersMessage() {
+        displayNoChapters();
     }
 
     // 加载相关课程
@@ -3102,11 +3340,10 @@
             const price = parseFloat(course.price || 0);
 
             return `
-                <div class="related-course-card" data-course-id="${course.id}">
+                <div class="related-course-card enhanced-card" data-course-id="${course.id}">
                     <div class="related-course-image">
-                        ${course.coverImage ? 
-                            `<img src="${course.coverImage}" alt="${course.title}" 
-                                 class="related-course-img">` :
+                        ${course.coverImage ?
+                            `<img class="lazy-image related-course-img" data-src="${course.coverImage}" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='150'%3E%3Crect fill='%23f0f0f0' width='200' height='150'/%3E%3C/svg%3E" alt="${course.title}">` :
                             '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 10v6M2 10l10-5 10 5-10 5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 12v5a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
                         }
                     </div>
@@ -3143,6 +3380,15 @@
                 this.parentElement.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 10v6M2 10l10-5 10 5-10 5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 12v5a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
             });
         });
+
+        // Initialize lazy loading for related course images
+        if (window.UXUtils && window.UXUtils.LazyLoader) {
+            const lazyImages = relatedList.querySelectorAll('img.lazy-image');
+            if (lazyImages.length > 0) {
+                const loader = new window.UXUtils.LazyLoader();
+                loader.observe(lazyImages);
+            }
+        }
     }
 
     // 隐藏相关课程部分
@@ -3244,6 +3490,7 @@
     // 报名课程
     async function enrollCourse() {
         const token = localStorage.getItem('token');
+        const enrollBtn = document.getElementById('enrollBtn');
 
         if (!token) {
             showNotification('请先登录', 'error');
@@ -3258,14 +3505,45 @@
             return;
         }
 
-        if (currentCourse.isFree) {
-            // 免费课程直接订阅
-            try {
+        const releaseButtonLoading = (() => {
+            if (!enrollBtn) {
+                return () => {};
+            }
+
+            let released = false;
+
+            if (window.uiHelpers) {
+                window.uiHelpers.showButtonLoading(enrollBtn);
+                return () => {
+                    if (!released) {
+                        window.uiHelpers.hideButtonLoading(enrollBtn);
+                        released = true;
+                    }
+                };
+            }
+
+            const originalText = enrollBtn.dataset.originalText || enrollBtn.textContent;
+            enrollBtn.dataset.originalText = originalText;
+            enrollBtn.disabled = true;
+            enrollBtn.textContent = '处理中...';
+
+            return () => {
+                if (released) {
+                    return;
+                }
+                released = true;
+                enrollBtn.disabled = false;
+                enrollBtn.textContent = enrollBtn.dataset.originalText || originalText;
+            };
+        })();
+
+        try {
+            if (currentCourse.isFree) {
                 const formData = new FormData();
                 formData.append('subscribableType', 'course');
                 formData.append('subscribableId', currentCourse.id);
                 formData.append('paymentMethod', 'free');
-                
+
                 const response = await fetch(`${API_BASE}/subscriptions/create`, {
                     method: 'POST',
                     headers: {
@@ -3276,20 +3554,27 @@
 
                 const data = await response.json();
 
-                if (data.success) {
-                    showNotification('订阅成功！');
+                if (response.ok && data.success) {
+                    showNotification('订阅成功！', 'success');
                     isSubscribed = true;
                     updateEnrollButton(true);
                 } else {
-                    showNotification(data.message || '订阅失败，请重试', 'error');
+                    throw new Error(data.message || '订阅失败，请重试');
                 }
-            } catch (error) {
-                console.error('订阅失败:', error);
-                showNotification('网络错误，请稍后重试', 'error');
+            } else {
+                releaseButtonLoading();
+                window.location.href = `payment.html?courseId=${currentCourse.id}&type=course`;
+                return;
             }
-        } else {
-            // 付费课程跳转到支付页面 - 不传递价格，让支付页面获取真实价格
-            window.location.href = `payment.html?courseId=${currentCourse.id}&type=course`;
+        } catch (error) {
+            console.error('订阅失败:', error);
+            if (window.uiHelpers) {
+                window.uiHelpers.handleApiError(error, '订阅课程失败');
+            } else {
+                showNotification(error.message || '网络错误，请稍后重试', 'error');
+            }
+        } finally {
+            releaseButtonLoading();
         }
     }
 
@@ -3361,25 +3646,84 @@
 
     // 显示加载状态
     function showLoading() {
-        document.getElementById('loadingState').style.display = 'flex';
-        document.getElementById('errorState').style.display = 'none';
-        document.getElementById('courseContent').style.display = 'none';
+        const loadingState = document.getElementById('loadingState');
+        const errorState = document.getElementById('errorState');
+        const courseContent = document.getElementById('courseContent');
+
+        if (loadingState) {
+            loadingState.style.display = 'flex';
+
+            const skeletonContainer = document.getElementById('courseLoadingSkeleton');
+            if (window.uiHelpers && skeletonContainer) {
+                window.uiHelpers.showSkeleton(skeletonContainer, { type: 'card', count: 2 });
+            }
+        }
+
+        if (errorState) {
+            errorState.style.display = 'none';
+        }
+
+        if (courseContent) {
+            courseContent.style.display = 'none';
+        }
+    }
+
+    function clearLoadingSkeleton() {
+        if (!window.uiHelpers) return;
+
+        const skeletonContainer = document.getElementById('courseLoadingSkeleton');
+        if (skeletonContainer) {
+            window.uiHelpers.hideSkeleton(skeletonContainer);
+            skeletonContainer.innerHTML = '';
+        }
     }
 
     // 显示内容
     function showContent() {
-        document.getElementById('loadingState').style.display = 'none';
-        document.getElementById('errorState').style.display = 'none';
-        document.getElementById('courseContent').style.display = 'block';
+        clearLoadingSkeleton();
+
+        const loadingState = document.getElementById('loadingState');
+        const errorState = document.getElementById('errorState');
+        const courseContent = document.getElementById('courseContent');
+
+        if (loadingState) {
+            loadingState.style.display = 'none';
+        }
+
+        if (errorState) {
+            errorState.style.display = 'none';
+        }
+
+        if (courseContent) {
+            courseContent.style.display = 'block';
+        }
     }
 
     // 显示错误
     function showError(message) {
-        document.getElementById('loadingState').style.display = 'none';
-        document.getElementById('courseContent').style.display = 'none';
-        document.getElementById('errorState').style.display = 'block';
-        if (message) {
-            document.querySelector('#errorState p').textContent = message;
+        clearLoadingSkeleton();
+
+        const loadingState = document.getElementById('loadingState');
+        const courseContent = document.getElementById('courseContent');
+        const errorState = document.getElementById('errorState');
+
+        if (loadingState) {
+            loadingState.style.display = 'none';
+        }
+
+        if (courseContent) {
+            courseContent.style.display = 'none';
+        }
+
+        if (errorState) {
+            errorState.style.display = 'block';
+
+            if (message) {
+                const messageEl = errorState.querySelector('p');
+                if (messageEl) {
+                    messageEl.textContent = message;
+                }
+            }
         }
     }
 

@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邀请好友 - AI未来学院</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 动态背景粒子 */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: float 6s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            25% { transform: translateY(-20px) translateX(10px); }
+            50% { transform: translateY(-40px) translateX(-10px); }
+            75% { transform: translateY(-20px) translateX(10px); }
+        }
+
+        /* 主容器 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 返回按钮 */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2rem;
+            backdrop-filter: blur(10px);
+            margin-bottom: 2rem;
+            transition: all 0.3s;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+
+        /* 页面标题 */
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .page-subtitle {
+            font-size: 1.125rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* 玻璃拟态卡片 */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 邀请码卡片 */
+        .invitation-code-card {
+            margin-bottom: 2rem;
+            text-align: center;
+            animation-delay: 0.1s;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+
+        .code-display {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .code-label {
+            font-size: 0.875rem;
+            color: #718096;
+            margin-bottom: 0.5rem;
+        }
+
+        .code-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #667eea;
+            letter-spacing: 0.1em;
+            font-family: 'Courier New', monospace;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 统计网格 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            transition: all 0.3s;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .stat-card:nth-child(2) { animation-delay: 0.1s; }
+        .stat-card:nth-child(3) { animation-delay: 0.2s; }
+        .stat-card:nth-child(4) { animation-delay: 0.3s; }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem;
+            border-radius: 1rem;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 0.875rem;
+            background: transparent;
+            border: none;
+            border-radius: 0.75rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+
+        /* Tab 内容 */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 邀请列表 */
+        .invitation-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .invitation-item {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s;
+        }
+
+        .invitation-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            font-weight: 700;
+        }
+
+        .invitation-info {
+            flex: 1;
+        }
+
+        .invitation-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 0.25rem;
+        }
+
+        .invitation-meta {
+            font-size: 0.875rem;
+            color: #718096;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .invitation-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-activated {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-registered {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        /* 奖励列表 */
+        .reward-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .reward-item {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .reward-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .reward-info {
+            flex: 1;
+        }
+
+        .reward-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 0.25rem;
+        }
+
+        .reward-time {
+            font-size: 0.875rem;
+            color: #718096;
+        }
+
+        .reward-points {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #f59e0b;
+        }
+
+        /* 排行榜 */
+        .leaderboard {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .leaderboard-item {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s;
+        }
+
+        .leaderboard-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .rank-badge {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .rank-1 {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            box-shadow: 0 4px 20px rgba(251, 191, 36, 0.4);
+        }
+
+        .rank-2 {
+            background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+        }
+
+        .rank-3 {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+        }
+
+        .rank-other {
+            background: #e2e8f0;
+            color: #64748b;
+        }
+
+        .leaderboard-info {
+            flex: 1;
+        }
+
+        .leaderboard-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 0.25rem;
+        }
+
+        .leaderboard-count {
+            font-size: 0.875rem;
+            color: #718096;
+        }
+
+        .leaderboard-points {
+            text-align: right;
+        }
+
+        .points-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .points-label {
+            font-size: 0.75rem;
+            color: #718096;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: white;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-text {
+            font-size: 1.125rem;
+            opacity: 0.8;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: white;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 分享海报模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: scaleIn 0.3s;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #718096;
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #1a202c;
+            transform: rotate(90deg);
+        }
+
+        .poster-preview {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+
+        .poster-qrcode {
+            width: 200px;
+            height: 200px;
+            background: white;
+            margin: 2rem auto;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .code-value {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态背景粒子 -->
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <!-- 返回按钮 -->
+        <a href="dashboard.html" class="back-button">
+            ← 返回主页
+        </a>
+
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <h1 class="page-title">🎁 邀请好友</h1>
+            <p class="page-subtitle">邀请好友注册学习，双方都可获得丰厚奖励</p>
+        </div>
+
+        <!-- 邀请码卡片 -->
+        <div class="glass-card invitation-code-card">
+            <h2 class="card-title">我的专属邀请码</h2>
+            <div class="code-display">
+                <div class="code-label">邀请码</div>
+                <div class="code-value" id="invitationCode">加载中...</div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="copyCode()">
+                    📋 复制邀请码
+                </button>
+                <button class="btn btn-secondary" onclick="shareLink()">
+                    🔗 复制邀请链接
+                </button>
+                <button class="btn btn-secondary" onclick="generatePoster()">
+                    🎨 生成海报
+                </button>
+            </div>
+        </div>
+
+        <!-- 统计卡片 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-value" id="totalInvitations">0</div>
+                <div class="stat-label">累计邀请</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-value" id="activatedCount">0</div>
+                <div class="stat-label">已激活</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💎</div>
+                <div class="stat-value" id="totalRewards">0</div>
+                <div class="stat-label">累计奖励</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-value">#<span id="ranking">-</span></div>
+                <div class="stat-label">我的排名</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="glass-card">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('invitations')">
+                    我的邀请
+                </button>
+                <button class="tab" onclick="switchTab('rewards')">
+                    奖励记录
+                </button>
+                <button class="tab" onclick="switchTab('leaderboard')">
+                    排行榜
+                </button>
+            </div>
+
+            <!-- 邀请列表 -->
+            <div class="tab-content active" id="invitationsTab">
+                <div class="invitation-list" id="invitationList">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>加载中...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 奖励记录 -->
+            <div class="tab-content" id="rewardsTab">
+                <div class="reward-list" id="rewardList">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>加载中...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 排行榜 -->
+            <div class="tab-content" id="leaderboardTab">
+                <div class="leaderboard" id="leaderboardList">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>加载中...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 分享海报模态框 -->
+    <div class="modal" id="posterModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">邀请海报</h3>
+                <button class="close-btn" onclick="closePosterModal()">×</button>
+            </div>
+            <div class="poster-preview">
+                <h2>🎓 AI未来学院</h2>
+                <p style="margin: 1rem 0;">邀请你一起学习</p>
+                <div class="poster-qrcode">📱</div>
+                <p>扫码注册送100积分</p>
+                <p style="margin-top: 1rem; font-size: 1.5rem; font-weight: 700;" id="posterCode">INV00000000</p>
+            </div>
+            <button class="btn btn-primary" style="width: 100%;" onclick="downloadPoster()">
+                下载海报
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 配置
+        const hostname = window.location.hostname;
+        const API_BASE = (hostname === 'localhost' || hostname === '127.0.0.1')
+            ? 'http://localhost:8080/api'
+            : 'http://42.194.245.66/api';
+
+        let invitationData = null;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!checkAuth()) return;
+
+            createParticles();
+            loadInvitationData();
+        });
+
+        // 检查认证
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/src/pages/login.html';
+                return false;
+            }
+            return true;
+        }
+
+        // 创建背景粒子
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.width = Math.random() * 10 + 5 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = Math.random() * 3 + 3 + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // 加载邀请数据
+        async function loadInvitationData() {
+            try {
+                const token = localStorage.getItem('token');
+
+                // 加载邀请码
+                const codeResponse = await fetch(`${API_BASE}/invitation/my-code`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const codeData = await codeResponse.json();
+
+                if (codeData.success) {
+                    document.getElementById('invitationCode').textContent = codeData.data.invitationCode;
+                    invitationData = codeData.data;
+                }
+
+                // 加载统计数据
+                const statsResponse = await fetch(`${API_BASE}/invitation/my-stats`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const statsData = await statsResponse.json();
+
+                if (statsData.success) {
+                    updateStats(statsData.stats);
+                    renderInvitations(statsData.invitations || []);
+                    renderRewards(statsData.rewards || []);
+                }
+
+                // 加载排行榜
+                loadLeaderboard();
+
+            } catch (error) {
+                console.error('加载数据失败:', error);
+                showError('加载失败，请刷新页面重试');
+            }
+        }
+
+        // 更新统计数据
+        function updateStats(stats) {
+            document.getElementById('totalInvitations').textContent = stats.totalInvitations || 0;
+            document.getElementById('activatedCount').textContent = stats.activatedCount || 0;
+            document.getElementById('totalRewards').textContent = stats.totalRewardsEarned || 0;
+            document.getElementById('ranking').textContent = stats.currentRanking || '-';
+        }
+
+        // 渲染邀请列表
+        function renderInvitations(invitations) {
+            const container = document.getElementById('invitationList');
+
+            if (invitations.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <div class="empty-text">还没有邀请记录，快去邀请好友吧！</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = invitations.map(inv => {
+                const statusMap = {
+                    'activated': { class: 'status-activated', text: '已激活' },
+                    'registered': { class: 'status-registered', text: '已注册' },
+                    'pending': { class: 'status-pending', text: '待注册' }
+                };
+                const status = statusMap[inv.status] || statusMap.pending;
+
+                return `
+                    <div class="invitation-item">
+                        <div class="user-avatar">${inv.inviteeId % 10}</div>
+                        <div class="invitation-info">
+                            <div class="invitation-name">用户 ${inv.inviteeId}</div>
+                            <div class="invitation-meta">
+                                <span>📅 ${formatDate(inv.createdAt)}</span>
+                                <span>📍 ${inv.invitationChannel || 'web'}</span>
+                            </div>
+                        </div>
+                        <span class="invitation-status ${status.class}">${status.text}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 渲染奖励记录
+        function renderRewards(rewards) {
+            const container = document.getElementById('rewardList');
+
+            if (rewards.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🎁</div>
+                        <div class="empty-text">还没有奖励记录</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = rewards.map(reward => `
+                <div class="reward-item">
+                    <div class="reward-icon">💎</div>
+                    <div class="reward-info">
+                        <div class="reward-title">${reward.reason || '邀请奖励'}</div>
+                        <div class="reward-time">${formatDate(reward.createdAt)}</div>
+                    </div>
+                    <div class="reward-points">+${reward.pointsEarned}</div>
+                </div>
+            `).join('');
+        }
+
+        // 加载排行榜
+        async function loadLeaderboard() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/invitation/leaderboard?limit=50`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    renderLeaderboard(data.leaderboard || []);
+                }
+            } catch (error) {
+                console.error('加载排行榜失败:', error);
+            }
+        }
+
+        // 渲染排行榜
+        function renderLeaderboard(leaderboard) {
+            const container = document.getElementById('leaderboardList');
+
+            if (leaderboard.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🏆</div>
+                        <div class="empty-text">排行榜暂无数据</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = leaderboard.map((item, index) => {
+                const rank = index + 1;
+                let rankClass = 'rank-other';
+                if (rank === 1) rankClass = 'rank-1';
+                else if (rank === 2) rankClass = 'rank-2';
+                else if (rank === 3) rankClass = 'rank-3';
+
+                return `
+                    <div class="leaderboard-item">
+                        <div class="rank-badge ${rankClass}">${rank}</div>
+                        <div class="leaderboard-info">
+                            <div class="leaderboard-name">用户 ${item.userId}</div>
+                            <div class="leaderboard-count">邀请 ${item.totalInvitations} 人</div>
+                        </div>
+                        <div class="leaderboard-points">
+                            <div class="points-value">${item.totalRewardsEarned || 0}</div>
+                            <div class="points-label">积分</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 切换Tab
+        function switchTab(tabName) {
+            // 更新tab按钮
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // 更新内容
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            const contentMap = {
+                'invitations': 'invitationsTab',
+                'rewards': 'rewardsTab',
+                'leaderboard': 'leaderboardTab'
+            };
+
+            document.getElementById(contentMap[tabName]).classList.add('active');
+        }
+
+        // 复制邀请码
+        function copyCode() {
+            const code = document.getElementById('invitationCode').textContent;
+            copyToClipboard(code);
+            showSuccess('邀请码已复制到剪贴板');
+        }
+
+        // 分享链接
+        function shareLink() {
+            if (!invitationData) return;
+            copyToClipboard(invitationData.shareUrl);
+            showSuccess('邀请链接已复制到剪贴板');
+        }
+
+        // 生成海报
+        function generatePoster() {
+            const code = document.getElementById('invitationCode').textContent;
+            document.getElementById('posterCode').textContent = code;
+            document.getElementById('posterModal').classList.add('active');
+        }
+
+        // 关闭海报模态框
+        function closePosterModal() {
+            document.getElementById('posterModal').classList.remove('active');
+        }
+
+        // 下载海报
+        function downloadPoster() {
+            showSuccess('海报生成功能开发中...');
+        }
+
+        // 复制到剪贴板
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+        }
+
+        // 格式化日期
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            const days = Math.floor(diff / 86400000);
+
+            if (days === 0) return '今天';
+            if (days === 1) return '昨天';
+            if (days < 7) return `${days}天前`;
+            return date.toLocaleDateString();
+        }
+
+        // 显示成功消息
+        function showSuccess(message) {
+            alert(message);
+        }
+
+        // 显示错误消息
+        function showError(message) {
+            alert(message);
+        }
+    </script>
+</body>
+</html>

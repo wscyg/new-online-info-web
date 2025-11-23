@@ -476,6 +476,9 @@
             color: white;
         }
     </style>
+
+    <!-- UX Enhancement Styles -->
+    <link rel="stylesheet" href="../styles/ux-enhancements.css">
 </head>
 <body class="orders-page">
     <!-- 导航栏 -->
@@ -551,6 +554,9 @@
     </main>
 
     <!-- Scripts -->
+    <!-- UX Enhancement Scripts -->
+    <script src="../utils/ux-utils.js"></script>
+
     <script src="../components/auth-init.js"></script>
     <!-- 移除 user-menu.js 避免冲突 -->
     <script>
@@ -1140,6 +1146,16 @@
             document.getElementById('errorState').style.display = 'none';
             document.getElementById('ordersContent').style.display = 'block';
         }
+    </script>
+    <!-- 全局登录状态组件 -->
+    <script src="../utils/auth-header.js"></script>
+    <script>
+        // 初始化登录状态组件
+        document.addEventListener('DOMContentLoaded', () => {
+            AuthHeader.init('auth-header', {
+                showLinks: false
+            });
+        });
     </script>
 </body>
 </html>

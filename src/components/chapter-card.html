@@ -1,0 +1,722 @@
+<!-- 章节学习卡片组件 -->
+<style>
+.chapter-card {
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+}
+
+.chapter-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+}
+
+.chapter-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.chapter-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+.chapter-number {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.chapter-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.chapter-meta {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 0.9rem;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+}
+
+.chapter-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.chapter-content {
+    padding: 2rem;
+}
+
+.content-section {
+    margin-bottom: 2rem;
+}
+
+.content-section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.content-section-title::before {
+    content: '';
+    width: 4px;
+    height: 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 2px;
+}
+
+.content-text {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #4a5568;
+    margin-bottom: 1.5rem;
+}
+
+.content-text p {
+    margin-bottom: 1rem;
+}
+
+.content-text h1, .content-text h2, .content-text h3 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: #2d3748;
+}
+
+.content-text h1 {
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.content-text h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.content-text h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.content-text ul, .content-text ol {
+    margin-left: 2rem;
+    margin-bottom: 1rem;
+}
+
+.content-text li {
+    margin-bottom: 0.5rem;
+}
+
+.content-text pre {
+    background: #2d3748;
+    color: #e2e8f0;
+    padding: 1.5rem;
+    border-radius: 12px;
+    overflow-x: auto;
+    margin-bottom: 1rem;
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.content-text code {
+    background: #edf2f7;
+    color: #e53e3e;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-family: 'Monaco', 'Courier New', monospace;
+}
+
+.content-text pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+}
+
+.content-text blockquote {
+    border-left: 4px solid #667eea;
+    padding-left: 1.5rem;
+    margin: 1.5rem 0;
+    color: #718096;
+    font-style: italic;
+}
+
+.content-text img {
+    max-width: 100%;
+    border-radius: 12px;
+    margin: 1.5rem 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.content-text table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+}
+
+.content-text th, .content-text td {
+    border: 1px solid #e2e8f0;
+    padding: 0.75rem;
+    text-align: left;
+}
+
+.content-text th {
+    background: #f7fafc;
+    font-weight: 600;
+}
+
+/* 知识点卡片 */
+.knowledge-card {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border-left: 4px solid #3b82f6;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin: 1.5rem 0;
+}
+
+.knowledge-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e40af;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.knowledge-content {
+    color: #334155;
+    line-height: 1.7;
+}
+
+/* 示例代码卡片 */
+.example-card {
+    background: #2d3748;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 1.5rem 0;
+}
+
+.example-header {
+    background: #1a202c;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.example-title {
+    color: #e2e8f0;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.example-lang {
+    background: #4a5568;
+    color: #e2e8f0;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+}
+
+.example-code {
+    padding: 1.5rem;
+    color: #e2e8f0;
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    overflow-x: auto;
+}
+
+/* 注意事项卡片 */
+.note-card {
+    background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%);
+    border-left: 4px solid #f59e0b;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin: 1.5rem 0;
+}
+
+.note-card.warning {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border-left-color: #ef4444;
+}
+
+.note-card.success {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border-left-color: #10b981;
+}
+
+.note-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.note-card .note-title {
+    color: #92400e;
+}
+
+.note-card.warning .note-title {
+    color: #991b1b;
+}
+
+.note-card.success .note-title {
+    color: #065f46;
+}
+
+/* 章节导航 */
+.chapter-nav {
+    display: flex;
+    justify-content: space-between;
+    padding: 2rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-weight: 600;
+    color: #4a5568;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+}
+
+.nav-btn:hover {
+    background: #f7fafc;
+    border-color: #667eea;
+    color: #667eea;
+    transform: translateY(-2px);
+}
+
+.nav-btn.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.nav-btn.disabled:hover {
+    transform: none;
+    border-color: #e2e8f0;
+}
+
+.nav-btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+}
+
+.nav-btn-primary:hover {
+    background: linear-gradient(135deg, #5a67d8 0%, #6b3fa0 100%);
+    color: white;
+}
+
+/* 学习进度条 */
+.progress-section {
+    padding: 1.5rem 2rem;
+    background: #f7fafc;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.progress-label {
+    font-size: 0.9rem;
+    color: #718096;
+}
+
+.progress-percent {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #667eea;
+}
+
+.progress-bar {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    transition: width 0.5s ease;
+    border-radius: 10px;
+}
+
+/* 加载状态 */
+.loading-skeleton {
+    animation: skeleton-loading 1s linear infinite alternate;
+}
+
+@keyframes skeleton-loading {
+    0% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+    .chapter-header {
+        padding: 1.5rem;
+    }
+
+    .chapter-title {
+        font-size: 1.5rem;
+    }
+
+    .chapter-content {
+        padding: 1.5rem;
+    }
+
+    .content-section-title {
+        font-size: 1.25rem;
+    }
+
+    .chapter-nav {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .nav-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+
+<script>
+/**
+ * 创建章节学习卡片
+ * @param {Object} chapter - 章节数据
+ * @param {Object} content - 章节内容
+ * @param {Object} options - 配置选项
+ * @returns {string} HTML字符串
+ */
+function createChapterCard(chapter, content, options = {}) {
+    const {
+        showProgress = true,
+        showNav = true,
+        progress = 0,
+        prevChapter = null,
+        nextChapter = null
+    } = options;
+
+    return `
+        <div class="chapter-card" data-chapter-id="${chapter.id}">
+            ${showProgress ? `
+                <div class="progress-section">
+                    <div class="progress-info">
+                        <span class="progress-label">学习进度</span>
+                        <span class="progress-percent">${progress}%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progress}%"></div>
+                    </div>
+                </div>
+            ` : ''}
+
+            <div class="chapter-header">
+                <div class="chapter-number">第 ${chapter.sequence || chapter.id} 章</div>
+                <h1 class="chapter-title">${chapter.title}</h1>
+                <div class="chapter-meta">
+                    ${chapter.duration ? `
+                        <div class="chapter-meta-item">
+                            <span>⏱️</span>
+                            <span>${chapter.duration}分钟</span>
+                        </div>
+                    ` : ''}
+                    ${chapter.difficulty ? `
+                        <div class="chapter-meta-item">
+                            <span>📊</span>
+                            <span>${getDifficultyText(chapter.difficulty)}</span>
+                        </div>
+                    ` : ''}
+                    <div class="chapter-meta-item">
+                        <span>👁️</span>
+                        <span>${chapter.views || 0} 学习</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chapter-content">
+                ${content.content_html || formatContent(content.content_text) || '<p>暂无内容</p>'}
+            </div>
+
+            ${showNav ? `
+                <div class="chapter-nav">
+                    ${prevChapter ? `
+                        <a href="#" class="nav-btn" onclick="loadChapter(${prevChapter.id}); return false;">
+                            <span>←</span>
+                            <span>上一章</span>
+                        </a>
+                    ` : '<div></div>'}
+
+                    ${nextChapter ? `
+                        <a href="#" class="nav-btn nav-btn-primary" onclick="loadChapter(${nextChapter.id}); return false;">
+                            <span>下一章</span>
+                            <span>→</span>
+                        </a>
+                    ` : `
+                        <button class="nav-btn nav-btn-primary" onclick="completeChapter(${chapter.id})">
+                            <span>✓ 完成学习</span>
+                        </button>
+                    `}
+                </div>
+            ` : ''}
+        </div>
+    `;
+}
+
+/**
+ * 格式化内容文本为HTML
+ */
+function formatContent(text) {
+    if (!text) return '';
+
+    // 简单的Markdown样式转换
+    text = text
+        // 代码块
+        .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
+        // 行内代码
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        // 标题
+        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+        .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+        // 粗体
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        // 斜体
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        // 链接
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+        // 段落
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>');
+
+    return `<p>${text}</p>`;
+}
+
+/**
+ * 获取难度文本
+ */
+function getDifficultyText(difficulty) {
+    const map = {
+        'beginner': '入门',
+        'intermediate': '中级',
+        'advanced': '高级',
+        'easy': '简单',
+        'medium': '中等',
+        'hard': '困难'
+    };
+    return map[difficulty] || difficulty;
+}
+
+/**
+ * 创建知识点卡片
+ */
+function createKnowledgeCard(title, content) {
+    return `
+        <div class="knowledge-card">
+            <div class="knowledge-title">
+                <span>💡</span>
+                <span>${title}</span>
+            </div>
+            <div class="knowledge-content">${content}</div>
+        </div>
+    `;
+}
+
+/**
+ * 创建示例代码卡片
+ */
+function createExampleCard(code, language = 'javascript', title = '示例代码') {
+    return `
+        <div class="example-card">
+            <div class="example-header">
+                <div class="example-title">${title}</div>
+                <div class="example-lang">${language}</div>
+            </div>
+            <pre class="example-code"><code>${escapeHtml(code)}</code></pre>
+        </div>
+    `;
+}
+
+/**
+ * 创建注意事项卡片
+ */
+function createNoteCard(content, type = 'note') {
+    const icons = {
+        note: '💡',
+        warning: '⚠️',
+        success: '✓'
+    };
+
+    const titles = {
+        note: '提示',
+        warning: '注意',
+        success: '重点'
+    };
+
+    return `
+        <div class="note-card ${type}">
+            <div class="note-title">
+                <span>${icons[type]}</span>
+                <span>${titles[type]}</span>
+            </div>
+            <div>${content}</div>
+        </div>
+    `;
+}
+
+/**
+ * 转义HTML
+ */
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, m => map[m]);
+}
+
+/**
+ * 加载章节内容
+ */
+async function loadChapter(chapterId) {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`/content/chapters/${chapterId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('加载失败');
+        }
+
+        const data = await response.json();
+
+        if (data.code === 200) {
+            // 渲染章节内容
+            renderChapter(data.data);
+
+            // 滚动到顶部
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // 更新进度
+            updateProgress(chapterId, 0);
+        } else {
+            alert(data.message || '加载章节失败');
+        }
+    } catch (error) {
+        console.error('加载章节失败:', error);
+        alert('网络错误，请稍后重试');
+    }
+}
+
+/**
+ * 完成章节学习
+ */
+async function completeChapter(chapterId) {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`/content/chapters/${chapterId}/progress?progressPercent=100`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.ok) {
+            alert('🎉 恭喜完成本章学习！');
+            // 可以跳转到下一章或课程列表
+        }
+    } catch (error) {
+        console.error('更新进度失败:', error);
+    }
+}
+
+/**
+ * 更新学习进度
+ */
+async function updateProgress(chapterId, percent) {
+    try {
+        const token = localStorage.getItem('token');
+        await fetch(`/content/chapters/${chapterId}/progress?progressPercent=${percent}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+    } catch (error) {
+        console.error('更新进度失败:', error);
+    }
+}
+
+/**
+ * 渲染章节内容
+ */
+function renderChapter(chapterData) {
+    const container = document.getElementById('chapterContainer');
+    if (!container) return;
+
+    const html = createChapterCard(
+        chapterData.chapter,
+        chapterData.content,
+        {
+            showProgress: true,
+            showNav: true,
+            progress: chapterData.progress || 0,
+            prevChapter: chapterData.prevChapter,
+            nextChapter: chapterData.nextChapter
+        }
+    );
+
+    container.innerHTML = html;
+}
+</script>

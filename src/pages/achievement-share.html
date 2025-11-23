@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成就分享 - AI未来学院</title>
+    <!-- html2canvas库 -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <!-- API配置 -->
+    <script src="../config/api-config.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+        }
+
+        /* 分享卡片容器 */
+        .share-card-container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 分享卡片 - 将被截图 */
+        .share-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            width: 450px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 装饰性背景 */
+        .card-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.1;
+            background-image:
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            color: white;
+        }
+
+        /* 成就图标 */
+        .achievement-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .achievement-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .achievement-desc {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .achievement-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .achievement-date {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 1.5rem;
+        }
+
+        /* 底部品牌 */
+        .card-footer {
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-logo {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .card-qrcode {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: #333;
+        }
+
+        /* 按钮组 */
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 1rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+        }
+
+        /* 预览提示 */
+        .preview-hint {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading.show {
+            display: flex;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 成功提示 */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(16, 185, 129, 0.95);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="share-card-container">
+            <!-- 分享卡片 -->
+            <div class="share-card" id="shareCard">
+                <div class="card-bg"></div>
+                <div class="card-content">
+                    <div class="achievement-icon" id="cardIcon">
+                        🏆
+                    </div>
+                    <div class="achievement-title" id="cardTitle">
+                        学习达人
+                    </div>
+                    <div class="achievement-desc" id="cardDesc">
+                        连续学习30天，完成10门课程
+                    </div>
+                    <div class="achievement-stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="statValue1">30</div>
+                            <div class="stat-label" id="statLabel1">连续天数</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="statValue2">10</div>
+                            <div class="stat-label" id="statLabel2">完成课程</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="statValue3">98</div>
+                            <div class="stat-label" id="statLabel3">超越%</div>
+                        </div>
+                    </div>
+                    <div class="achievement-date" id="cardDate">
+                        解锁时间: 2025-11-06
+                    </div>
+                    <div class="card-footer">
+                        <div class="card-logo">🎓 AI未来学院</div>
+                        <div class="card-qrcode">
+                            扫码查看
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 按钮组 -->
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="generateShareImage()">
+                    📸 生成分享图片
+                </button>
+                <button class="btn btn-secondary" onclick="goBack()">
+                    ← 返回
+                </button>
+            </div>
+
+            <div class="preview-hint">
+                💡 点击生成按钮即可下载分享图片
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载动画 -->
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- 提示Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // 从URL参数获取成就数据
+        function getAchievementData() {
+            const params = new URLSearchParams(window.location.search);
+
+            return {
+                icon: params.get('icon') || '🏆',
+                title: params.get('title') || '学习达人',
+                desc: params.get('desc') || '连续学习30天，完成10门课程',
+                stat1Value: params.get('stat1Value') || '30',
+                stat1Label: params.get('stat1Label') || '连续天数',
+                stat2Value: params.get('stat2Value') || '10',
+                stat2Label: params.get('stat2Label') || '完成课程',
+                stat3Value: params.get('stat3Value') || '98',
+                stat3Label: params.get('stat3Label') || '超越%',
+                date: params.get('date') || new Date().toLocaleDateString('zh-CN')
+            };
+        }
+
+        // 初始化卡片数据
+        function initCard() {
+            const data = getAchievementData();
+
+            document.getElementById('cardIcon').textContent = data.icon;
+            document.getElementById('cardTitle').textContent = data.title;
+            document.getElementById('cardDesc').textContent = data.desc;
+            document.getElementById('statValue1').textContent = data.stat1Value;
+            document.getElementById('statLabel1').textContent = data.stat1Label;
+            document.getElementById('statValue2').textContent = data.stat2Value;
+            document.getElementById('statLabel2').textContent = data.stat2Label;
+            document.getElementById('statValue3').textContent = data.stat3Value;
+            document.getElementById('statLabel3').textContent = data.stat3Label;
+            document.getElementById('cardDate').textContent = `解锁时间: ${data.date}`;
+        }
+
+        // 生成分享图片
+        async function generateShareImage() {
+            const loading = document.getElementById('loading');
+            loading.classList.add('show');
+
+            try {
+                const card = document.getElementById('shareCard');
+
+                // 使用html2canvas截图
+                const canvas = await html2canvas(card, {
+                    backgroundColor: null,
+                    scale: 2, // 提高清晰度
+                    logging: false,
+                    useCORS: true
+                });
+
+                // 转换为图片
+                const dataUrl = canvas.toDataURL('image/png');
+
+                // 下载图片
+                downloadImage(dataUrl, '成就分享-' + Date.now() + '.png');
+
+                // 显示成功提示
+                showToast('✅ 图片已生成！请查看下载文件夹');
+
+            } catch (error) {
+                console.error('生成图片失败:', error);
+                showToast('❌ 生成失败，请重试', 'error');
+            } finally {
+                loading.classList.remove('show');
+            }
+        }
+
+        // 下载图片
+        function downloadImage(dataUrl, filename) {
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // 显示提示
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.background = type === 'success'
+                ? 'rgba(16, 185, 129, 0.95)'
+                : 'rgba(239, 68, 68, 0.95)';
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 返回
+        function goBack() {
+            window.history.back();
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initCard();
+        });
+    </script>
+</body>
+</html>

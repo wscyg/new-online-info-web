@@ -480,8 +480,15 @@
             }
         }
     </style>
+
+    <!-- UX Enhancement Styles -->
+    
+  <link rel="stylesheet" href="/assets/ux-enhancements-2fb285cd.css">
 </head>
 <body>
+    <!-- 全局登录状态 -->
+    <div id="auth-header"></div>
+
     <!-- Top Navigation -->
     <nav class="top-nav">
         <div class="nav-container">
@@ -590,6 +597,13 @@
         </main>
     </div>
 
+    <script src="../utils/loading.js"></script>
+    <script src="../utils/notification.js"></script>
+    <script src="../utils/ui-helpers.js"></script>
+
+    <!-- UX Enhancement Scripts -->
+    <script src="../utils/ux-utils.js"></script>
+
     <script>
         // Configuration
         const hostname = window.location.hostname;
@@ -601,19 +615,46 @@
         // Initialize Dashboard
         document.addEventListener('DOMContentLoaded', function() {
             if (!checkAuth()) return;
-            
+
+            // Initialize UX enhancements
+            initUXEnhancements();
+
             loadUserInfo();
             loadStatistics();
             loadMyCourses();
             loadRecentActivity();
         });
 
+        // Initialize UX enhancements
+        function initUXEnhancements() {
+            // Initialize lazy loading for images
+            if (window.UXUtils && window.UXUtils.LazyLoader) {
+                const lazyImages = document.querySelectorAll('img.lazy-image');
+                if (lazyImages.length > 0) {
+                    const loader = new window.UXUtils.LazyLoader();
+                    loader.observe(lazyImages);
+                }
+            }
+
+            // Initialize animation triggers
+            if (window.UXUtils && window.UXUtils.AnimationTrigger) {
+                window.UXUtils.AnimationTrigger.init();
+            }
+
+            // Initialize smooth scroll
+            if (window.UXUtils && window.UXUtils.smoothScroll) {
+                window.UXUtils.smoothScroll.init();
+            }
+
+            console.log('✅ Dashboard UX enhancements initialized');
+        }
+
         // Check Authentication
         function checkAuth() {
             const token = localStorage.getItem('token');
             if (!token) {
                 const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-                window.location.href = isDev ? '/src/pages/login.html' : '/login.html';
+                window.location.href = '/src/pages/login.html';
                 return false;
             }
             return true;
@@ -708,7 +749,12 @@
         // Load My Courses
         async function loadMyCourses() {
             const container = document.getElementById('coursesGrid');
-            
+
+            // Show loading skeleton
+            if (window.uiHelpers) {
+                window.uiHelpers.showSkeleton(container, { type: 'card', count: 3 });
+            }
+
             try {
                 const response = await fetch(`${API_BASE}/user/courses`, {
                     headers: {
@@ -758,14 +804,22 @@
                     throw new Error('Failed to load courses');
                 }
             } catch (error) {
-                // Silently handle errors
+                // Handle errors with notification
                 console.log('Could not load courses');
+                if (window.uiHelpers && error.status !== 401) {
+                    window.uiHelpers.handleApiError(error, '加载课程失败');
+                }
                 container.innerHTML = `
                     <div style="grid-column:1/-1;text-align:center;padding:3rem;">
                         <p style="color:#718096;margin-bottom:1rem;">请登录后查看课程</p>
                         <a href="login.html" class="btn btn-primary">立即登录</a>
                     </div>
                 `;
+            } finally {
+                // Hide loading skeleton
+                if (window.uiHelpers) {
+                    window.uiHelpers.hideSkeleton(container);
+                }
             }
         }
 
@@ -891,9 +945,19 @@
             if (confirm('确定要退出登录吗？')) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
-                window.location.href = 'login.html';
+                window.location.href = '/src/pages/login.html';
             }
         }
+    </script>
+    <!-- 全局登录状态组件 -->
+    <script src="../utils/auth-header.js"></script>
+    <script>
+        // 初始化登录状态组件
+        document.addEventListener('DOMContentLoaded', () => {
+            AuthHeader.init('auth-header', {
+                showLinks: false
+            });
+        });
     </script>
 </body>
 </html>

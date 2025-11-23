@@ -414,6 +414,9 @@
             to { opacity: 1; }
         }
     </style>
+
+    <!-- UX Enhancement Styles -->
+    <link rel="stylesheet" href="../styles/ux-enhancements.css">
 </head>
 <body>
     <div class="register-container">
@@ -443,7 +446,7 @@
                 <label class="form-label">用户名</label>
                 <div class="input-wrapper">
                     <i class="fas fa-user input-icon"></i>
-                    <input type="text" class="form-input" id="username" placeholder="请输入用户名" required>
+                    <input type="text" class="form-input" id="username" name="username" data-validate="username" placeholder="请输入用户名" required>
                 </div>
                 <div class="validation-hint" id="usernameHint">
                     <i class="fas fa-info-circle"></i>
@@ -456,7 +459,7 @@
                 <label class="form-label">邮箱地址</label>
                 <div class="input-wrapper">
                     <i class="fas fa-envelope input-icon"></i>
-                    <input type="email" class="form-input" id="email" placeholder="请输入邮箱地址" required>
+                    <input type="email" class="form-input" id="email" name="email" data-validate="email" placeholder="请输入邮箱地址" required>
                 </div>
                 <div class="validation-hint" id="emailHint">
                     <i class="fas fa-info-circle"></i>
@@ -489,7 +492,7 @@
                 <label class="form-label">密码</label>
                 <div class="input-wrapper">
                     <i class="fas fa-lock input-icon"></i>
-                    <input type="password" class="form-input" id="password" placeholder="请输入密码" required>
+                    <input type="password" class="form-input" id="password" name="password" data-validate="password" placeholder="请输入密码" required>
                 </div>
                 <div class="validation-hint" id="passwordHint">
                     <i class="fas fa-info-circle"></i>
@@ -502,7 +505,7 @@
                 <label class="form-label">确认密码</label>
                 <div class="input-wrapper">
                     <i class="fas fa-lock input-icon"></i>
-                    <input type="password" class="form-input" id="confirmPassword" placeholder="请再次输入密码" required>
+                    <input type="password" class="form-input" id="confirmPassword" name="confirmPassword" data-validate="password-confirm" placeholder="请再次输入密码" required>
                 </div>
                 <div class="validation-hint" id="confirmHint">
                     <i class="fas fa-info-circle"></i>
@@ -515,7 +518,7 @@
                 <label class="form-label">昵称 <span style="color: #9ca3af;">(可选)</span></label>
                 <div class="input-wrapper">
                     <i class="fas fa-smile input-icon"></i>
-                    <input type="text" class="form-input" id="nickname" placeholder="请输入昵称（可选）">
+                    <input type="text" class="form-input" id="nickname" name="nickname" data-validate="nickname" placeholder="请输入昵称（可选）">
                 </div>
                 <div class="validation-hint" id="nicknameHint">
                     <i class="fas fa-info-circle"></i>
@@ -544,6 +547,14 @@
             已有账号？<a href="login.html" id="loginLink">立即登录</a>
         </div>
     </div>
+
+    <script src="../utils/loading.js"></script>
+    <script src="../utils/notification.js"></script>
+    <script src="../utils/ui-helpers.js"></script>
+    <script src="../utils/form-validation.js"></script>
+
+    <!-- UX Enhancement Scripts -->
+    <script src="../utils/ux-utils.js"></script>
 
     <script>
         // DOM元素
@@ -885,15 +896,20 @@
         // 发送验证码
         async function sendVerificationCode() {
             const email = elements.email.value.trim();
-            
+
             if (!validationStatus.email) {
                 showMessage('error', '请先输入有效的邮箱地址');
                 return;
             }
 
             try {
-                elements.sendCodeBtn.disabled = true;
-                elements.sendCodeText.textContent = '发送中...';
+                // Show button loading
+                if (window.uiHelpers) {
+                    window.uiHelpers.showButtonLoading(elements.sendCodeBtn);
+                } else {
+                    elements.sendCodeBtn.disabled = true;
+                    elements.sendCodeText.textContent = '发送中...';
+                }
 
                 const response = await fetch(`${API_BASE}/auth/send-email-verification`, {
                     method: 'POST',
@@ -906,19 +922,35 @@
                 const result = await response.json();
 
                 if (result.code === 200) {
-                    showMessage('success', '验证码已发送到您的邮箱，请查收');
+                    if (window.uiHelpers) {
+                        window.uiHelpers.showSuccess('验证码已发送到您的邮箱，请查收');
+                    } else {
+                        showMessage('success', '验证码已发送到您的邮箱，请查收');
+                    }
                     startCountdown(60);
                     setValidationHint(elements.codeHint, '', '验证码已发送，请查收邮箱');
                 } else {
-                    showMessage('error', result.message || '发送失败，请稍后重试');
-                    elements.sendCodeBtn.disabled = false;
-                    elements.sendCodeText.textContent = '发送验证码';
+                    if (window.uiHelpers) {
+                        window.uiHelpers.showError(result.message || '发送失败，请稍后重试');
+                    } else {
+                        showMessage('error', result.message || '发送失败，请稍后重试');
+                    }
                 }
             } catch (error) {
                 console.error('发送验证码失败:', error);
-                showMessage('error', '网络错误，请稍后重试');
-                elements.sendCodeBtn.disabled = false;
-                elements.sendCodeText.textContent = '发送验证码';
+                if (window.uiHelpers) {
+                    window.uiHelpers.handleApiError(error, '发送验证码失败');
+                } else {
+                    showMessage('error', '网络错误，请稍后重试');
+                }
+            } finally {
+                // Hide button loading
+                if (window.uiHelpers) {
+                    window.uiHelpers.hideButtonLoading(elements.sendCodeBtn);
+                } else {
+                    elements.sendCodeBtn.disabled = false;
+                    elements.sendCodeText.textContent = '发送验证码';
+                }
             }
         }
 
@@ -1004,22 +1036,34 @@
                 const result = await response.json();
 
                 if (result.code === 200) {
-                    showMessage('success', '注册成功！正在跳转到登录页...');
-                    
+                    if (window.uiHelpers) {
+                        window.uiHelpers.showSuccess('注册成功！正在跳转到登录页...');
+                    } else {
+                        showMessage('success', '注册成功！正在跳转到登录页...');
+                    }
+
                     // 延迟跳转
                     setTimeout(() => {
                         const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
-                        const loginUrl = returnUrl ? 
-                            `login.html?returnUrl=${encodeURIComponent(returnUrl)}` : 
+                        const loginUrl = returnUrl ?
+                            `login.html?returnUrl=${encodeURIComponent(returnUrl)}` :
                             'login.html';
                         window.location.href = loginUrl;
                     }, 2000);
                 } else {
-                    showMessage('error', result.message || '注册失败，请重试');
+                    if (window.uiHelpers) {
+                        window.uiHelpers.showError(result.message || '注册失败，请重试');
+                    } else {
+                        showMessage('error', result.message || '注册失败，请重试');
+                    }
                 }
             } catch (error) {
                 console.error('注册失败:', error);
-                showMessage('error', '网络错误，请稍后重试');
+                if (window.uiHelpers) {
+                    window.uiHelpers.handleApiError(error, '注册失败');
+                } else {
+                    showMessage('error', '网络错误，请稍后重试');
+                }
             } finally {
                 setLoadingState(false);
             }
@@ -1027,12 +1071,20 @@
 
         // 设置加载状态
         function setLoadingState(loading) {
-            elements.registerBtn.disabled = loading;
-            
-            if (loading) {
-                elements.btnText.innerHTML = '<span class="loading-spinner"></span>注册中...';
+            if (window.uiHelpers) {
+                if (loading) {
+                    window.uiHelpers.showButtonLoading(elements.registerBtn);
+                } else {
+                    window.uiHelpers.hideButtonLoading(elements.registerBtn);
+                }
             } else {
-                elements.btnText.textContent = '创建账户';
+                elements.registerBtn.disabled = loading;
+
+                if (loading) {
+                    elements.btnText.innerHTML = '<span class="loading-spinner"></span>注册中...';
+                } else {
+                    elements.btnText.textContent = '创建账户';
+                }
             }
         }
 

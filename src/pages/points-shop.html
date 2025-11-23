@@ -681,15 +681,11 @@
                 <span>👑</span>
                 <span>VIP特权</span>
             </button>
-            <button class="category-btn" data-category="virtual">
-                <span>🎮</span>
-                <span>虚拟道具</span>
-            </button>
             <button class="category-btn" data-category="physical">
                 <span>🎁</span>
                 <span>实物奖品</span>
             </button>
-            <button class="category-btn" data-category="discount">
+            <button class="category-btn" data-category="coupon">
                 <span>🎫</span>
                 <span>优惠券</span>
             </button>
@@ -781,129 +777,26 @@
     </div>
 
     <script>
-        // 商品数据
-        const products = [
-            {
-                id: 'course-python',
-                category: 'course',
-                name: 'Python高级编程课程',
-                desc: '解锁Python高级特性课程，包含异步编程、装饰器等内容',
-                points: 3000,
-                icon: '🐍',
-                stock: 10,
-                sold: 156,
-                badges: ['hot']
-            },
-            {
-                id: 'course-ai',
-                category: 'course',
-                name: 'AI算法实战课程',
-                desc: '深度学习与机器学习实战项目课程',
-                points: 5000,
-                icon: '🤖',
-                stock: 5,
-                sold: 89,
-                badges: ['new', 'hot']
-            },
-            {
-                id: 'coupon-100',
-                category: 'discount',
-                name: '100元课程优惠券',
-                desc: '可用于购买任意付费课程，满299元可用',
-                points: 1000,
-                icon: '🎫',
-                stock: 50,
-                sold: 234,
-                badges: []
-            },
-            {
-                id: 'avatar-frame',
-                category: 'virtual',
-                name: '专属头像框',
-                desc: '金色限定头像框，彰显学霸身份',
-                points: 800,
-                icon: '🖼️',
-                stock: 100,
-                sold: 456,
-                badges: ['limited']
-            },
-            {
-                id: 'notebook',
-                category: 'physical',
-                name: 'AI学习笔记本',
-                desc: '精美硬壳笔记本，含AI学习路线图',
-                points: 1500,
-                icon: '📔',
-                stock: 20,
-                sold: 67,
-                badges: []
-            },
-            {
-                id: 'tshirt',
-                category: 'physical',
-                name: '程序员文化衫',
-                desc: '"Hello World"主题T恤，纯棉材质',
-                points: 2000,
-                icon: '👕',
-                stock: 3,
-                sold: 145,
-                badges: ['hot']
-            },
-            {
-                id: 'badge-master',
-                category: 'virtual',
-                name: '大师徽章',
-                desc: '展示在个人主页，象征顶级学习者',
-                points: 10000,
-                icon: '🏅',
-                stock: 10,
-                sold: 12,
-                badges: ['limited']
-            },
-            {
-                id: 'coupon-50',
-                category: 'discount',
-                name: '50元通用优惠券',
-                desc: '全站通用，满199元可用',
-                points: 500,
-                icon: '🎟️',
-                stock: 100,
-                sold: 567,
-                badges: []
-            },
-            {
-                id: 'course-web',
-                category: 'course',
-                name: '全栈开发精品课',
-                desc: '从前端到后端，打造全栈工程师',
-                points: 4500,
-                icon: '💻',
-                stock: 8,
-                sold: 203,
-                badges: ['new']
-            },
-            {
-                id: 'mug',
-                category: 'physical',
-                name: '程序员马克杯',
-                desc: '"代码改变世界"主题马克杯',
-                points: 1200,
-                icon: '☕',
-                stock: 15,
-                sold: 89,
-                badges: []
-            }
-        ];
-
+        // 全局变量
         let currentCategory = 'all';
-        let userPoints = 8560;
+        let userPoints = 0;
+        let products = [];
+        let allProducts = [];
+
+        // 获取API Base URL
+        function getApiBase() {
+            return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                ? 'http://localhost:8080/api'
+                : '/api';
+        }
 
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
             initializeStars();
             bindEvents();
+            loadUserPoints();
             loadProducts();
-            loadPointsHistory();
+            loadRedemptionHistory();
         });
 
         // 初始化星空背景
@@ -938,21 +831,84 @@
                     document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     currentCategory = this.dataset.category;
-                    loadProducts();
+                    filterProducts();
                 });
             });
         }
 
-        // 加载商品
-        function loadProducts() {
-            const shopGrid = document.getElementById('shopGrid');
-            
-            // 筛选商品
-            let filteredProducts = products;
-            if (currentCategory !== 'all') {
-                filteredProducts = products.filter(p => p.category === currentCategory);
+        // 加载用户积分
+        async function loadUserPoints() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    console.log('用户未登录');
+                    return;
+                }
+
+                const response = await fetch(`${getApiBase()}/user/profile`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.code === 200 && data.data) {
+                        userPoints = data.data.points || 0;
+                        document.getElementById('userPoints').textContent = userPoints.toLocaleString();
+                    }
+                }
+            } catch (error) {
+                console.error('加载用户积分失败:', error);
             }
-            
+        }
+
+        // 加载商品列表
+        async function loadProducts() {
+            const shopGrid = document.getElementById('shopGrid');
+
+            shopGrid.innerHTML = `
+                <div class="loading" style="grid-column: 1 / -1;">
+                    <div class="loading-spinner"></div>
+                    <p>加载商品中...</p>
+                </div>
+            `;
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${getApiBase()}/points-shop/items?page=1&size=100`, {
+                    headers: {
+                        'Authorization': token ? `Bearer ${token}` : ''
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.code === 200 && data.data) {
+                        allProducts = data.data.items || data.data || [];
+                        filterProducts();
+                    } else {
+                        showEmptyState();
+                    }
+                } else {
+                    showErrorState('无法加载商品列表，请稍后再试');
+                }
+            } catch (error) {
+                console.error('加载商品失败:', error);
+                showErrorState('网络连接失败，请检查网络设置');
+            }
+        }
+
+        // 筛选商品
+        function filterProducts() {
+            const shopGrid = document.getElementById('shopGrid');
+
+            // 筛选商品
+            let filteredProducts = allProducts;
+            if (currentCategory !== 'all') {
+                filteredProducts = allProducts.filter(p => p.itemType === currentCategory);
+            }
+
             if (filteredProducts.length === 0) {
                 shopGrid.innerHTML = `
                     <div class="empty-state" style="grid-column: 1 / -1;">
@@ -962,56 +918,94 @@
                 `;
                 return;
             }
-            
+
             // 渲染商品
             shopGrid.innerHTML = filteredProducts.map(product => createProductCard(product)).join('');
         }
 
+        // 显示空状态
+        function showEmptyState() {
+            const shopGrid = document.getElementById('shopGrid');
+            shopGrid.innerHTML = `
+                <div class="empty-state" style="grid-column: 1 / -1;">
+                    <div class="empty-icon">📦</div>
+                    <p>暂无商品</p>
+                </div>
+            `;
+        }
+
+        // 显示错误状态
+        function showErrorState(message) {
+            const shopGrid = document.getElementById('shopGrid');
+            shopGrid.innerHTML = `
+                <div class="empty-state" style="grid-column: 1 / -1;">
+                    <div class="empty-icon">⚠️</div>
+                    <p>${message}</p>
+                    <button class="btn-exchange" onclick="loadProducts()" style="margin-top: 1rem;">重试</button>
+                </div>
+            `;
+        }
+
         // 创建商品卡片
         function createProductCard(product) {
-            const isAffordable = userPoints >= product.points;
-            const isLowStock = product.stock <= 5;
-            
+            const isAffordable = userPoints >= product.pointsCost;
+            const isLowStock = product.stockAvailable <= 5;
+            const totalSold = (product.stockTotal || 0) - (product.stockAvailable || 0);
+
+            // 根据商品类型选择图标
+            const iconMap = {
+                'course': '📚',
+                'vip': '👑',
+                'physical': '🎁',
+                'coupon': '🎫'
+            };
+            const icon = iconMap[product.itemType] || '🎁';
+
+            // 判断是否是新品或热门（根据销量和上架时间）
+            const badges = [];
+            if (totalSold > 100) badges.push('hot');
+            if (product.stockAvailable <= 10) badges.push('limited');
+
             let badgesHtml = '';
-            if (product.badges.length > 0) {
+            if (badges.length > 0) {
                 badgesHtml = `
                     <div class="product-badges">
-                        ${product.badges.map(badge => `
+                        ${badges.map(badge => `
                             <span class="badge badge-${badge}">${
-                                badge === 'hot' ? '热门' : 
-                                badge === 'new' ? '新品' : 
+                                badge === 'hot' ? '热门' :
+                                badge === 'new' ? '新品' :
                                 '限定'
                             }</span>
                         `).join('')}
                     </div>
                 `;
             }
-            
+
             return `
-                <div class="product-card ${product.category === 'vip' ? 'vip' : ''} ${product.badges.includes('limited') ? 'limited' : ''}">
+                <div class="product-card ${product.itemType === 'vip' ? 'vip' : ''} ${badges.includes('limited') ? 'limited' : ''}">
                     ${badgesHtml}
                     <div class="product-image">
-                        ${product.icon}
+                        ${product.imageUrl ? `<img src="${product.imageUrl}" alt="${product.name}" style="max-width:80px; max-height:80px;" />` : icon}
                     </div>
                     <div class="product-info">
-                        <div class="product-category">${getCategoryName(product.category)}</div>
+                        <div class="product-category">${getCategoryName(product.itemType)}</div>
                         <h3 class="product-name">${product.name}</h3>
-                        <p class="product-desc">${product.desc}</p>
+                        <p class="product-desc">${product.description || ''}</p>
                         <div class="product-meta">
                             <span class="product-stock ${isLowStock ? 'stock-low' : ''}">
-                                库存: ${product.stock}
+                                库存: ${product.stockAvailable}
                             </span>
-                            <span class="product-sold">已兑: ${product.sold}</span>
+                            <span class="product-sold">已兑: ${totalSold}</span>
                         </div>
                         <div class="product-footer">
                             <div class="product-price">
-                                <span class="price-points">${product.points.toLocaleString()}</span>
+                                <span class="price-points">${product.pointsCost.toLocaleString()}</span>
                                 <span class="price-label">积分</span>
                             </div>
-                            <button class="btn-exchange" 
-                                    ${!isAffordable || product.stock === 0 ? 'disabled' : ''} 
-                                    onclick="exchangeProduct('${product.id}')">
-                                ${product.stock === 0 ? '已售罄' : (isAffordable ? '立即兑换' : '积分不足')}
+                            <button class="btn-exchange"
+                                    ${!isAffordable || product.stockAvailable === 0 || product.isActive === 0 ? 'disabled' : ''}
+                                    onclick="exchangeProduct(${product.id})">
+                                ${product.stockAvailable === 0 ? '已售罄' : (isAffordable ? '立即兑换' : '积分不足')}
                             </button>
                         </div>
                     </div>
@@ -1024,140 +1018,149 @@
             const names = {
                 'course': '课程兑换',
                 'vip': 'VIP特权',
-                'virtual': '虚拟道具',
                 'physical': '实物奖品',
-                'discount': '优惠券'
+                'coupon': '优惠券'
             };
             return names[category] || '其他';
         }
 
         // 兑换商品
-        async function exchangeProduct(productId) {
-            const product = products.find(p => p.id === productId);
-            if (!product) return;
-            
-            if (userPoints < product.points) {
+        async function exchangeProduct(itemId) {
+            const product = allProducts.find(p => p.id === itemId);
+            if (!product) {
+                showNotification('商品不存在', 'error');
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showNotification('请先登录', 'error');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
+                return;
+            }
+
+            if (userPoints < product.pointsCost) {
                 showNotification('积分不足，继续努力吧！', 'error');
                 return;
             }
-            
-            if (product.stock === 0) {
+
+            if (product.stockAvailable === 0) {
                 showNotification('商品已售罄', 'error');
                 return;
             }
-            
-            if (confirm(`确认使用 ${product.points} 积分兑换「${product.name}」吗？`)) {
+
+            if (confirm(`确认使用 ${product.pointsCost} 积分兑换「${product.name}」吗？`)) {
                 try {
-                    // 调用API进行兑换
-                    const token = localStorage.getItem('token');
-                    const response = await fetch('/api/points/exchange', {
+                    const response = await fetch(`${getApiBase()}/points-shop/redeem?itemId=${itemId}`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Authorization': token ? `Bearer ${token}` : ''
-                        },
-                        body: JSON.stringify({
-                            productId: productId,
-                            points: product.points
-                        })
+                            'Authorization': `Bearer ${token}`
+                        }
                     });
-                    
+
                     if (response.ok) {
                         const data = await response.json();
                         if (data.code === 200) {
-                            // 更新用户积分
-                            userPoints -= product.points;
-                            document.getElementById('userPoints').textContent = userPoints.toLocaleString();
-                            
-                            // 更新商品库存
-                            product.stock--;
-                            product.sold++;
-                            
-                            // 重新加载商品
+                            showNotification('兑换成功！请在"我的兑换"中查看', 'success');
+
+                            // 重新加载用户积分
+                            loadUserPoints();
+
+                            // 重新加载商品列表
                             loadProducts();
-                            
-                            showNotification('兑换成功！请在个人中心查看', 'success');
-                            
-                            // 添加到历史记录
-                            addToHistory({
-                                type: 'spend',
-                                title: `兑换${product.name}`,
-                                points: product.points
-                            });
+
+                            // 重新加载兑换历史
+                            loadRedemptionHistory();
                         } else {
                             showNotification(data.message || '兑换失败', 'error');
                         }
                     } else {
-                        // 模拟成功（API不可用时）
-                        userPoints -= product.points;
-                        document.getElementById('userPoints').textContent = userPoints.toLocaleString();
-                        product.stock--;
-                        product.sold++;
-                        loadProducts();
-                        showNotification('兑换成功！', 'success');
+                        const data = await response.json();
+                        showNotification(data.message || '兑换失败，请稍后再试', 'error');
                     }
                 } catch (error) {
                     console.error('兑换失败:', error);
-                    // 模拟成功
-                    userPoints -= product.points;
-                    document.getElementById('userPoints').textContent = userPoints.toLocaleString();
-                    product.stock--;
-                    product.sold++;
-                    loadProducts();
-                    showNotification('兑换成功！', 'success');
+                    showNotification('网络错误，请检查网络设置', 'error');
                 }
             }
         }
 
-        // 加载积分历史
-        async function loadPointsHistory() {
+        // 加载兑换历史
+        async function loadRedemptionHistory() {
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch('/api/points/history?page=1&size=10', {
+                if (!token) {
+                    console.log('用户未登录');
+                    return;
+                }
+
+                const response = await fetch(`${getApiBase()}/points-shop/redemptions?page=1&size=10`, {
                     headers: {
-                        'Authorization': token ? `Bearer ${token}` : ''
+                        'Authorization': `Bearer ${token}`
                     }
                 });
-                
+
                 if (response.ok) {
                     const data = await response.json();
                     if (data.code === 200 && data.data) {
-                        renderHistory(data.data);
+                        renderRedemptionHistory(data.data.items || data.data || []);
                     }
                 }
             } catch (error) {
-                console.error('加载积分历史失败:', error);
+                console.error('加载兑换历史失败:', error);
             }
         }
 
-        // 渲染历史记录
-        function renderHistory(historyData) {
+        // 渲染兑换历史记录
+        function renderRedemptionHistory(redemptions) {
             const historyList = document.getElementById('historyList');
-            // 实现历史记录渲染逻辑
-        }
 
-        // 添加到历史记录
-        function addToHistory(record) {
-            const historyList = document.getElementById('historyList');
-            const now = new Date();
-            const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-            
-            const newItem = document.createElement('div');
-            newItem.className = 'history-item';
-            newItem.innerHTML = `
-                <div class="history-info">
-                    <div class="history-icon ${record.type === 'earn' ? 'earn' : 'spend'}">${record.type === 'earn' ? '➕' : '➖'}</div>
-                    <div class="history-details">
-                        <div class="history-title">${record.title}</div>
-                        <div class="history-date">${dateStr}</div>
+            if (!redemptions || redemptions.length === 0) {
+                historyList.innerHTML = `
+                    <div class="empty-state">
+                        <p style="color: rgba(255, 255, 255, 0.5);">暂无兑换记录</p>
                     </div>
-                </div>
-                <div class="history-points ${record.type === 'earn' ? 'points-add' : 'points-minus'}">
-                    ${record.type === 'earn' ? '+' : '-'}${record.points}
-                </div>
-            `;
-            
-            historyList.insertBefore(newItem, historyList.firstChild);
+                `;
+                return;
+            }
+
+            historyList.innerHTML = redemptions.map(redemption => {
+                const date = new Date(redemption.redeemedAt);
+                const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+
+                // 根据状态显示不同的图标和样式
+                let statusIcon = '➖';
+                let statusClass = 'spend';
+                let statusText = '';
+
+                if (redemption.status === 'completed') {
+                    statusIcon = '✅';
+                    statusText = ' (已完成)';
+                } else if (redemption.status === 'cancelled') {
+                    statusIcon = '❌';
+                    statusClass = 'earn';
+                    statusText = ' (已取消)';
+                } else if (redemption.status === 'pending') {
+                    statusIcon = '⏳';
+                    statusText = ' (待处理)';
+                }
+
+                return `
+                    <div class="history-item">
+                        <div class="history-info">
+                            <div class="history-icon ${statusClass}">${statusIcon}</div>
+                            <div class="history-details">
+                                <div class="history-title">兑换商品 #${redemption.id}${statusText}</div>
+                                <div class="history-date">${dateStr}</div>
+                            </div>
+                        </div>
+                        <div class="history-points points-minus">-${redemption.pointsSpent}</div>
+                    </div>
+                `;
+            }).join('');
         }
 
         // 显示通知

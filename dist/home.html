@@ -10,8 +10,55 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
+    <style>
+        /* 诗句打字机效果样式 */
+        .poetry-line {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .poetry-line.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .poetry-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+        }
+
+        .poetry-cursor {
+            color: #667eea;
+            animation: poetryBlink 1s infinite;
+            font-weight: 600;
+            display: none; /* 默认隐藏，打字时显示 */
+        }
+
+        .poetry-cursor.active {
+            display: inline;
+        }
+
+        @keyframes poetryBlink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* 确保诗句行有足够的最小高度 */
+        .poetry-line {
+            min-height: 1.5em;
+            margin-bottom: 0.5em;
+        }
+    </style>
+
+    <!-- UX Enhancement Styles -->
+    
   <script type="module" crossorigin src="/assets/modulepreload-polyfill-3cfb730f.js"></script>
-  <link rel="stylesheet" href="/assets/home-65fc4d4b.css">
+  <link rel="stylesheet" href="/assets/home-5a47593a.css">
+  <link rel="stylesheet" href="/assets/ux-enhancements-2fb285cd.css">
 </head>
 <body>
     <!-- 背景系统 -->
@@ -330,62 +377,120 @@
         <div class="features-grid">
             <a href="src/pages/courses.html#all" class="feature-card featured-bundle" style="grid-column: span 2;">
                 <div class="bundle-badge">超值全套</div>
-                <div class="feature-icon" style="font-size: 2.5rem;"><i class="fas fa-robot" style="color: #4a9eff;"></i></div>
+                <div class="feature-icon" style="font-size: 2.5rem;">
+                    <svg width="40" height="40" viewBox="0 0 40 40" style="color: #4a9eff;">
+                        <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="2"/>
+                        <circle cx="20" cy="20" r="12" fill="none" stroke="currentColor" stroke-width="2"/>
+                        <circle cx="20" cy="20" r="6" fill="currentColor"/>
+                        <path d="M20 2 L22 8 L20 14 L18 8 Z" fill="currentColor"/>
+                        <path d="M38 20 L32 22 L26 20 L32 18 Z" fill="currentColor"/>
+                        <path d="M20 38 L18 32 L20 26 L22 32 Z" fill="currentColor"/>
+                        <path d="M2 20 L8 18 L14 20 L8 22 Z" fill="currentColor"/>
+                    </svg>
+                </div>
                 <h3 class="feature-title" style="color: var(--accent-light);">AI全套专栏</h3>
                 <p class="feature-description">
-                    <strong>一次订阅，全部解锁</strong>：包含机器学习、深度学习、Transformer、NLP 全部内容<br>
-                    <strong>超级优惠</strong>：原价￥456，现价仅需<span style="color: #e74c3c; font-size: 1.3em; font-weight: bold;">￥299</span>，节省157元<br>
-                    <strong>从入门到专家</strong>：系统学习路径，38个章节全面覆盖AI核心技术
+                    <strong>故事化教学体系</strong>：通过生动的场景案例，让抽象的技术概念变得具体易懂<br>
+                    <strong>超级优惠</strong>：原价￥9999，现价仅需<span style="color: #e74c3c; font-size: 1.3em; font-weight: bold;">￥2999</span>，节省7000元<br>
+                    <strong>渐进式思维引导</strong>：从直觉到数学证明，层层深入，完整还原从发现问题到解决问题的思维过程<br>
+                    <strong>强大的可视化系统</strong>：动态背景营造沉浸感，交互式图表和动画，实时参数调节和效果展示
                 </p>
             </a>
 
             <a href="src/pages/courses.html#dl" class="feature-card">
-                <div class="feature-icon"><i class="fas fa-brain" style="color: #ff6b6b;"></i></div>
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" style="color: #ff6b6b;">
+                        <path d="M16 2 C8.268 2 2 8.268 2 16 C2 23.732 8.268 30 16 30 C23.732 30 30 23.732 30 16 C30 8.268 23.732 2 16 2 Z" fill="none" stroke="currentColor" stroke-width="2"/>
+                        <circle cx="10" cy="12" r="2" fill="currentColor"/>
+                        <circle cx="22" cy="12" r="2" fill="currentColor"/>
+                        <circle cx="16" cy="18" r="3" fill="currentColor"/>
+                        <path d="M10 12 L16 18" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M22 12 L16 18" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M16 18 L16 24" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                </div>
                 <h3 class="feature-title">深度学习进阶</h3>
                 <p class="feature-description">
-                    <strong>神经网络可视化</strong>：前向传播、反向传播全流程动画展示<br>
+                    <strong>实战代码详解</strong>：从理论到实现的完整路径，代码对比（单头 vs 多头）<br>
                     <strong>数学推导详解</strong>：激活函数、权重更新公式逐行解析<br>
-                    从CNN到RNN，从理论基础到PyTorch实战，精通深度学习核心技术
+                    <strong>互动学习体验</strong>：即时反馈的测验题，动手填空练习，性能对比实验
                 </p>
             </a>
 
             <a href="src/pages/courses.html#transformer" class="feature-card">
-                <div class="feature-icon"><i class="fas fa-bolt" style="color: #ffd93d;"></i></div>
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" style="color: #ffd93d;">
+                        <rect x="4" y="8" width="6" height="16" fill="currentColor" rx="2"/>
+                        <rect x="13" y="4" width="6" height="24" fill="currentColor" rx="2"/>
+                        <rect x="22" y="10" width="6" height="12" fill="currentColor" rx="2"/>
+                        <path d="M16 2 L18 6 L16 10 L14 6 Z" fill="currentColor"/>
+                        <circle cx="7" cy="16" r="1" fill="white"/>
+                        <circle cx="16" cy="16" r="1" fill="white"/>
+                        <circle cx="25" cy="16" r="1" fill="white"/>
+                    </svg>
+                </div>
                 <h3 class="feature-title">Transformer架构</h3>
                 <p class="feature-description">
                     <strong>从可视化全过程到手撕源码</strong>：注意力机制动态图解，逐行代码实现<br>
-                    <strong>数学公式拆解</strong>：Self-Attention、Position Encoding公式推导<br>
+                    <strong>矩阵计算详细演示</strong>：Self-Attention、Position Encoding的具体数值演示<br>
                     深度掌握BERT、GPT核心原理，构建自己的大语言模型
                 </p>
             </a>
 
             <a href="src/pages/courses.html#ml" class="feature-card">
-                <div class="feature-icon"><i class="fas fa-chart-line" style="color: #4ecdc4;"></i></div>
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" style="color: #4ecdc4;">
+                        <path d="M4 28 L4 4 L28 4" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <circle cx="8" cy="24" r="2" fill="currentColor"/>
+                        <circle cx="12" cy="20" r="2" fill="currentColor"/>
+                        <circle cx="16" cy="16" r="2" fill="currentColor"/>
+                        <circle cx="20" cy="12" r="2" fill="currentColor"/>
+                        <circle cx="24" cy="8" r="2" fill="currentColor"/>
+                        <path d="M6 26 L26 6" stroke="currentColor" stroke-width="2" stroke-dasharray="2,2"/>
+                    </svg>
+                </div>
                 <h3 class="feature-title">机器学习基础</h3>
                 <p class="feature-description">
                     <strong>可视化算法过程</strong>：线性回归、K-Means聚类、决策树等核心算法动态演示<br>
-                    <strong>公式拆解分析</strong>：梯度下降、损失函数逐步推导，数学原理清晰呈现<br>
+                    <strong>学习进度追踪</strong>：完整还原从发现问题到解决问题的思维过程，包含错误尝试和失败经验<br>
                     从线性回归到集成学习，全面掌握机器学习核心算法
                 </p>
             </a>
 
             <a href="src/pages/courses.html#nlp" class="feature-card">
-                <div class="feature-icon"><i class="fas fa-comments" style="color: #9b59b6;"></i></div>
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" style="color: #9b59b6;">
+                        <rect x="4" y="8" width="24" height="16" fill="none" stroke="currentColor" stroke-width="2" rx="4"/>
+                        <path d="M8 14 L12 14" stroke="currentColor" stroke-width="2"/>
+                        <path d="M8 18 L20 18" stroke="currentColor" stroke-width="2"/>
+                        <circle cx="24" cy="12" r="2" fill="currentColor"/>
+                        <path d="M22 10 L18 6 L14 10" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                    </svg>
+                </div>
                 <h3 class="feature-title">自然语言处理</h3>
                 <p class="feature-description">
                     <strong>文本处理可视化</strong>：词向量空间、语义相似度计算过程展示<br>
-                    <strong>NLP算法拆解</strong>：TF-IDF、Word2Vec、BERT原理公式推导<br>
+                    <strong>情感共鸣设计</strong>：让学习者感同身受，避免走弯路的完整探索过程<br>
                     从文本分析到对话系统，构建智能NLP应用
                 </p>
             </a>
 
             <div class="feature-card">
-                <div class="feature-icon">实战</div>
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" style="color: #e67e22;">
+                        <rect x="6" y="6" width="20" height="14" fill="none" stroke="currentColor" stroke-width="2" rx="2"/>
+                        <rect x="8" y="8" width="5" height="3" fill="currentColor" rx="1"/>
+                        <rect x="8" y="13" width="8" height="2" fill="currentColor" rx="1"/>
+                        <rect x="8" y="16" width="6" height="2" fill="currentColor" rx="1"/>
+                        <circle cx="22" cy="12" r="2" fill="currentColor"/>
+                        <path d="M6 22 L10 26 L26 26" stroke="currentColor" stroke-width="2" fill="none"/>
+                    </svg>
+                </div>
                 <h3 class="feature-title">项目实战</h3>
                 <p class="feature-description">
-                    <strong>端到端可视化</strong>：从数据预处理到模型部署全流程图示<br>
+                    <strong>可运行的完整示例</strong>：关键步骤的详细注释，真实企业级项目案例<br>
                     <strong>工程化实践</strong>：模型优化、性能调优、生产环境部署<br>
-                    真实企业级项目案例，完整的AI项目开发体验
+                    完整的AI项目开发体验，不直接给答案，展示完整探索过程
                 </p>
             </div>
         </div>
@@ -420,6 +525,29 @@
             <p class="cta-description">
                 加入信息革命，与全球优秀的AI工程师一起学习成长
             </p>
+
+            <!-- 诗句区域 -->
+            <div class="poetry-content-cta">
+                <div class="poetry-lines">
+                    <div class="poetry-line" id="poetry-line-1">
+                        <span class="poetry-content"></span>
+                        <span class="poetry-cursor">|</span>
+                    </div>
+                    <div class="poetry-line" id="poetry-line-2">
+                        <span class="poetry-content"></span>
+                        <span class="poetry-cursor">|</span>
+                    </div>
+                    <div class="poetry-line" id="poetry-line-3">
+                        <span class="poetry-content"></span>
+                        <span class="poetry-cursor">|</span>
+                    </div>
+                    <div class="poetry-line" id="poetry-line-4">
+                        <span class="poetry-content"></span>
+                        <span class="poetry-cursor">|</span>
+                    </div>
+                </div>
+            </div>
+
             <a href="src/pages/courses.html" class="btn btn-primary hero-btn">立即加入</a>
         </div>
     </section>
@@ -468,7 +596,93 @@
         </div>
     </footer>
 
+    <!-- UX Enhancement Scripts -->
+    <script src="src/utils/ux-utils.js"></script>
+
     
     
+    <script>
+        // 诗句打字机效果
+        function initPoetryTypewriter() {
+            const poems = [
+                "迷宫深处有灯火，",
+                "弯路走来皆收获。",
+                "千回百转寻常路，",
+                "一朝看破笑呵呵。"
+            ];
+
+            let currentLineIndex = 0;
+            let currentCharIndex = 0;
+            let isTyping = false;
+
+            function typePoetryLine() {
+                if (currentLineIndex >= poems.length) {
+                    // 所有诗句打完，隐藏所有光标
+                    document.querySelectorAll('.poetry-cursor').forEach(cursor => {
+                        cursor.classList.remove('active');
+                    });
+                    return;
+                }
+
+                const lineElement = document.getElementById(`poetry-line-${currentLineIndex + 1}`);
+                const contentElement = lineElement.querySelector('.poetry-content');
+                const cursorElement = lineElement.querySelector('.poetry-cursor');
+                const currentPoem = poems[currentLineIndex];
+
+                // 激活当前行
+                lineElement.classList.add('active');
+                cursorElement.classList.add('active');
+
+                if (currentCharIndex < currentPoem.length) {
+                    // 继续打字
+                    contentElement.textContent += currentPoem.charAt(currentCharIndex);
+                    currentCharIndex++;
+                    setTimeout(typePoetryLine, Math.random() * 50 + 60);
+                } else {
+                    // 当前行打完，隐藏当前光标，移动到下一行
+                    cursorElement.classList.remove('active');
+                    currentLineIndex++;
+                    currentCharIndex = 0;
+
+                    // 延迟一下再开始下一行
+                    setTimeout(typePoetryLine, 600);
+                }
+            }
+
+            // 使用Intersection Observer检测诗句区域是否进入视野
+            function initPoetryObserver() {
+                const poetrySection = document.querySelector('.poetry-content-cta');
+
+                if (!poetrySection) return;
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting && !isTyping) {
+                            isTyping = true;
+                            // 延迟一下开始打字，让用户看到进入效果
+                            setTimeout(() => {
+                                typePoetryLine();
+                            }, 500);
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, {
+                    threshold: 0.3 // 当诗句区域30%可见时触发
+                });
+
+                observer.observe(poetrySection);
+            }
+
+            // 页面加载完成后初始化
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initPoetryObserver);
+            } else {
+                initPoetryObserver();
+            }
+        }
+
+        // 初始化诗句打字机效果
+        initPoetryTypewriter();
+    </script>
 </body>
 </html>

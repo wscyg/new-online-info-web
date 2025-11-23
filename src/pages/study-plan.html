@@ -127,8 +127,106 @@
         </div>
     </div>
 
-    <script src="../js/config.js"></script>
-    <script src="../js/api.js"></script>
-    <script src="../js/study-plan.js"></script>
+    <script>
+        // 全局变量
+        let studyPlans = [];
+        const API_BASE = '/api';
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStudyPlans();
+            loadStudyStats();
+        });
+
+        // 加载学习计划
+        async function loadStudyPlans() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.log('用户未登录');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/study-plans`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.code === 200 && data.data) {
+                        studyPlans = data.data;
+                        renderStudyPlans(data.data);
+                    }
+                }
+            } catch (error) {
+                console.error('加载学习计划失败:', error);
+            }
+        }
+
+        // 加载学习统计
+        async function loadStudyStats() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/study-plans/stats`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.code === 200 && data.data) {
+                        updateStats(data.data);
+                    }
+                }
+            } catch (error) {
+                console.error('加载统计失败:', error);
+            }
+        }
+
+        // 渲染学习计划
+        function renderStudyPlans(plans) {
+            const plansList = document.getElementById('plansList');
+            if (!plans || plans.length === 0) {
+                plansList.innerHTML = '<p style="text-align:center;color:#999;">暂无学习计划</p>';
+                return;
+            }
+
+            plansList.innerHTML = plans.map(plan => `
+                <div class="plan-item">
+                    <h4>${plan.title || plan.name}</h4>
+                    <p>${plan.description || ''}</p>
+                    <div class="plan-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${plan.progress || 0}%"></div>
+                        </div>
+                        <span>${plan.progress || 0}%</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 更新统计
+        function updateStats(stats) {
+            document.getElementById('totalPlans').textContent = stats.total || 0;
+            document.getElementById('completedPlans').textContent = stats.completed || 0;
+            document.getElementById('completionRate').textContent = (stats.completionRate || 0) + '%';
+            document.getElementById('streakDays').textContent = stats.streakDays || 0;
+        }
+
+        // 创建计划
+        function createPlan() {
+            document.getElementById('planModal').style.display = 'flex';
+        }
+
+        // 关闭模态框
+        function closePlanModal() {
+            document.getElementById('planModal').style.display = 'none';
+        }
+    </script>
 </body>
 </html>

@@ -10,11 +10,69 @@
     
     // API配置
     const API_CONFIG = {
-        BASE_URL: isDevelopment 
-            ? 'http://localhost:8080/api' 
+        BASE_URL: isDevelopment
+            ? 'http://localhost:8080/api'
             : 'http://42.194.245.66/api',
         TIMEOUT: 30000,
-        RETRY_COUNT: 3
+        RETRY_COUNT: 3,
+        // API端点配置
+        ENDPOINTS: {
+            // 认证相关
+            auth: {
+                login: '/auth/login',
+                register: '/auth/register',
+                logout: '/auth/logout',
+                forgotPassword: '/auth/forgot-password',
+                resetPassword: '/auth/reset-password',
+                sendEmailVerification: '/auth/send-email-verification',
+                verifyEmailCode: '/auth/verify-email-code',
+                checkUsername: '/auth/check-username',
+                checkEmail: '/auth/check-email'
+            },
+            // 用户相关
+            user: {
+                profile: '/user/profile',
+                updateProfile: '/user/profile',
+                uploadAvatar: '/user/avatar',
+                verifyEmail: '/user/verify-email',
+                verifyPhone: '/user/verify-phone',
+                changePassword: '/user/change-password',
+                statistics: '/user/statistics'
+            },
+            // 课程相关
+            courses: {
+                list: '/courses',
+                detail: '/courses/:id',
+                chapters: '/content/courses/:id/chapters',
+                content: '/content/chapters/:id/content',
+                enroll: '/courses/:id/enroll',
+                myProgress: '/content/courses/:id/my-progress',
+                updateProgress: '/content/chapters/:id/progress'
+            },
+            // 订阅和支付
+            subscription: {
+                create: '/subscription/create',
+                check: '/subscription/check',
+                list: '/subscription/list',
+                cancel: '/subscription/:id/cancel'
+            },
+            payment: {
+                create: '/payment/create',
+                query: '/payment/query/:orderNo',
+                callback: '/payment/callback',
+                refund: '/payment/refund'
+            },
+            // 学习相关
+            learning: {
+                progress: '/learning/progress',
+                statistics: '/learning/statistics',
+                recentActivity: '/learning/recent-activity'
+            },
+            // 其他
+            notifications: '/notifications',
+            points: '/points',
+            achievements: '/achievements'
+        }
     };
     
     // 页面路径配置
@@ -78,14 +136,96 @@
         },
         
         // 获取API URL
-        getApiUrl(endpoint) {
+        getApiUrl(endpoint, params = {}) {
             if (endpoint.startsWith('http')) {
                 return endpoint;
             }
             if (!endpoint.startsWith('/')) {
                 endpoint = '/' + endpoint;
             }
+
+            // 替换路径参数 (e.g., /courses/:id -> /courses/123)
+            Object.keys(params).forEach(key => {
+                endpoint = endpoint.replace(`:${key}`, params[key]);
+            });
+
             return API_CONFIG.BASE_URL + endpoint;
+        },
+
+        // 构建完整的API请求配置
+        buildApiRequest(endpoint, options = {}) {
+            const config = {
+                url: helpers.getApiUrl(endpoint, options.params),
+                method: options.method || 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                },
+                timeout: options.timeout || API_CONFIG.TIMEOUT
+            };
+
+            // 添加认证token
+            const token = localStorage.getItem('token');
+            if (token) {
+                config.headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            // 添加请求体
+            if (options.data) {
+                config.body = JSON.stringify(options.data);
+            }
+
+            return config;
+        },
+
+        // 通用API请求函数（带错误处理和重试）
+        async apiRequest(endpoint, options = {}) {
+            const config = helpers.buildApiRequest(endpoint, options);
+            let lastError;
+
+            // 重试逻辑
+            for (let attempt = 0; attempt <= (options.retryCount || API_CONFIG.RETRY_COUNT); attempt++) {
+                try {
+                    const response = await fetch(config.url, {
+                        method: config.method,
+                        headers: config.headers,
+                        body: config.body
+                    });
+
+                    // 处理未授权
+                    if (response.status === 401) {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                        if (options.redirectOnUnauth !== false) {
+                            helpers.navigateToLogin();
+                        }
+                        throw new Error('未授权，请重新登录');
+                    }
+
+                    // 解析响应
+                    const data = await response.json();
+
+                    // 检查业务逻辑错误
+                    if (!response.ok || !data.success) {
+                        throw new Error(data.message || `请求失败: ${response.status}`);
+                    }
+
+                    return data;
+
+                } catch (error) {
+                    lastError = error;
+
+                    // 如果是最后一次尝试，抛出错误
+                    if (attempt === (options.retryCount || API_CONFIG.RETRY_COUNT)) {
+                        throw lastError;
+                    }
+
+                    // 等待后重试
+                    await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+                }
+            }
+
+            throw lastError;
         }
     };
     

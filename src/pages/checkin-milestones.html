@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>签到里程碑 - AI未来学院</title>
+    <!-- API配置 -->
+    <script src="../config/api-config.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* 顶部导航 */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            color: white;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .title {
+            font-size: 2rem;
+            font-weight: bold;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 用户进度卡片 */
+        .progress-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 2rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .progress-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .progress-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-subtitle {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        /* 里程碑时间线 */
+        .milestones-container {
+            position: relative;
+        }
+
+        .milestone-item {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .milestone-item:hover {
+            transform: translateX(10px);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .milestone-item.completed {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.5);
+        }
+
+        .milestone-item.current {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: rgba(245, 158, 11, 0.8);
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.4);
+        }
+
+        .milestone-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .milestone-icon {
+            font-size: 3rem;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 1rem;
+        }
+
+        .milestone-info {
+            flex: 1;
+        }
+
+        .milestone-day {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .milestone-name {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .milestone-status {
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .status-completed {
+            background: rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .status-current {
+            background: rgba(245, 158, 11, 0.3);
+            color: #f59e0b;
+        }
+
+        .status-locked {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .milestone-rewards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .reward-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 0.75rem;
+            text-align: center;
+        }
+
+        .reward-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .reward-label {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .reward-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-top: 0.25rem;
+        }
+
+        .milestone-description {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            opacity: 0.9;
+        }
+
+        /* 进度条 */
+        .progress-bar-container {
+            margin: 2rem 0;
+        }
+
+        .progress-bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+            border-radius: 10px;
+            transition: width 1s ease-out;
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            color: white;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .title {
+                font-size: 1.5rem;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .milestone-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .milestone-rewards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部栏 -->
+        <div class="top-bar">
+            <a href="dashboard.html" class="back-btn">← 返回</a>
+            <div class="title">📆 签到里程碑</div>
+            <div></div>
+        </div>
+
+        <!-- 加载状态 -->
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>加载签到数据中...</p>
+        </div>
+
+        <!-- 用户进度 -->
+        <div class="progress-card" id="progressCard" style="display: none;">
+            <div class="progress-header">
+                <div class="progress-title">🔥 您的签到进度</div>
+                <div class="progress-subtitle" id="progressSubtitle">继续加油，向下一个里程碑前进！</div>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="stat-label">当前连续</div>
+                    <div class="stat-value" id="consecutiveDays">0</div>
+                    <div class="stat-label">天</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">累计签到</div>
+                    <div class="stat-value" id="totalDays">0</div>
+                    <div class="stat-label">天</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">最长连续</div>
+                    <div class="stat-value" id="maxConsecutive">0</div>
+                    <div class="stat-label">天</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">累计积分</div>
+                    <div class="stat-value" id="totalPoints">0</div>
+                    <div class="stat-label">分</div>
+                </div>
+            </div>
+
+            <!-- 距离下一个里程碑 -->
+            <div class="progress-bar-container" id="nextMilestoneProgress" style="display: none;">
+                <div class="progress-bar-label">
+                    <span>距离下一个里程碑:</span>
+                    <span id="progressText">0/0 天</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 里程碑列表 -->
+        <div class="milestones-container" id="milestonesContainer" style="display: none;">
+            <!-- 将由JS动态生成 -->
+        </div>
+    </div>
+
+    <script>
+        let userStats = null;
+
+        // 页面加载
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMilestones();
+        });
+
+        // 加载里程碑数据
+        async function loadMilestones() {
+            try {
+                const token = apiClient.getToken();
+                if (!token) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // 获取用户签到统计
+                const statsResponse = await apiClient.get(API_ENDPOINTS.CHECKIN.STATS);
+                userStats = statsResponse.data.stats;
+
+                // 获取所有里程碑奖励
+                const milestonesResponse = await apiClient.get('/checkin/milestones');
+                const milestones = milestonesResponse.data || getDefaultMilestones();
+
+                renderProgress();
+                renderMilestones(milestones);
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('progressCard').style.display = 'block';
+                document.getElementById('milestonesContainer').style.display = 'block';
+
+            } catch (error) {
+                console.error('加载里程碑失败:', error);
+
+                // 使用默认数据
+                userStats = {
+                    currentConsecutiveDays: 0,
+                    totalCheckinDays: 0,
+                    maxConsecutiveDays: 0,
+                    totalPointsEarned: 0
+                };
+
+                renderProgress();
+                renderMilestones(getDefaultMilestones());
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('progressCard').style.display = 'block';
+                document.getElementById('milestonesContainer').style.display = 'block';
+            }
+        }
+
+        // 渲染用户进度
+        function renderProgress() {
+            document.getElementById('consecutiveDays').textContent = userStats.currentConsecutiveDays || 0;
+            document.getElementById('totalDays').textContent = userStats.totalCheckinDays || 0;
+            document.getElementById('maxConsecutive').textContent = userStats.maxConsecutiveDays || 0;
+            document.getElementById('totalPoints').textContent = userStats.totalPointsEarned || 0;
+
+            // 计算下一个里程碑
+            const currentDays = userStats.currentConsecutiveDays || 0;
+            const milestones = [1, 3, 7, 15, 30, 50, 100, 180, 365];
+            const nextMilestone = milestones.find(m => m > currentDays);
+
+            if (nextMilestone) {
+                const progress = (currentDays / nextMilestone) * 100;
+                document.getElementById('progressText').textContent = `${currentDays}/${nextMilestone} 天`;
+                document.getElementById('progressFill').style.width = `${progress}%`;
+                document.getElementById('nextMilestoneProgress').style.display = 'block';
+                document.getElementById('progressSubtitle').textContent =
+                    `还需 ${nextMilestone - currentDays} 天到达 ${nextMilestone} 天里程碑！`;
+            }
+        }
+
+        // 渲染里程碑列表
+        function renderMilestones(milestones) {
+            const container = document.getElementById('milestonesContainer');
+            const currentDays = userStats.currentConsecutiveDays || 0;
+
+            milestones.sort((a, b) => a.milestoneDays - b.milestoneDays);
+
+            container.innerHTML = milestones.map(milestone => {
+                const isCompleted = currentDays >= milestone.milestoneDays;
+                const isCurrent = !isCompleted && milestone.milestoneDays === getNextMilestone(currentDays, milestones);
+                const statusClass = isCompleted ? 'completed' : (isCurrent ? 'current' : '');
+                const statusText = isCompleted ? '✅ 已完成' : (isCurrent ? '🎯 进行中' : '🔒 未解锁');
+                const statusBadge = isCompleted ? 'status-completed' : (isCurrent ? 'status-current' : 'status-locked');
+
+                return `
+                    <div class="milestone-item ${statusClass}">
+                        <div class="milestone-header">
+                            <div class="milestone-icon">${getMilestoneIcon(milestone.milestoneDays)}</div>
+                            <div class="milestone-info">
+                                <div class="milestone-day">第 ${milestone.milestoneDays} 天</div>
+                                <div class="milestone-name">${milestone.badgeName || milestone.description || '签到奖励'}</div>
+                            </div>
+                            <div class="milestone-status ${statusBadge}">${statusText}</div>
+                        </div>
+
+                        <div class="milestone-rewards">
+                            <div class="reward-item">
+                                <div class="reward-icon">💎</div>
+                                <div class="reward-label">积分奖励</div>
+                                <div class="reward-value">${milestone.points}</div>
+                            </div>
+                            ${milestone.treasureBox ? `
+                                <div class="reward-item">
+                                    <div class="reward-icon">📦</div>
+                                    <div class="reward-label">宝箱</div>
+                                    <div class="reward-value">${milestone.treasureBox}</div>
+                                </div>
+                            ` : ''}
+                            ${milestone.badgeName ? `
+                                <div class="reward-item">
+                                    <div class="reward-icon">🏅</div>
+                                    <div class="reward-label">勋章</div>
+                                    <div class="reward-value">${milestone.badgeName}</div>
+                                </div>
+                            ` : ''}
+                            ${milestone.titleName ? `
+                                <div class="reward-item">
+                                    <div class="reward-icon">👑</div>
+                                    <div class="reward-label">称号</div>
+                                    <div class="reward-value">${milestone.titleName}</div>
+                                </div>
+                            ` : ''}
+                            ${getExtraRewards(milestone.milestoneDays)}
+                        </div>
+
+                        ${milestone.description ? `
+                            <div class="milestone-description">
+                                📝 ${milestone.description}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 获取里程碑图标
+        function getMilestoneIcon(days) {
+            if (days === 1) return '🌱';
+            if (days === 3) return '🌿';
+            if (days === 7) return '🌳';
+            if (days === 15) return '🎋';
+            if (days === 30) return '🏆';
+            if (days === 50) return '💫';
+            if (days === 100) return '🔥';
+            if (days === 180) return '⭐';
+            if (days === 365) return '👑';
+            return '🎁';
+        }
+
+        // 获取额外奖励
+        function getExtraRewards(days) {
+            let rewards = [];
+            if (days === 7) rewards.push('<div class="reward-item"><div class="reward-icon">🛡️</div><div class="reward-label">道具</div><div class="reward-value">保护卡 x1</div></div>');
+            if (days === 30) rewards.push('<div class="reward-item"><div class="reward-icon">🛡️</div><div class="reward-label">道具</div><div class="reward-value">保护卡 x2<br>补签卡 x1</div></div>');
+            if (days === 100) rewards.push('<div class="reward-item"><div class="reward-icon">🛡️</div><div class="reward-label">道具</div><div class="reward-value">保护卡 x5<br>补签卡 x3</div></div>');
+            return rewards.join('');
+        }
+
+        // 获取下一个里程碑
+        function getNextMilestone(currentDays, milestones) {
+            const next = milestones.find(m => m.milestoneDays > currentDays);
+            return next ? next.milestoneDays : null;
+        }
+
+        // 默认里程碑数据
+        function getDefaultMilestones() {
+            return [
+                { milestoneDays: 1, points: 15, description: '每日签到基础奖励' },
+                { milestoneDays: 3, points: 50, treasureBox: '普通宝箱', description: '连续签到3天奖励' },
+                { milestoneDays: 7, points: 150, treasureBox: '稀有宝箱', badgeName: '周学霸', description: '连续签到7天奖励' },
+                { milestoneDays: 15, points: 500, treasureBox: '史诗宝箱', badgeName: '半月达人', description: '连续签到15天奖励' },
+                { milestoneDays: 30, points: 1500, treasureBox: '传说宝箱', badgeName: '月度学神', titleName: '月度学神', description: '连续签到30天奖励' },
+                { milestoneDays: 50, points: 2000, treasureBox: '传说宝箱', badgeName: '五十日坚持者', description: '连续签到50天奖励' },
+                { milestoneDays: 100, points: 8000, treasureBox: '神话宝箱', badgeName: '百日坚持', titleName: '百日坚持者', description: '连续签到100天永久奖励' },
+                { milestoneDays: 180, points: 10000, treasureBox: '神话宝箱', titleName: '半年学霸', description: '连续签到180天永久称号' },
+                { milestoneDays: 365, points: 50000, treasureBox: '至尊宝箱', badgeName: '年度坚持之王', titleName: '学习之神', description: '连续签到365天终极奖励' }
+            ];
+        }
+    </script>
+</body>
+</html>

@@ -15,13 +15,16 @@ class AuthManager {
   init() {
     console.log('[AuthManager] Initializing...');
     console.log('[AuthManager] Token exists:', !!this.token);
-    
-    // 暂时禁用token过期检查，避免误清除
-    // if (this.token && this.isTokenExpired()) {
-    //   console.log('[AuthManager] Token expired, attempting refresh...');
-    //   this.refreshAccessToken();
-    // }
-    
+
+    // 启用token过期检查
+    if (this.token && this.isTokenExpired()) {
+      console.log('[AuthManager] Token expired, attempting refresh...');
+      this.refreshAccessToken().catch(() => {
+        console.warn('[AuthManager] Token refresh failed, clearing auth data');
+        this.clearAuthData();
+      });
+    }
+
     // 从localStorage恢复用户信息
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
@@ -33,6 +36,46 @@ class AuthManager {
         console.error('[AuthManager] Failed to parse user data:', e);
       }
     }
+
+    // 监听localStorage变化，实现跨标签页同步
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'token') {
+        if (!e.newValue) {
+          // Token被清除，同步退出登录
+          console.log('[AuthManager] Token cleared in another tab, logging out');
+          this.clearAuthData();
+        } else if (e.newValue !== this.token) {
+          // Token被更新，同步新token
+          console.log('[AuthManager] Token updated in another tab, syncing');
+          this.token = e.newValue;
+          this.isAuthenticated = true;
+          if (window.API?.service) {
+            window.API.service.setToken(this.token);
+          }
+        }
+      } else if (e.key === 'user') {
+        if (!e.newValue) {
+          this.user = null;
+        } else {
+          try {
+            this.user = JSON.parse(e.newValue);
+          } catch (error) {
+            console.error('[AuthManager] Failed to parse user data from storage event:', error);
+          }
+        }
+        this.updateUserState();
+      }
+    });
+
+    // 定期检查token过期（每5分钟）
+    setInterval(() => {
+      if (this.token && this.isTokenExpired()) {
+        console.log('[AuthManager] Token expired, attempting refresh...');
+        this.refreshAccessToken().catch(() => {
+          console.warn('[AuthManager] Token refresh failed during periodic check');
+        });
+      }
+    }, 5 * 60 * 1000);
   }
 
   async login(credentials) {
@@ -124,25 +167,42 @@ class AuthManager {
 
   async refreshAccessToken() {
     if (!this.refreshToken) {
+      console.warn('[AuthManager] No refresh token available');
       this.logout();
       return false;
     }
 
     try {
+      console.log('[AuthManager] Refreshing access token...');
       const response = await api.post('/auth/refresh', {
         refreshToken: this.refreshToken
       });
 
-      if (response.success) {
+      if (response.success && response.data.accessToken) {
         this.token = response.data.accessToken;
         localStorage.setItem('token', this.token);
-        api.setToken(this.token);
+
+        // 更新refresh token if provided
+        if (response.data.refreshToken) {
+          this.refreshToken = response.data.refreshToken;
+          localStorage.setItem('refreshToken', this.refreshToken);
+        }
+
+        // Update API service token
+        if (window.API?.service) {
+          window.API.service.setToken(this.token);
+        }
+
+        console.log('[AuthManager] Token refresh successful');
         return true;
       }
+
+      console.warn('[AuthManager] Token refresh failed: invalid response');
     } catch (error) {
-      console.error('Token refresh failed:', error);
+      console.error('[AuthManager] Token refresh error:', error);
     }
 
+    // Only logout if refresh fails
     this.logout();
     return false;
   }

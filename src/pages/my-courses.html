@@ -765,6 +765,9 @@
     </style>
 </head>
 <body>
+    <!-- 全局登录状态 -->
+    <div id="auth-header"></div>
+
     <!-- 简洁背景 -->
     <div class="matrix-bg"></div>
     
@@ -1597,7 +1600,7 @@
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
                 localStorage.removeItem('refreshToken');
-                window.location.href = 'login.html';
+                window.location.href = '/src/pages/login.html';
             }
         };
 
@@ -1630,6 +1633,16 @@
         } else {
             myCourseManager.init();
         }
+    </script>
+    <!-- 全局登录状态组件 -->
+    <script src="../utils/auth-header.js"></script>
+    <script>
+        // 初始化登录状态组件
+        document.addEventListener('DOMContentLoaded', () => {
+            AuthHeader.init('auth-header', {
+                showLinks: false
+            });
+        });
     </script>
 </body>
 </html>

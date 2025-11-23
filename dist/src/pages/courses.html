@@ -6,8 +6,11 @@
     <title>课程</title>
     <meta name="description" content="以人工智能为核心，让每个人在AI时代都能够快速成长">
     
+    
     <!-- 预加载主题切换器 -->
     <script src="../utils/theme-switcher.js"></script>
+    <script src="../utils/ux-utils.js"></script>
+    <script src="../components/enhanced-search.js"></script>
     <style>
         * {
             margin: 0;
@@ -87,7 +90,7 @@
             position: fixed;
             inset: 0;
             z-index: -2;
-            background: 
+            background:
                 radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
                 radial-gradient(circle at 80% 20%, rgba(240, 147, 251, 0.15) 0%, transparent 50%),
                 radial-gradient(circle at 40% 80%, rgba(79, 172, 254, 0.15) 0%, transparent 50%);
@@ -197,28 +200,43 @@
             background: var(--light);
             border: 2px solid var(--gray-300);
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             margin-left: 1rem;
+            padding: 0;
         }
 
         .theme-toggle:hover {
             border-color: var(--primary);
-            transform: scale(1.05);
+            transform: scale(1.1) rotate(15deg);
+            background: var(--gray-100);
         }
 
         .theme-toggle .theme-icon {
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        [data-theme="dark"] .theme-toggle {
+            background: var(--gray-800);
+            border-color: var(--gray-600);
+        }
+
+        [data-theme="dark"] .theme-toggle:hover {
+            background: var(--gray-700);
+            border-color: var(--warning);
         }
 
         [data-theme="dark"] .theme-toggle .sun-icon {
-            display: inline;
+            display: flex;
         }
 
         [data-theme="dark"] .theme-toggle .moon-icon {
@@ -230,7 +248,7 @@
         }
 
         [data-theme="light"] .theme-toggle .moon-icon {
-            display: inline;
+            display: flex;
         }
 
         .nav-link {
@@ -333,15 +351,16 @@
         }
 
         .hero-subtitle {
-            font-size: 1.5rem;
-            font-weight: 500;
+            font-size: 1.8rem;
+            font-weight: 700;
             color: var(--dark);
             margin-bottom: 1rem;
-            max-width: 700px;
+            max-width: 1000px;
             margin-left: auto;
             margin-right: auto;
-            line-height: 1.4;
+            line-height: 1.2;
             letter-spacing: 0.02em;
+            white-space: nowrap;
         }
         
         [data-theme="dark"] .hero-subtitle {
@@ -623,7 +642,7 @@
             border-radius: 24px;
             overflow: hidden;
             transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            box-shadow: 
+            box-shadow:
                 0 8px 32px rgba(0, 0, 0, 0.1),
                 inset 0 1px 0 rgba(255, 255, 255, 0.2);
             position: relative;
@@ -632,6 +651,11 @@
             animation: cardEnter 0.6s ease-out forwards;
             opacity: 0;
             transform: translateY(30px);
+        }
+
+        /* Apply enhanced card styles */
+        .course-card.enhanced-card {
+            animation: fadeInUp 0.6s ease-out forwards;
         }
 
         .course-card:hover {
@@ -704,6 +728,16 @@
             -o-object-fit: cover;
                object-fit: cover;
             transition: transform 0.4s ease;
+        }
+
+        /* Lazy loading for images */
+        .course-image img.lazy-image {
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+        }
+
+        .course-image img.lazy-image.loaded {
+            opacity: 1;
         }
 
         .course-card:hover .course-image img {
@@ -1578,13 +1612,61 @@
         [data-theme="dark"] .course-card.bundle-card .bundle-stat-label {
             color: #e2e8f0 !important;
         }
+
+        /* 打字机效果样式 */
+        .typewriter-text {
+            position: relative;
+            display: inline-block;
+            min-height: 2em;
+        }
+
+        .typewriter-span {
+            display: inline;
+        }
+
+        .cursor {
+            display: inline-block;
+            color: var(--primary);
+            animation: blink 1s infinite;
+            font-weight: normal;
+            margin-left: 2px;
+        }
+
+        [data-theme="dark"] .cursor {
+            color: var(--accent-light);
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* 让打字机文本有渐变色效果 */
+        .typewriter-span {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+        }
+
+        [data-theme="dark"] .typewriter-span {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
     </style>
   <link rel="stylesheet" href="/assets/theme-b29253a3.css">
+  <link rel="stylesheet" href="/assets/ux-enhancements-2fb285cd.css">
 </head>
 <body>
+    <!-- 全局登录状态 -->
+    <div id="auth-header"></div>
+
     <!-- 简洁背景 -->
     <div class="matrix-bg"></div>
-    
+
     <!-- 导航栏 -->
     <nav class="navbar" id="navbar">
         <div class="nav-container">
@@ -1594,11 +1676,14 @@
             <div class="nav-menu">
                 <a href="courses.html" class="nav-link active">课程</a>
                 <a href="dashboard.html" class="nav-link">学习中心</a>
-                <a href="community-square.html" class="nav-link">社区广场</a>
+                <a href="plaza.html" class="nav-link">📚 学习广场</a>
+                <a href="pk-arena.html" class="nav-link">⚔️ PK竞技</a>
+                <a href="team-learning.html" class="nav-link">👥 组队学习</a>
+                <a href="leaderboard.html" class="nav-link">🏆 排行榜</a>
+                <a href="community-square.html" class="nav-link">社区</a>
                 <a href="qa.html" class="nav-link">问答</a>
-                <a href="leaderboard.html" class="nav-link">排行榜</a>
                 <a href="my-courses.html" class="nav-link">我的课程</a>
-                
+
                 <!-- 在线用户统计 -->
                 <div class="online-indicator">
                     <div class="online-dot"></div>
@@ -1608,8 +1693,8 @@
                 
                 <!-- 主题切换按钮 -->
                 <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="切换主题">
-                    <span class="theme-icon sun-icon">日间</span>
-                    <span class="theme-icon moon-icon">夜间</span>
+                    <span class="theme-icon sun-icon">☀️</span>
+                    <span class="theme-icon moon-icon">🌙</span>
                 </button>
             </div>
             
@@ -1626,7 +1711,10 @@
     <!-- Hero Section -->
     <section class="hero-section">
         <div class="hero-content">
-            <p class="hero-subtitle">以人工智能为核心，让每个人在AI时代都能够快速成长</p>
+            <p class="hero-subtitle typewriter-text">
+                <span id="typewriter-content" class="typewriter-span"></span>
+                <span class="cursor" id="cursor">|</span>
+            </p>
         </div>
     </section>
 
@@ -1645,17 +1733,33 @@
             <div class="filter-controls">
                 <div class="search-container">
                     <input type="text" class="search-input" id="courseSearch" placeholder="搜索课程、讲师或关键词...">
-                    <button class="search-btn" onclick="performSearch()">搜索</button>
+                    <button class="search-btn" onclick="performSearch()">🔍</button>
                 </div>
-                
+
+                <select class="sort-select" id="difficultyFilter" onchange="applyFilters()">
+                    <option value="">所有难度</option>
+                    <option value="beginner">入门</option>
+                    <option value="intermediate">进阶</option>
+                    <option value="advanced">高级</option>
+                </select>
+
+                <select class="sort-select" id="priceFilter" onchange="applyFilters()">
+                    <option value="">所有价格</option>
+                    <option value="free">免费</option>
+                    <option value="paid">付费</option>
+                </select>
+
                 <select class="sort-select" id="sortSelect">
                     <option value="popular">最受欢迎</option>
                     <option value="newest">最新发布</option>
                     <option value="rating">评分最高</option>
                     <option value="price-low">价格从低到高</option>
                     <option value="price-high">价格从高到低</option>
-                    <option value="free">免费课程</option>
                 </select>
+
+                <button class="sort-select" onclick="clearFilters()" style="cursor: pointer; background: #ef4444; color: white; border: none;">
+                    清除筛选
+                </button>
             </div>
         </div>
     </section>
@@ -1732,6 +1836,8 @@
     <div id="notification" class="notification"></div>
 
     <!-- Scripts -->
+    <script src="../utils/loading.js"></script>
+    <script src="../utils/notification.js"></script>
     <script>
         // Enhanced Course Manager with Backend Integration
         class ModernCourseManager {
@@ -1909,9 +2015,13 @@
             // Load courses from backend (包含课程和课程包)
             async loadCourses(append = false) {
                 if (this.isLoading) return;
-                
+
                 this.isLoading = true;
-                this.showLoadingSkeleton();
+
+                // Use centralized loading utility
+                if (!append && window.loading) {
+                    window.loading.showSkeleton('#coursesGrid', { type: 'card', count: 6, dark: document.documentElement.getAttribute('data-theme') === 'dark' });
+                }
 
                 try {
                     // 性能优化：只在首次加载时获取课程包
@@ -1966,29 +2076,60 @@
                     this.renderCourses();
                 } catch (error) {
                     console.error('加载课程失败:', error);
-                    this.showNotification(`加载课程失败: ${error.message}`, 'error');
+                    // Use centralized notification
+                    if (window.notification) {
+                        window.notification.error(`加载课程失败: ${error.message}`, '错误');
+                    }
                     this.showEmptyState('加载失败，请稍后重试');
                 } finally {
                     this.isLoading = false;
-                    this.hideLoadingSkeleton();
+                    // Hide loading skeleton using centralized utility
+                    if (window.loading) {
+                        window.loading.hideSkeleton('#coursesGrid');
+                    }
                 }
             }
 
             // 加载课程数据
             async loadCoursesData(append = false, retryCount = 0) {
                 const maxRetries = 2;
-                
+
                 let apiUrl = '/api/courses';
                 let params = new URLSearchParams({
                     page: append ? this.currentPage : 1,
-                    size: this.pageSize,
-                    search: this.searchTerm,
-                    sort: this.currentSort
+                    size: this.pageSize
                 });
 
                 // 如果选择了特定课程包，获取该课程包的课程
                 if (this.currentBundle !== 'all') {
                     apiUrl = `/api/courses/bundles/${this.currentBundle}/courses`;
+                } else {
+                    // Use search endpoint with filters
+                    apiUrl = '/api/courses/search';
+
+                    // Add search keyword
+                    if (this.searchTerm) {
+                        params.set('keyword', this.searchTerm);
+                    }
+
+                    // Add difficulty filter
+                    const difficultyFilter = document.getElementById('difficultyFilter');
+                    if (difficultyFilter && difficultyFilter.value) {
+                        params.set('difficulty', difficultyFilter.value);
+                    }
+
+                    // Add price filter
+                    const priceFilter = document.getElementById('priceFilter');
+                    if (priceFilter && priceFilter.value) {
+                        if (priceFilter.value === 'free') {
+                            params.set('isFree', 'true');
+                        } else if (priceFilter.value === 'paid') {
+                            params.set('isFree', 'false');
+                        }
+                    }
+
+                    // Add sort
+                    params.set('sortBy', this.currentSort);
                 }
 
                 try {
@@ -2004,15 +2145,17 @@
                         
                         console.error(`API请求失败: ${response.status} ${response.statusText}`);
                         
-                        // Show user-friendly error message
-                        if (response.status === 502) {
-                            this.showNotification('服务器暂时不可用，请稍后再试', 'error');
-                        } else if (response.status === 500) {
-                            this.showNotification('服务器内部错误，正在修复中', 'error');
-                        } else if (response.status === 404) {
-                            this.showNotification('请求的资源未找到', 'warning');
-                        } else {
-                            this.showNotification(`网络错误 (${response.status})，请检查网络连接`, 'error');
+                        // Show user-friendly error message using centralized notification
+                        if (window.notification) {
+                            if (response.status === 502) {
+                                window.notification.error('服务器暂时不可用，请稍后再试', '网络错误');
+                            } else if (response.status === 500) {
+                                window.notification.error('服务器内部错误，正在修复中', '服务器错误');
+                            } else if (response.status === 404) {
+                                window.notification.warning('请求的资源未找到', '未找到');
+                            } else {
+                                window.notification.error(`网络错误 (${response.status})，请检查网络连接`, '网络错误');
+                            }
                         }
                         
                         // Return empty result to prevent crashes
@@ -2040,9 +2183,11 @@
                         await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
                         return this.loadCoursesData(append, retryCount + 1);
                     }
-                    
+
                     console.error('课程加载失败:', error);
-                    this.showNotification('课程加载失败，请检查网络连接', 'error');
+                    if (window.notification) {
+                        window.notification.error('课程加载失败，请检查网络连接', '加载失败');
+                    }
                     return { courses: [] };
                 }
             }
@@ -2284,10 +2429,10 @@
                 const discount = originalPrice > price ? Math.round((1 - price / originalPrice) * 100) : 0;
 
                 return `
-                    <div class="course-card" data-course-id="${course.id}">
+                    <div class="course-card enhanced-card" data-course-id="${course.id}">
                         <div class="course-image">
-                            ${course.coverImage ? 
-                                `<img src="${course.coverImage}" alt="${course.title}" 
+                            ${course.coverImage ?
+                                `<img class="lazy-image" data-src="${course.coverImage}" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%23f0f0f0' width='400' height='300'/%3E%3C/svg%3E" alt="${course.title}"
                                      onerror="this.parentElement.innerHTML='${this.getPlaceholderImageHtml()}'">` :
                                 this.getPlaceholderImageHtml()
                             }
@@ -2373,15 +2518,15 @@
                 const discount = originalPrice > price ? Math.round((1 - price / originalPrice) * 100) : 30;
 
                 // 预检图片可用性，如果无法加载则直接使用图标
-                const imageContent = bundle.coverImage ? 
-                    `<img src="${bundle.coverImage}" alt="${bundle.title}" 
+                const imageContent = bundle.coverImage ?
+                    `<img class="lazy-image" data-src="${bundle.coverImage}" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%23f0f0f0' width='400' height='300'/%3E%3C/svg%3E" alt="${bundle.title}"
                          onload="console.log('Bundle image loaded successfully')"
                          onerror="console.log('Bundle image failed to load, using fallback'); this.style.display='none'; this.parentElement.innerHTML='<span style=&quot;font-size: 4rem;&quot;>${randomIcon}</span>';"
                          style="width: 100%; height: 100%; object-fit: cover;">` :
                     `<span style="font-size: 4rem;">${randomIcon}</span>`;
 
                 return `
-                    <div class="course-card bundle-card" data-course-id="${bundle.id}" data-bundle-id="${bundle.originalId}" style="cursor: pointer;">
+                    <div class="course-card bundle-card enhanced-card" data-course-id="${bundle.id}" data-bundle-id="${bundle.originalId}" style="cursor: pointer;">
                         <!-- 课程包特惠标识 -->
                         <div class="bundle-badge-container" onclick="window.viewBundleDetail(${bundle.originalId})">
                             <div class="bundle-primary-badge">课程包特惠</div>
@@ -2518,10 +2663,12 @@
             async handleEnroll(courseId) {
                 const token = localStorage.getItem('token');
                 if (!token) {
-                    this.showNotification('请先登录才能报名课程', 'warning');
+                    if (window.notification) {
+                        window.notification.warning('请先登录才能报名课程', '需要登录');
+                    }
                     setTimeout(() => {
-                        const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-                        const loginPath = isDev ? '/src/pages/login.html' : '/login.html';
+                        // 修正登录页面路径
+                        const loginPath = '/src/pages/login.html';
                         window.location.href = `${loginPath}?returnUrl=${encodeURIComponent(window.location.pathname)}`;
                     }, 1000);
                     return;
@@ -2529,8 +2676,16 @@
 
                 const course = this.courses.find(c => c.id === courseId);
                 if (!course) {
-                    this.showNotification('课程不存在', 'error');
+                    if (window.notification) {
+                        window.notification.error('课程不存在', '错误');
+                    }
                     return;
+                }
+
+                // Find button and show loading state
+                const button = document.querySelector(`[data-course-id="${courseId}"] .enroll-btn`);
+                if (button && window.loading) {
+                    window.loading.showButton(button);
                 }
 
                 try {
@@ -2548,8 +2703,11 @@
                         if (data.success) {
                             this.subscriptionStatus.set(courseId, true);
                             this.renderCourses();
-                            this.showNotification('报名成功！开始学习吧', 'success');
-                            
+
+                            if (window.notification) {
+                                window.notification.success('报名成功！开始学习吧', '成功');
+                            }
+
                             // Redirect to course after delay
                             setTimeout(() => {
                                 const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
@@ -2565,7 +2723,14 @@
                     }
                 } catch (error) {
                     console.error('课程报名失败:', error);
-                    this.showNotification(`报名失败: ${error.message}`, 'error');
+                    if (window.notification) {
+                        window.notification.error(`报名失败: ${error.message}`, '错误');
+                    }
+                } finally {
+                    // Hide button loading state
+                    if (button && window.loading) {
+                        window.loading.hideButton(button);
+                    }
                 }
             }
 
@@ -2678,9 +2843,19 @@
                 // Load more button
                 const loadMoreBtn = document.getElementById('loadMoreBtn');
                 if (loadMoreBtn) {
-                    loadMoreBtn.addEventListener('click', () => {
+                    loadMoreBtn.addEventListener('click', async () => {
+                        // Show loading state on button
+                        if (window.loading) {
+                            window.loading.showButton(loadMoreBtn);
+                        }
+
                         this.currentPage++;
-                        this.loadCourses(true);
+                        await this.loadCourses(true);
+
+                        // Hide loading state
+                        if (window.loading) {
+                            window.loading.hideButton(loadMoreBtn);
+                        }
                     });
                 }
 
@@ -2750,17 +2925,11 @@
                 // 这里可以添加定期更新逻辑
             }
 
-            // Show notification
+            // Show notification - delegate to centralized notification system
             showNotification(message, type = 'info') {
-                const notification = document.getElementById('notification');
-                if (!notification) return;
-
-                notification.textContent = message;
-                notification.className = `notification ${type} show`;
-
-                setTimeout(() => {
-                    notification.classList.remove('show');
-                }, 3000);
+                if (window.notification) {
+                    window.notification[type] ? window.notification[type](message) : window.notification.info(message);
+                }
             }
         }
 
@@ -2791,7 +2960,7 @@
                 if (courseManager) {
                     courseManager.showNotification('请先登录', 'warning');
                 }
-                window.location.href = 'login.html?returnUrl=courses.html';
+                window.location.href = '/src/pages/login.html?returnUrl=courses.html';
                 return;
             }
 
@@ -2914,6 +3083,35 @@
                 courseManager.currentPage = 1;
                 courseManager.loadCourses();
             }
+        };
+
+        window.applyFilters = () => {
+            courseManager.currentPage = 1;
+            courseManager.loadCourses();
+        };
+
+        window.clearFilters = () => {
+            // Clear search
+            const searchInput = document.getElementById('courseSearch');
+            if (searchInput) searchInput.value = '';
+            courseManager.searchTerm = '';
+
+            // Clear difficulty filter
+            const difficultyFilter = document.getElementById('difficultyFilter');
+            if (difficultyFilter) difficultyFilter.value = '';
+
+            // Clear price filter
+            const priceFilter = document.getElementById('priceFilter');
+            if (priceFilter) priceFilter.value = '';
+
+            // Reset to popular sort
+            const sortSelect = document.getElementById('sortSelect');
+            if (sortSelect) sortSelect.value = 'popular';
+            courseManager.currentSort = 'popular';
+
+            // Reload courses
+            courseManager.currentPage = 1;
+            courseManager.loadCourses();
         };
 
         window.toggleUserMenu = toggleUserMenu;
@@ -3042,11 +3240,90 @@
             document.addEventListener('DOMContentLoaded', () => {
                 courseManager.init();
                 onlineManager.init();
+                initTypewriter();
+                initUXEnhancements();
             });
         } else {
             courseManager.init();
             onlineManager.init();
+            initTypewriter();
+            initUXEnhancements();
         }
+
+        // Initialize UX enhancements
+        function initUXEnhancements() {
+            // Initialize lazy loading for images
+            if (window.UXUtils && window.UXUtils.LazyLoader) {
+                const lazyImages = document.querySelectorAll('img.lazy-image');
+                const loader = new window.UXUtils.LazyLoader();
+                loader.observe(lazyImages);
+            }
+
+            // Initialize animation triggers
+            if (window.UXUtils && window.UXUtils.AnimationTrigger) {
+                window.UXUtils.AnimationTrigger.init();
+            }
+
+            // Initialize smooth scroll
+            if (window.UXUtils && window.UXUtils.smoothScroll) {
+                window.UXUtils.smoothScroll.init();
+            }
+
+            console.log('✅ UX enhancements initialized');
+        }
+
+        // 循环打字机效果函数
+        function initTypewriter() {
+            const text = "以人工智能为核心，让每个人在AI时代都能够快速成长";
+            const typewriterContent = document.getElementById('typewriter-content');
+            const cursor = document.getElementById('cursor');
+            let index = 0;
+            let isDeleting = false;
+
+            function typeWriter() {
+                // 确保光标始终显示
+                cursor.style.display = 'inline';
+
+                if (!isDeleting && index < text.length) {
+                    // 正在打字
+                    typewriterContent.textContent += text.charAt(index);
+                    index++;
+                    setTimeout(typeWriter, Math.random() * 100 + 80);
+                } else if (!isDeleting && index === text.length) {
+                    // 打字完成，暂停3秒后开始删除
+                    setTimeout(() => {
+                        isDeleting = true;
+                        typeWriter();
+                    }, 3000);
+                } else if (isDeleting && index > 0) {
+                    // 正在删除
+                    typewriterContent.textContent = text.substring(0, index - 1);
+                    index--;
+                    setTimeout(typeWriter, Math.random() * 50 + 30);
+                } else if (isDeleting && index === 0) {
+                    // 删除完成，暂停1秒后重新开始打字
+                    isDeleting = false;
+                    setTimeout(typeWriter, 1000);
+                }
+            }
+
+            // 页面加载后延迟开始打字效果
+            setTimeout(() => {
+                typeWriter();
+            }, 500);
+        }
+
+    </script>
+
+    <!-- 全局登录状态组件 -->
+    <script src="../utils/auth-header.js"></script>
+    <script>
+        // 初始化登录状态组件
+        document.addEventListener('DOMContentLoaded', () => {
+            AuthHeader.init('auth-header', {
+                showLinks: false  // courses页面已有自己的导航
+            });
+        });
     </script>
 </body>
 </html>

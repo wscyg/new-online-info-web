@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的2025学习报告 - AI未来学院</title>
+    <!-- html2canvas -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- API配置 -->
+    <script src="../config/api-config.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* 年度报告卡片 */
+        .report-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2rem;
+            padding: 3rem 2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 装饰性背景 */
+        .card-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.1;
+            background-image:
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 1;
+            color: white;
+        }
+
+        /* 标题区域 */
+        .report-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .report-year {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .report-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .report-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* 统计数据区域 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* 高光时刻 */
+        .highlights {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .highlights-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .highlight-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .highlight-icon {
+            font-size: 2rem;
+        }
+
+        .highlight-text {
+            flex: 1;
+        }
+
+        .highlight-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 0.3rem;
+        }
+
+        .highlight-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        /* 成长轨迹 */
+        .growth-track {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .growth-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .growth-chart {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 1rem;
+        }
+
+        .growth-timeline {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+
+        .timeline-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .timeline-month {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 0.3rem;
+        }
+
+        .timeline-status {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        /* 年度关键词 */
+        .keywords {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        .keywords-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+        }
+
+        .keywords-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .keyword-tag {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.8rem 1.5rem;
+            border-radius: 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* 排名超越 */
+        .ranking {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        .ranking-text {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .ranking-percent {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        /* 底部品牌 */
+        .report-footer {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-text {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* 按钮组 */
+        .button-container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 1rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            color: white;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Toast提示 */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(16, 185, 129, 0.95);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 隐藏按钮容器（截图时） */
+        .screenshot .button-container {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="container">
+        <!-- 加载状态 -->
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>正在生成您的年度学习报告...</p>
+        </div>
+
+        <!-- 年度报告 -->
+        <div class="report-card" id="reportCard" style="display: none;">
+            <div class="card-bg"></div>
+            <div class="card-content">
+                <!-- 标题 -->
+                <div class="report-header">
+                    <div class="report-year" id="reportYear">2025</div>
+                    <div class="report-title">📊 我的年度学习报告</div>
+                    <div class="report-subtitle" id="userName">学习者</div>
+                </div>
+
+                <!-- 核心数据 -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">⏱️</div>
+                        <div class="stat-value" id="totalHours">128</div>
+                        <div class="stat-label">学习时长（小时）</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📚</div>
+                        <div class="stat-value" id="completedCourses">12</div>
+                        <div class="stat-label">完成课程</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🎓</div>
+                        <div class="stat-value" id="certificates">8</div>
+                        <div class="stat-label">获得证书</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💎</div>
+                        <div class="stat-value" id="totalPoints">5280</div>
+                        <div class="stat-label">累计积分</div>
+                    </div>
+                </div>
+
+                <!-- 高光时刻 -->
+                <div class="highlights">
+                    <div class="highlights-title">🏆 高光时刻</div>
+                    <div class="highlight-item">
+                        <div class="highlight-icon">🎯</div>
+                        <div class="highlight-text">
+                            <div class="highlight-label">PK最高连胜</div>
+                            <div class="highlight-value" id="pkStreak">15场</div>
+                        </div>
+                    </div>
+                    <div class="highlight-item">
+                        <div class="highlight-icon">👑</div>
+                        <div class="highlight-text">
+                            <div class="highlight-label">最高段位</div>
+                            <div class="highlight-value" id="pkRank">钻石3</div>
+                        </div>
+                    </div>
+                    <div class="highlight-item">
+                        <div class="highlight-icon">🔥</div>
+                        <div class="highlight-text">
+                            <div class="highlight-label">连续签到</div>
+                            <div class="highlight-value" id="checkinStreak">100天</div>
+                        </div>
+                    </div>
+                    <div class="highlight-item">
+                        <div class="highlight-icon">⭐</div>
+                        <div class="highlight-text">
+                            <div class="highlight-label">稀有成就</div>
+                            <div class="highlight-value" id="rareAchievement">学习狂魔</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 成长轨迹 -->
+                <div class="growth-track">
+                    <div class="growth-title">📈 成长轨迹</div>
+                    <canvas id="growthChart" class="growth-chart"></canvas>
+                    <div class="growth-timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-month">1月</div>
+                            <div class="timeline-status" id="status1">入门</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-month">6月</div>
+                            <div class="timeline-status" id="status6">进阶</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-month">12月</div>
+                            <div class="timeline-status" id="status12">精通</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 年度关键词 -->
+                <div class="keywords">
+                    <div class="keywords-title">🎁 年度关键词</div>
+                    <div class="keywords-list">
+                        <div class="keyword-tag" id="keyword1">#坚持学习</div>
+                        <div class="keyword-tag" id="keyword2">#技术成长</div>
+                        <div class="keyword-tag" id="keyword3">#追求卓越</div>
+                    </div>
+                </div>
+
+                <!-- 排名 -->
+                <div class="ranking">
+                    <div class="ranking-text">您的学习表现超越了</div>
+                    <div class="ranking-percent" id="rankingPercent">89%</div>
+                    <div class="ranking-text">的学员</div>
+                </div>
+
+                <!-- 底部 -->
+                <div class="report-footer">
+                    <div class="footer-logo">🎓 AI未来学院</div>
+                    <div class="footer-text">感谢您的陪伴，期待2026更加精彩！</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 按钮组 -->
+        <div class="button-container" style="display: none;" id="buttonContainer">
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="generateShareImage()">
+                    📸 生成分享图片
+                </button>
+                <button class="btn btn-secondary" onclick="goBack()">
+                    ← 返回首页
+                </button>
+            </div>
+            <p style="text-align: center; color: rgba(255,255,255,0.8); margin-top: 1rem; font-size: 0.9rem;">
+                💡 点击生成按钮，下载精美年度报告分享给好友
+            </p>
+        </div>
+    </div>
+
+    <!-- Toast提示 -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let reportData = null;
+        let growthChartInstance = null;
+
+        // 页面加载
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAnnualReport();
+        });
+
+        // 加载年度报告数据
+        async function loadAnnualReport() {
+            try {
+                const token = apiClient.getToken();
+                if (!token) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // 并发请求多个API获取数据
+                const [userProfile, learningStats, pkStats, checkinStats, achievements] = await Promise.all([
+                    apiClient.get(API_ENDPOINTS.USER.PROFILE),
+                    apiClient.get('/learning/annual-stats'), // 需要后端实现
+                    apiClient.get('/pk/my-stats'),
+                    apiClient.get(API_ENDPOINTS.CHECKIN.STATS),
+                    apiClient.get(API_ENDPOINTS.ACHIEVEMENT.LIST)
+                ]);
+
+                // 整合数据
+                reportData = {
+                    year: new Date().getFullYear(),
+                    userName: userProfile.data.username || '学习者',
+                    totalHours: calculateTotalHours(learningStats.data),
+                    completedCourses: learningStats.data?.completedCourses || 0,
+                    certificates: learningStats.data?.certificates || 0,
+                    totalPoints: userProfile.data.points || 0,
+                    pkStreak: pkStats.data?.maxStreak || 0,
+                    pkRank: pkStats.data?.currentRank || '青铜',
+                    checkinStreak: checkinStats.data?.consecutiveDays || 0,
+                    rareAchievement: findRareAchievement(achievements.data),
+                    growthData: learningStats.data?.monthlyProgress || generateMockGrowthData(),
+                    keywords: generateKeywords(learningStats.data, pkStats.data),
+                    rankingPercent: calculateRanking(learningStats.data)
+                };
+
+                renderReport();
+
+            } catch (error) {
+                console.error('加载年度报告失败:', error);
+
+                // 使用模拟数据
+                reportData = generateMockData();
+                renderReport();
+            }
+        }
+
+        // 渲染报告
+        function renderReport() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('reportCard').style.display = 'block';
+            document.getElementById('buttonContainer').style.display = 'block';
+
+            // 填充数据
+            document.getElementById('reportYear').textContent = reportData.year;
+            document.getElementById('userName').textContent = reportData.userName;
+            document.getElementById('totalHours').textContent = reportData.totalHours;
+            document.getElementById('completedCourses').textContent = reportData.completedCourses;
+            document.getElementById('certificates').textContent = reportData.certificates;
+            document.getElementById('totalPoints').textContent = reportData.totalPoints;
+            document.getElementById('pkStreak').textContent = reportData.pkStreak + '场';
+            document.getElementById('pkRank').textContent = reportData.pkRank;
+            document.getElementById('checkinStreak').textContent = reportData.checkinStreak + '天';
+            document.getElementById('rareAchievement').textContent = reportData.rareAchievement;
+            document.getElementById('rankingPercent').textContent = reportData.rankingPercent + '%';
+
+            // 关键词
+            reportData.keywords.forEach((keyword, index) => {
+                const elem = document.getElementById(`keyword${index + 1}`);
+                if (elem) elem.textContent = keyword;
+            });
+
+            // 成长轨迹图表
+            renderGrowthChart();
+
+            // 添加动画效果
+            setTimeout(() => {
+                document.querySelectorAll('.stat-card, .highlights, .growth-track, .keywords, .ranking').forEach((elem, index) => {
+                    elem.style.animation = `fadeInUp 0.6s ease-out ${index * 0.1}s both`;
+                });
+            }, 100);
+        }
+
+        // 渲染成长图表
+        function renderGrowthChart() {
+            const ctx = document.getElementById('growthChart').getContext('2d');
+
+            if (growthChartInstance) {
+                growthChartInstance.destroy();
+            }
+
+            growthChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                    datasets: [{
+                        label: '学习时长（小时）',
+                        data: reportData.growthData,
+                        borderColor: 'rgba(255, 255, 255, 0.8)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.8)'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.8)'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 生成分享图片
+        async function generateShareImage() {
+            const loading = document.getElementById('loading');
+            loading.style.display = 'flex';
+            loading.querySelector('p').textContent = '正在生成分享图片...';
+
+            // 隐藏按钮
+            document.getElementById('container').classList.add('screenshot');
+
+            try {
+                await new Promise(resolve => setTimeout(resolve, 500)); // 等待DOM更新
+
+                const reportCard = document.getElementById('reportCard');
+                const canvas = await html2canvas(reportCard, {
+                    backgroundColor: null,
+                    scale: 2,
+                    logging: false,
+                    useCORS: true
+                });
+
+                const dataUrl = canvas.toDataURL('image/png');
+                downloadImage(dataUrl, `年度学习报告-${reportData.year}.png`);
+
+                showToast('✅ 图片已生成！请查看下载文件夹');
+
+            } catch (error) {
+                console.error('生成图片失败:', error);
+                showToast('❌ 生成失败，请重试', 'error');
+            } finally {
+                document.getElementById('container').classList.remove('screenshot');
+                loading.style.display = 'none';
+            }
+        }
+
+        // 下载图片
+        function downloadImage(dataUrl, filename) {
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // 显示Toast
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.background = type === 'success'
+                ? 'rgba(16, 185, 129, 0.95)'
+                : 'rgba(239, 68, 68, 0.95)';
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 返回首页
+        function goBack() {
+            window.location.href = 'dashboard.html';
+        }
+
+        // 工具函数
+        function calculateTotalHours(stats) {
+            return stats?.totalMinutes ? Math.floor(stats.totalMinutes / 60) : 128;
+        }
+
+        function findRareAchievement(achievements) {
+            if (!achievements || achievements.length === 0) return '学习达人';
+            const rare = achievements.find(a => a.rarity === 'rare' || a.rarity === 'epic');
+            return rare ? rare.name : '学习达人';
+        }
+
+        function generateKeywords(learningStats, pkStats) {
+            return ['#坚持学习', '#技术成长', '#追求卓越'];
+        }
+
+        function calculateRanking(stats) {
+            return stats?.ranking || 89;
+        }
+
+        function generateMockGrowthData() {
+            return [5, 8, 12, 15, 18, 22, 20, 25, 28, 30, 25, 22];
+        }
+
+        function generateMockData() {
+            return {
+                year: 2025,
+                userName: '学习者',
+                totalHours: 128,
+                completedCourses: 12,
+                certificates: 8,
+                totalPoints: 5280,
+                pkStreak: 15,
+                pkRank: '钻石3',
+                checkinStreak: 100,
+                rareAchievement: '学习狂魔',
+                growthData: [5, 8, 12, 15, 18, 22, 20, 25, 28, 30, 25, 22],
+                keywords: ['#坚持学习', '#技术成长', '#追求卓越'],
+                rankingPercent: 89
+            };
+        }
+
+        // 添加动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

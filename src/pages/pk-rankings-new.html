@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PK排行榜 - 在线学习平台</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../styles/pk-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- 外部依赖 -->
+    <script src="https://cdn.jsdelivr.net/npm/zustand@4.4.1/index.umd.js"></script>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="pk-navbar">
+        <div class="pk-nav-container">
+            <a href="../pages/dashboard.html" class="pk-nav-brand">🎓 在线学习平台</a>
+            <ul class="pk-nav-menu">
+                <li><a href="dashboard.html" class="pk-nav-link">仪表盘</a></li>
+                <li><a href="courses.html" class="pk-nav-link">课程</a></li>
+                <li><a href="pk-arena-new.html" class="pk-nav-link">PK竞技场</a></li>
+                <li><a href="pk-rankings-new.html" class="pk-nav-link active">排行榜</a></li>
+                <li><a href="pk-friends-new.html" class="pk-nav-link">好友</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 主容器 -->
+    <div class="pk-container">
+        <!-- 页面标题 -->
+        <div class="pk-page-header">
+            <h1 class="pk-page-title">🏆 PK排行榜</h1>
+            <p class="pk-page-subtitle">争夺最高荣誉，成为PK之王！</p>
+        </div>
+
+        <!-- 我的排名卡片 -->
+        <div class="pk-card pk-mb-4" id="myRankCard">
+            <h3 class="pk-card-title pk-mb-3">我的排名</h3>
+            <div class="pk-my-rank-info">
+                <div class="pk-flex pk-flex-between">
+                    <div class="pk-flex pk-flex-gap">
+                        <div class="pk-player-avatar" id="myAvatar"></div>
+                        <div>
+                            <div class="pk-player-name" id="myName"></div>
+                            <span class="pk-player-tier" id="myTier"></span>
+                        </div>
+                    </div>
+                    <div class="pk-flex pk-flex-gap">
+                        <div class="pk-stat-box">
+                            <div class="pk-stat-value" id="myRank">#-</div>
+                            <div class="pk-stat-label">排名</div>
+                        </div>
+                        <div class="pk-stat-box">
+                            <div class="pk-stat-value" id="myElo">1200</div>
+                            <div class="pk-stat-label">ELO分数</div>
+                        </div>
+                        <div class="pk-stat-box">
+                            <div class="pk-stat-value" id="myWins">0</div>
+                            <div class="pk-stat-label">胜场</div>
+                        </div>
+                        <div class="pk-stat-box">
+                            <div class="pk-stat-value" id="myWinRate">0%</div>
+                            <div class="pk-stat-label">胜率</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 排行榜切换标签 -->
+        <div class="pk-leaderboard-tabs pk-mb-4">
+            <button class="pk-leaderboard-tab active" data-type="overall">
+                🌟 总榜
+            </button>
+            <button class="pk-leaderboard-tab" data-type="daily">
+                📅 日榜
+            </button>
+            <button class="pk-leaderboard-tab" data-type="weekly">
+                📊 周榜
+            </button>
+            <button class="pk-leaderboard-tab" data-type="monthly">
+                📈 月榜
+            </button>
+            <button class="pk-leaderboard-tab" data-type="tier">
+                💎 段位榜
+            </button>
+        </div>
+
+        <!-- 段位筛选（仅在段位榜显示） -->
+        <div class="pk-card pk-mb-4 pk-hidden" id="tierFilterCard">
+            <h3 class="pk-card-title pk-mb-3">选择段位</h3>
+            <div class="pk-tier-tabs">
+                <button class="pk-tier-tab" data-tier="bronze">
+                    🥉 青铜
+                </button>
+                <button class="pk-tier-tab" data-tier="silver">
+                    🥈 白银
+                </button>
+                <button class="pk-tier-tab active" data-tier="gold">
+                    🥇 黄金
+                </button>
+                <button class="pk-tier-tab" data-tier="platinum">
+                    💎 铂金
+                </button>
+                <button class="pk-tier-tab" data-tier="diamond">
+                    💠 钻石
+                </button>
+                <button class="pk-tier-tab" data-tier="master">
+                    👑 王者
+                </button>
+            </div>
+        </div>
+
+        <!-- 排行榜列表 -->
+        <div class="pk-card">
+            <div class="pk-leaderboard-header pk-mb-3">
+                <h3 class="pk-card-title" id="leaderboardTitle">总排行榜</h3>
+                <div class="pk-leaderboard-meta">
+                    <span id="leaderboardUpdate">更新于: --:--</span>
+                </div>
+            </div>
+
+            <!-- 加载状态 -->
+            <div class="pk-loading pk-text-center pk-mb-4" id="loadingIndicator">
+                <div class="pk-spinner"></div>
+                <span>加载中...</span>
+            </div>
+
+            <!-- 排行榜内容 -->
+            <div id="leaderboardList">
+                <!-- 动态加载 -->
+            </div>
+
+            <!-- 分页 -->
+            <div class="pk-pagination pk-mt-4 pk-hidden" id="pagination">
+                <button class="pk-btn pk-btn-outline" id="prevPageBtn" disabled>
+                    ← 上一页
+                </button>
+                <div class="pk-page-info">
+                    第 <span id="currentPage">1</span> / <span id="totalPages">1</span> 页
+                </div>
+                <button class="pk-btn pk-btn-outline" id="nextPageBtn">
+                    下一页 →
+                </button>
+            </div>
+        </div>
+
+        <!-- 段位分布统计 -->
+        <div class="pk-card pk-mt-4">
+            <h3 class="pk-card-title pk-mb-3">📊 段位分布</h3>
+            <div class="pk-tier-distribution" id="tierDistribution">
+                <!-- 动态加载 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript模块 -->
+    <script type="module">
+        import { PKRankings } from './pk/rankings.js';
+
+        // 初始化排行榜
+        const rankings = new PKRankings();
+
+        // 页面加载后初始化
+        document.addEventListener('DOMContentLoaded', async () => {
+            await rankings.init();
+        });
+
+        // 全局导出用于调试
+        window.pkRankings = rankings;
+    </script>
+
+    <style>
+        /* 我的排名信息 */
+        .pk-my-rank-info {
+            padding: var(--pk-spacing-lg);
+            background: var(--pk-bg-glass);
+            border-radius: var(--pk-radius-lg);
+        }
+
+        /* 段位标签页 */
+        .pk-tier-tabs {
+            display: flex;
+            gap: var(--pk-spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .pk-tier-tab {
+            padding: var(--pk-spacing-md) var(--pk-spacing-xl);
+            background: var(--pk-bg-glass);
+            border: 2px solid var(--pk-border-glass);
+            border-radius: var(--pk-radius-md);
+            cursor: pointer;
+            transition: var(--pk-transition-fast);
+            font-weight: 600;
+            color: var(--pk-text-primary);
+        }
+
+        .pk-tier-tab:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .pk-tier-tab.active {
+            border-color: var(--pk-primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        /* 排行榜头部 */
+        .pk-leaderboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pk-leaderboard-meta {
+            font-size: 0.875rem;
+            color: var(--pk-text-muted);
+        }
+
+        /* 排行榜列表项 */
+        .pk-rank-item {
+            position: relative;
+        }
+
+        .pk-rank-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 60%;
+            border-radius: 0 4px 4px 0;
+            opacity: 0;
+            transition: var(--pk-transition);
+        }
+
+        .pk-rank-item.top1::before {
+            background: var(--tier-gold);
+            opacity: 1;
+        }
+
+        .pk-rank-item.top2::before {
+            background: var(--tier-silver);
+            opacity: 1;
+        }
+
+        .pk-rank-item.top3::before {
+            background: var(--tier-bronze);
+            opacity: 1;
+        }
+
+        .pk-rank-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: var(--pk-spacing-lg);
+        }
+
+        .pk-rank-stats {
+            display: flex;
+            gap: var(--pk-spacing-xl);
+        }
+
+        .pk-rank-stat {
+            text-align: center;
+        }
+
+        .pk-rank-stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--pk-primary);
+        }
+
+        .pk-rank-stat-label {
+            font-size: 0.75rem;
+            color: var(--pk-text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* 分页 */
+        .pk-pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pk-page-info {
+            font-weight: 600;
+        }
+
+        /* 段位分布 */
+        .pk-tier-distribution {
+            display: grid;
+            gap: var(--pk-spacing-md);
+        }
+
+        .pk-tier-dist-item {
+            background: var(--pk-bg-glass);
+            border-radius: var(--pk-radius-md);
+            padding: var(--pk-spacing-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pk-tier-dist-info {
+            display: flex;
+            align-items: center;
+            gap: var(--pk-spacing-md);
+        }
+
+        .pk-tier-dist-icon {
+            font-size: 2rem;
+        }
+
+        .pk-tier-dist-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .pk-tier-dist-count {
+            color: var(--pk-text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        .pk-tier-dist-bar {
+            flex: 1;
+            max-width: 300px;
+            margin: 0 var(--pk-spacing-lg);
+        }
+
+        .pk-tier-dist-bar-bg {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--pk-radius-full);
+            height: 8px;
+            overflow: hidden;
+        }
+
+        .pk-tier-dist-bar-fill {
+            height: 100%;
+            border-radius: var(--pk-radius-full);
+            transition: width 0.5s ease;
+        }
+
+        .pk-tier-dist-percent {
+            font-weight: 700;
+            font-size: 1.25rem;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        /* 响应式 */
+        @media (max-width: 968px) {
+            .pk-my-rank-info .pk-flex-between {
+                flex-direction: column;
+                gap: var(--pk-spacing-lg);
+            }
+
+            .pk-rank-stats {
+                flex-direction: column;
+                gap: var(--pk-spacing-md);
+            }
+
+            .pk-tier-dist-bar {
+                max-width: 150px;
+            }
+
+            .pk-leaderboard-tabs {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+        }
+    </style>
+</body>
+</html>

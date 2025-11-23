@@ -26,6 +26,7 @@ class ApiService {
         this.refreshToken = localStorage.getItem('refreshToken');
         this.requestQueue = new Map();
         this.cache = new Map();
+        this.refreshingToken = null; // Promise for ongoing token refresh
         this.retryConfig = {
             maxRetries: 3,
             retryDelay: 1000,
@@ -88,44 +89,65 @@ class ApiService {
         return promise;
     }
 
-    // 刷新token
+    // 刷新token（带锁机制防止并发刷新）
     async refreshAccessToken() {
+        // 如果已有正在进行的刷新，等待其完成
+        if (this.refreshingToken) {
+            console.log('[API] Token refresh already in progress, waiting...');
+            return this.refreshingToken;
+        }
+
         if (!this.refreshToken) {
             throw new Error('No refresh token available');
         }
 
-        try {
-            const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    refreshToken: this.refreshToken
-                })
-            });
+        // 创建刷新Promise并保存
+        this.refreshingToken = (async () => {
+            try {
+                console.log('[API] Starting token refresh...');
+                const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        refreshToken: this.refreshToken
+                    })
+                });
 
-            const data = await response.json();
+                const data = await response.json();
 
-            if (response.ok && data.success) {
-                this.setToken(data.data.accessToken);
-                if (data.data.refreshToken) {
-                    this.setRefreshToken(data.data.refreshToken);
+                if (response.ok && data.success) {
+                    this.setToken(data.data.accessToken);
+                    if (data.data.refreshToken) {
+                        this.setRefreshToken(data.data.refreshToken);
+                    }
+                    console.log('[API] Token refresh successful');
+                    return data.data.accessToken;
                 }
-                return data.data.accessToken;
-            }
-        } catch (error) {
-            console.error('Token refresh failed:', error);
-        }
 
-        // 刷新失败，清除所有token
-        this.clearToken();
-        // 使用相对路径，兼容不同环境
-        const loginPath = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-            ? '/src/pages/login.html' 
-            : '/login.html';
-        window.location.href = loginPath;
-        throw new Error('Token refresh failed');
+                throw new Error('Token refresh failed: invalid response');
+            } catch (error) {
+                console.error('[API] Token refresh failed:', error);
+                // 刷新失败，清除所有token
+                this.clearToken();
+                // 使用相对路径，兼容不同环境
+                const loginPath = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                    ? '/src/pages/login.html'
+                    : '/login.html';
+
+                setTimeout(() => {
+                    window.location.href = loginPath;
+                }, 1000);
+
+                throw error;
+            } finally {
+                // 清除刷新锁
+                this.refreshingToken = null;
+            }
+        })();
+
+        return this.refreshingToken;
     }
 
     // 重试机制
@@ -166,10 +188,14 @@ class ApiService {
 
             // 处理401错误，尝试刷新token
             if (response.status === 401 && this.token && this.refreshToken) {
+                console.log('[API] Received 401, attempting token refresh...');
                 try {
+                    // 使用带锁的刷新方法，防止并发刷新
                     await this.refreshAccessToken();
+
                     // 使用新token重新请求
                     headers['Authorization'] = `Bearer ${this.token}`;
+                    console.log('[API] Retrying request with new token...');
                     return fetch(`${API_BASE_URL}${url}`, {
                         ...options,
                         headers,
@@ -177,6 +203,7 @@ class ApiService {
                         credentials: 'include'
                     });
                 } catch (refreshError) {
+                    console.error('[API] Token refresh failed, returning 401 response');
                     // 刷新失败，返回原始401响应
                     return response;
                 }
@@ -433,6 +460,14 @@ class AuthAPI {
         return this.api.get('/auth/check-phone', { phone });
     }
 
+    async sendSmsVerification(phone, scene = 'register') {
+        return this.api.post('/auth/send-sms-verification', null, { phone, scene });
+    }
+
+    async verifySmsCode(phone, code) {
+        return this.api.post('/auth/verify-sms-code', { phone, code });
+    }
+
     logout() {
         this.api.clearToken();
         window.location.href = '/';
@@ -504,6 +539,14 @@ class UserAPI {
         return this.api.downloadFile(`/user/certificates/${certificateId}/download`, `certificate-${certificateId}.pdf`);
     }
 
+    async getMyCertificates(params = {}) {
+        return this.api.get('/certificates/my', params);
+    }
+
+    async getCertificateById(certificateId) {
+        return this.api.get(`/certificates/${certificateId}`);
+    }
+
     async updateSettings(settings) {
         return this.api.put('/user/settings', settings);
     }
@@ -560,6 +603,42 @@ class CourseAPI {
 
     async purchaseCourse(courseId) {
         return this.api.post(`/courses/${courseId}/purchase`);
+    }
+
+    async getBundles(params = {}) {
+        return this.api.get('/courses/bundles', params);
+    }
+
+    async getBundleById(bundleId) {
+        return this.api.get(`/courses/bundles/${bundleId}`);
+    }
+
+    async getBundleCourses(bundleId, params = {}) {
+        return this.api.get(`/courses/bundles/${bundleId}/courses`, params);
+    }
+
+    async getCoursePackage(courseId) {
+        return this.api.get(`/courses/${courseId}/package`);
+    }
+
+    async getPackages(params = {}) {
+        return this.api.get('/packages', params);
+    }
+
+    async getPackagesByCategory(categoryId, params = {}) {
+        return this.api.get(`/categories/${categoryId}/packages`, params);
+    }
+
+    async addToWishlist(courseId) {
+        return this.api.post('/wishlist', { courseId });
+    }
+
+    async removeFromWishlist(courseId) {
+        return this.api.delete(`/wishlist/${courseId}`);
+    }
+
+    async getWishlist(params = {}) {
+        return this.api.get('/wishlist', params);
     }
 }
 
@@ -669,6 +748,22 @@ class OrderAPI {
     async subscribeVIP(vipData) {
         return this.api.post('/orders/vip/subscribe', vipData);
     }
+
+    async getOrderStatus(orderNo) {
+        return this.api.get(`/orders/status/${orderNo}`);
+    }
+
+    async getMyOrders(params = {}) {
+        return this.api.get('/orders/my', params);
+    }
+
+    async checkCourseAccess(courseId) {
+        return this.api.get(`/subscriptions/access/course/${courseId}`);
+    }
+
+    async createSubscription(subscriptionData) {
+        return this.api.post('/subscriptions/create', subscriptionData);
+    }
 }
 
 class StudyRoomAPI {
@@ -757,6 +852,66 @@ class CommentAPI {
     }
 }
 
+class CommunityAPI {
+    constructor(apiService) {
+        this.api = apiService;
+    }
+
+    async getNotes(params = {}) {
+        return this.api.get('/community/notes', params);
+    }
+
+    async getNoteById(noteId) {
+        return this.api.get(`/community/notes/${noteId}`);
+    }
+
+    async createNote(noteData) {
+        return this.api.post('/community/notes/create', noteData);
+    }
+
+    async updateNote(noteId, noteData) {
+        return this.api.put(`/community/notes/${noteId}`, noteData);
+    }
+
+    async deleteNote(noteId) {
+        return this.api.delete(`/community/notes/${noteId}`);
+    }
+
+    async likeNote(noteId) {
+        return this.api.post(`/community/notes/${noteId}/like`);
+    }
+}
+
+class QAApi {
+    constructor(apiService) {
+        this.api = apiService;
+    }
+
+    async getQuestions(params = {}) {
+        return this.api.get('/qa/questions', params);
+    }
+
+    async getQuestionById(questionId) {
+        return this.api.get(`/qa/questions/${questionId}`);
+    }
+
+    async createQuestion(questionData) {
+        return this.api.post('/qa/questions/create', questionData);
+    }
+
+    async answerQuestion(questionId, answerData) {
+        return this.api.post(`/qa/questions/${questionId}/answer`, answerData);
+    }
+
+    async likeAnswer(answerId) {
+        return this.api.post(`/qa/answers/${answerId}/like`);
+    }
+
+    async acceptAnswer(answerId) {
+        return this.api.post(`/qa/answers/${answerId}/accept`);
+    }
+}
+
 class AchievementAPI {
     constructor(apiService) {
         this.api = apiService;
@@ -775,6 +930,238 @@ class AchievementAPI {
     }
 }
 
+class PkAPI {
+    constructor(apiService) {
+        this.api = apiService;
+    }
+
+    // Battle management
+    async createBattle(player1Id, player2Id, mode) {
+        return this.api.post('/pk/battle/create', { player1Id, player2Id, mode });
+    }
+
+    async startBattle(battleId) {
+        return this.api.post(`/pk/battle/${battleId}/start`);
+    }
+
+    async submitAnswer(battleId, questionId, answer, answerTime) {
+        return this.api.post(`/pk/battle/${battleId}/answer`, {
+            questionId,
+            answer,
+            answerTime
+        });
+    }
+
+    async endBattle(battleId) {
+        return this.api.post(`/pk/battle/${battleId}/end`);
+    }
+
+    async forfeitBattle(battleId) {
+        return this.api.post(`/pk/battle/${battleId}/forfeit`);
+    }
+
+    async getBattleDetails(battleId) {
+        return this.api.get(`/pk/battle/${battleId}`);
+    }
+
+    async getBattleHistory(page = 1, size = 20) {
+        return this.api.get('/pk/battle/history', { page, size });
+    }
+
+    async getBattleReplay(battleId) {
+        return this.api.get(`/pk/battle/${battleId}/replay`);
+    }
+
+    // Matching system
+    async joinMatching(mode) {
+        return this.api.post('/pk/matching/join', { mode });
+    }
+
+    async findMatch() {
+        return this.api.post('/pk/matching/find');
+    }
+
+    async cancelMatching() {
+        return this.api.post('/pk/matching/cancel');
+    }
+
+    async inviteFriend(friendId, mode) {
+        return this.api.post('/pk/matching/invite', { friendId, mode });
+    }
+
+    async acceptInvite(inviteId) {
+        return this.api.post(`/pk/matching/invite/${inviteId}/accept`);
+    }
+
+    async rejectInvite(inviteId) {
+        return this.api.post(`/pk/matching/invite/${inviteId}/reject`);
+    }
+
+    // Battle modes
+    async getBattleModes() {
+        return this.api.get('/pk/modes');
+    }
+
+    // Online users
+    async getOnlineUsers(page = 1, size = 20) {
+        return this.api.get('/pk/users/online', { page, size });
+    }
+}
+
+class FriendAPI {
+    constructor(apiService) {
+        this.api = apiService;
+    }
+
+    async searchUsers(keyword, page = 1, size = 20) {
+        return this.api.get('/pk/friends/search', { keyword, page, size });
+    }
+
+    async sendRequest(toUserId, message = '') {
+        return this.api.post('/pk/friends/request', { toUserId, message });
+    }
+
+    async acceptRequest(requestId) {
+        return this.api.post(`/pk/friends/request/${requestId}/accept`);
+    }
+
+    async rejectRequest(requestId) {
+        return this.api.post(`/pk/friends/request/${requestId}/reject`);
+    }
+
+    async getFriendList(page = 1, size = 50) {
+        return this.api.get('/pk/friends/list', { page, size });
+    }
+
+    async getOnlineFriends() {
+        return this.api.get('/pk/friends/online');
+    }
+
+    async deleteFriend(friendId) {
+        return this.api.delete(`/pk/friends/${friendId}`);
+    }
+
+    async getPendingRequests() {
+        return this.api.get('/pk/friends/requests/pending');
+    }
+
+    async getFriendProfile(friendId) {
+        return this.api.get(`/pk/friends/${friendId}/profile`);
+    }
+
+    async blockUser(userId) {
+        return this.api.post(`/pk/friends/${userId}/block`);
+    }
+
+    async unblockUser(userId) {
+        return this.api.post(`/pk/friends/${userId}/unblock`);
+    }
+}
+
+class RankingAPI {
+    constructor(apiService) {
+        this.api = apiService;
+    }
+
+    async getLeaderboard(type = 'elo', period = 'all', limit = 100) {
+        return this.api.get('/pk/rankings/leaderboard', { type, period, limit });
+    }
+
+    async getUserRanking(userId, type = 'elo', period = 'all') {
+        return this.api.get(`/pk/rankings/user/${userId}`, { type, period });
+    }
+
+    async getMyRanking(type = 'elo', period = 'all') {
+        return this.api.get('/pk/rankings/my', { type, period });
+    }
+
+    async getUserStats(userId) {
+        return this.api.get(`/pk/rankings/stats/${userId}`);
+    }
+
+    async getMyStats() {
+        return this.api.get('/pk/rankings/stats/my');
+    }
+
+    async getTierDistribution() {
+        return this.api.get('/pk/rankings/tier-distribution');
+    }
+
+    async getTierInfo(tier) {
+        return this.api.get(`/pk/rankings/tier/${tier}`);
+    }
+
+    async getUsersByTier(tier, page = 1, size = 20) {
+        return this.api.get(`/pk/rankings/tier/${tier}/users`, { page, size });
+    }
+}
+
+/**
+ * 连续签到API
+ * 提供签到、统计、排行榜等功能
+ */
+class CheckinAPI {
+    constructor(apiService) {
+        this.api = apiService;
+    }
+
+    /**
+     * 每日签到
+     */
+    async dailyCheckIn() {
+        return this.api.post('/checkin/daily');
+    }
+
+    /**
+     * 获取签到统计
+     */
+    async getStats() {
+        return this.api.get('/checkin/stats');
+    }
+
+    /**
+     * 获取签到日历
+     * @param {number} year - 年份（可选，默认当前年）
+     * @param {number} month - 月份（可选，默认当前月）
+     */
+    async getCalendar(year = null, month = null) {
+        const params = {};
+        if (year) params.year = year;
+        if (month) params.month = month;
+        return this.api.get('/checkin/calendar', params);
+    }
+
+    /**
+     * 补签
+     * @param {string} date - 补签日期（格式：2025-11-05）
+     */
+    async makeupCheckIn(date) {
+        return this.api.post('/checkin/makeup', null, { date });
+    }
+
+    /**
+     * 获取签到排行榜
+     * @param {number} limit - 返回数量（默认100）
+     */
+    async getLeaderboard(limit = 100) {
+        return this.api.get('/checkin/leaderboard', { limit });
+    }
+
+    /**
+     * 获取奖励配置
+     */
+    async getRewards() {
+        return this.api.get('/checkin/rewards');
+    }
+
+    /**
+     * 今日签到状态
+     */
+    async getTodayStatus() {
+        return this.api.get('/checkin/today');
+    }
+}
+
 const apiService = new ApiService();
 const authAPI = new AuthAPI(apiService);
 const userAPI = new UserAPI(apiService);
@@ -786,7 +1173,13 @@ const orderAPI = new OrderAPI(apiService);
 const studyRoomAPI = new StudyRoomAPI(apiService);
 const pointsAPI = new PointsAPI(apiService);
 const commentAPI = new CommentAPI(apiService);
+const communityAPI = new CommunityAPI(apiService);
+const qaAPI = new QAApi(apiService);
 const achievementAPI = new AchievementAPI(apiService);
+const pkAPI = new PkAPI(apiService);
+const friendAPI = new FriendAPI(apiService);
+const rankingAPI = new RankingAPI(apiService);
+const checkinAPI = new CheckinAPI(apiService);
 
 window.API = {
     auth: authAPI,
@@ -799,7 +1192,13 @@ window.API = {
     studyRoom: studyRoomAPI,
     points: pointsAPI,
     comment: commentAPI,
+    community: communityAPI,
+    qa: qaAPI,
     achievement: achievementAPI,
+    pk: pkAPI,
+    friend: friendAPI,
+    ranking: rankingAPI,
+    checkin: checkinAPI,
     service: apiService
 };
 
@@ -815,5 +1214,11 @@ export {
     studyRoomAPI,
     pointsAPI,
     commentAPI,
-    achievementAPI
+    communityAPI,
+    qaAPI,
+    achievementAPI,
+    pkAPI,
+    friendAPI,
+    rankingAPI,
+    checkinAPI
 };

@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日幸运转盘 - AI未来学院</title>
+    <!-- API配置文件 -->
+    <script src="../config/api-config.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 背景粒子动画 */
+        .background-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: float 10s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0.3;
+            }
+            50% {
+                transform: translateY(-100px) rotate(180deg);
+                opacity: 0.6;
+            }
+        }
+
+        /* 容器 */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 页头 */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            color: white;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* 玻璃拟态卡片 */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* 主要网格 */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 968px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 转盘区域 */
+        .lottery-wheel-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .lottery-wheel-container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 20px 0;
+        }
+
+        .wheel-outer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
+            box-shadow: 0 10px 50px rgba(255, 215, 0, 0.5), inset 0 0 30px rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 8px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .wheel-inner {
+            position: relative;
+            width: 90%;
+            height: 90%;
+            border-radius: 50%;
+            background: white;
+            overflow: hidden;
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+        }
+
+        .wheel-section {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: 100% 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 8个扇形区域 */
+        .wheel-section:nth-child(1) { background: #ff6b6b; transform: rotate(0deg) skewY(-45deg); }
+        .wheel-section:nth-child(2) { background: #4ecdc4; transform: rotate(45deg) skewY(-45deg); }
+        .wheel-section:nth-child(3) { background: #ffe66d; transform: rotate(90deg) skewY(-45deg); color: #333; }
+        .wheel-section:nth-child(4) { background: #a8e6cf; transform: rotate(135deg) skewY(-45deg); color: #333; }
+        .wheel-section:nth-child(5) { background: #ff8787; transform: rotate(180deg) skewY(-45deg); }
+        .wheel-section:nth-child(6) { background: #74b9ff; transform: rotate(225deg) skewY(-45deg); }
+        .wheel-section:nth-child(7) { background: #fd79a8; transform: rotate(270deg) skewY(-45deg); }
+        .wheel-section:nth-child(8) { background: #a29bfe; transform: rotate(315deg) skewY(-45deg); }
+
+        .wheel-section-content {
+            transform: skewY(45deg) rotate(22.5deg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 中心按钮 */
+        .wheel-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8787 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 5px 30px rgba(255, 107, 107, 0.5);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .wheel-center:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 8px 40px rgba(255, 107, 107, 0.7);
+        }
+
+        .wheel-center:active {
+            transform: translate(-50%, -50%) scale(0.95);
+        }
+
+        .wheel-center.disabled {
+            background: linear-gradient(135deg, #95a5a6 0%, #bdc3c7 100%);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* 指针 */
+        .wheel-pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 40px solid #ff6b6b;
+            z-index: 11;
+            filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.3));
+        }
+
+        /* 奖池选择器 */
+        .pool-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .pool-card {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .pool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .pool-card.active {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.2) 100%);
+            border-color: white;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        .pool-icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .pool-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .pool-cost {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* 统计卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* 抽奖记录 */
+        .records-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .record-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 0.8rem;
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .record-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .record-prize {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .record-icon {
+            font-size: 2rem;
+        }
+
+        .record-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .record-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .record-time {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .record-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        /* 稀有度颜色 */
+        .rarity-common { color: #95a5a6; }
+        .rarity-rare { color: #3498db; }
+        .rarity-epic { color: #9b59b6; }
+        .rarity-legendary { color: #f39c12; }
+        .rarity-mythic { color: #e74c3c; }
+
+        /* 模态框 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
+            border-radius: 2rem;
+            padding: 3rem;
+            max-width: 500px;
+            text-align: center;
+            animation: scaleIn 0.4s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .prize-display {
+            margin: 2rem 0;
+        }
+
+        .prize-icon-large {
+            font-size: 6rem;
+            margin-bottom: 1rem;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .prize-name-large {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .prize-value-large {
+            font-size: 1.5rem;
+            color: #666;
+        }
+
+        /* 按钮 */
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 2rem;
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+        }
+
+        /* 动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* 滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* 加载动画 */
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 概率显示区域 */
+        .probability-section {
+            margin-top: 2rem;
+        }
+
+        .probability-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 1rem;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .probability-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .probability-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .probability-content.show {
+            display: block;
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        .probability-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 0.8rem;
+            margin-bottom: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .probability-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .probability-item-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .probability-icon {
+            font-size: 2rem;
+        }
+
+        .probability-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .probability-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .probability-value {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .probability-rate {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .probability-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .probability-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700 0%, #ffed4e 100%);
+            border-radius: 4px;
+            transition: width 0.6s ease;
+        }
+
+        /* 中奖公示 */
+        .winner-notice {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .winner-notice-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .winner-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 0.6rem;
+            margin-bottom: 0.6rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .winner-user {
+            font-weight: bold;
+        }
+
+        .winner-prize {
+            color: #ffd700;
+        }
+
+        .winner-time {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* 合规声明 */
+        .compliance-notice {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 0.8rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+        }
+
+        .compliance-notice strong {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景粒子 -->
+    <div class="background-particles" id="particles"></div>
+
+    <div class="container">
+        <!-- 页头 -->
+        <div class="header">
+            <h1>🎰 每日幸运转盘</h1>
+            <p>每天免费抽奖，赢取丰厚奖励！</p>
+        </div>
+
+        <!-- 主网格 -->
+        <div class="main-grid">
+            <!-- 左侧：转盘区域 -->
+            <div>
+                <div class="glass-card lottery-wheel-section">
+                    <h2 style="color: white; text-align: center; margin-bottom: 20px;">🎡 幸运转盘</h2>
+
+                    <!-- 奖池选择 -->
+                    <div class="pool-selector" id="poolSelector">
+                        <div class="pool-card active" data-pool-id="1" data-cost-type="free">
+                            <div class="pool-icon">🎰</div>
+                            <div class="pool-name">免费抽奖</div>
+                            <div class="pool-cost">每天1次</div>
+                        </div>
+                        <div class="pool-card" data-pool-id="2" data-cost-type="points" data-cost-value="100">
+                            <div class="pool-icon">📦</div>
+                            <div class="pool-name">青铜盲盒</div>
+                            <div class="pool-cost">100积分</div>
+                        </div>
+                        <div class="pool-card" data-pool-id="3" data-cost-type="points" data-cost-value="500">
+                            <div class="pool-icon">💎</div>
+                            <div class="pool-name">白银盲盒</div>
+                            <div class="pool-cost">500积分</div>
+                        </div>
+                        <div class="pool-card" data-pool-id="4" data-cost-type="points" data-cost-value="2000">
+                            <div class="pool-icon">👑</div>
+                            <div class="pool-name">黄金盲盒</div>
+                            <div class="pool-cost">2000积分</div>
+                        </div>
+                    </div>
+
+                    <!-- 转盘 -->
+                    <div class="lottery-wheel-container">
+                        <div class="wheel-pointer"></div>
+                        <div class="wheel-outer">
+                            <div class="wheel-inner" id="wheelInner">
+                                <div class="wheel-section">
+                                    <div class="wheel-section-content">💎<br>10</div>
+                                </div>
+                                <div class="wheel-section">
+                                    <div class="wheel-section-content">💎<br>50</div>
+                                </div>
+                                <div class="wheel-section">
+                                    <div class="wheel-section-content">💎<br>100</div>
+                                </div>
+                                <div class="wheel-section">
+                                    <div class="wheel-section-content">⚡<br>2X</div>
+                                </div>
+                                <div class="wheel-section">
+                                    <div class="wheel-section-content">💎<br>500</div>
+                                </div>
+                                <div class="wheel-section">
+                                    <div class="wheel-section-content">📱<br>大奖</div>
+                                </div>
+                                <div class="wheel-section">
+                                    <div class="wheel-section-content">😊<br>再来</div>
+                                </div>
+                                <div class="wheel-section">
+                                    <div class="wheel-section-content">👑<br>VIP</div>
+                                </div>
+                            </div>
+                            <div class="wheel-center" id="drawButton">
+                                <div>开始<br>抽奖</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧：统计和记录 -->
+            <div>
+                <!-- 统计卡片 -->
+                <div class="glass-card">
+                    <h2 style="color: white; margin-bottom: 20px;">📊 我的数据</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">🎯</div>
+                            <div class="stat-value" id="todayDraws">0</div>
+                            <div class="stat-label">今日抽奖</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🎁</div>
+                            <div class="stat-value" id="freeDrawsRemaining">1</div>
+                            <div class="stat-label">免费次数</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">💎</div>
+                            <div class="stat-value" id="userPoints">0</div>
+                            <div class="stat-label">我的积分</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🏆</div>
+                            <div class="stat-value" id="totalDraws">0</div>
+                            <div class="stat-label">累计抽奖</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 抽奖记录 -->
+                <div class="glass-card">
+                    <h2 style="color: white; margin-bottom: 20px;">📜 抽奖记录</h2>
+                    <div class="records-list" id="recordsList">
+                        <div style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.7);">
+                            暂无抽奖记录
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 中奖概率公示 -->
+                <div class="glass-card probability-section">
+                    <div class="probability-toggle" onclick="toggleProbability()">
+                        📊 查看当前奖池中奖概率 ▼
+                    </div>
+                    <div class="probability-content" id="probabilityContent">
+                        <div id="probabilityList">
+                            <div class="loading-spinner"></div>
+                        </div>
+                        <div class="compliance-notice">
+                            <strong>📢 合规声明：</strong><br>
+                            根据《互联网抽奖管理办法》，所有奖品中奖概率已公示。本平台承诺概率真实有效，抽奖结果完全随机，保证公平公正。
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 最近中奖公示 -->
+                <div class="glass-card winner-notice">
+                    <div class="winner-notice-title">
+                        🏆 最近中奖名单（实时更新）
+                    </div>
+                    <div id="winnerList">
+                        <div class="loading-spinner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 中奖模态框 -->
+    <div class="modal" id="prizeModal">
+        <div class="modal-content">
+            <h2 style="color: #333; margin-bottom: 1rem;">🎉 恭喜中奖！</h2>
+            <div class="prize-display">
+                <div class="prize-icon-large" id="prizeIcon">🎁</div>
+                <div class="prize-name-large" id="prizeName">神秘大奖</div>
+                <div class="prize-value-large" id="prizeValue">+100 积分</div>
+            </div>
+            <button class="btn" onclick="closePrizeModal()">太棒了！</button>
+        </div>
+    </div>
+
+    <script>
+        // 配置
+        const API_BASE = 'http://localhost:8070/api';
+        let currentPoolId = 1;
+        let isSpinning = false;
+        let userStats = null;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            initPoolSelector();
+            loadUserStats();
+            loadRecords();
+            loadProbabilities(1); // 加载默认奖池概率
+            loadRecentWinners(); // 加载最近中奖名单
+        });
+
+        // 创建背景粒子
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.width = Math.random() * 10 + 5 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 10 + 's';
+                particle.style.animationDuration = (Math.random() * 5 + 8) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // 初始化奖池选择器
+        function initPoolSelector() {
+            const poolCards = document.querySelectorAll('.pool-card');
+            poolCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    poolCards.forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    currentPoolId = parseInt(this.dataset.poolId);
+
+                    // 更新抽奖按钮文本
+                    const costType = this.dataset.costType;
+                    const costValue = this.dataset.costValue;
+                    const drawButton = document.getElementById('drawButton');
+
+                    if (costType === 'free') {
+                        drawButton.innerHTML = '<div>免费<br>抽奖</div>';
+                    } else {
+                        drawButton.innerHTML = `<div>${costValue}<br>积分</div>`;
+                    }
+                });
+            });
+        }
+
+        // 加载用户统计
+        async function loadUserStats() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    alert('请先登录');
+                    window.location.href = '/login.html';
+                    return;
+                }
+
+                const response = await fetch(`${API_BASE}/lottery/my-stats`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const result = await response.json();
+                if (result.code === 200 && result.data) {
+                    userStats = result.data;
+                    updateStatsDisplay();
+                }
+            } catch (error) {
+                console.error('加载统计失败:', error);
+            }
+        }
+
+        // 更新统计显示
+        function updateStatsDisplay() {
+            if (!userStats) return;
+
+            document.getElementById('todayDraws').textContent = userStats.todayDraws || 0;
+            document.getElementById('freeDrawsRemaining').textContent = userStats.freeDrawsRemaining || 0;
+            document.getElementById('totalDraws').textContent = userStats.totalDraws || 0;
+
+            // 获取用户积分
+            fetch(`${API_BASE}/user/profile`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.code === 200) {
+                    document.getElementById('userPoints').textContent = result.data.points || 0;
+                }
+            });
+        }
+
+        // 加载抽奖记录
+        async function loadRecords() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/lottery/my-stats`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const result = await response.json();
+                if (result.code === 200 && result.data && result.data.recentRecords) {
+                    displayRecords(result.data.recentRecords);
+                }
+            } catch (error) {
+                console.error('加载记录失败:', error);
+            }
+        }
+
+        // 显示记录列表
+        function displayRecords(records) {
+            const container = document.getElementById('recordsList');
+
+            if (!records || records.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.7);">暂无抽奖记录</div>';
+                return;
+            }
+
+            container.innerHTML = records.map(record => {
+                const icon = getPrizeIcon(record.prizeType);
+                const timeAgo = getTimeAgo(record.createdAt);
+
+                return `
+                    <div class="record-item">
+                        <div class="record-prize">
+                            <div class="record-icon">${icon}</div>
+                            <div class="record-info">
+                                <div class="record-name">${record.prizeName}</div>
+                                <div class="record-time">${timeAgo}</div>
+                            </div>
+                        </div>
+                        <div class="record-value">+${record.prizeValue}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 获取奖品图标
+        function getPrizeIcon(type) {
+            const icons = {
+                'points': '💎',
+                'vip': '👑',
+                'item': '⚡',
+                'coupon': '🎫',
+                'physical': '📱'
+            };
+            return icons[type] || '🎁';
+        }
+
+        // 获取相对时间
+        function getTimeAgo(timestamp) {
+            const now = new Date();
+            const time = new Date(timestamp);
+            const diff = Math.floor((now - time) / 1000);
+
+            if (diff < 60) return '刚刚';
+            if (diff < 3600) return Math.floor(diff / 60) + '分钟前';
+            if (diff < 86400) return Math.floor(diff / 3600) + '小时前';
+            return Math.floor(diff / 86400) + '天前';
+        }
+
+        // 开始抽奖
+        document.getElementById('drawButton').addEventListener('click', async function() {
+            if (isSpinning) return;
+
+            isSpinning = true;
+            this.classList.add('disabled');
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/lottery/draw`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ poolId: currentPoolId })
+                });
+
+                const result = await response.json();
+
+                if (result.code === 200 && result.data) {
+                    // 转动转盘
+                    spinWheel(result.data);
+                } else {
+                    alert(result.message || '抽奖失败');
+                    isSpinning = false;
+                    this.classList.remove('disabled');
+                }
+            } catch (error) {
+                console.error('抽奖失败:', error);
+                alert('抽奖失败，请重试');
+                isSpinning = false;
+                this.classList.remove('disabled');
+            }
+        });
+
+        // 转动转盘
+        function spinWheel(data) {
+            const wheel = document.getElementById('wheelInner');
+            const prize = data.prize;
+
+            // 计算旋转角度（随机位置）
+            const baseRotation = 360 * 5; // 转5圈
+            const randomRotation = Math.random() * 360; // 随机角度
+            const totalRotation = baseRotation + randomRotation;
+
+            wheel.style.transform = `rotate(${totalRotation}deg)`;
+
+            // 4秒后显示结果
+            setTimeout(() => {
+                showPrizeModal(prize);
+                isSpinning = false;
+                document.getElementById('drawButton').classList.remove('disabled');
+
+                // 刷新数据
+                loadUserStats();
+                loadRecords();
+            }, 4000);
+        }
+
+        // 显示中奖模态框
+        function showPrizeModal(prize) {
+            const modal = document.getElementById('prizeModal');
+            document.getElementById('prizeIcon').textContent = getPrizeIcon(prize.prizeType);
+            document.getElementById('prizeName').textContent = prize.prizeName;
+
+            let valueText = '';
+            if (prize.prizeType === 'points') {
+                valueText = `+${prize.prizeValue} 积分`;
+            } else if (prize.prizeType === 'vip') {
+                valueText = `VIP ${prize.prizeValue} 天`;
+            } else {
+                valueText = prize.prizeDescription || '恭喜获得';
+            }
+            document.getElementById('prizeValue').textContent = valueText;
+
+            modal.classList.add('active');
+        }
+
+        // 关闭中奖模态框
+        function closePrizeModal() {
+            document.getElementById('prizeModal').classList.remove('active');
+        }
+
+        // 切换概率显示
+        function toggleProbability() {
+            const content = document.getElementById('probabilityContent');
+            content.classList.toggle('show');
+        }
+
+        // 加载奖池概率
+        async function loadProbabilities(poolId) {
+            try {
+                const response = await fetch(`${API_CONFIG.BASE_URL}/lottery/pools/${poolId}/prizes`, {
+                    headers: {
+                        'Authorization': `Bearer ${apiClient.getToken()}`
+                    }
+                });
+
+                const result = await response.json();
+                if (result.code === 200 && result.data && result.data.prizes) {
+                    displayProbabilities(result.data.prizes);
+                }
+            } catch (error) {
+                console.error('加载概率失败:', error);
+                document.getElementById('probabilityList').innerHTML =
+                    '<div style="text-align: center; color: rgba(255,255,255,0.7); padding: 2rem;">加载概率失败</div>';
+            }
+        }
+
+        // 显示概率列表
+        function displayProbabilities(prizes) {
+            const container = document.getElementById('probabilityList');
+
+            if (!prizes || prizes.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: rgba(255,255,255,0.7); padding: 2rem;">暂无概率数据</div>';
+                return;
+            }
+
+            // 按概率降序排列
+            prizes.sort((a, b) => (b.probability || 0) - (a.probability || 0));
+
+            container.innerHTML = prizes.map(prize => {
+                const probability = prize.probability || 0;
+                const probabilityPercent = (probability * 100).toFixed(2);
+                const icon = getPrizeIcon(prize.type);
+
+                return `
+                    <div class="probability-item">
+                        <div class="probability-item-left">
+                            <div class="probability-icon">${icon}</div>
+                            <div class="probability-info">
+                                <div class="probability-name">${prize.name}</div>
+                                <div class="probability-value">${prize.value} ${getPrizeUnit(prize.type)}</div>
+                                <div class="probability-bar">
+                                    <div class="probability-bar-fill" style="width: ${probabilityPercent}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="probability-rate">${probabilityPercent}%</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 获取奖品单位
+        function getPrizeUnit(type) {
+            const units = {
+                'points': '积分',
+                'vip': '天VIP',
+                'item': '个',
+                'coupon': '张优惠券',
+                'physical': ''
+            };
+            return units[type] || '';
+        }
+
+        // 加载最近中奖名单
+        async function loadRecentWinners() {
+            try {
+                const response = await fetch(`${API_CONFIG.BASE_URL}/lottery/my-stats`, {
+                    headers: {
+                        'Authorization': `Bearer ${apiClient.getToken()}`
+                    }
+                });
+
+                const result = await response.json();
+                if (result.code === 200 && result.data && result.data.recentRecords) {
+                    // 显示所有用户的最近中奖（这里暂时用自己的记录模拟）
+                    displayRecentWinners(result.data.recentRecords.slice(0, 10));
+                }
+            } catch (error) {
+                console.error('加载中奖名单失败:', error);
+                document.getElementById('winnerList').innerHTML =
+                    '<div style="text-align: center; color: rgba(255,255,255,0.7); padding: 1rem;">暂无中奖记录</div>';
+            }
+        }
+
+        // 显示最近中奖名单
+        function displayRecentWinners(records) {
+            const container = document.getElementById('winnerList');
+
+            if (!records || records.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: rgba(255,255,255,0.7); padding: 1rem;">暂无中奖记录</div>';
+                return;
+            }
+
+            container.innerHTML = records.map(record => {
+                const username = maskUsername(record.userId);
+                const timeAgo = getTimeAgo(record.createdAt);
+
+                return `
+                    <div class="winner-item">
+                        <span class="winner-user">🎖️ ${username}</span>
+                        <span class="winner-prize">抽中 ${record.prizeName}</span>
+                        <span class="winner-time">${timeAgo}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 脱敏用户名
+        function maskUsername(userId) {
+            // 简单脱敏处理
+            const username = `用户${userId}`;
+            if (username.length <= 3) return username;
+            return username.substring(0, 2) + '***' + username.substring(username.length - 1);
+        }
+
+        // 监听奖池切换，更新概率显示
+        const originalInitPoolSelector = initPoolSelector;
+        initPoolSelector = function() {
+            originalInitPoolSelector();
+
+            const poolCards = document.querySelectorAll('.pool-card');
+            poolCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const poolId = parseInt(this.dataset.poolId);
+                    loadProbabilities(poolId); // 切换奖池时重新加载概率
+                });
+            });
+        };
+    </script>
+</body>
+</html>

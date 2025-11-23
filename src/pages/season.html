@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PK赛季 - 在线学习平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .gradient-gold {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+        }
+
+        .gradient-silver {
+            background: linear-gradient(135deg, #e0e7ff 0%, #cfd9ff 100%);
+        }
+
+        .gradient-bronze {
+            background: linear-gradient(135deg, #ffd194 0%, #d1913c 100%);
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .rank-1 { background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color: #fff; }
+        .rank-2 { background: linear-gradient(135deg, #C0C0C0 0%, #808080 100%); color: #fff; }
+        .rank-3 { background: linear-gradient(135deg, #CD7F32 0%, #8B4513 100%); color: #fff; }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(245,248,255,0.9) 100%);
+            border-left: 4px solid #667eea;
+        }
+
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .elo-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .tier-BRONZE { background: #cd7f32; color: white; }
+        .tier-SILVER { background: #c0c0c0; color: #333; }
+        .tier-GOLD { background: #ffd700; color: #333; }
+        .tier-PLATINUM { background: #e5e4e2; color: #333; }
+        .tier-DIAMOND { background: #b9f2ff; color: #0066cc; }
+        .tier-MASTER { background: #8a2be2; color: white; }
+        .tier-GRANDMASTER { background: #ff1493; color: white; }
+        .tier-CHALLENGER { background: #ff4500; color: white; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <div class="gradient-bg text-white p-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex items-center justify-between mb-4">
+                <a href="dashboard.html" class="flex items-center text-white hover:text-gray-200 transition">
+                    <i class="ri-arrow-left-line mr-2"></i>
+                    返回主页
+                </a>
+                <button onclick="refreshData()" class="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition">
+                    <i class="ri-refresh-line"></i>
+                    刷新
+                </button>
+            </div>
+
+            <h1 class="text-4xl font-bold mb-2" id="seasonTitle">加载中...</h1>
+            <p class="text-lg opacity-90" id="seasonTheme">正在获取赛季信息...</p>
+
+            <div class="mt-6 flex items-center gap-6">
+                <div class="flex items-center gap-2">
+                    <i class="ri-calendar-line text-xl"></i>
+                    <span id="seasonDates">...</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="ri-time-line text-xl"></i>
+                    <span id="seasonTimeLeft">...</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="ri-group-line text-xl"></i>
+                    <span id="participantCount">...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Tab Navigation -->
+        <div class="flex gap-2 mb-6 border-b border-gray-200">
+            <button onclick="switchTab('overview')" class="tab-btn px-6 py-3 font-medium transition active" data-tab="overview">
+                <i class="ri-home-line mr-2"></i>赛季概览
+            </button>
+            <button onclick="switchTab('leaderboard')" class="tab-btn px-6 py-3 font-medium transition" data-tab="leaderboard">
+                <i class="ri-trophy-line mr-2"></i>排行榜
+            </button>
+            <button onclick="switchTab('rewards')" class="tab-btn px-6 py-3 font-medium transition" data-tab="rewards">
+                <i class="ri-gift-line mr-2"></i>奖励
+            </button>
+            <button onclick="switchTab('tasks')" class="tab-btn px-6 py-3 font-medium transition" data-tab="tasks">
+                <i class="ri-task-line mr-2"></i>任务
+            </button>
+        </div>
+
+        <!-- Overview Tab -->
+        <div id="tab-overview" class="tab-content">
+            <!-- User Stats Card -->
+            <div class="card p-6 mb-6 animate-fade-in">
+                <h2 class="text-2xl font-bold mb-4 flex items-center">
+                    <i class="ri-user-star-line mr-2 text-purple-600"></i>
+                    我的赛季数据
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4" id="userStatsGrid">
+                    <!-- Stats will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="card p-6 mb-6 animate-fade-in">
+                <h2 class="text-2xl font-bold mb-4">赛季说明</h2>
+                <p class="text-gray-700 leading-relaxed" id="seasonDescription">
+                    加载中...
+                </p>
+            </div>
+        </div>
+
+        <!-- Leaderboard Tab -->
+        <div id="tab-leaderboard" class="tab-content hidden">
+            <div class="card p-6 animate-fade-in">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold flex items-center">
+                        <i class="ri-trophy-line mr-2 text-yellow-500"></i>
+                        赛季排行榜
+                    </h2>
+                    <div class="flex gap-2">
+                        <button onclick="loadLeaderboard(10)" class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition">Top 10</button>
+                        <button onclick="loadLeaderboard(50)" class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition">Top 50</button>
+                        <button onclick="loadLeaderboard(100)" class="px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition">Top 100</button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">排名</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">玩家</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">ELO</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">段位</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">对战</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">胜率</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">连胜</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">奖励</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardBody">
+                            <!-- Leaderboard rows will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rewards Tab -->
+        <div id="tab-rewards" class="tab-content hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="rewardsGrid">
+                <!-- Reward cards will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Tasks Tab -->
+        <div id="tab-tasks" class="tab-content hidden">
+            <div class="space-y-4" id="tasksContainer">
+                <!-- Task cards will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8070/api';
+        let currentSeasonId = null;
+        let seasonData = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadCurrentSeason();
+            await loadUserStats();
+        });
+
+        // Load current season
+        async function loadCurrentSeason() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/seasons/current`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.code === 200) {
+                    seasonData = data.data;
+                    currentSeasonId = seasonData.id;
+                    renderSeasonInfo(seasonData);
+                    await loadSeasonDetails();
+                }
+            } catch (error) {
+                console.error('加载赛季信息失败:', error);
+            }
+        }
+
+        // Render season info
+        function renderSeasonInfo(season) {
+            document.getElementById('seasonTitle').textContent = season.seasonName;
+            document.getElementById('seasonTheme').textContent = `主题: ${season.theme}`;
+
+            const startDate = new Date(season.startDate).toLocaleDateString('zh-CN');
+            const endDate = new Date(season.endDate).toLocaleDateString('zh-CN');
+            document.getElementById('seasonDates').textContent = `${startDate} - ${endDate}`;
+
+            updateTimeLeft(season.endDate);
+            document.getElementById('participantCount').textContent = `${season.totalParticipants || 0} 名参与者`;
+            document.getElementById('seasonDescription').textContent = season.description || '暂无描述';
+        }
+
+        // Update time left
+        function updateTimeLeft(endDate) {
+            const now = new Date();
+            const end = new Date(endDate);
+            const diff = end - now;
+
+            if (diff <= 0) {
+                document.getElementById('seasonTimeLeft').textContent = '赛季已结束';
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            document.getElementById('seasonTimeLeft').textContent = `剩余 ${days}天 ${hours}小时`;
+        }
+
+        // Load season details
+        async function loadSeasonDetails() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/seasons/${currentSeasonId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.code === 200) {
+                    renderRewards(data.data.rewards);
+                    renderTasks(data.data.tasks);
+                }
+            } catch (error) {
+                console.error('加载赛季详情失败:', error);
+            }
+        }
+
+        // Load user stats
+        async function loadUserStats() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/seasons/my-stats`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.code === 200) {
+                    renderUserStats(data.data.ranking);
+                }
+            } catch (error) {
+                console.error('加载用户统计失败:', error);
+            }
+        }
+
+        // Render user stats
+        function renderUserStats(ranking) {
+            const grid = document.getElementById('userStatsGrid');
+            grid.innerHTML = `
+                <div class="stat-card p-4 rounded-lg">
+                    <div class="text-gray-600 text-sm mb-1">当前排名</div>
+                    <div class="text-3xl font-bold text-purple-600">#${ranking.currentRank || '未上榜'}</div>
+                    <div class="text-sm text-gray-500 mt-1">${ranking.rankChange > 0 ? '↑' : ranking.rankChange < 0 ? '↓' : '—'} ${Math.abs(ranking.rankChange || 0)}</div>
+                </div>
+
+                <div class="stat-card p-4 rounded-lg">
+                    <div class="text-gray-600 text-sm mb-1">赛季ELO</div>
+                    <div class="text-3xl font-bold text-blue-600">${ranking.currentElo}</div>
+                    <div class="text-sm text-gray-500 mt-1">峰值: ${ranking.peakElo}</div>
+                </div>
+
+                <div class="stat-card p-4 rounded-lg">
+                    <div class="text-gray-600 text-sm mb-1">对战记录</div>
+                    <div class="text-3xl font-bold text-green-600">${ranking.wins}胜${ranking.losses}负</div>
+                    <div class="text-sm text-gray-500 mt-1">胜率: ${ranking.winRate || 0}%</div>
+                </div>
+
+                <div class="stat-card p-4 rounded-lg">
+                    <div class="text-gray-600 text-sm mb-1">连胜记录</div>
+                    <div class="text-3xl font-bold text-orange-600">${ranking.currentStreak || 0}</div>
+                    <div class="text-sm text-gray-500 mt-1">最高: ${ranking.maxWinStreak || 0}</div>
+                </div>
+            `;
+        }
+
+        // Load leaderboard
+        async function loadLeaderboard(limit = 100) {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/seasons/${currentSeasonId}/leaderboard?limit=${limit}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.code === 200) {
+                    renderLeaderboard(data.data);
+                }
+            } catch (error) {
+                console.error('加载排行榜失败:', error);
+            }
+        }
+
+        // Render leaderboard
+        function renderLeaderboard(leaderboard) {
+            const tbody = document.getElementById('leaderboardBody');
+            tbody.innerHTML = leaderboard.map((entry, index) => {
+                const ranking = entry.ranking;
+                const reward = entry.reward;
+                const rankDisplay = index < 3 ? `<div class="rank-badge rank-${index + 1}">${index + 1}</div>` : `<div class="text-gray-700 font-semibold">${index + 1}</div>`;
+
+                return `
+                    <tr class="border-b hover:bg-gray-50 transition">
+                        <td class="px-4 py-4">${rankDisplay}</td>
+                        <td class="px-4 py-4">
+                            <div class="flex items-center gap-2">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400"></div>
+                                <div>
+                                    <div class="font-medium">${ranking.username || '匿名用户'}</div>
+                                    <div class="text-xs text-gray-500">ID: ${ranking.userId}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-4 py-4">
+                            <div class="text-xl font-bold text-blue-600">${ranking.currentElo}</div>
+                        </td>
+                        <td class="px-4 py-4">
+                            <span class="elo-badge tier-${getTier(ranking.currentElo)}">${getTier(ranking.currentElo)}</span>
+                        </td>
+                        <td class="px-4 py-4">${ranking.totalBattles || 0}</td>
+                        <td class="px-4 py-4">
+                            <div class="text-green-600 font-semibold">${ranking.winRate || 0}%</div>
+                        </td>
+                        <td class="px-4 py-4">
+                            <div class="text-orange-600 font-semibold">${ranking.currentStreak || 0}</div>
+                        </td>
+                        <td class="px-4 py-4">
+                            <div class="text-sm text-gray-700">${reward ? reward.pointsReward + ' 积分' : '参与奖'}</div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Render rewards
+        function renderRewards(rewards) {
+            const grid = document.getElementById('rewardsGrid');
+            grid.innerHTML = rewards.map(reward => {
+                const gradientClass = reward.rankType === 'champion' ? 'gradient-gold' :
+                                     reward.rankType === 'top3' ? 'gradient-silver' :
+                                     reward.rankType === 'top10' ? 'gradient-bronze' : 'bg-gray-100';
+
+                return `
+                    <div class="card p-6">
+                        <div class="${gradientClass} text-white p-4 rounded-lg mb-4 text-center">
+                            <div class="text-2xl font-bold mb-2">${reward.titleName || '参与奖'}</div>
+                            <div class="text-sm opacity-90">第 ${reward.rankRangeStart} - ${reward.rankRangeEnd} 名</div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between py-2 border-b">
+                                <span class="text-gray-600">积分奖励</span>
+                                <span class="font-bold text-purple-600">${reward.pointsReward}</span>
+                            </div>
+                            ${reward.vipDays > 0 ? `
+                            <div class="flex items-center justify-between py-2 border-b">
+                                <span class="text-gray-600">VIP天数</span>
+                                <span class="font-bold text-blue-600">${reward.vipDays}天</span>
+                            </div>
+                            ` : ''}
+                            ${reward.badgeReward ? `
+                            <div class="flex items-center justify-between py-2">
+                                <span class="text-gray-600">专属徽章</span>
+                                <span class="text-sm text-gray-700">${reward.badgeReward}</span>
+                            </div>
+                            ` : ''}
+                        </div>
+
+                        <p class="text-sm text-gray-500 mt-4">${reward.description}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Render tasks
+        function renderTasks(tasks) {
+            const daily = tasks.filter(t => t.taskType === 'daily');
+            const weekly = tasks.filter(t => t.taskType === 'weekly');
+            const season = tasks.filter(t => t.taskType === 'season');
+
+            const container = document.getElementById('tasksContainer');
+            container.innerHTML = `
+                ${renderTaskSection('每日任务', daily)}
+                ${renderTaskSection('每周任务', weekly)}
+                ${renderTaskSection('赛季任务', season)}
+            `;
+        }
+
+        function renderTaskSection(title, tasks) {
+            return `
+                <div class="card p-6">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="ri-checkbox-circle-line mr-2 text-purple-600"></i>
+                        ${title}
+                    </h3>
+                    <div class="space-y-3">
+                        ${tasks.map(task => `
+                            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                                <div class="flex-1">
+                                    <div class="font-medium text-gray-900">${task.taskName}</div>
+                                    <div class="text-sm text-gray-600 mt-1">${task.taskDescription}</div>
+                                </div>
+                                <div class="text-right ml-4">
+                                    <div class="text-lg font-bold text-purple-600">${task.pointsReward} 积分</div>
+                                    <div class="text-xs text-gray-500 mt-1">要求: ${task.requirementValue}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Get tier from ELO
+        function getTier(elo) {
+            if (elo < 1200) return 'BRONZE';
+            if (elo < 1400) return 'SILVER';
+            if (elo < 1600) return 'GOLD';
+            if (elo < 1800) return 'PLATINUM';
+            if (elo < 2000) return 'DIAMOND';
+            if (elo < 2200) return 'MASTER';
+            if (elo < 2400) return 'GRANDMASTER';
+            return 'CHALLENGER';
+        }
+
+        // Switch tab
+        function switchTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'border-b-2', 'border-purple-600', 'text-purple-600');
+                btn.classList.add('text-gray-600');
+            });
+            const activeBtn = document.querySelector(`[data-tab="${tab}"]`);
+            activeBtn.classList.add('active', 'border-b-2', 'border-purple-600', 'text-purple-600');
+            activeBtn.classList.remove('text-gray-600');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+
+            // Load data if needed
+            if (tab === 'leaderboard' && document.getElementById('leaderboardBody').children.length === 0) {
+                loadLeaderboard();
+            }
+        }
+
+        // Refresh data
+        async function refreshData() {
+            await loadCurrentSeason();
+            await loadUserStats();
+            if (document.querySelector('[data-tab="leaderboard"]').classList.contains('active')) {
+                await loadLeaderboard();
+            }
+        }
+    </script>
+</body>
+</html>

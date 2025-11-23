@@ -640,6 +640,9 @@
     </style>
 </head>
 <body>
+    <!-- 全局登录状态 -->
+    <div id="auth-header"></div>
+
     <!-- 粒子背景 -->
     <div class="particles-bg" id="particlesBg"></div>
 
@@ -751,64 +754,8 @@
     </div>
 
     <script>
-        // 证书数据
-        const certificates = [
-            {
-                id: 'CERT-2024-0001',
-                type: 'course',
-                courseName: '深度学习基础与实践',
-                issueDate: '2024-08-10',
-                grade: 'A+',
-                score: 98,
-                level: 'gold'
-            },
-            {
-                id: 'CERT-2024-0002',
-                type: 'course',
-                courseName: 'Python高级编程',
-                issueDate: '2024-07-25',
-                grade: 'A',
-                score: 92,
-                level: 'normal'
-            },
-            {
-                id: 'CERT-2024-0003',
-                type: 'achievement',
-                courseName: '学习达人',
-                issueDate: '2024-07-20',
-                grade: '特殊成就',
-                score: 100,
-                level: 'platinum'
-            },
-            {
-                id: 'CERT-2024-0004',
-                type: 'course',
-                courseName: '机器学习算法详解',
-                issueDate: '2024-07-15',
-                grade: 'A',
-                score: 90,
-                level: 'normal'
-            },
-            {
-                id: 'CERT-2024-0005',
-                type: 'competition',
-                courseName: 'AI创新大赛',
-                issueDate: '2024-07-01',
-                grade: '二等奖',
-                score: 95,
-                level: 'gold'
-            },
-            {
-                id: 'CERT-2024-0006',
-                type: 'course',
-                courseName: '数据科学入门',
-                issueDate: '2024-06-20',
-                grade: 'B+',
-                score: 88,
-                level: 'normal'
-            }
-        ];
-
+        // 全局变量
+        let certificates = [];
         let currentFilter = 'all';
 
         // 页面加载完成后初始化
@@ -848,7 +795,7 @@
         // 加载证书
         async function loadCertificates() {
             const grid = document.getElementById('certificatesGrid');
-            
+
             // 显示加载状态
             grid.innerHTML = `
                 <div class="loading" style="grid-column: 1 / -1;">
@@ -857,28 +804,82 @@
                 </div>
             `;
 
-            // 模拟API调用延迟
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    grid.innerHTML = `
+                        <div class="empty-state" style="grid-column: 1 / -1;">
+                            <div class="empty-icon">🔒</div>
+                            <h3>请先登录</h3>
+                            <p>登录后查看您的证书</p>
+                        </div>
+                    `;
+                    return;
+                }
 
-            // 筛选证书
-            let filteredCertificates = certificates;
-            if (currentFilter !== 'all') {
-                filteredCertificates = certificates.filter(cert => cert.type === currentFilter);
+                const response = await fetch('/api/certificates/my', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.code === 200 && data.data) {
+                        certificates = data.data.certificates || [];
+
+                        // 更新统计卡片
+                        updateStats(data.data.stats || {});
+
+                        // 筛选证书
+                        let filteredCertificates = certificates;
+                        if (currentFilter !== 'all') {
+                            filteredCertificates = certificates.filter(cert => cert.type === currentFilter);
+                        }
+
+                        if (filteredCertificates.length === 0) {
+                            grid.innerHTML = `
+                                <div class="empty-state" style="grid-column: 1 / -1;">
+                                    <div class="empty-icon">📜</div>
+                                    <h3>暂无证书</h3>
+                                    <p>完成课程学习即可获得证书</p>
+                                </div>
+                            `;
+                            return;
+                        }
+
+                        // 渲染证书
+                        grid.innerHTML = filteredCertificates.map(cert => createCertificateCard(cert)).join('');
+                    }
+                } else {
+                    showErrorState();
+                }
+            } catch (error) {
+                console.error('加载证书失败:', error);
+                showErrorState();
             }
+        }
 
-            if (filteredCertificates.length === 0) {
-                grid.innerHTML = `
-                    <div class="empty-state" style="grid-column: 1 / -1;">
-                        <div class="empty-icon">📜</div>
-                        <h3>暂无证书</h3>
-                        <p>完成课程学习即可获得证书</p>
-                    </div>
-                `;
-                return;
-            }
+        // 更新统计卡片
+        function updateStats(stats) {
+            const statCards = document.querySelectorAll('.stat-number');
+            if (statCards[0]) statCards[0].textContent = stats.total || 0;
+            if (statCards[1]) statCards[1].textContent = stats.excellent || 0;
+            if (statCards[2]) statCards[2].textContent = stats.completed || 0;
+            if (statCards[3]) statCards[3].textContent = (stats.averageScore || 0) + '%';
+        }
 
-            // 渲染证书
-            grid.innerHTML = filteredCertificates.map(cert => createCertificateCard(cert)).join('');
+        // 显示错误状态
+        function showErrorState() {
+            const grid = document.getElementById('certificatesGrid');
+            grid.innerHTML = `
+                <div class="empty-state" style="grid-column: 1 / -1;">
+                    <div class="empty-icon">⚠️</div>
+                    <h3>加载失败</h3>
+                    <p>无法加载证书，请稍后重试</p>
+                    <button class="btn btn-primary" onclick="loadCertificates()" style="margin-top: 1rem;">重试</button>
+                </div>
+            `;
         }
 
         // 创建证书卡片
@@ -972,6 +973,16 @@
                 notification.remove();
             }, 3000);
         }
+    </script>
+    <!-- 全局登录状态组件 -->
+    <script src="../utils/auth-header.js"></script>
+    <script>
+        // 初始化登录状态组件
+        document.addEventListener('DOMContentLoaded', () => {
+            AuthHeader.init('auth-header', {
+                showLinks: false
+            });
+        });
     </script>
 </body>
 </html>
