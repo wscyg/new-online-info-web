@@ -303,20 +303,56 @@ class PKArena {
                 <div class="match-found-animation">
                     <div class="success-icon">✓</div>
                     <h2>匹配成功！</h2>
-                    <div class="opponent-info">
-                        <div class="opponent-avatar">
-                            ${data.opponent.avatar
-                                ? `<img src="${data.opponent.avatar}" alt="${data.opponent.nickname}">`
-                                : data.opponent.nickname[0].toUpperCase()
-                            }
+                    <div class="players-vs-container">
+                        <div class="player-avatar-container">
+                            <canvas id="matchPlayerAvatar" width="120" height="160"></canvas>
+                            <div class="player-name">${this.state.user?.nickname || '我'}</div>
+                            <div class="player-tier">${window.getTierName(this.state.stats?.tier)} ${window.getTierIcon(this.state.stats?.tier)}</div>
                         </div>
-                        <div class="opponent-name">${data.opponent.nickname}</div>
-                        <div class="opponent-tier">${window.getTierName(data.opponent.tier)} ${window.getTierIcon(data.opponent.tier)}</div>
-                        <div class="opponent-elo">ELO: ${data.opponent.elo}</div>
+                        <div class="vs-badge">VS</div>
+                        <div class="player-avatar-container">
+                            <canvas id="matchOpponentAvatar" width="120" height="160"></canvas>
+                            <div class="player-name">${data.opponent.nickname}</div>
+                            <div class="player-tier">${window.getTierName(data.opponent.tier)} ${window.getTierIcon(data.opponent.tier)}</div>
+                            <div class="player-elo">ELO: ${data.opponent.elo}</div>
+                        </div>
                     </div>
                     <div class="countdown">3秒后进入对战...</div>
                 </div>
             `;
+
+            // 【新增】渲染双方Avatar
+            this.renderMatchAvatars(this.state.user?.id, data.opponent.id);
+        }
+    }
+
+    /**
+     * 【新增】渲染匹配成功后的Avatar
+     */
+    async renderMatchAvatars(playerId, opponentId) {
+        try {
+            // 动态导入Avatar渲染器（如果还没加载）
+            if (!window.AvatarRenderer) {
+                await import('../../components/AvatarRenderer.js');
+            }
+
+            // 渲染双方Avatar
+            if (playerId) {
+                const playerRenderer = new window.AvatarRenderer('matchPlayerAvatar', 120, 160);
+                await playerRenderer.loadEquippedSkins(playerId);
+                playerRenderer.render();
+            }
+
+            if (opponentId) {
+                const opponentRenderer = new window.AvatarRenderer('matchOpponentAvatar', 120, 160);
+                await opponentRenderer.loadEquippedSkins(opponentId);
+                opponentRenderer.render();
+            }
+
+            console.log('[PK Arena] Match avatars rendered successfully');
+        } catch (error) {
+            console.error('[PK Arena] Failed to render match avatars:', error);
+            // Avatar渲染失败不影响核心流程
         }
     }
 

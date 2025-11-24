@@ -24,7 +24,7 @@
             <div class="pk-grid pk-grid-3" style="align-items: center;">
                 <!-- 玩家1 -->
                 <div class="pk-player-compact">
-                    <div class="pk-player-avatar-sm" id="player1Avatar"></div>
+                    <canvas id="player1AvatarCanvas" width="50" height="65" class="pk-avatar-canvas-sm"></canvas>
                     <div class="pk-player-info-sm">
                         <div class="pk-player-name-sm" id="player1Name"></div>
                         <div class="pk-player-progress-sm">
@@ -47,7 +47,7 @@
                             <span id="player2Progress">0</span> / <span id="totalQuestions2">10</span>
                         </div>
                     </div>
-                    <div class="pk-player-avatar-sm" id="player2Avatar"></div>
+                    <canvas id="player2AvatarCanvas" width="50" height="65" class="pk-avatar-canvas-sm"></canvas>
                 </div>
             </div>
         </div>
@@ -142,6 +142,9 @@
             </div>
         </div>
     </div>
+
+    <!-- 引入Avatar渲染器 -->
+    <script src="../components/AvatarRenderer.js"></script>
 
     <!-- JavaScript模块 -->
     <script type="module">
@@ -315,6 +318,21 @@
             padding: 0.25rem 0.5rem;
         }
 
+        /* Avatar Canvas样式 */
+        .pk-avatar-canvas-sm {
+            border: 2px solid rgba(79, 70, 229, 0.5);
+            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.8);
+            width: 50px;
+            height: 65px;
+        }
+
+        .pk-player-compact {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
         /* 响应式 */
         @media (max-width: 968px) {
             .pk-timer-value {
@@ -327,6 +345,11 @@
 
             .pk-question-container {
                 padding: var(--pk-spacing-lg);
+            }
+
+            .pk-avatar-canvas-sm {
+                width: 40px;
+                height: 52px;
             }
         }
     </style>

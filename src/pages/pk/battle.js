@@ -104,6 +104,9 @@ class PKBattle {
                 const battleInfo = response.data;
                 this.store.getState().setBattle(battleInfo);
 
+                // 【新增】渲染双方Avatar到状态栏
+                await this.renderBattleAvatars(battleInfo);
+
                 // 如果对战已经开始，加载题目
                 if (battleInfo.status === 'IN_PROGRESS') {
                     this.loadQuestions(battleInfo.questions);
@@ -117,6 +120,39 @@ class PKBattle {
         } catch (error) {
             console.error('[PK Battle] Failed to load battle info:', error);
             this.showNotification('网络错误', 'error');
+        }
+    }
+
+    /**
+     * 【新增】渲染对战状态栏的Avatar
+     */
+    async renderBattleAvatars(battleInfo) {
+        try {
+            // 动态导入Avatar渲染器
+            if (!window.AvatarRenderer) {
+                await import('../../components/AvatarRenderer.js');
+            }
+
+            // 渲染玩家1的Avatar（自己）
+            if (battleInfo.player1?.id || battleInfo.player1Id) {
+                const player1Id = battleInfo.player1?.id || battleInfo.player1Id;
+                const player1Renderer = new window.AvatarRenderer('player1AvatarCanvas', 50, 65);
+                await player1Renderer.loadEquippedSkins(player1Id);
+                player1Renderer.render();
+            }
+
+            // 渲染玩家2的Avatar（对手）
+            if (battleInfo.player2?.id || battleInfo.player2Id) {
+                const player2Id = battleInfo.player2?.id || battleInfo.player2Id;
+                const player2Renderer = new window.AvatarRenderer('player2AvatarCanvas', 50, 65);
+                await player2Renderer.loadEquippedSkins(player2Id);
+                player2Renderer.render();
+            }
+
+            console.log('[PK Battle] Battle avatars rendered successfully');
+        } catch (error) {
+            console.error('[PK Battle] Failed to render battle avatars:', error);
+            // Avatar渲染失败不影响核心流程
         }
     }
 
@@ -210,7 +246,7 @@ class PKBattle {
     /**
      * 渲染当前题目
      */
-    renderCurrentQuestion() {
+    async renderCurrentQuestion() {
         const { questions, currentQuestionIndex } = this.state;
 
         if (currentQuestionIndex >= questions.length) {
@@ -245,11 +281,51 @@ class PKBattle {
             hljs.highlightElement(block);
         });
 
-        // 记录题目开始时间
+        // 【新增】记录题目开始时间到后端（反作弊）
+        await this.recordQuestionStart(currentQuestionIndex);
+
+        // 记录题目开始时间（本地）
         this.questionStartTime = Date.now();
 
         // 清除之前的选择
         this.selectedAnswer = null;
+    }
+
+    /**
+     * 【新增】记录题目开始时间（反作弊）
+     */
+    async recordQuestionStart(questionIndex) {
+        try {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const userId = user.id;
+
+            if (!userId) {
+                console.warn('[PK Battle] User ID not found, skipping question start record');
+                return;
+            }
+
+            const response = await fetch(`${window.API_BASE_URL || 'http://localhost:8070'}/api/pk/anticheat/question-start`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({
+                    battleId: this.battleId,
+                    userId: userId,
+                    questionIndex: questionIndex
+                })
+            });
+
+            if (response.ok) {
+                console.log(`[PK Battle] Question ${questionIndex} start time recorded`);
+            } else {
+                console.warn('[PK Battle] Failed to record question start time:', await response.text());
+            }
+        } catch (error) {
+            console.error('[PK Battle] Error recording question start time:', error);
+            // 不阻断主流程
+        }
     }
 
     /**

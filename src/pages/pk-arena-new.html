@@ -137,7 +137,7 @@
                 <div class="pk-grid pk-grid-3 pk-grid-gap" style="align-items: center;">
                     <!-- 玩家1 -->
                     <div class="pk-player-card">
-                        <div class="pk-player-avatar" id="player1Avatar"></div>
+                        <canvas id="player1AvatarCanvas" width="120" height="160" class="pk-avatar-canvas"></canvas>
                         <div class="pk-player-name" id="player1Name"></div>
                         <span class="pk-player-tier" id="player1Tier"></span>
                     </div>
@@ -147,7 +147,7 @@
 
                     <!-- 玩家2 -->
                     <div class="pk-player-card">
-                        <div class="pk-player-avatar" id="player2Avatar"></div>
+                        <canvas id="player2AvatarCanvas" width="120" height="160" class="pk-avatar-canvas"></canvas>
                         <div class="pk-player-name" id="player2Name"></div>
                         <span class="pk-player-tier" id="player2Tier"></span>
                     </div>
@@ -190,6 +190,9 @@
             </div>
         </div>
     </div>
+
+    <!-- 引入Avatar渲染器 -->
+    <script src="../components/AvatarRenderer.js"></script>
 
     <!-- JavaScript模块 -->
     <script type="module">
@@ -295,6 +298,19 @@
         .pk-friend-status.online::before {
             content: "●";
             margin-right: 0.25rem;
+        }
+
+        /* Avatar Canvas样式 */
+        .pk-avatar-canvas {
+            border: 2px solid rgba(79, 70, 229, 0.5);
+            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.8);
+            display: block;
+            margin: 0 auto 1rem;
+        }
+
+        .pk-player-card {
+            text-align: center;
         }
     </style>
 </body>
