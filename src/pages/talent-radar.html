@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人才雷达 - CodeArena</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Arial', sans-serif;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .grade-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .grade-S {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #8b4513;
+        }
+
+        .grade-Aplus, .grade-A {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .grade-Bplus, .grade-B {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+        }
+
+        .grade-C {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+        }
+
+        .dimension-score {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: #f3f4f6;
+        }
+
+        .score-bar {
+            flex: 1;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            margin: 0 16px;
+            overflow: hidden;
+        }
+
+        .score-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .score-high { background: linear-gradient(90deg, #10b981 0%, #34d399 100%); }
+        .score-medium { background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%); }
+        .score-low { background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%); }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .leaderboard-item:hover {
+            background: #f9fafb;
+        }
+
+        .rank-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 16px;
+        }
+
+        .rank-1 { background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); color: #8b4513; }
+        .rank-2 { background: linear-gradient(135deg, #c0c0c0 0%, #e0e0e0 100%); color: #4a4a4a; }
+        .rank-3 { background: linear-gradient(135deg, #cd7f32 0%, #e8a87c 100%); color: white; }
+        .rank-other { background: #e5e7eb; color: #6b7280; }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .tab-button {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab-button.active {
+            border-bottom-color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <a href="../index.html" class="text-2xl font-bold text-purple-600">
+                        <i class="fas fa-code"></i> CodeArena
+                    </a>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-xl font-semibold text-gray-700">人才雷达</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="userInfo" class="text-gray-700"></span>
+                    <a href="../index.html" class="text-gray-600 hover:text-purple-600">
+                        <i class="fas fa-home"></i> 返回首页
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Tabs -->
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex space-x-4 border-b-2 border-white border-opacity-30">
+            <button class="tab-button active" data-tab="myRadar">
+                <i class="fas fa-chart-area"></i> 我的雷达
+            </button>
+            <button class="tab-button" data-tab="leaderboard">
+                <i class="fas fa-trophy"></i> 排行榜
+            </button>
+            <button class="tab-button" data-tab="compare">
+                <i class="fas fa-balance-scale"></i> 对比分析
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container mx-auto px-6 py-6">
+        <!-- My Radar Tab -->
+        <div id="myRadarTab" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Radar Chart -->
+                <div class="card p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">
+                        <i class="fas fa-radar"></i> 能力雷达图
+                    </h2>
+                    <canvas id="radarChart" width="400" height="400"></canvas>
+                    <div class="text-center mt-4">
+                        <button id="recalculateBtn" class="btn-primary">
+                            <i class="fas fa-sync"></i> 重新计算
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Card -->
+                <div class="card p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">
+                        综合评估
+                    </h2>
+
+                    <div class="text-center mb-6">
+                        <div class="mb-2">
+                            <span id="gradeBadge" class="grade-badge">--</span>
+                        </div>
+                        <p class="text-4xl font-bold text-gray-800" id="overallScore">--</p>
+                        <p class="text-gray-500">综合得分</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="flex justify-between text-sm text-gray-600 mb-1">
+                            <span>全站排名</span>
+                            <span id="percentile">Top --</span>
+                        </div>
+                        <div class="flex justify-between text-sm text-gray-600 mb-1">
+                            <span>对战场次</span>
+                            <span id="totalBattles">-- 场</span>
+                        </div>
+                        <div class="flex justify-between text-sm text-gray-600">
+                            <span>最后更新</span>
+                            <span id="lastUpdated">--</span>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">各维度得分</h3>
+                    <div id="dimensionScores"></div>
+                </div>
+            </div>
+
+            <!-- Analysis Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                <div class="card p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">
+                        <i class="fas fa-star text-yellow-500"></i> 优势技能
+                    </h3>
+                    <div id="strengths"></div>
+                </div>
+
+                <div class="card p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">
+                        <i class="fas fa-arrow-up text-blue-500"></i> 待提升
+                    </h3>
+                    <div id="improvements"></div>
+                </div>
+
+                <div class="card p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">
+                        <i class="fas fa-user-tie text-purple-500"></i> 推荐导师
+                    </h3>
+                    <div id="recommendedMentors"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leaderboard Tab -->
+        <div id="leaderboardTab" class="tab-content" style="display: none;">
+            <div class="card p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        <i class="fas fa-trophy text-yellow-500"></i> 人才排行榜
+                    </h2>
+                    <select id="dimensionFilter" class="px-4 py-2 border border-gray-300 rounded-lg">
+                        <option value="overall">综合得分</option>
+                        <option value="speed">答题速度</option>
+                        <option value="accuracy">正确率</option>
+                        <option value="consistency">稳定性</option>
+                        <option value="difficulty">难度掌握</option>
+                        <option value="breadth">知识广度</option>
+                    </select>
+                </div>
+                <div id="leaderboardList"></div>
+            </div>
+        </div>
+
+        <!-- Compare Tab -->
+        <div id="compareTab" class="tab-content" style="display: none;">
+            <div class="card p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">
+                    <i class="fas fa-balance-scale"></i> 能力对比分析
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">用户1 ID</label>
+                        <input type="number" id="compareUser1" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="输入用户ID">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">用户2 ID</label>
+                        <input type="number" id="compareUser2" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="输入用户ID">
+                    </div>
+                </div>
+
+                <button id="compareBtn" class="btn-primary w-full mb-6">
+                    <i class="fas fa-search"></i> 开始对比
+                </button>
+
+                <div id="comparisonResult"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../scripts/talent-radar.js"></script>
+</body>
+</html>

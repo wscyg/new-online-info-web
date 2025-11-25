@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="100">
+  <rect x="35" y="85" width="10" height="15" fill="#333" rx="2"/>
+  <rect x="37" y="15" width="6" height="70" fill="rgba(100,200,255,0.8)" stroke="rgba(100,200,255,1)" stroke-width="2" rx="3"/>
+  <rect x="38" y="17" width="4" height="66" fill="rgba(200,230,255,0.9)"/>
+  <text x="40" y="50" text-anchor="middle" fill="#fff" font-size="8" font-weight="bold">LIGHT</text>
+</svg>

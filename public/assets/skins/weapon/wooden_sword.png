@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="100">
+  <rect x="35" y="80" width="10" height="20" fill="#8b4513"/>
+  <polygon points="40,10 38,80 42,80 40,10" fill="#a0522d"/>
+  <text x="40" y="50" text-anchor="middle" fill="#fff" font-size="10">WEAPON</text>
+</svg>
