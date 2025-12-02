@@ -349,6 +349,44 @@
         }
     };
 
+    // Load utility scripts
+    function loadUtilityScripts() {
+        const scripts = [
+            { id: 'global-notifications-script', path: 'global-notifications.js' },
+            { id: 'error-handler-script', path: 'error-handler.js' },
+            { id: 'api-cache-script', path: 'api-cache.js' }
+        ];
+
+        scripts.forEach(({ id, path }) => {
+            if (document.getElementById(id)) return;
+
+            const script = document.createElement('script');
+            script.id = id;
+            script.src = `../scripts/${path}`;
+            script.onerror = () => {
+                const altScript = document.createElement('script');
+                altScript.src = `/src/scripts/${path}`;
+                document.head.appendChild(altScript);
+            };
+            document.head.appendChild(script);
+        });
+
+        // Load mobile responsive CSS
+        if (!document.getElementById('mobile-responsive-css')) {
+            const link = document.createElement('link');
+            link.id = 'mobile-responsive-css';
+            link.rel = 'stylesheet';
+            link.href = '../styles/mobile-responsive.css';
+            link.onerror = () => {
+                const altLink = document.createElement('link');
+                altLink.rel = 'stylesheet';
+                altLink.href = '/src/styles/mobile-responsive.css';
+                document.head.appendChild(altLink);
+            };
+            document.head.appendChild(link);
+        }
+    }
+
     // Auto-init on DOM ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
@@ -356,10 +394,12 @@
             const path = window.location.pathname;
             const pageName = path.substring(path.lastIndexOf('/') + 1).replace('.html', '');
             CommonHeader.init(pageName);
+            loadUtilityScripts();
         });
     } else {
         const path = window.location.pathname;
         const pageName = path.substring(path.lastIndexOf('/') + 1).replace('.html', '');
         CommonHeader.init(pageName);
+        loadUtilityScripts();
     }
 })();

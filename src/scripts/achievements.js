@@ -3,7 +3,9 @@
  * 管理成就的展示、解锁和进度跟踪
  */
 
-const API_BASE = 'http://localhost:8070';
+const API_BASE = window.location.hostname === 'localhost'
+    ? 'http://localhost:8070/api'
+    : 'http://42.194.245.66:8070/api';
 
 class AchievementManager {
     constructor() {
