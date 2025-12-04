@@ -1055,28 +1055,78 @@
             }
         });
         
+        const API_BASE = window.location.hostname === 'localhost'
+            ? 'http://localhost:8070/api'
+            : 'http://42.194.245.66:8070/api';
+
         // 发布笔记
-        function publishNote() {
-            const title = document.getElementById('noteTitle').value;
-            const content = document.getElementById('noteContent').value;
-            
+        async function publishNote() {
+            const title = document.getElementById('noteTitle').value.trim();
+            const content = document.getElementById('noteContent').value.trim();
+            const categorySelect = document.querySelector('.modal select') || { value: 'tech' };
+            const category = categorySelect.value || 'tech';
+
             if (!title || !content) {
                 alert('请填写标题和内容');
                 return;
             }
-            
-            // TODO: 调用API发布笔记
-            console.log('发布笔记:', { title, content });
-            alert('✅ 发布成功！');
-            closePublishModal();
-            
-            // 清空表单
-            document.getElementById('noteTitle').value = '';
-            document.getElementById('noteContent').value = '';
-            document.getElementById('imagePreview').innerHTML = '';
-            document.getElementById('imagePreview').style.display = 'none';
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('请先登录');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // 收集标签
+            const tagElements = document.querySelectorAll('.selected-tag');
+            const tags = Array.from(tagElements).map(el => el.textContent.replace('×', '').trim());
+
+            try {
+                const response = await fetch(`${API_BASE}/community/notes`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        title,
+                        content,
+                        category,
+                        type: 'article',
+                        tags,
+                        summary: content.substring(0, 200)
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.code === 200 || result.success) {
+                    alert('✅ 发布成功！');
+                    closePublishModal();
+
+                    // 清空表单
+                    document.getElementById('noteTitle').value = '';
+                    document.getElementById('noteContent').value = '';
+                    document.getElementById('imagePreview').innerHTML = '';
+                    document.getElementById('imagePreview').style.display = 'none';
+
+                    // 重新加载笔记列表
+                    loadNotes('all');
+                } else {
+                    alert('发布失败: ' + (result.message || '未知错误'));
+                }
+            } catch (error) {
+                console.error('发布笔记失败:', error);
+                alert('发布失败，请稍后重试');
+            }
         }
         
+        let currentPage = 1;
+        let currentCategory = 'all';
+        let isLoading = false;
+        let hasMore = true;
+
         // 切换分类
         function switchCategory(category) {
             // 更新标签样式
@@ -1084,80 +1134,156 @@
                 tab.classList.remove('active');
             });
             event.target.classList.add('active');
-            
-            // TODO: 加载对应分类的内容
-            console.log('切换分类:', category);
+
+            currentCategory = category;
+            currentPage = 1;
+            hasMore = true;
+
+            // 清空现有内容
+            document.getElementById('notesContainer').innerHTML = '';
+
+            // 加载对应分类的内容
             loadNotes(category);
         }
-        
+
         // 查看笔记详情
         function viewNote(noteId) {
-            console.log('查看笔记:', noteId);
-            // TODO: 跳转到笔记详情页
             window.location.href = `note-detail.html?id=${noteId}`;
         }
-        
+
         // 前往个人主页
         function goToProfile() {
             window.location.href = 'social-profile.html';
         }
-        
+
         // 加载更多
         function loadMore() {
-            console.log('加载更多笔记...');
-            // TODO: 实现加载更多功能
-            
-            // 模拟添加更多内容
+            if (!isLoading && hasMore) {
+                currentPage++;
+                loadNotes(currentCategory, true);
+            }
+        }
+
+        // 加载笔记
+        async function loadNotes(category = 'all', append = false) {
+            if (isLoading) return;
+            isLoading = true;
+
             const container = document.getElementById('notesContainer');
+
+            if (!append) {
+                container.innerHTML = '<div style="text-align: center; padding: 40px; color: #999;">加载中...</div>';
+            }
+
+            try {
+                const response = await fetch(
+                    `${API_BASE}/community/notes?category=${category}&page=${currentPage}&size=20&sort=hot`
+                );
+
+                const result = await response.json();
+
+                if (result.code === 200 && result.data) {
+                    const notes = result.data.items || [];
+                    hasMore = result.data.hasNext;
+
+                    if (!append) {
+                        container.innerHTML = '';
+                    }
+
+                    if (notes.length === 0 && !append) {
+                        container.innerHTML = `
+                            <div style="text-align: center; padding: 60px; color: #999;">
+                                <div style="font-size: 48px; margin-bottom: 16px;">📝</div>
+                                <p>暂无笔记，快来发布第一篇吧！</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    notes.forEach(note => {
+                        const noteCard = createNoteCard(note);
+                        container.appendChild(noteCard);
+                    });
+                } else {
+                    if (!append) {
+                        container.innerHTML = '<div style="text-align: center; padding: 40px; color: #999;">加载失败</div>';
+                    }
+                }
+            } catch (error) {
+                console.error('加载笔记失败:', error);
+                if (!append) {
+                    container.innerHTML = '<div style="text-align: center; padding: 40px; color: #999;">加载失败，请稍后重试</div>';
+                }
+            } finally {
+                isLoading = false;
+            }
+        }
+
+        // 创建笔记卡片
+        function createNoteCard(note) {
             const colors = [
                 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
                 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-                'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)'
+                'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+                'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)',
+                'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)'
             ];
-            
-            for (let i = 0; i < 10; i++) {
-                const noteCard = document.createElement('div');
-                noteCard.className = 'note-card';
-                noteCard.onclick = () => viewNote(100 + i);
-                
-                const height = Math.floor(Math.random() * 100) + 180;
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                
-                noteCard.innerHTML = `
-                    <div class="note-cover">
-                        <div style="height: ${height}px; background: ${color};"></div>
-                        <span class="note-type-badge">学习笔记</span>
-                    </div>
-                    <div class="note-content">
-                        <h3 class="note-title">这是一条新加载的学习笔记 #${100 + i}</h3>
-                        <div class="note-author">
-                            <div class="author-info">
-                                <div class="author-avatar">新</div>
-                                <span class="author-name">用户${100 + i}</span>
+
+            const noteCard = document.createElement('div');
+            noteCard.className = 'note-card';
+            noteCard.onclick = () => viewNote(note.id);
+
+            const height = Math.floor(Math.random() * 80) + 160;
+            const coverImage = note.coverImages && note.coverImages.length > 0
+                ? `<img src="${note.coverImages[0]}" style="width: 100%; height: ${height}px; object-fit: cover;">`
+                : `<div style="height: ${height}px; background: ${colors[note.id % colors.length]};"></div>`;
+
+            const author = note.author || {};
+            const avatarInitial = (author.nickname || author.username || '用')[0];
+
+            const categoryLabels = {
+                'interview': '面试经验',
+                'offer': 'Offer分享',
+                'tech': '技术文章',
+                'qa': '问答讨论'
+            };
+
+            noteCard.innerHTML = `
+                <div class="note-cover">
+                    ${coverImage}
+                    <span class="note-type-badge">${categoryLabels[note.category] || '学习笔记'}</span>
+                </div>
+                <div class="note-content">
+                    <h3 class="note-title">${note.title || '无标题'}</h3>
+                    <div class="note-author">
+                        <div class="author-info">
+                            <div class="author-avatar" style="background: ${colors[(note.userId || 0) % colors.length]}">
+                                ${author.avatar ? `<img src="${author.avatar}" style="width: 100%; height: 100%; border-radius: 50%;">` : avatarInitial}
                             </div>
-                            <div class="note-likes">
-                                <span class="like-icon">❤️</span>
-                                <span>${Math.floor(Math.random() * 1000)}</span>
-                            </div>
+                            <span class="author-name">${author.nickname || author.username || '匿名用户'}</span>
+                        </div>
+                        <div class="note-likes">
+                            <span class="like-icon">❤️</span>
+                            <span>${note.likeCount || 0}</span>
                         </div>
                     </div>
-                `;
-                
-                container.appendChild(noteCard);
+                </div>
+            `;
+
+            return noteCard;
+        }
+
+        // 无限滚动
+        window.addEventListener('scroll', () => {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
+                loadMore();
             }
-        }
-        
-        // 加载笔记
-        function loadNotes(category) {
-            // TODO: 根据分类加载笔记
-            console.log('加载笔记:', category);
-        }
-        
+        });
+
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
-            // 初始化瀑布流
-            console.log('页面加载完成');
+            loadNotes('all');
         });
     </script>
 </body>

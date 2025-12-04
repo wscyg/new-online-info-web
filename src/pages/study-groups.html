@@ -1183,24 +1183,115 @@
     </div>
 
     <script>
-        // 选择群组
+        const API_BASE = window.location.hostname === 'localhost'
+            ? 'http://localhost:8070/api'
+            : 'http://42.194.245.66:8070/api';
+
+        let currentRoomId = null;
+        let studyRooms = [];
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadStudyRooms();
+        });
+
+        // 加载学习室列表
+        async function loadStudyRooms() {
+            try {
+                const response = await fetch(`${API_BASE}/studyrooms/list?page=1&size=50`);
+                const result = await response.json();
+
+                if (result.code === 200 && result.data) {
+                    studyRooms = result.data.rooms || [];
+                    renderStudyRooms(studyRooms);
+                }
+            } catch (error) {
+                console.error('加载学习室失败:', error);
+            }
+        }
+
+        // 渲染学习室列表
+        function renderStudyRooms(rooms) {
+            const container = document.querySelector('.group-list');
+            if (!container || rooms.length === 0) return;
+
+            // 保留前两个固定项（师徒群、私聊示例）
+            const existingItems = container.querySelectorAll('.group-item');
+            const staticCount = 2;
+
+            rooms.forEach((room, index) => {
+                const existingItem = existingItems[staticCount + index];
+                if (existingItem) {
+                    // 更新现有项
+                    existingItem.querySelector('.group-name').textContent = room.name;
+                    existingItem.querySelector('.group-members').textContent = `${room.memberCount || 0}人`;
+                    existingItem.querySelector('.group-message').textContent = room.lastMessage || '暂无消息';
+                    existingItem.onclick = () => selectStudyRoom(existingItem, room.id);
+                } else {
+                    // 添加新项
+                    const roomEl = document.createElement('div');
+                    roomEl.className = 'group-item';
+                    roomEl.onclick = () => selectStudyRoom(roomEl, room.id);
+
+                    const colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#fa709a'];
+                    const color = colors[index % colors.length];
+
+                    roomEl.innerHTML = `
+                        <div class="group-avatar" style="background: ${color}">${room.name[0]}</div>
+                        <div class="group-info">
+                            <div class="group-name">${room.name}</div>
+                            <div class="group-message">${room.lastMessage || '暂无消息'}</div>
+                        </div>
+                        <div class="group-meta">
+                            <span class="group-time">${room.updatedAt ? new Date(room.updatedAt).toLocaleTimeString('zh-CN', {hour: '2-digit', minute: '2-digit'}) : ''}</span>
+                            <span class="group-members">${room.memberCount || 0}人</span>
+                        </div>
+                    `;
+                    container.appendChild(roomEl);
+                }
+            });
+        }
+
+        // 选择学习室
+        async function selectStudyRoom(element, roomId) {
+            document.querySelectorAll('.group-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            element.classList.add('active');
+
+            currentRoomId = roomId;
+
+            // 查找房间信息
+            const room = studyRooms.find(r => r.id === roomId);
+            if (room) {
+                document.querySelector('.chat-name').textContent = room.name;
+                document.querySelector('.chat-status').textContent = `${room.memberCount || 0}人 · ${room.onlineCount || 0}人在线`;
+            }
+
+            // 加载消息
+            await loadRoomMessages(roomId);
+        }
+
+        // 选择群组（保留原有功能）
         function selectGroup(element, type) {
             // 移除其他active状态
             document.querySelectorAll('.group-item').forEach(item => {
                 item.classList.remove('active');
             });
             element.classList.add('active');
-            
+
+            currentRoomId = null; // 非学习室
+
             // 根据类型更新聊天界面
             updateChatInterface(type);
         }
-        
+
         // 更新聊天界面
         function updateChatInterface(type) {
             const chatName = document.querySelector('.chat-name');
             const chatStatus = document.querySelector('.chat-status');
             const chatAvatar = document.querySelector('.chat-avatar');
-            
+
             if (type === 'private') {
                 chatName.textContent = '王小芳';
                 chatStatus.textContent = '在线';
@@ -1210,17 +1301,70 @@
                 chatStatus.textContent = '12位弟子 · 5人在线';
                 chatAvatar.textContent = '🎓';
             }
-            
+
             // 清空消息区域并加载新消息
             loadMessages(type);
         }
-        
-        // 加载消息
+
+        // 加载消息（静态示例）
         function loadMessages(type) {
-            // TODO: 根据类型加载对应的消息
             console.log('加载消息:', type);
         }
-        
+
+        // 加载房间消息
+        async function loadRoomMessages(roomId) {
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = '<div style="text-align: center; padding: 20px; color: #999;">加载中...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/studyrooms/${roomId}/messages?page=1&size=50`);
+                const result = await response.json();
+
+                if (result.code === 200 && result.data) {
+                    const messages = result.data.messages || [];
+                    renderMessages(messages);
+                } else {
+                    container.innerHTML = '<div style="text-align: center; padding: 20px; color: #999;">暂无消息</div>';
+                }
+            } catch (error) {
+                console.error('加载消息失败:', error);
+                container.innerHTML = '<div style="text-align: center; padding: 20px; color: #999;">加载失败</div>';
+            }
+        }
+
+        // 渲染消息
+        function renderMessages(messages) {
+            const container = document.getElementById('messagesContainer');
+            const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+            const currentUserId = currentUser.id;
+
+            if (messages.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 20px; color: #999;">暂无消息，开始聊天吧！</div>';
+                return;
+            }
+
+            container.innerHTML = messages.map(msg => {
+                const isSelf = msg.userId === currentUserId;
+                const time = new Date(msg.createdAt).toLocaleTimeString('zh-CN', {hour: '2-digit', minute: '2-digit'});
+                const avatar = msg.nickname ? msg.nickname[0] : '匿';
+
+                return `
+                    <div class="message ${isSelf ? 'self' : ''}">
+                        <div class="message-avatar">${avatar}</div>
+                        <div class="message-content">
+                            <div class="message-info">
+                                <span class="message-name">${msg.nickname || '匿名'}</span>
+                                <span>${time}</span>
+                            </div>
+                            <div class="message-bubble">${msg.content}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.scrollTop = container.scrollHeight;
+        }
+
         // 切换标签
         function switchTab(tab, element) {
             // 更新标签样式
@@ -1228,23 +1372,80 @@
                 item.classList.remove('active');
             });
             element.classList.add('active');
-            
-            // TODO: 筛选显示对应类型的群组
-            console.log('切换到:', tab);
+
+            // 筛选显示对应类型的群组
+            filterStudyRooms(tab);
+        }
+
+        // 筛选学习室
+        function filterStudyRooms(type) {
+            const container = document.querySelector('.group-list');
+            const items = container.querySelectorAll('.group-item');
+
+            items.forEach(item => {
+                if (type === 'all') {
+                    item.style.display = 'flex';
+                } else {
+                    const roomType = item.dataset.type || 'study';
+                    item.style.display = (roomType === type) ? 'flex' : 'none';
+                }
+            });
         }
         
         // 发送消息
-        function sendMessage() {
+        async function sendMessage() {
             const input = document.getElementById('messageInput');
             const message = input.value.trim();
-            
+
             if (!message) return;
-            
-            // 创建消息元素
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('请先登录');
+                return;
+            }
+
+            // 如果有当前学习室，发送到API
+            if (currentRoomId) {
+                try {
+                    const response = await fetch(`${API_BASE}/studyrooms/${currentRoomId}/message?content=${encodeURIComponent(message)}&messageType=text`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    const result = await response.json();
+
+                    if (result.code === 200) {
+                        // 添加到本地显示
+                        addLocalMessage(message);
+                        input.value = '';
+                        input.style.height = 'auto';
+                    } else {
+                        alert('发送失败: ' + result.message);
+                    }
+                } catch (error) {
+                    console.error('发送消息失败:', error);
+                    // 即使API失败，也显示本地消息
+                    addLocalMessage(message);
+                    input.value = '';
+                }
+            } else {
+                // 没有选中学习室，只显示本地
+                addLocalMessage(message);
+                input.value = '';
+                input.style.height = 'auto';
+            }
+        }
+
+        // 添加本地消息显示
+        function addLocalMessage(message) {
+            const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
             const messageDiv = document.createElement('div');
             messageDiv.className = 'message self';
             messageDiv.innerHTML = `
-                <div class="message-avatar">我</div>
+                <div class="message-avatar">${currentUser.nickname ? currentUser.nickname[0] : '我'}</div>
                 <div class="message-content">
                     <div class="message-info">
                         <span>${new Date().toLocaleTimeString('zh-CN', {hour: '2-digit', minute: '2-digit'})}</span>
@@ -1252,17 +1453,10 @@
                     <div class="message-bubble">${message}</div>
                 </div>
             `;
-            
-            // 添加到消息容器
+
             const container = document.getElementById('messagesContainer');
             container.appendChild(messageDiv);
-            
-            // 滚动到底部
             container.scrollTop = container.scrollHeight;
-            
-            // 清空输入框
-            input.value = '';
-            input.style.height = 'auto';
         }
         
         // 处理回车键
@@ -1290,10 +1484,58 @@
         }
         
         // 创建群组
-        function createGroup() {
-            console.log('创建群组');
-            closeModal();
-            // TODO: 实现创建群组功能
+        async function createGroup() {
+            const nameInput = document.querySelector('#createGroupModal input[placeholder="群组名称"]');
+            const descInput = document.querySelector('#createGroupModal textarea');
+            const maxMembersInput = document.querySelector('#createGroupModal input[type="number"]');
+
+            const name = nameInput?.value?.trim();
+            const description = descInput?.value?.trim();
+            const maxMembers = parseInt(maxMembersInput?.value) || 100;
+
+            if (!name) {
+                alert('请输入群组名称');
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('请先登录');
+                return;
+            }
+
+            try {
+                const params = new URLSearchParams({
+                    name,
+                    description: description || '',
+                    maxMembers,
+                    roomType: 'study'
+                });
+
+                const response = await fetch(`${API_BASE}/studyrooms/create?${params}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.code === 200) {
+                    alert('创建成功！');
+                    closeModal();
+                    // 清空表单
+                    if (nameInput) nameInput.value = '';
+                    if (descInput) descInput.value = '';
+                    // 重新加载列表
+                    await loadStudyRooms();
+                } else {
+                    alert('创建失败: ' + result.message);
+                }
+            } catch (error) {
+                console.error('创建群组失败:', error);
+                alert('创建失败，请稍后重试');
+            }
         }
         
         // 与导师聊天
