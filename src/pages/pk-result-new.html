@@ -3,150 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>对战结果 - 在线学习平台</title>
+    <title>对战结果 - AI 信息未来</title>
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="../styles/pk-styles.css">
+    <!-- Apple Design CSS -->
+    <link rel="stylesheet" href="../styles/apple-design.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <!-- 外部依赖 -->
+    <!-- External Dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/zustand@4.4.1/index.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
-    <!-- 导航栏 -->
-    <nav class="pk-navbar">
-        <div class="pk-nav-container">
-            <a href="../pages/dashboard.html" class="pk-nav-brand">🎓 在线学习平台</a>
-            <ul class="pk-nav-menu">
-                <li><a href="pk-arena-new.html" class="pk-nav-link">返回竞技场</a></li>
-                <li><a href="pk-rankings-new.html" class="pk-nav-link">查看排行榜</a></li>
-            </ul>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="../pages/dashboard.html" class="nav-logo">学习平台</a>
+            <div class="nav-menu">
+                <a href="dashboard.html" class="nav-link">首页</a>
+                <a href="courses.html" class="nav-link">课程</a>
+                <a href="community.html" class="nav-link">社区</a>
+                <a href="pk-arena-new.html" class="nav-link active">PK竞技</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+                <div class="user-menu">
+                    <div class="user-avatar" id="userAvatar"></div>
+                </div>
+            </div>
         </div>
     </nav>
 
-    <!-- 主容器 -->
-    <div class="pk-container">
-        <!-- 结果标题 -->
-        <div class="pk-result-header" id="resultHeader">
-            <div class="pk-result-icon" id="resultIcon">🎉</div>
-            <h1 class="pk-result-title" id="resultTitle">胜利!</h1>
-            <p class="pk-result-subtitle" id="resultSubtitle"></p>
+    <!-- Main Container -->
+    <div class="container" style="margin-top: 80px; padding-bottom: 80px;">
+        <!-- Result Header -->
+        <div class="result-header" id="resultHeader">
+            <div class="result-icon-container" id="resultIcon">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="8" r="7"></circle>
+                    <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                </svg>
+            </div>
+            <h1 class="result-title" id="resultTitle">胜利</h1>
+            <p class="result-subtitle" id="resultSubtitle">恭喜你获得胜利</p>
         </div>
 
-        <!-- 对战结果卡片 -->
-        <div class="pk-result-vs pk-mb-4">
-            <div class="pk-grid pk-grid-3" style="align-items: center;">
-                <!-- 玩家1 -->
-                <div class="pk-player-result" id="player1Result">
-                    <div class="pk-player-avatar-lg" id="player1Avatar"></div>
-                    <div class="pk-player-name" id="player1Name"></div>
-                    <div class="pk-player-stats-result">
-                        <div class="pk-stat-result">
-                            <div class="pk-stat-value" id="player1Correct">0</div>
-                            <div class="pk-stat-label">答对题数</div>
+        <!-- Battle Result Card -->
+        <div class="battle-result-card">
+            <div class="players-grid">
+                <!-- Player 1 -->
+                <div class="player-result" id="player1Result">
+                    <div class="player-avatar-lg" id="player1Avatar"></div>
+                    <div class="player-name" id="player1Name">玩家1</div>
+                    <div class="player-stats-result">
+                        <div class="stat-result">
+                            <div class="stat-value" id="player1Correct">0</div>
+                            <div class="stat-label">答对题数</div>
                         </div>
-                        <div class="pk-stat-result">
-                            <div class="pk-stat-value" id="player1Time">00:00</div>
-                            <div class="pk-stat-label">总用时</div>
+                        <div class="stat-result">
+                            <div class="stat-value" id="player1Time">00:00</div>
+                            <div class="stat-label">总用时</div>
                         </div>
-                        <div class="pk-stat-result">
-                            <div class="pk-stat-value" id="player1Accuracy">0%</div>
-                            <div class="pk-stat-label">正确率</div>
+                        <div class="stat-result">
+                            <div class="stat-value" id="player1Accuracy">0%</div>
+                            <div class="stat-label">正确率</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- VS -->
-                <div class="pk-result-vs-badge">
-                    <div class="pk-vs-score">
+                <!-- VS Score -->
+                <div class="vs-container">
+                    <div class="vs-score">
                         <span id="player1Score">0</span>
-                        :
+                        <span class="vs-separator">:</span>
                         <span id="player2Score">0</span>
                     </div>
                 </div>
 
-                <!-- 玩家2 -->
-                <div class="pk-player-result" id="player2Result">
-                    <div class="pk-player-avatar-lg" id="player2Avatar"></div>
-                    <div class="pk-player-name" id="player2Name"></div>
-                    <div class="pk-player-stats-result">
-                        <div class="pk-stat-result">
-                            <div class="pk-stat-value" id="player2Correct">0</div>
-                            <div class="pk-stat-label">答对题数</div>
+                <!-- Player 2 -->
+                <div class="player-result" id="player2Result">
+                    <div class="player-avatar-lg" id="player2Avatar"></div>
+                    <div class="player-name" id="player2Name">玩家2</div>
+                    <div class="player-stats-result">
+                        <div class="stat-result">
+                            <div class="stat-value" id="player2Correct">0</div>
+                            <div class="stat-label">答对题数</div>
                         </div>
-                        <div class="pk-stat-result">
-                            <div class="pk-stat-value" id="player2Time">00:00</div>
-                            <div class="pk-stat-label">总用时</div>
+                        <div class="stat-result">
+                            <div class="stat-value" id="player2Time">00:00</div>
+                            <div class="stat-label">总用时</div>
                         </div>
-                        <div class="pk-stat-result">
-                            <div class="pk-stat-value" id="player2Accuracy">0%</div>
-                            <div class="pk-stat-label">正确率</div>
+                        <div class="stat-result">
+                            <div class="stat-value" id="player2Accuracy">0%</div>
+                            <div class="stat-label">正确率</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ELO变化 -->
-        <div class="pk-card pk-mb-4">
-            <h3 class="pk-card-title pk-mb-3">📊 积分变化</h3>
-            <div class="pk-elo-change-container">
-                <div class="pk-elo-change-item">
-                    <div class="pk-elo-label">我的ELO</div>
-                    <div class="pk-elo-value">
-                        <span id="myOldElo">1200</span>
-                        <span class="pk-elo-arrow" id="myEloArrow">→</span>
-                        <span id="myNewElo" class="pk-elo-new">1210</span>
-                        <span class="pk-elo-diff" id="myEloDiff">(+10)</span>
+        <!-- ELO Change Card -->
+        <div class="card" style="margin-top: 24px;">
+            <div class="card-body">
+                <h3 class="card-title" style="margin-bottom: 24px;">积分变化</h3>
+                <div class="elo-change-grid">
+                    <div class="elo-change-item">
+                        <div class="elo-label">我的ELO</div>
+                        <div class="elo-value">
+                            <span id="myOldElo">1200</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                            <span id="myNewElo" class="elo-new">1210</span>
+                            <span class="elo-diff" id="myEloDiff">(+10)</span>
+                        </div>
+                        <div class="tier-change" id="myTierChange">
+                            <span id="myOldTier" class="tier-badge"></span>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;" id="myTierArrow">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                            <span id="myNewTier" class="tier-badge" style="display: none;"></span>
+                        </div>
                     </div>
-                    <div class="pk-tier-change">
-                        <span id="myOldTier" class="pk-player-tier"></span>
-                        <span id="myTierArrow" class="pk-tier-arrow pk-hidden">→</span>
-                        <span id="myNewTier" class="pk-player-tier pk-hidden"></span>
-                    </div>
-                </div>
-                <div class="pk-elo-change-item">
-                    <div class="pk-elo-label">对手ELO</div>
-                    <div class="pk-elo-value">
-                        <span id="opponentOldElo">1200</span>
-                        <span class="pk-elo-arrow">→</span>
-                        <span id="opponentNewElo" class="pk-elo-new">1190</span>
-                        <span class="pk-elo-diff" id="opponentEloDiff">(-10)</span>
+                    <div class="elo-change-item">
+                        <div class="elo-label">对手ELO</div>
+                        <div class="elo-value">
+                            <span id="opponentOldElo">1200</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                            <span id="opponentNewElo" class="elo-new">1190</span>
+                            <span class="elo-diff" id="opponentEloDiff">(-10)</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 答题详情 -->
-        <div class="pk-card pk-mb-4">
-            <h3 class="pk-card-title pk-mb-3">📝 答题详情</h3>
-            <div class="pk-answer-details" id="answerDetailsList">
-                <!-- 动态加载 -->
+        <!-- Answer Details Card -->
+        <div class="card" style="margin-top: 24px;">
+            <div class="card-body">
+                <h3 class="card-title" style="margin-bottom: 24px;">答题详情</h3>
+                <div class="answer-details" id="answerDetailsList">
+                    <!-- Dynamically loaded -->
+                </div>
             </div>
         </div>
 
-        <!-- 操作按钮 -->
-        <div class="pk-card">
-            <div class="pk-flex pk-flex-gap">
-                <button class="pk-btn pk-btn-primary pk-btn-lg pk-btn-full" id="rematchBtn">
-                    🔄 再战一局
-                </button>
-                <button class="pk-btn pk-btn-outline pk-btn-lg pk-btn-full" id="replayBtn">
-                    📺 查看回放
-                </button>
-                <button class="pk-btn pk-btn-outline pk-btn-lg" id="backToArenaBtn">
-                    ← 返回竞技场
-                </button>
-            </div>
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn btn-primary btn-lg" id="rematchBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 4 23 10 17 10"></polyline>
+                    <polyline points="1 20 1 14 7 14"></polyline>
+                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                </svg>
+                再战一局
+            </button>
+            <button class="btn btn-secondary btn-lg" id="replayBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                查看回放
+            </button>
+            <button class="btn btn-secondary" id="backToArenaBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+                返回竞技场
+            </button>
         </div>
     </div>
 
-    <!-- JavaScript模块 -->
+    <!-- JavaScript Modules -->
     <script type="module">
         import { PKResult } from './pk/result.js';
 
-        // 获取battleId参数
+        // Get battleId parameter
         const urlParams = new URLSearchParams(window.location.search);
         const battleId = urlParams.get('battleId');
 
@@ -154,263 +198,392 @@
             alert('无效的对战ID');
             window.location.href = 'pk-arena-new.html';
         } else {
-            // 初始化PK结果
+            // Initialize PK result
             const result = new PKResult(battleId);
 
-            // 页面加载后初始化
+            // Initialize after page load
             document.addEventListener('DOMContentLoaded', async () => {
                 await result.init();
             });
 
-            // 全局导出用于调试
+            // Export globally for debugging
             window.pkResult = result;
         }
     </script>
 
+    <script>
+        // API Base URL
+        const API_BASE = '/api';
+
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // Auth Check
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+        if (!token) {
+            window.location.href = '../pages/login.html';
+        }
+
+        // User Avatar
+        const userAvatar = document.getElementById('userAvatar');
+        if (user.nickname) {
+            userAvatar.textContent = user.nickname.charAt(0).toUpperCase();
+        }
+    </script>
+
     <style>
-        /* 结果页面特殊样式 */
-        .pk-result-header {
+        /* Result Page Specific Styles */
+        .result-header {
             text-align: center;
-            padding: var(--pk-spacing-2xl) 0;
-            margin-bottom: var(--pk-spacing-xl);
+            padding: 80px 0 40px;
         }
 
-        .pk-result-icon {
-            font-size: 5rem;
-            margin-bottom: var(--pk-spacing-md);
-            animation: pk-result-bounce 1s ease-in-out;
+        .result-icon-container {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 24px;
+            background: var(--bg-secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            animation: resultBounce 1s ease-in-out;
         }
 
-        @keyframes pk-result-bounce {
+        @keyframes resultBounce {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
+            50% { transform: scale(1.1); }
         }
 
-        .pk-result-title {
-            font-size: 3.5rem;
-            font-weight: 900;
-            margin-bottom: var(--pk-spacing-sm);
+        .result-title {
+            font-size: 56px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.03em;
         }
 
-        .pk-result-title.victory {
-            background: linear-gradient(135deg, var(--pk-success), #059669);
+        .result-title.victory {
+            background: linear-gradient(135deg, #34c759 0%, #30d158 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .pk-result-title.defeat {
-            background: linear-gradient(135deg, var(--pk-danger), #dc2626);
+        .result-title.defeat {
+            background: linear-gradient(135deg, #ff3b30 0%, #ff453a 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .pk-result-title.draw {
-            background: linear-gradient(135deg, #64748b, #94a3b8);
+        .result-title.draw {
+            background: linear-gradient(135deg, #64748b 0%, #94a3b8 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .pk-result-subtitle {
-            font-size: 1.25rem;
-            color: var(--pk-text-secondary);
+        .result-subtitle {
+            font-size: 21px;
+            color: var(--text-secondary);
         }
 
-        /* 玩家结果卡片 */
-        .pk-player-result {
+        /* Battle Result Card */
+        .battle-result-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            margin-top: 40px;
+        }
+
+        .players-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .player-result {
             text-align: center;
-            padding: var(--pk-spacing-xl);
-            border-radius: var(--pk-radius-xl);
-            background: var(--pk-bg-glass);
+            padding: 32px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            transition: transform var(--transition-fast);
         }
 
-        .pk-player-result.winner {
-            border: 2px solid var(--pk-success);
-            box-shadow: 0 0 30px rgba(16, 185, 129, 0.3);
+        .player-result.winner {
+            background: rgba(52, 199, 89, 0.1);
+            border: 2px solid #34c759;
+            transform: scale(1.02);
         }
 
-        .pk-player-result.loser {
+        .player-result.loser {
             opacity: 0.7;
         }
 
-        .pk-player-avatar-lg {
-            width: 120px;
-            height: 120px;
-            border-radius: var(--pk-radius-full);
-            background: linear-gradient(135deg, #667eea, #764ba2);
+        .player-avatar-lg {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3rem;
-            font-weight: 700;
-            margin: 0 auto var(--pk-spacing-md);
+            font-size: 40px;
+            font-weight: 600;
+            color: white;
+            margin: 0 auto 16px;
         }
 
-        .pk-player-stats-result {
+        .player-name {
+            font-size: 21px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+        }
+
+        .player-stats-result {
             display: flex;
-            gap: var(--pk-spacing-lg);
+            gap: 24px;
             justify-content: center;
-            margin-top: var(--pk-spacing-lg);
         }
 
-        .pk-stat-result {
+        .stat-result {
             text-align: center;
         }
 
-        /* VS分数徽章 */
-        .pk-result-vs-badge {
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* VS Container */
+        .vs-container {
             text-align: center;
         }
 
-        .pk-vs-score {
-            font-size: 4rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--pk-primary), var(--pk-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .vs-score {
+            font-size: 64px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.03em;
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
 
-        /* ELO变化容器 */
-        .pk-elo-change-container {
+        .vs-separator {
+            color: var(--text-tertiary);
+        }
+
+        /* ELO Change */
+        .elo-change-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: var(--pk-spacing-xl);
+            gap: 24px;
         }
 
-        .pk-elo-change-item {
-            background: var(--pk-bg-glass);
-            border-radius: var(--pk-radius-lg);
-            padding: var(--pk-spacing-xl);
+        .elo-change-item {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: 24px;
             text-align: center;
         }
 
-        .pk-elo-label {
-            font-size: 0.875rem;
-            color: var(--pk-text-muted);
-            margin-bottom: var(--pk-spacing-sm);
+        .elo-label {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
         }
 
-        .pk-elo-value {
-            font-size: 2rem;
+        .elo-value {
+            font-size: 28px;
             font-weight: 700;
-            margin-bottom: var(--pk-spacing-md);
+            color: var(--text-primary);
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: var(--pk-spacing-md);
+            gap: 12px;
         }
 
-        .pk-elo-arrow {
-            color: var(--pk-text-muted);
-            font-size: 1.5rem;
+        .elo-value svg {
+            color: var(--text-tertiary);
         }
 
-        .pk-elo-new {
-            color: var(--pk-primary);
+        .elo-new {
+            color: var(--accent);
         }
 
-        .pk-elo-diff {
-            font-size: 1.25rem;
+        .elo-diff {
+            font-size: 19px;
             font-weight: 600;
         }
 
-        .pk-elo-diff.positive {
-            color: var(--pk-success);
+        .elo-diff.positive {
+            color: #34c759;
         }
 
-        .pk-elo-diff.negative {
-            color: var(--pk-danger);
+        .elo-diff.negative {
+            color: #ff3b30;
         }
 
-        .pk-tier-change {
+        .tier-change {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: var(--pk-spacing-md);
+            gap: 8px;
         }
 
-        .pk-tier-arrow {
-            color: var(--pk-text-muted);
+        .tier-badge {
+            font-size: 13px;
+            font-weight: 500;
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            background: var(--bg-hover);
+            color: var(--text-secondary);
         }
 
-        /* 答题详情 */
-        .pk-answer-details {
+        /* Answer Details */
+        .answer-details {
             display: grid;
-            gap: var(--pk-spacing-md);
+            gap: 12px;
         }
 
-        .pk-answer-item {
-            background: var(--pk-bg-glass);
-            border-radius: var(--pk-radius-md);
-            padding: var(--pk-spacing-lg);
+        .answer-item {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: background var(--transition-fast);
         }
 
-        .pk-answer-item.correct {
-            border-left: 4px solid var(--pk-success);
+        .answer-item:hover {
+            background: var(--bg-hover);
         }
 
-        .pk-answer-item.wrong {
-            border-left: 4px solid var(--pk-danger);
+        .answer-item.correct {
+            border-left: 3px solid #34c759;
         }
 
-        .pk-answer-question {
+        .answer-item.wrong {
+            border-left: 3px solid #ff3b30;
+        }
+
+        .answer-question {
             flex: 1;
-            margin-right: var(--pk-spacing-lg);
+            margin-right: 24px;
         }
 
-        .pk-answer-question-text {
-            font-weight: 600;
-            margin-bottom: var(--pk-spacing-sm);
+        .answer-question-text {
+            font-size: 17px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 4px;
         }
 
-        .pk-answer-your-answer {
-            font-size: 0.875rem;
-            color: var(--pk-text-muted);
+        .answer-your-answer {
+            font-size: 14px;
+            color: var(--text-secondary);
         }
 
-        .pk-answer-stats {
+        .answer-stats {
             display: flex;
-            gap: var(--pk-spacing-lg);
+            gap: 24px;
             align-items: center;
         }
 
-        .pk-answer-time {
-            font-size: 0.875rem;
-            color: var(--pk-text-muted);
+        .answer-time {
+            font-size: 14px;
+            color: var(--text-tertiary);
         }
 
-        .pk-answer-status {
-            font-weight: 700;
-            font-size: 1.25rem;
+        .answer-status {
+            font-weight: 600;
+            font-size: 19px;
         }
 
-        .pk-answer-status.correct {
-            color: var(--pk-success);
+        .answer-status.correct {
+            color: #34c759;
         }
 
-        .pk-answer-status.wrong {
-            color: var(--pk-danger);
+        .answer-status.wrong {
+            color: #ff3b30;
         }
 
-        /* 响应式 */
-        @media (max-width: 968px) {
-            .pk-result-title {
-                font-size: 2.5rem;
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            margin-top: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .result-title {
+                font-size: 40px;
             }
 
-            .pk-vs-score {
-                font-size: 3rem;
+            .battle-result-card {
+                padding: 24px;
             }
 
-            .pk-elo-change-container {
+            .players-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .vs-container {
+                order: -1;
+            }
+
+            .vs-score {
+                font-size: 48px;
+            }
+
+            .player-stats-result {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .elo-change-grid {
                 grid-template-columns: 1fr;
             }
 
-            .pk-player-stats-result {
+            .action-buttons {
                 flex-direction: column;
-                gap: var(--pk-spacing-md);
+            }
+
+            .action-buttons .btn {
+                width: 100%;
             }
         }
     </style>

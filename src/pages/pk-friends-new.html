@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>好友管理 - 在线学习平台</title>
+    <title>好友管理 - AI 信息未来</title>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="../styles/pk-styles.css">
+    <link rel="stylesheet" href="../styles/apple-design.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <!-- 外部依赖 -->
@@ -14,143 +14,170 @@
 </head>
 <body>
     <!-- 导航栏 -->
-    <nav class="pk-navbar">
-        <div class="pk-nav-container">
-            <a href="../pages/dashboard.html" class="pk-nav-brand">🎓 在线学习平台</a>
-            <ul class="pk-nav-menu">
-                <li><a href="dashboard.html" class="pk-nav-link">仪表盘</a></li>
-                <li><a href="courses.html" class="pk-nav-link">课程</a></li>
-                <li><a href="pk-arena-new.html" class="pk-nav-link">PK竞技场</a></li>
-                <li><a href="pk-rankings-new.html" class="pk-nav-link">排行榜</a></li>
-                <li><a href="pk-friends-new.html" class="pk-nav-link active">好友</a></li>
-            </ul>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="../pages/dashboard.html" class="nav-logo">AI 信息未来</a>
+            <div class="nav-menu">
+                <a href="dashboard.html" class="nav-link">首页</a>
+                <a href="courses.html" class="nav-link">课程</a>
+                <a href="community.html" class="nav-link">社区</a>
+                <a href="pk-arena-new.html" class="nav-link active">PK竞技</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path class="sun-icon" d="M10 3V1M10 19V17M17 10H19M1 10H3M15.657 4.343L17.071 2.929M2.929 17.071L4.343 15.657M15.657 15.657L17.071 17.071M2.929 2.929L4.343 4.343M13 10C13 11.6569 11.6569 13 10 13C8.34315 13 7 11.6569 7 10C7 8.34315 8.34315 7 10 7C11.6569 7 13 8.34315 13 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path class="moon-icon" d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" fill="currentColor"/>
+                    </svg>
+                </button>
+                <div class="user-menu">
+                    <div class="user-avatar" id="userAvatar"></div>
+                </div>
+            </div>
         </div>
     </nav>
 
     <!-- 主容器 -->
-    <div class="pk-container">
+    <div class="container" style="margin-top: 80px; margin-bottom: 80px;">
         <!-- 页面标题 -->
-        <div class="pk-page-header">
-            <h1 class="pk-page-title">👥 好友管理</h1>
-            <p class="pk-page-subtitle">管理你的PK好友，邀请他们一起对战！</p>
+        <div style="text-align: center; margin-bottom: 48px;">
+            <h1 style="margin-bottom: 12px;">好友管理</h1>
+            <p style="color: var(--text-secondary); font-size: 19px;">管理你的PK好友，邀请他们一起对战</p>
         </div>
 
         <!-- 搜索用户 -->
-        <div class="pk-card pk-mb-4">
-            <h3 class="pk-card-title pk-mb-3">🔍 搜索用户</h3>
-            <div class="pk-flex pk-flex-gap">
-                <input
-                    type="text"
-                    class="pk-form-input"
-                    id="searchInput"
-                    placeholder="输入用户名或昵称搜索..."
-                    style="flex: 1;"
-                >
-                <button class="pk-btn pk-btn-primary" id="searchBtn">
-                    搜索
-                </button>
-            </div>
+        <div class="card" style="margin-bottom: 24px;">
+            <div class="card-body">
+                <h3 class="card-title" style="margin-bottom: 16px;">搜索用户</h3>
+                <div style="display: flex; gap: 12px;">
+                    <input
+                        type="text"
+                        class="form-input"
+                        id="searchInput"
+                        placeholder="输入用户名或昵称搜索..."
+                        style="flex: 1;"
+                    >
+                    <button class="btn btn-primary" id="searchBtn">
+                        搜索
+                    </button>
+                </div>
 
-            <!-- 搜索结果 -->
-            <div class="pk-mt-3" id="searchResults">
-                <!-- 动态加载 -->
+                <!-- 搜索结果 -->
+                <div style="margin-top: 16px;" id="searchResults">
+                    <!-- 动态加载 -->
+                </div>
             </div>
         </div>
 
         <!-- 好友请求 -->
-        <div class="pk-card pk-mb-4">
-            <div class="pk-flex pk-flex-between pk-mb-3">
-                <h3 class="pk-card-title">📬 好友请求</h3>
-                <span class="pk-badge" id="requestCount">0</span>
-            </div>
-            <div id="friendRequestsList">
-                <div class="pk-empty-state">
-                    <div class="pk-empty-icon">📭</div>
-                    <p class="pk-empty-text">暂无好友请求</p>
+        <div class="card" style="margin-bottom: 24px;">
+            <div class="card-body">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 class="card-title" style="margin: 0;">好友请求</h3>
+                    <span class="badge badge-primary" id="requestCount">0</span>
+                </div>
+                <div id="friendRequestsList">
+                    <div class="empty-state">
+                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity: 0.3; margin-bottom: 16px;">
+                            <rect x="12" y="16" width="40" height="32" rx="4" stroke="currentColor" stroke-width="2"/>
+                            <path d="M12 24L32 36L52 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <p class="card-text">暂无好友请求</p>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- 好友列表标签页 -->
-        <div class="pk-card">
-            <div class="pk-friends-tabs pk-mb-3">
-                <button class="pk-friends-tab active" data-tab="all">
-                    全部好友 <span id="allFriendsCount">(0)</span>
-                </button>
-                <button class="pk-friends-tab" data-tab="online">
-                    在线好友 <span id="onlineFriendsCount">(0)</span>
-                </button>
-            </div>
+        <div class="card">
+            <div class="card-body">
+                <div style="display: flex; gap: 16px; border-bottom: 1px solid var(--border-color); margin-bottom: 24px;">
+                    <button class="friends-tab active" data-tab="all">
+                        全部好友 <span id="allFriendsCount">(0)</span>
+                    </button>
+                    <button class="friends-tab" data-tab="online">
+                        在线好友 <span id="onlineFriendsCount">(0)</span>
+                    </button>
+                </div>
 
-            <!-- 好友列表 -->
-            <div id="friendsListContainer">
-                <!-- 动态加载 -->
+                <!-- 好友列表 -->
+                <div id="friendsListContainer">
+                    <!-- 动态加载 -->
+                </div>
             </div>
         </div>
     </div>
 
     <!-- 用户详情模态框 -->
-    <div class="pk-modal" id="userDetailModal">
-        <div class="pk-modal-content">
-            <div class="pk-modal-header">
-                <h3 class="pk-modal-title">用户详情</h3>
-                <button class="pk-modal-close" id="closeUserDetailModal">&times;</button>
+    <div class="modal" id="userDetailModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 class="modal-title">用户详情</h3>
+                <button class="modal-close" id="closeUserDetailModal">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
             </div>
-            <div class="pk-modal-body">
-                <div class="pk-user-detail-card">
-                    <div class="pk-text-center pk-mb-4">
-                        <div class="pk-player-avatar-lg" id="detailAvatar"></div>
-                        <div class="pk-player-name pk-mt-2" id="detailName"></div>
-                        <span class="pk-player-tier pk-mt-2" id="detailTier"></span>
-                    </div>
+            <div class="modal-body">
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <div class="player-avatar-lg" id="detailAvatar"></div>
+                    <div style="font-size: 21px; font-weight: 600; margin-top: 16px;" id="detailName"></div>
+                    <span class="badge" style="margin-top: 8px;" id="detailTier"></span>
+                </div>
 
-                    <div class="pk-user-stats-grid pk-mb-4">
-                        <div class="pk-stat-box">
-                            <div class="pk-stat-value" id="detailElo">1200</div>
-                            <div class="pk-stat-label">ELO分数</div>
-                        </div>
-                        <div class="pk-stat-box">
-                            <div class="pk-stat-value" id="detailWins">0</div>
-                            <div class="pk-stat-label">胜场</div>
-                        </div>
-                        <div class="pk-stat-box">
-                            <div class="pk-stat-value" id="detailLosses">0</div>
-                            <div class="pk-stat-label">负场</div>
-                        </div>
-                        <div class="pk-stat-box">
-                            <div class="pk-stat-value" id="detailWinRate">0%</div>
-                            <div class="pk-stat-label">胜率</div>
-                        </div>
+                <div class="stats-grid" style="margin-bottom: 24px;">
+                    <div class="stat">
+                        <div class="stat-value" id="detailElo">1200</div>
+                        <div class="stat-label">ELO分数</div>
                     </div>
+                    <div class="stat">
+                        <div class="stat-value" id="detailWins">0</div>
+                        <div class="stat-label">胜场</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="detailLosses">0</div>
+                        <div class="stat-label">负场</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="detailWinRate">0%</div>
+                        <div class="stat-label">胜率</div>
+                    </div>
+                </div>
 
-                    <div class="pk-flex pk-flex-gap">
-                        <button class="pk-btn pk-btn-primary pk-btn-full" id="inviteBattleBtn">
-                            ⚔️ 邀请PK
-                        </button>
-                        <button class="pk-btn pk-btn-outline pk-btn-full" id="viewProfileBtn">
-                            👤 查看主页
-                        </button>
-                    </div>
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn btn-primary" style="flex: 1;" id="inviteBattleBtn">
+                        邀请PK
+                    </button>
+                    <button class="btn btn-secondary" style="flex: 1;" id="viewProfileBtn">
+                        查看主页
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- 删除好友确认模态框 -->
-    <div class="pk-modal" id="deleteFriendModal">
-        <div class="pk-modal-content">
-            <div class="pk-modal-header">
-                <h3 class="pk-modal-title">⚠️ 删除好友</h3>
-                <button class="pk-modal-close" id="closeDeleteModal">&times;</button>
+    <div class="modal" id="deleteFriendModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 class="modal-title">删除好友</h3>
+                <button class="modal-close" id="closeDeleteModal">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
             </div>
-            <div class="pk-modal-body">
-                <p class="pk-mb-3">确定要删除好友 <strong id="deleteFriendName"></strong> 吗？</p>
-                <p class="pk-text-muted pk-mb-4">删除后需要重新添加才能成为好友</p>
-                <div class="pk-flex pk-flex-gap">
-                    <button class="pk-btn pk-btn-outline pk-btn-full" id="cancelDeleteBtn">
+            <div class="modal-body">
+                <p style="margin-bottom: 12px;">确定要删除好友 <strong id="deleteFriendName"></strong> 吗？</p>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">删除后需要重新添加才能成为好友</p>
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn btn-secondary" style="flex: 1;" id="cancelDeleteBtn">
                         取消
                     </button>
-                    <button class="pk-btn pk-btn-danger pk-btn-full" id="confirmDeleteBtn">
+                    <button class="btn btn-danger" style="flex: 1;" id="confirmDeleteBtn">
                         确认删除
                     </button>
                 </div>
@@ -174,248 +201,449 @@
         window.pkFriends = friends;
     </script>
 
+    <script>
+        // 主题切换
+        const themeToggle = document.getElementById('themeToggle');
+        const currentTheme = localStorage.getItem('theme') || 'light';
+
+        if (currentTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const theme = document.documentElement.getAttribute('data-theme');
+            const newTheme = theme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // 用户头像
+        const userStr = localStorage.getItem('user');
+        const userAvatar = document.getElementById('userAvatar');
+        if (userStr) {
+            try {
+                const user = JSON.parse(userStr);
+                if (user.avatar) {
+                    userAvatar.innerHTML = `<img src="${user.avatar}" alt="${user.nickname}">`;
+                } else if (user.nickname) {
+                    userAvatar.textContent = user.nickname[0].toUpperCase();
+                }
+            } catch (e) {
+                console.error('Failed to parse user data:', e);
+            }
+        }
+
+        // 用户菜单下拉
+        userAvatar.addEventListener('click', () => {
+            // TODO: 实现用户菜单下拉
+        });
+    </script>
+
     <style>
-        /* 好友请求项 */
-        .pk-friend-request-item {
-            background: var(--pk-bg-glass);
-            border: 1px solid var(--pk-border-glass);
-            border-radius: var(--pk-radius-md);
-            padding: var(--pk-spacing-lg);
+        /* === 好友请求项 === */
+        .friend-request-item {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: var(--pk-spacing-md);
+            margin-bottom: 12px;
+            transition: background var(--transition-fast);
         }
 
-        .pk-friend-request-info {
+        .friend-request-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .friend-request-info {
             display: flex;
             align-items: center;
-            gap: var(--pk-spacing-md);
+            gap: 16px;
             flex: 1;
         }
 
-        .pk-friend-request-avatar {
+        .friend-request-avatar {
             width: 50px;
             height: 50px;
-            border-radius: var(--pk-radius-full);
+            border-radius: 50%;
             background: linear-gradient(135deg, #667eea, #764ba2);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
-            font-size: 1.25rem;
+            font-weight: 600;
+            font-size: 20px;
+            color: #fff;
         }
 
-        .pk-friend-request-details {
+        .friend-request-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .friend-request-details {
             flex: 1;
         }
 
-        .pk-friend-request-name {
-            font-weight: 700;
-            margin-bottom: 0.25rem;
+        .friend-request-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-primary);
         }
 
-        .pk-friend-request-time {
-            font-size: 0.875rem;
-            color: var(--pk-text-muted);
+        .friend-request-time {
+            font-size: 14px;
+            color: var(--text-tertiary);
         }
 
-        .pk-friend-request-actions {
+        .friend-request-actions {
             display: flex;
-            gap: var(--pk-spacing-sm);
+            gap: 8px;
         }
 
-        /* 好友标签页 */
-        .pk-friends-tabs {
-            display: flex;
-            gap: var(--pk-spacing-md);
-            border-bottom: 2px solid var(--pk-border-glass);
-        }
-
-        .pk-friends-tab {
-            padding: var(--pk-spacing-md) var(--pk-spacing-lg);
+        /* === 好友标签页 === */
+        .friends-tab {
+            padding: 12px 0;
             background: transparent;
             border: none;
-            border-bottom: 3px solid transparent;
+            border-bottom: 2px solid transparent;
             cursor: pointer;
-            transition: var(--pk-transition-fast);
-            font-weight: 600;
-            color: var(--pk-text-secondary);
-            margin-bottom: -2px;
+            transition: var(--transition-fast);
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 15px;
+            font-family: var(--font-sans);
         }
 
-        .pk-friends-tab:hover {
-            color: var(--pk-text-primary);
+        .friends-tab:hover {
+            color: var(--text-primary);
         }
 
-        .pk-friends-tab.active {
-            color: var(--pk-primary);
-            border-bottom-color: var(--pk-primary);
+        .friends-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
         }
 
-        /* 好友列表 */
-        .pk-friends-grid {
+        /* === 好友列表 === */
+        .friends-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: var(--pk-spacing-md);
-            margin-top: var(--pk-spacing-lg);
+            gap: 16px;
         }
 
-        .pk-friend-card {
-            background: var(--pk-bg-glass);
-            border: 1px solid var(--pk-border-glass);
-            border-radius: var(--pk-radius-lg);
-            padding: var(--pk-spacing-lg);
-            transition: var(--pk-transition);
+        .friend-card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            transition: all var(--transition-fast);
         }
 
-        .pk-friend-card:hover {
-            background: rgba(255, 255, 255, 0.08);
+        .friend-card:hover {
+            background: var(--bg-hover);
             transform: translateY(-2px);
         }
 
-        .pk-friend-card-header {
+        .friend-card-header {
             display: flex;
             align-items: center;
-            gap: var(--pk-spacing-md);
-            margin-bottom: var(--pk-spacing-md);
+            gap: 16px;
+            margin-bottom: 16px;
         }
 
-        .pk-friend-card-avatar {
+        .friend-card-avatar {
             width: 60px;
             height: 60px;
-            border-radius: var(--pk-radius-full);
+            border-radius: 50%;
             background: linear-gradient(135deg, #667eea, #764ba2);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
-            font-size: 1.5rem;
+            font-weight: 600;
+            font-size: 24px;
+            color: #fff;
             position: relative;
         }
 
-        .pk-friend-online-indicator {
+        .friend-card-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .friend-online-indicator {
             position: absolute;
             bottom: 0;
             right: 0;
             width: 16px;
             height: 16px;
-            background: var(--pk-success);
-            border: 3px solid var(--pk-bg-darker);
-            border-radius: var(--pk-radius-full);
+            background: #34c759;
+            border: 3px solid var(--bg-card);
+            border-radius: 50%;
         }
 
-        .pk-friend-card-info {
+        .friend-card-info {
             flex: 1;
         }
 
-        .pk-friend-card-name {
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 0.25rem;
+        .friend-card-name {
+            font-weight: 600;
+            font-size: 17px;
+            margin-bottom: 4px;
+            color: var(--text-primary);
         }
 
-        .pk-friend-card-status {
-            font-size: 0.875rem;
-            color: var(--pk-text-muted);
+        .friend-card-status {
+            font-size: 14px;
+            color: var(--text-tertiary);
         }
 
-        .pk-friend-card-status.online {
-            color: var(--pk-success);
+        .friend-card-status.online {
+            color: #34c759;
         }
 
-        .pk-friend-card-stats {
+        .friend-card-stats {
             display: flex;
-            gap: var(--pk-spacing-md);
-            margin-bottom: var(--pk-spacing-md);
-            padding: var(--pk-spacing-md);
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: var(--pk-radius-sm);
+            gap: 16px;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: var(--bg-primary);
+            border-radius: var(--radius-sm);
         }
 
-        .pk-friend-card-stat {
+        .friend-card-stat {
             flex: 1;
             text-align: center;
         }
 
-        .pk-friend-card-stat-value {
-            font-weight: 700;
-            color: var(--pk-primary);
+        .friend-card-stat-value {
+            font-weight: 600;
+            color: var(--accent);
+            font-size: 17px;
         }
 
-        .pk-friend-card-stat-label {
-            font-size: 0.75rem;
-            color: var(--pk-text-muted);
-            margin-top: 0.25rem;
+        .friend-card-stat-label {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 4px;
         }
 
-        .pk-friend-card-actions {
+        .friend-card-actions {
             display: flex;
-            gap: var(--pk-spacing-sm);
+            gap: 8px;
         }
 
-        /* 搜索结果 */
-        .pk-search-results {
+        /* === 搜索结果 === */
+        .search-results {
             max-height: 400px;
             overflow-y: auto;
         }
 
-        .pk-search-result-item {
-            background: var(--pk-bg-glass);
-            border: 1px solid var(--pk-border-glass);
-            border-radius: var(--pk-radius-md);
-            padding: var(--pk-spacing-lg);
+        .search-result-item {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: var(--pk-spacing-md);
+            margin-top: 12px;
+            transition: background var(--transition-fast);
         }
 
-        .pk-search-result-info {
+        .search-result-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .search-result-info {
             display: flex;
             align-items: center;
-            gap: var(--pk-spacing-md);
+            gap: 16px;
             flex: 1;
         }
 
-        /* 徽章 */
-        .pk-badge {
-            background: var(--pk-danger);
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: var(--pk-radius-full);
-            font-size: 0.875rem;
-            font-weight: 700;
+        /* === 空状态 === */
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
         }
 
-        /* 用户详情卡片 */
-        .pk-user-detail-card {
-            padding: var(--pk-spacing-lg);
+        /* === 玩家头像 === */
+        .player-avatar-lg {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 40px;
+            color: #fff;
+            margin: 0 auto;
         }
 
-        .pk-user-stats-grid {
+        .player-avatar-lg img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* === 统计网格 === */
+        .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: var(--pk-spacing-md);
+            gap: 16px;
         }
 
-        /* 响应式 */
-        @media (max-width: 968px) {
-            .pk-friends-grid {
+        .stat {
+            text-align: center;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* === 模态框 === */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .modal-dialog {
+            position: relative;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow: auto;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-title {
+            font-size: 21px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+
+        .modal-close:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        /* === 危险按钮 === */
+        .btn-danger {
+            background: #ff3b30;
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background: #ff2d20;
+        }
+
+        /* === 主题切换图标 === */
+        [data-theme="dark"] .sun-icon {
+            display: none;
+        }
+
+        [data-theme="light"] .moon-icon {
+            display: none;
+        }
+
+        [data-theme="dark"] .moon-icon {
+            display: block;
+        }
+
+        [data-theme="light"] .sun-icon {
+            display: block;
+        }
+
+        /* === 响应式 === */
+        @media (max-width: 768px) {
+            .friends-grid {
                 grid-template-columns: 1fr;
             }
 
-            .pk-friend-request-item {
+            .friend-request-item {
                 flex-direction: column;
-                gap: var(--pk-spacing-md);
+                gap: 16px;
             }
 
-            .pk-friend-request-actions {
+            .friend-request-actions {
                 width: 100%;
             }
 
-            .pk-friend-request-actions .pk-btn {
+            .friend-request-actions .btn {
                 flex: 1;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>

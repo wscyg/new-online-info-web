@@ -3,1077 +3,440 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>邀请好友 - AI未来学院</title>
+    <title>邀请好友 - AI 信息未来</title>
+    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 2rem 0;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        /* 动态背景粒子 */
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .particle {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            animation: float 6s infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0) translateX(0); }
-            25% { transform: translateY(-20px) translateX(10px); }
-            50% { transform: translateY(-40px) translateX(-10px); }
-            75% { transform: translateY(-20px) translateX(10px); }
-        }
-
-        /* 主容器 */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
-            position: relative;
-            z-index: 2;
-        }
-
-        /* 返回按钮 */
-        .back-button {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: white;
-            text-decoration: none;
-            font-size: 1rem;
-            padding: 0.75rem 1.5rem;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 2rem;
-            backdrop-filter: blur(10px);
-            margin-bottom: 2rem;
-            transition: all 0.3s;
-        }
-
-        .back-button:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateX(-5px);
-        }
-
-        /* 页面标题 */
-        .page-header {
-            text-align: center;
-            margin-bottom: 3rem;
-            animation: fadeInDown 0.6s ease-out;
-        }
-
-        .page-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 0.5rem;
-            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .page-subtitle {
-            font-size: 1.125rem;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        /* 玻璃拟态卡片 */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(20px);
-            border-radius: 1.5rem;
-            padding: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* 邀请码卡片 */
-        .invitation-code-card {
-            margin-bottom: 2rem;
-            text-align: center;
-            animation-delay: 0.1s;
-        }
-
-        .card-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: white;
-            margin-bottom: 1.5rem;
-        }
-
-        .code-display {
-            background: white;
-            padding: 2rem;
-            border-radius: 1rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .code-label {
-            font-size: 0.875rem;
-            color: #718096;
-            margin-bottom: 0.5rem;
-        }
-
-        .code-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #667eea;
-            letter-spacing: 0.1em;
-            font-family: 'Courier New', monospace;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 0.875rem 2rem;
-            border: none;
-            border-radius: 2rem;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
-
-        .btn-secondary {
-            background: white;
-            color: #667eea;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-secondary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        /* 统计网格 */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(20px);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            text-align: center;
-            transition: all 0.3s;
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        .stat-card:nth-child(2) { animation-delay: 0.1s; }
-        .stat-card:nth-child(3) { animation-delay: 0.2s; }
-        .stat-card:nth-child(4) { animation-delay: 0.3s; }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.25);
-        }
-
-        .stat-icon {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 0.25rem;
-        }
-
-        .stat-label {
-            font-size: 0.875rem;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 0.5rem;
-            border-radius: 1rem;
-        }
-
-        .tab {
-            flex: 1;
-            padding: 0.875rem;
-            background: transparent;
-            border: none;
-            border-radius: 0.75rem;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .tab.active {
-            background: white;
-            color: #667eea;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .tab:hover:not(.active) {
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
-        }
-
-        /* Tab 内容 */
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* 邀请列表 */
-        .invitation-list {
-            display: grid;
-            gap: 1rem;
-        }
-
-        .invitation-item {
-            background: white;
-            border-radius: 1rem;
-            padding: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            transition: all 0.3s;
-        }
-
-        .invitation-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .user-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: white;
-            font-weight: 700;
-        }
-
-        .invitation-info {
-            flex: 1;
-        }
-
-        .invitation-name {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: #1a202c;
-            margin-bottom: 0.25rem;
-        }
-
-        .invitation-meta {
-            font-size: 0.875rem;
-            color: #718096;
-            display: flex;
-            gap: 1rem;
-        }
-
-        .invitation-status {
-            padding: 0.25rem 0.75rem;
-            border-radius: 1rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-
-        .status-activated {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .status-registered {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .status-pending {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        /* 奖励列表 */
-        .reward-list {
-            display: grid;
-            gap: 1rem;
-        }
-
-        .reward-item {
-            background: white;
-            border-radius: 1rem;
-            padding: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .reward-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-
-        .reward-info {
-            flex: 1;
-        }
-
-        .reward-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #1a202c;
-            margin-bottom: 0.25rem;
-        }
-
-        .reward-time {
-            font-size: 0.875rem;
-            color: #718096;
-        }
-
-        .reward-points {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #f59e0b;
-        }
-
-        /* 排行榜 */
-        .leaderboard {
-            display: grid;
-            gap: 1rem;
-        }
-
-        .leaderboard-item {
-            background: white;
-            border-radius: 1rem;
-            padding: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            transition: all 0.3s;
-        }
-
-        .leaderboard-item:hover {
-            transform: scale(1.02);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-        }
-
-        .rank-badge {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: white;
-        }
-
-        .rank-1 {
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            box-shadow: 0 4px 20px rgba(251, 191, 36, 0.4);
-        }
-
-        .rank-2 {
-            background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
-        }
-
-        .rank-3 {
-            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-        }
-
-        .rank-other {
-            background: #e2e8f0;
-            color: #64748b;
-        }
-
-        .leaderboard-info {
-            flex: 1;
-        }
-
-        .leaderboard-name {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: #1a202c;
-            margin-bottom: 0.25rem;
-        }
-
-        .leaderboard-count {
-            font-size: 0.875rem;
-            color: #718096;
-        }
-
-        .leaderboard-points {
-            text-align: right;
-        }
-
-        .points-value {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #667eea;
-        }
-
-        .points-label {
-            font-size: 0.75rem;
-            color: #718096;
-        }
-
-        /* 空状态 */
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: white;
-        }
-
-        .empty-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-
-        .empty-text {
-            font-size: 1.125rem;
-            opacity: 0.8;
-        }
-
-        /* Loading */
-        .loading {
-            text-align: center;
-            padding: 3rem;
-            color: white;
-        }
-
-        .spinner {
-            display: inline-block;
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* 分享海报模态框 */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.3s;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 1.5rem;
-            padding: 2rem;
-            max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            animation: scaleIn 0.3s;
-        }
-
-        @keyframes scaleIn {
-            from {
-                transform: scale(0.9);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .modal-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #1a202c;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: #718096;
-            cursor: pointer;
-            padding: 0.5rem;
-            transition: all 0.3s;
-        }
-
-        .close-btn:hover {
-            color: #1a202c;
-            transform: rotate(90deg);
-        }
-
-        .poster-preview {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 1rem;
-            padding: 2rem;
-            text-align: center;
-            color: white;
-            margin-bottom: 1.5rem;
-        }
-
-        .poster-qrcode {
-            width: 200px;
-            height: 200px;
-            background: white;
-            margin: 2rem auto;
-            border-radius: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-        }
-
-        /* 响应式 */
-        @media (max-width: 768px) {
-            .page-title {
-                font-size: 2rem;
-            }
-
-            .code-value {
-                font-size: 2rem;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .action-buttons {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-            }
-        }
+        .page-header { padding: 100px 0 60px; text-align: center; background: var(--bg-secondary); }
+        .page-title { font-size: 48px; font-weight: 700; margin-bottom: 12px; }
+        .page-desc { font-size: 19px; color: var(--text-secondary); }
+        .invite-section { padding: 48px 0 80px; }
+        .invite-container { max-width: 800px; margin: 0 auto; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px; }
+        @media (max-width: 640px) { .stats-grid { grid-template-columns: 1fr; } }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; text-align: center; }
+        .stat-value { font-size: 36px; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+        .stat-label { font-size: 15px; color: var(--text-secondary); }
+        .invite-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 32px; margin-bottom: 32px; }
+        .invite-card-title { font-size: 20px; font-weight: 600; margin-bottom: 20px; }
+        .invite-code-box { background: var(--bg-secondary); border-radius: 12px; padding: 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+        .invite-code { font-size: 24px; font-weight: 700; font-family: monospace; letter-spacing: 2px; }
+        .copy-btn { padding: 10px 20px; font-size: 14px; font-weight: 500; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+        .copy-btn:hover { transform: scale(1.05); }
+        .invite-link-box { display: flex; gap: 12px; }
+        .invite-link-input { flex: 1; padding: 14px 16px; font-size: 14px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-primary); }
+        .rewards-section { margin-top: 40px; }
+        .rewards-title { font-size: 20px; font-weight: 600; margin-bottom: 20px; }
+        .rewards-list { display: flex; flex-direction: column; gap: 16px; }
+        .reward-item { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px 24px; display: flex; align-items: center; gap: 20px; }
+        .reward-icon { width: 56px; height: 56px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .reward-icon svg { width: 28px; height: 28px; color: #fff; }
+        .reward-info { flex: 1; }
+        .reward-title { font-weight: 600; margin-bottom: 4px; }
+        .reward-desc { font-size: 14px; color: var(--text-tertiary); }
+        .reward-value { font-size: 18px; font-weight: 700; color: #f59e0b; }
+        .history-section { margin-top: 48px; }
+        .history-title { font-size: 20px; font-weight: 600; margin-bottom: 20px; }
+        .history-list { display: flex; flex-direction: column; gap: 12px; }
+        .history-item { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .history-user { font-weight: 600; }
+        .history-time { font-size: 14px; color: var(--text-tertiary); }
+        .history-reward { font-size: 15px; color: var(--success); font-weight: 500; }
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-tertiary); }
+        .empty-state svg { width: 60px; height: 60px; margin-bottom: 16px; opacity: 0.5; }
+        /* 分享按钮样式 */
+        .share-btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; font-size: 14px; font-weight: 500; border: none; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+        .share-btn i { font-size: 16px; }
+        .share-btn:hover { transform: translateY(-2px); }
+        .share-btn.wechat { background: #07c160; color: white; }
+        .share-btn.weibo { background: #e6162d; color: white; }
+        .share-btn.qq { background: #12b7f5; color: white; }
+        .share-btn.link { background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        /* 排行榜样式 */
+        .leaderboard-section { margin-top: 48px; }
+        .leaderboard-title { font-size: 20px; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .leaderboard-title i { color: #f59e0b; }
+        .leaderboard-list { display: flex; flex-direction: column; gap: 12px; }
+        .leaderboard-item { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+        .leaderboard-rank { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+        .leaderboard-rank.gold { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; }
+        .leaderboard-rank.silver { background: linear-gradient(135deg, #9ca3af, #6b7280); color: white; }
+        .leaderboard-rank.bronze { background: linear-gradient(135deg, #d97706, #b45309); color: white; }
+        .leaderboard-rank.normal { background: var(--bg-secondary); color: var(--text-secondary); }
+        .leaderboard-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; }
+        .leaderboard-info { flex: 1; }
+        .leaderboard-name { font-weight: 600; }
+        .leaderboard-count { font-size: 13px; color: var(--text-tertiary); }
+        .leaderboard-points { font-weight: 700; color: #f59e0b; }
     </style>
+    <!-- QRCode库 -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 </head>
 <body>
-    <!-- 动态背景粒子 -->
-    <div class="particles" id="particles"></div>
-
-    <div class="container">
-        <!-- 返回按钮 -->
-        <a href="dashboard.html" class="back-button">
-            ← 返回主页
-        </a>
-
-        <!-- 页面标题 -->
-        <div class="page-header">
-            <h1 class="page-title">🎁 邀请好友</h1>
-            <p class="page-subtitle">邀请好友注册学习，双方都可获得丰厚奖励</p>
-        </div>
-
-        <!-- 邀请码卡片 -->
-        <div class="glass-card invitation-code-card">
-            <h2 class="card-title">我的专属邀请码</h2>
-            <div class="code-display">
-                <div class="code-label">邀请码</div>
-                <div class="code-value" id="invitationCode">加载中...</div>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="home.html" class="nav-logo">AI 信息未来</a>
+            <div class="nav-menu">
+                <a href="home.html" class="nav-link">首页</a>
+                <a href="courses.html" class="nav-link">课程</a>
+                <a href="online-plaza.html" class="nav-link">在线广场</a>
+                <a href="community.html" class="nav-link">社区</a>
+                <a href="pk-arena.html" class="nav-link">PK竞技</a>
             </div>
-            <div class="action-buttons">
-                <button class="btn btn-primary" onclick="copyCode()">
-                    📋 复制邀请码
-                </button>
-                <button class="btn btn-secondary" onclick="shareLink()">
-                    🔗 复制邀请链接
-                </button>
-                <button class="btn btn-secondary" onclick="generatePoster()">
-                    🎨 生成海报
-                </button>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+                <div id="authArea"></div>
             </div>
         </div>
+    </nav>
 
-        <!-- 统计卡片 -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">👥</div>
-                <div class="stat-value" id="totalInvitations">0</div>
-                <div class="stat-label">累计邀请</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">✅</div>
-                <div class="stat-value" id="activatedCount">0</div>
-                <div class="stat-label">已激活</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">💎</div>
-                <div class="stat-value" id="totalRewards">0</div>
-                <div class="stat-label">累计奖励</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">🏆</div>
-                <div class="stat-value">#<span id="ranking">-</span></div>
-                <div class="stat-label">我的排名</div>
-            </div>
+    <header class="page-header">
+        <div class="container">
+            <h1 class="page-title">邀请好友</h1>
+            <p class="page-desc">邀请好友一起学习，双方都能获得奖励</p>
         </div>
+    </header>
 
-        <!-- Tabs -->
-        <div class="glass-card">
-            <div class="tabs">
-                <button class="tab active" onclick="switchTab('invitations')">
-                    我的邀请
-                </button>
-                <button class="tab" onclick="switchTab('rewards')">
-                    奖励记录
-                </button>
-                <button class="tab" onclick="switchTab('leaderboard')">
-                    排行榜
-                </button>
-            </div>
-
-            <!-- 邀请列表 -->
-            <div class="tab-content active" id="invitationsTab">
-                <div class="invitation-list" id="invitationList">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                        <p>加载中...</p>
+    <section class="invite-section">
+        <div class="container">
+            <div class="invite-container">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="inviteCount">0</div>
+                        <div class="stat-label">已邀请好友</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="successCount">0</div>
+                        <div class="stat-label">成功注册</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="rewardPoints">0</div>
+                        <div class="stat-label">累计获得积分</div>
                     </div>
                 </div>
-            </div>
 
-            <!-- 奖励记录 -->
-            <div class="tab-content" id="rewardsTab">
-                <div class="reward-list" id="rewardList">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                        <p>加载中...</p>
+                <div class="invite-card">
+                    <h3 class="invite-card-title">我的邀请码</h3>
+                    <div class="invite-code-box">
+                        <span class="invite-code" id="inviteCode">------</span>
+                        <button class="copy-btn" onclick="copyCode()">复制邀请码</button>
                     </div>
-                </div>
-            </div>
-
-            <!-- 排行榜 -->
-            <div class="tab-content" id="leaderboardTab">
-                <div class="leaderboard" id="leaderboardList">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                        <p>加载中...</p>
+                    <h3 class="invite-card-title">邀请链接</h3>
+                    <div class="invite-link-box">
+                        <input type="text" class="invite-link-input" id="inviteLink" readonly>
+                        <button class="copy-btn" onclick="copyLink()">复制链接</button>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- 分享海报模态框 -->
-    <div class="modal" id="posterModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">邀请海报</h3>
-                <button class="close-btn" onclick="closePosterModal()">×</button>
-            </div>
-            <div class="poster-preview">
-                <h2>🎓 AI未来学院</h2>
-                <p style="margin: 1rem 0;">邀请你一起学习</p>
-                <div class="poster-qrcode">📱</div>
-                <p>扫码注册送100积分</p>
-                <p style="margin-top: 1rem; font-size: 1.5rem; font-weight: 700;" id="posterCode">INV00000000</p>
-            </div>
-            <button class="btn btn-primary" style="width: 100%;" onclick="downloadPoster()">
-                下载海报
-            </button>
-        </div>
-    </div>
-
-    <script>
-        // 配置
-        const hostname = window.location.hostname;
-        const API_BASE = (hostname === 'localhost' || hostname === '127.0.0.1')
-            ? 'http://localhost:8080/api'
-            : 'http://42.194.245.66/api';
-
-        let invitationData = null;
-
-        // 初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            if (!checkAuth()) return;
-
-            createParticles();
-            loadInvitationData();
-        });
-
-        // 检查认证
-        function checkAuth() {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                window.location.href = '/src/pages/login.html';
-                return false;
-            }
-            return true;
-        }
-
-        // 创建背景粒子
-        function createParticles() {
-            const container = document.getElementById('particles');
-            for (let i = 0; i < 20; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.width = Math.random() * 10 + 5 + 'px';
-                particle.style.height = particle.style.width;
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.top = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 6 + 's';
-                particle.style.animationDuration = Math.random() * 3 + 3 + 's';
-                container.appendChild(particle);
-            }
-        }
-
-        // 加载邀请数据
-        async function loadInvitationData() {
-            try {
-                const token = localStorage.getItem('token');
-
-                // 加载邀请码
-                const codeResponse = await fetch(`${API_BASE}/invitation/my-code`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const codeData = await codeResponse.json();
-
-                if (codeData.success) {
-                    document.getElementById('invitationCode').textContent = codeData.data.invitationCode;
-                    invitationData = codeData.data;
-                }
-
-                // 加载统计数据
-                const statsResponse = await fetch(`${API_BASE}/invitation/my-stats`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const statsData = await statsResponse.json();
-
-                if (statsData.success) {
-                    updateStats(statsData.stats);
-                    renderInvitations(statsData.invitations || []);
-                    renderRewards(statsData.rewards || []);
-                }
-
-                // 加载排行榜
-                loadLeaderboard();
-
-            } catch (error) {
-                console.error('加载数据失败:', error);
-                showError('加载失败，请刷新页面重试');
-            }
-        }
-
-        // 更新统计数据
-        function updateStats(stats) {
-            document.getElementById('totalInvitations').textContent = stats.totalInvitations || 0;
-            document.getElementById('activatedCount').textContent = stats.activatedCount || 0;
-            document.getElementById('totalRewards').textContent = stats.totalRewardsEarned || 0;
-            document.getElementById('ranking').textContent = stats.currentRanking || '-';
-        }
-
-        // 渲染邀请列表
-        function renderInvitations(invitations) {
-            const container = document.getElementById('invitationList');
-
-            if (invitations.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">📭</div>
-                        <div class="empty-text">还没有邀请记录，快去邀请好友吧！</div>
-                    </div>
-                `;
-                return;
-            }
-
-            container.innerHTML = invitations.map(inv => {
-                const statusMap = {
-                    'activated': { class: 'status-activated', text: '已激活' },
-                    'registered': { class: 'status-registered', text: '已注册' },
-                    'pending': { class: 'status-pending', text: '待注册' }
-                };
-                const status = statusMap[inv.status] || statusMap.pending;
-
-                return `
-                    <div class="invitation-item">
-                        <div class="user-avatar">${inv.inviteeId % 10}</div>
-                        <div class="invitation-info">
-                            <div class="invitation-name">用户 ${inv.inviteeId}</div>
-                            <div class="invitation-meta">
-                                <span>📅 ${formatDate(inv.createdAt)}</span>
-                                <span>📍 ${inv.invitationChannel || 'web'}</span>
+                    <!-- 二维码区域 -->
+                    <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border-color);">
+                        <h3 class="invite-card-title">扫码邀请</h3>
+                        <div style="display: flex; align-items: center; gap: 24px; flex-wrap: wrap;">
+                            <div id="qrcode" style="width: 150px; height: 150px; background: white; border-radius: 12px; padding: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></div>
+                            <div style="flex: 1; min-width: 200px;">
+                                <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px;">扫描二维码，快速分享给好友</p>
+                                <button class="copy-btn" onclick="downloadQR()" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                                    <i class="fas fa-download" style="margin-right: 8px;"></i>保存二维码
+                                </button>
                             </div>
                         </div>
-                        <span class="invitation-status ${status.class}">${status.text}</span>
                     </div>
-                `;
-            }).join('');
+
+                    <!-- 社交分享 -->
+                    <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border-color);">
+                        <h3 class="invite-card-title">分享到</h3>
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <button class="share-btn wechat" onclick="shareToWechat()">
+                                <i class="fab fa-weixin"></i> 微信
+                            </button>
+                            <button class="share-btn weibo" onclick="shareToWeibo()">
+                                <i class="fab fa-weibo"></i> 微博
+                            </button>
+                            <button class="share-btn qq" onclick="shareToQQ()">
+                                <i class="fab fa-qq"></i> QQ
+                            </button>
+                            <button class="share-btn link" onclick="copyLink()">
+                                <i class="fas fa-link"></i> 复制链接
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rewards-section">
+                    <h3 class="rewards-title">邀请奖励</h3>
+                    <div class="rewards-list">
+                        <div class="reward-item">
+                            <div class="reward-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
+                            </div>
+                            <div class="reward-info">
+                                <div class="reward-title">好友注册成功</div>
+                                <div class="reward-desc">好友通过你的链接注册账号</div>
+                            </div>
+                            <div class="reward-value">+50 积分</div>
+                        </div>
+                        <div class="reward-item">
+                            <div class="reward-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                            </div>
+                            <div class="reward-info">
+                                <div class="reward-title">好友首次购课</div>
+                                <div class="reward-desc">好友购买任意付费课程</div>
+                            </div>
+                            <div class="reward-value">+200 积分</div>
+                        </div>
+                        <div class="reward-item">
+                            <div class="reward-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            </div>
+                            <div class="reward-info">
+                                <div class="reward-title">好友获得奖励</div>
+                                <div class="reward-desc">新用户专享注册礼包</div>
+                            </div>
+                            <div class="reward-value">+100 积分</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="history-section">
+                    <h3 class="history-title">邀请记录</h3>
+                    <div class="history-list" id="historyList">
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/><path d="M16 4l2 2 4-4"/></svg>
+                            <p>还没有邀请记录，快去邀请好友吧</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 邀请排行榜 -->
+                <div class="leaderboard-section">
+                    <h3 class="leaderboard-title"><i class="fas fa-trophy"></i> 邀请排行榜</h3>
+                    <div class="leaderboard-list" id="leaderboardList">
+                        <div class="empty-state">
+                            <p>暂无排行数据</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-text">2025 AI 信息未来</div>
+                <div class="footer-links"><a href="#" class="footer-link">关于我们</a><a href="#" class="footer-link">使用条款</a></div>
+            </div>
+        </div>
+    </footer>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const API_BASE = '/api';
+        let inviteCode = '';
+
+        document.addEventListener('DOMContentLoaded', () => { initTheme(); checkAuth(); loadInviteData(); });
+
+        function initTheme() {
+            const saved = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', saved);
+            updateThemeIcon(saved);
+            document.getElementById('themeToggle').addEventListener('click', () => {
+                const current = document.documentElement.getAttribute('data-theme');
+                const next = current === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('theme', next);
+                updateThemeIcon(next);
+            });
         }
 
-        // 渲染奖励记录
-        function renderRewards(rewards) {
-            const container = document.getElementById('rewardList');
+        function updateThemeIcon(theme) { document.querySelector('#themeToggle i').className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon'; }
 
-            if (rewards.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">🎁</div>
-                        <div class="empty-text">还没有奖励记录</div>
-                    </div>
-                `;
-                return;
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            const authArea = document.getElementById('authArea');
+            if (token && userStr) {
+                const user = JSON.parse(userStr);
+                const initial = (user.nickname || user.username || 'U').charAt(0).toUpperCase();
+                authArea.innerHTML = `<div class="user-menu"><div class="user-avatar" onclick="toggleDropdown()">${initial}</div><div class="dropdown" id="userDropdown"><div class="dropdown-item" onclick="location.href='dashboard.html'"><i class="fas fa-tachometer-alt"></i> 学习中心</div><div class="dropdown-item" onclick="location.href='profile.html'"><i class="fas fa-user"></i> 个人主页</div><div class="dropdown-divider"></div><div class="dropdown-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出</div></div></div>`;
+            } else {
+                window.location.href = 'login.html?returnUrl=' + encodeURIComponent(window.location.href);
             }
+        }
 
-            container.innerHTML = rewards.map(reward => `
-                <div class="reward-item">
-                    <div class="reward-icon">💎</div>
-                    <div class="reward-info">
-                        <div class="reward-title">${reward.reason || '邀请奖励'}</div>
-                        <div class="reward-time">${formatDate(reward.createdAt)}</div>
+        function toggleDropdown() { document.getElementById('userDropdown').classList.toggle('show'); }
+        function logout() { localStorage.removeItem('token'); localStorage.removeItem('user'); location.reload(); }
+        document.addEventListener('click', (e) => { if (!e.target.closest('.user-menu')) { const d = document.getElementById('userDropdown'); if (d) d.classList.remove('show'); } });
+
+        async function loadInviteData() {
+            try {
+                const res = await fetch(`${API_BASE}/invitation/my`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
+                const data = await res.json();
+                if (data.code === 200 && data.data) {
+                    inviteCode = data.data.inviteCode || generateCode();
+                    document.getElementById('inviteCode').textContent = inviteCode;
+                    document.getElementById('inviteLink').value = `${window.location.origin}/pages/register.html?ref=${inviteCode}`;
+                    document.getElementById('inviteCount').textContent = data.data.inviteCount || 0;
+                    document.getElementById('successCount').textContent = data.data.successCount || 0;
+                    document.getElementById('rewardPoints').textContent = data.data.rewardPoints || 0;
+                    if (data.data.records && data.data.records.length > 0) {
+                        renderHistory(data.data.records);
+                    }
+                } else {
+                    setDefaultCode();
+                }
+            } catch (e) {
+                setDefaultCode();
+            }
+        }
+
+        function setDefaultCode() {
+            inviteCode = generateCode();
+            document.getElementById('inviteCode').textContent = inviteCode;
+            document.getElementById('inviteLink').value = `${window.location.origin}/pages/register.html?ref=${inviteCode}`;
+        }
+
+        function generateCode() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            return (user.username || 'USER').toUpperCase().slice(0, 4) + Math.random().toString(36).substring(2, 6).toUpperCase();
+        }
+
+        function renderHistory(list) {
+            const container = document.getElementById('historyList');
+            container.innerHTML = list.map(item => `
+                <div class="history-item">
+                    <div>
+                        <div class="history-user">${item.username || '用户'}</div>
+                        <div class="history-time">${formatDate(item.createdAt)}</div>
                     </div>
-                    <div class="reward-points">+${reward.pointsEarned}</div>
+                    <div class="history-reward">+${item.reward || 50} 积分</div>
                 </div>
             `).join('');
         }
 
-        // 加载排行榜
+        function copyCode() {
+            navigator.clipboard.writeText(inviteCode).then(() => showToast('邀请码已复制')).catch(() => showToast('复制失败'));
+        }
+
+        function copyLink() {
+            const link = document.getElementById('inviteLink').value;
+            navigator.clipboard.writeText(link).then(() => showToast('链接已复制')).catch(() => showToast('复制失败'));
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('zh-CN');
+        }
+
+        function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
+
+        // 二维码生成
+        let qrInstance = null;
+        function generateQRCode() {
+            const link = document.getElementById('inviteLink').value;
+            if (!link) return;
+
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = '';
+
+            qrInstance = new QRCode(qrContainer, {
+                text: link,
+                width: 130,
+                height: 130,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        }
+
+        function downloadQR() {
+            const canvas = document.querySelector('#qrcode canvas');
+            if (!canvas) {
+                showToast('请先生成二维码');
+                return;
+            }
+            const link = document.createElement('a');
+            link.download = 'invite-qrcode.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            showToast('二维码已保存');
+        }
+
+        // 社交分享
+        function shareToWechat() {
+            showToast('请截图保存二维码分享到微信');
+        }
+
+        function shareToWeibo() {
+            const link = document.getElementById('inviteLink').value;
+            const text = encodeURIComponent('我在AI信息未来学习AI课程，快来和我一起学习吧！');
+            const url = encodeURIComponent(link);
+            window.open(`https://service.weibo.com/share/share.php?title=${text}&url=${url}`, '_blank', 'width=600,height=500');
+        }
+
+        function shareToQQ() {
+            const link = document.getElementById('inviteLink').value;
+            const title = encodeURIComponent('AI信息未来 - 专业AI学习平台');
+            const summary = encodeURIComponent('我正在学习AI课程，使用我的邀请码注册可以获得额外积分奖励！');
+            const url = encodeURIComponent(link);
+            window.open(`https://connect.qq.com/widget/shareqq/index.html?url=${url}&title=${title}&summary=${summary}`, '_blank', 'width=600,height=500');
+        }
+
+        // 加载邀请排行榜
         async function loadLeaderboard() {
             try {
-                const token = localStorage.getItem('token');
-                const response = await fetch(`${API_BASE}/invitation/leaderboard?limit=50`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
+                const res = await fetch(`${API_BASE}/invitation/leaderboard`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                 });
-                const data = await response.json();
-
-                if (data.success) {
-                    renderLeaderboard(data.leaderboard || []);
+                const data = await res.json();
+                if (data.code === 200 && data.data && data.data.length > 0) {
+                    renderLeaderboard(data.data);
+                } else {
+                    // 使用示例数据
+                    renderLeaderboard([
+                        { username: '学习达人', inviteCount: 28, rewardPoints: 2800 },
+                        { username: 'AI探索者', inviteCount: 19, rewardPoints: 1900 },
+                        { username: '技术先锋', inviteCount: 15, rewardPoints: 1500 }
+                    ]);
                 }
-            } catch (error) {
-                console.error('加载排行榜失败:', error);
+            } catch (e) {
+                // 使用示例数据
+                renderLeaderboard([
+                    { username: '学习达人', inviteCount: 28, rewardPoints: 2800 },
+                    { username: 'AI探索者', inviteCount: 19, rewardPoints: 1900 },
+                    { username: '技术先锋', inviteCount: 15, rewardPoints: 1500 }
+                ]);
             }
         }
 
-        // 渲染排行榜
-        function renderLeaderboard(leaderboard) {
+        function renderLeaderboard(list) {
             const container = document.getElementById('leaderboardList');
+            const rankClasses = ['gold', 'silver', 'bronze'];
 
-            if (leaderboard.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">🏆</div>
-                        <div class="empty-text">排行榜暂无数据</div>
-                    </div>
-                `;
-                return;
-            }
-
-            container.innerHTML = leaderboard.map((item, index) => {
-                const rank = index + 1;
-                let rankClass = 'rank-other';
-                if (rank === 1) rankClass = 'rank-1';
-                else if (rank === 2) rankClass = 'rank-2';
-                else if (rank === 3) rankClass = 'rank-3';
-
+            container.innerHTML = list.slice(0, 10).map((item, index) => {
+                const rankClass = index < 3 ? rankClasses[index] : 'normal';
+                const initial = (item.username || 'U').charAt(0).toUpperCase();
                 return `
                     <div class="leaderboard-item">
-                        <div class="rank-badge ${rankClass}">${rank}</div>
+                        <div class="leaderboard-rank ${rankClass}">${index + 1}</div>
+                        <div class="leaderboard-avatar">${initial}</div>
                         <div class="leaderboard-info">
-                            <div class="leaderboard-name">用户 ${item.userId}</div>
-                            <div class="leaderboard-count">邀请 ${item.totalInvitations} 人</div>
+                            <div class="leaderboard-name">${item.username || '用户'}</div>
+                            <div class="leaderboard-count">邀请 ${item.inviteCount || 0} 人</div>
                         </div>
-                        <div class="leaderboard-points">
-                            <div class="points-value">${item.totalRewardsEarned || 0}</div>
-                            <div class="points-label">积分</div>
-                        </div>
+                        <div class="leaderboard-points">+${item.rewardPoints || 0}</div>
                     </div>
                 `;
             }).join('');
         }
 
-        // 切换Tab
-        function switchTab(tabName) {
-            // 更新tab按钮
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            event.target.classList.add('active');
-
-            // 更新内容
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-
-            const contentMap = {
-                'invitations': 'invitationsTab',
-                'rewards': 'rewardsTab',
-                'leaderboard': 'leaderboardTab'
-            };
-
-            document.getElementById(contentMap[tabName]).classList.add('active');
-        }
-
-        // 复制邀请码
-        function copyCode() {
-            const code = document.getElementById('invitationCode').textContent;
-            copyToClipboard(code);
-            showSuccess('邀请码已复制到剪贴板');
-        }
-
-        // 分享链接
-        function shareLink() {
-            if (!invitationData) return;
-            copyToClipboard(invitationData.shareUrl);
-            showSuccess('邀请链接已复制到剪贴板');
-        }
-
-        // 生成海报
-        function generatePoster() {
-            const code = document.getElementById('invitationCode').textContent;
-            document.getElementById('posterCode').textContent = code;
-            document.getElementById('posterModal').classList.add('active');
-        }
-
-        // 关闭海报模态框
-        function closePosterModal() {
-            document.getElementById('posterModal').classList.remove('active');
-        }
-
-        // 下载海报
-        function downloadPoster() {
-            showSuccess('海报生成功能开发中...');
-        }
-
-        // 复制到剪贴板
-        function copyToClipboard(text) {
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
-        }
-
-        // 格式化日期
-        function formatDate(dateString) {
-            if (!dateString) return '-';
-            const date = new Date(dateString);
-            const now = new Date();
-            const diff = now - date;
-            const days = Math.floor(diff / 86400000);
-
-            if (days === 0) return '今天';
-            if (days === 1) return '昨天';
-            if (days < 7) return `${days}天前`;
-            return date.toLocaleDateString();
-        }
-
-        // 显示成功消息
-        function showSuccess(message) {
-            alert(message);
-        }
-
-        // 显示错误消息
-        function showError(message) {
-            alert(message);
-        }
+        // 初始化时加载排行榜和生成二维码
+        setTimeout(() => {
+            generateQRCode();
+            loadLeaderboard();
+        }, 500);
     </script>
 </body>
 </html>

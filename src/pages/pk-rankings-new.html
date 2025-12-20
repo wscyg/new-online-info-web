@@ -3,377 +3,844 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PK排行榜 - 在线学习平台</title>
+    <title>PK排行榜 - AI 信息未来</title>
+    <link rel="stylesheet" href="../styles/apple-design.css">
+    <style>
+        /* PK Rankings Specific Styles */
+        .pk-main {
+            padding-top: 64px;
+            min-height: 100vh;
+            background: var(--bg-primary);
+        }
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="../styles/pk-styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+        .pk-container {
+            max-width: 1024px;
+            margin: 0 auto;
+            padding: 40px 22px;
+        }
 
-    <!-- 外部依赖 -->
-    <script src="https://cdn.jsdelivr.net/npm/zustand@4.4.1/index.umd.js"></script>
+        .pk-page-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .pk-page-title {
+            font-size: 48px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 12px;
+            background: linear-gradient(180deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .pk-page-subtitle {
+            font-size: 19px;
+            color: var(--text-secondary);
+        }
+
+        /* My Rank Card */
+        .my-rank-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+
+        .my-rank-card h3 {
+            font-size: 21px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        .my-rank-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .my-rank-profile {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .my-rank-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .my-rank-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .my-rank-details {
+            flex: 1;
+        }
+
+        .my-rank-name {
+            font-size: 21px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .my-rank-tier {
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        .my-rank-stats {
+            display: flex;
+            gap: 32px;
+        }
+
+        .stat-box {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Tabs */
+        .leaderboard-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+            overflow-x: auto;
+            padding: 4px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .leaderboard-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .leaderboard-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+        }
+
+        .leaderboard-tab:hover {
+            color: var(--text-primary);
+            background: var(--bg-hover);
+        }
+
+        .leaderboard-tab.active {
+            color: var(--accent);
+            background: rgba(0, 113, 227, 0.1);
+            border-color: var(--accent);
+        }
+
+        /* Tier Filter */
+        .tier-filter-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .tier-filter-card h3 {
+            font-size: 19px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .tier-tabs {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .tier-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .tier-tab:hover {
+            color: var(--text-primary);
+            background: var(--bg-hover);
+        }
+
+        .tier-tab.active {
+            color: var(--accent);
+            background: rgba(0, 113, 227, 0.1);
+            border-color: var(--accent);
+        }
+
+        /* Leaderboard Card */
+        .leaderboard-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            margin-bottom: 32px;
+        }
+
+        .leaderboard-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .leaderboard-title {
+            font-size: 21px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .leaderboard-update {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        .leaderboard-list {
+            padding: 8px;
+        }
+
+        /* Rank Item */
+        .rank-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            transition: background var(--transition-fast);
+            position: relative;
+        }
+
+        .rank-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .rank-item.current-user {
+            background: rgba(0, 113, 227, 0.05);
+            border: 1px solid rgba(0, 113, 227, 0.2);
+        }
+
+        .rank-badge {
+            width: 40px;
+            text-align: center;
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        .rank-badge.medal {
+            font-size: 28px;
+        }
+
+        .rank-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            border: 2px solid transparent;
+        }
+
+        .rank-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .rank-user-info {
+            flex: 1;
+        }
+
+        .rank-user-name {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .rank-user-tier {
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .rank-stats {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .rank-stat {
+            text-align: center;
+        }
+
+        .rank-stat-value {
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .rank-stat-label {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+        }
+
+        .rank-change {
+            font-size: 15px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .rank-change.up {
+            color: #34c759;
+            background: rgba(52, 199, 89, 0.1);
+        }
+
+        .rank-change.down {
+            color: #ff3b30;
+            background: rgba(255, 59, 48, 0.1);
+        }
+
+        .rank-change.same {
+            color: var(--text-tertiary);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .page-info {
+            font-size: 15px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .page-info span {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* Tier Distribution */
+        .tier-distribution-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+        }
+
+        .tier-distribution-card h3 {
+            font-size: 21px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        .tier-distribution-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .tier-dist-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .tier-dist-item:hover {
+            background: var(--bg-hover);
+            transform: translateX(4px);
+        }
+
+        .tier-icon {
+            font-size: 32px;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tier-info {
+            flex: 1;
+        }
+
+        .tier-name {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .tier-range {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        .tier-stats {
+            text-align: right;
+            margin-right: 16px;
+        }
+
+        .tier-count {
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .tier-percentage {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .tier-progress {
+            width: 200px;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+
+        [data-theme="dark"] .tier-progress {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .tier-progress-bar {
+            height: 100%;
+            border-radius: var(--radius-full);
+            transition: width 0.5s var(--ease-out);
+        }
+
+        /* Loading */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 64px;
+        }
+
+        .loading-container .spinner {
+            margin-bottom: 16px;
+        }
+
+        .loading-text {
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 64px 32px;
+            color: var(--text-secondary);
+            font-size: 17px;
+        }
+
+        /* Hidden */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .pk-page-title {
+                font-size: 36px;
+            }
+
+            .my-rank-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .my-rank-stats {
+                width: 100%;
+                justify-content: space-around;
+                gap: 16px;
+            }
+
+            .rank-stats {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .tier-progress {
+                width: 100px;
+            }
+
+            .leaderboard-tabs {
+                gap: 8px;
+            }
+
+            .leaderboard-tab {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- 导航栏 -->
-    <nav class="pk-navbar">
-        <div class="pk-nav-container">
-            <a href="../pages/dashboard.html" class="pk-nav-brand">🎓 在线学习平台</a>
-            <ul class="pk-nav-menu">
-                <li><a href="dashboard.html" class="pk-nav-link">仪表盘</a></li>
-                <li><a href="courses.html" class="pk-nav-link">课程</a></li>
-                <li><a href="pk-arena-new.html" class="pk-nav-link">PK竞技场</a></li>
-                <li><a href="pk-rankings-new.html" class="pk-nav-link active">排行榜</a></li>
-                <li><a href="pk-friends-new.html" class="pk-nav-link">好友</a></li>
-            </ul>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="dashboard.html" class="nav-logo">AI 信息未来</a>
+            <div class="nav-menu">
+                <a href="dashboard.html" class="nav-link">首页</a>
+                <a href="courses.html" class="nav-link">课程</a>
+                <a href="community.html" class="nav-link">社区</a>
+                <a href="pk-arena-new.html" class="nav-link active">PK竞技</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path class="sun-icon" d="M10 2a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 2zm0 13a5 5 0 100-10 5 5 0 000 10zm7-5a.75.75 0 01.75.75v.5a.75.75 0 01-1.5 0v-.5A.75.75 0 0117 10z"/>
+                        <path class="moon-icon" d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" style="display: none;"/>
+                    </svg>
+                </button>
+                <div class="user-menu">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                </div>
+            </div>
         </div>
     </nav>
 
-    <!-- 主容器 -->
-    <div class="pk-container">
-        <!-- 页面标题 -->
-        <div class="pk-page-header">
-            <h1 class="pk-page-title">🏆 PK排行榜</h1>
-            <p class="pk-page-subtitle">争夺最高荣誉，成为PK之王！</p>
-        </div>
+    <!-- Main Content -->
+    <div class="pk-main">
+        <div class="pk-container">
+            <!-- Page Header -->
+            <div class="pk-page-header">
+                <h1 class="pk-page-title">PK排行榜</h1>
+                <p class="pk-page-subtitle">争夺最高荣誉，成为PK之王</p>
+            </div>
 
-        <!-- 我的排名卡片 -->
-        <div class="pk-card pk-mb-4" id="myRankCard">
-            <h3 class="pk-card-title pk-mb-3">我的排名</h3>
-            <div class="pk-my-rank-info">
-                <div class="pk-flex pk-flex-between">
-                    <div class="pk-flex pk-flex-gap">
-                        <div class="pk-player-avatar" id="myAvatar"></div>
-                        <div>
-                            <div class="pk-player-name" id="myName"></div>
-                            <span class="pk-player-tier" id="myTier"></span>
+            <!-- My Rank Card -->
+            <div class="my-rank-card" id="myRankCard">
+                <h3>我的排名</h3>
+                <div class="my-rank-info">
+                    <div class="my-rank-profile">
+                        <div class="my-rank-avatar" id="myAvatar">U</div>
+                        <div class="my-rank-details">
+                            <div class="my-rank-name" id="myName">用户名</div>
+                            <div class="my-rank-tier" id="myTier">
+                                <span>青铜</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="pk-flex pk-flex-gap">
-                        <div class="pk-stat-box">
-                            <div class="pk-stat-value" id="myRank">#-</div>
-                            <div class="pk-stat-label">排名</div>
+                    <div class="my-rank-stats">
+                        <div class="stat-box">
+                            <div class="stat-value" id="myRank">#-</div>
+                            <div class="stat-label">排名</div>
                         </div>
-                        <div class="pk-stat-box">
-                            <div class="pk-stat-value" id="myElo">1200</div>
-                            <div class="pk-stat-label">ELO分数</div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="myElo">1200</div>
+                            <div class="stat-label">ELO分数</div>
                         </div>
-                        <div class="pk-stat-box">
-                            <div class="pk-stat-value" id="myWins">0</div>
-                            <div class="pk-stat-label">胜场</div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="myWins">0</div>
+                            <div class="stat-label">胜场</div>
                         </div>
-                        <div class="pk-stat-box">
-                            <div class="pk-stat-value" id="myWinRate">0%</div>
-                            <div class="pk-stat-label">胜率</div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="myWinRate">0%</div>
+                            <div class="stat-label">胜率</div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- 排行榜切换标签 -->
-        <div class="pk-leaderboard-tabs pk-mb-4">
-            <button class="pk-leaderboard-tab active" data-type="overall">
-                🌟 总榜
-            </button>
-            <button class="pk-leaderboard-tab" data-type="daily">
-                📅 日榜
-            </button>
-            <button class="pk-leaderboard-tab" data-type="weekly">
-                📊 周榜
-            </button>
-            <button class="pk-leaderboard-tab" data-type="monthly">
-                📈 月榜
-            </button>
-            <button class="pk-leaderboard-tab" data-type="tier">
-                💎 段位榜
-            </button>
-        </div>
-
-        <!-- 段位筛选（仅在段位榜显示） -->
-        <div class="pk-card pk-mb-4 pk-hidden" id="tierFilterCard">
-            <h3 class="pk-card-title pk-mb-3">选择段位</h3>
-            <div class="pk-tier-tabs">
-                <button class="pk-tier-tab" data-tier="bronze">
-                    🥉 青铜
+            <!-- Leaderboard Tabs -->
+            <div class="leaderboard-tabs">
+                <button class="leaderboard-tab active" data-type="overall">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 1.5a.75.75 0 01.75.75v.5a.75.75 0 01-1.5 0v-.5A.75.75 0 018 1.5zM3 8a5 5 0 1110 0A5 5 0 013 8z"/>
+                    </svg>
+                    总榜
                 </button>
-                <button class="pk-tier-tab" data-tier="silver">
-                    🥈 白银
+                <button class="leaderboard-tab" data-type="daily">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M3.5 0a.5.5 0 01.5.5V1h8V.5a.5.5 0 011 0V1h1a2 2 0 012 2v11a2 2 0 01-2 2H2a2 2 0 01-2-2V3a2 2 0 012-2h1V.5a.5.5 0 01.5-.5z"/>
+                    </svg>
+                    日榜
                 </button>
-                <button class="pk-tier-tab active" data-tier="gold">
-                    🥇 黄金
+                <button class="leaderboard-tab" data-type="weekly">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M2 1a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V2a1 1 0 00-1-1H2zm1 2h10v10H3V3z"/>
+                    </svg>
+                    周榜
                 </button>
-                <button class="pk-tier-tab" data-tier="platinum">
-                    💎 铂金
+                <button class="leaderboard-tab" data-type="monthly">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M1 2.5A2.5 2.5 0 013.5 0h9A2.5 2.5 0 0115 2.5v11a2.5 2.5 0 01-2.5 2.5h-9A2.5 2.5 0 011 13.5v-11z"/>
+                    </svg>
+                    月榜
                 </button>
-                <button class="pk-tier-tab" data-tier="diamond">
-                    💠 钻石
-                </button>
-                <button class="pk-tier-tab" data-tier="master">
-                    👑 王者
+                <button class="leaderboard-tab" data-type="tier">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M9.05.435a1 1 0 00-2.1 0L5.2 6.158H.5a.5.5 0 00-.3.9l4.1 3L2.7 15.77a.5.5 0 00.7.6L8 13.267l4.6 3.103a.5.5 0 00.7-.6l-1.6-5.712 4.1-3a.5.5 0 00-.3-.9h-4.7L9.05.435z"/>
+                    </svg>
+                    段位榜
                 </button>
             </div>
-        </div>
 
-        <!-- 排行榜列表 -->
-        <div class="pk-card">
-            <div class="pk-leaderboard-header pk-mb-3">
-                <h3 class="pk-card-title" id="leaderboardTitle">总排行榜</h3>
-                <div class="pk-leaderboard-meta">
-                    <span id="leaderboardUpdate">更新于: --:--</span>
+            <!-- Tier Filter (hidden by default) -->
+            <div class="tier-filter-card hidden" id="tierFilterCard">
+                <h3>选择段位</h3>
+                <div class="tier-tabs">
+                    <button class="tier-tab" data-tier="bronze">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <circle cx="8" cy="8" r="6" fill="#cd7f32"/>
+                        </svg>
+                        青铜
+                    </button>
+                    <button class="tier-tab" data-tier="silver">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <circle cx="8" cy="8" r="6" fill="#c0c0c0"/>
+                        </svg>
+                        白银
+                    </button>
+                    <button class="tier-tab active" data-tier="gold">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <circle cx="8" cy="8" r="6" fill="#ffd700"/>
+                        </svg>
+                        黄金
+                    </button>
+                    <button class="tier-tab" data-tier="platinum">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <circle cx="8" cy="8" r="6" fill="#00d4ff"/>
+                        </svg>
+                        铂金
+                    </button>
+                    <button class="tier-tab" data-tier="diamond">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <circle cx="8" cy="8" r="6" fill="#b9f2ff"/>
+                        </svg>
+                        钻石
+                    </button>
+                    <button class="tier-tab" data-tier="master">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <circle cx="8" cy="8" r="6" fill="#ff6b6b"/>
+                        </svg>
+                        王者
+                    </button>
                 </div>
             </div>
 
-            <!-- 加载状态 -->
-            <div class="pk-loading pk-text-center pk-mb-4" id="loadingIndicator">
-                <div class="pk-spinner"></div>
-                <span>加载中...</span>
-            </div>
-
-            <!-- 排行榜内容 -->
-            <div id="leaderboardList">
-                <!-- 动态加载 -->
-            </div>
-
-            <!-- 分页 -->
-            <div class="pk-pagination pk-mt-4 pk-hidden" id="pagination">
-                <button class="pk-btn pk-btn-outline" id="prevPageBtn" disabled>
-                    ← 上一页
-                </button>
-                <div class="pk-page-info">
-                    第 <span id="currentPage">1</span> / <span id="totalPages">1</span> 页
+            <!-- Leaderboard Card -->
+            <div class="leaderboard-card">
+                <div class="leaderboard-header">
+                    <h3 class="leaderboard-title" id="leaderboardTitle">总排行榜</h3>
+                    <span class="leaderboard-update" id="leaderboardUpdate">更新于: --:--</span>
                 </div>
-                <button class="pk-btn pk-btn-outline" id="nextPageBtn">
-                    下一页 →
-                </button>
-            </div>
-        </div>
 
-        <!-- 段位分布统计 -->
-        <div class="pk-card pk-mt-4">
-            <h3 class="pk-card-title pk-mb-3">📊 段位分布</h3>
-            <div class="pk-tier-distribution" id="tierDistribution">
-                <!-- 动态加载 -->
+                <!-- Loading State -->
+                <div class="loading-container" id="loadingIndicator">
+                    <div class="spinner"></div>
+                    <span class="loading-text">加载中...</span>
+                </div>
+
+                <!-- Leaderboard List -->
+                <div class="leaderboard-list hidden" id="leaderboardList">
+                    <!-- Dynamically populated -->
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination hidden" id="pagination">
+                    <button class="btn btn-secondary btn-sm" id="prevPageBtn" disabled>
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M10 12L6 8l4-4v8z"/>
+                        </svg>
+                        上一页
+                    </button>
+                    <div class="page-info">
+                        第 <span id="currentPage">1</span> / <span id="totalPages">1</span> 页
+                    </div>
+                    <button class="btn btn-secondary btn-sm" id="nextPageBtn">
+                        下一页
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M6 4l4 4-4 4V4z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tier Distribution -->
+            <div class="tier-distribution-card">
+                <h3>段位分布</h3>
+                <div class="tier-distribution-list" id="tierDistribution">
+                    <!-- Dynamically populated -->
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript模块 -->
+    <!-- Scripts -->
+    <script>
+        // API Configuration
+        const API_BASE = '/api';
+
+        // Theme Management
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const sunIcon = document.querySelector('.sun-icon');
+            const moonIcon = document.querySelector('.moon-icon');
+            if (theme === 'dark') {
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+            } else {
+                sunIcon.style.display = 'block';
+                moonIcon.style.display = 'none';
+            }
+        }
+
+        document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
+
+        // User Avatar
+        function initUserAvatar() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const avatar = document.getElementById('userAvatar');
+            if (avatar && user.username) {
+                avatar.textContent = user.username[0].toUpperCase();
+            }
+        }
+
+        // Tier Configuration
+        window.TIERS = {
+            BRONZE: { name: '青铜', color: '#cd7f32', minElo: 0, maxElo: 1199 },
+            SILVER: { name: '白银', color: '#c0c0c0', minElo: 1200, maxElo: 1399 },
+            GOLD: { name: '黄金', color: '#ffd700', minElo: 1400, maxElo: 1599 },
+            PLATINUM: { name: '铂金', color: '#00d4ff', minElo: 1600, maxElo: 1799 },
+            DIAMOND: { name: '钻石', color: '#b9f2ff', minElo: 1800, maxElo: 1999 },
+            MASTER: { name: '王者', color: '#ff6b6b', minElo: 2000, maxElo: 9999 }
+        };
+
+        window.getTierName = function(tier) {
+            return window.TIERS[tier]?.name || '未知';
+        };
+
+        window.getTierIcon = function(tier) {
+            const colors = {
+                BRONZE: '#cd7f32',
+                SILVER: '#c0c0c0',
+                GOLD: '#ffd700',
+                PLATINUM: '#00d4ff',
+                DIAMOND: '#b9f2ff',
+                MASTER: '#ff6b6b'
+            };
+            const color = colors[tier] || '#999';
+            return `<svg width="16" height="16" viewBox="0 0 16 16" fill="${color}"><circle cx="8" cy="8" r="6"/></svg>`;
+        };
+
+        // Get Medal SVG
+        function getMedalSVG(rank) {
+            const colors = ['#ffd700', '#c0c0c0', '#cd7f32'];
+            const color = colors[rank - 1];
+            return `<svg width="24" height="24" viewBox="0 0 24 24" fill="${color}">
+                <path d="M12 2L15 9L22 10L17 15L18 22L12 18L6 22L7 15L2 10L9 9L12 2Z"/>
+            </svg>`;
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            initUserAvatar();
+        });
+    </script>
+
+    <!-- Module Script -->
     <script type="module">
         import { PKRankings } from './pk/rankings.js';
 
-        // 初始化排行榜
+        // Initialize rankings
         const rankings = new PKRankings();
 
-        // 页面加载后初始化
+        // Page load initialization
         document.addEventListener('DOMContentLoaded', async () => {
             await rankings.init();
         });
 
-        // 全局导出用于调试
+        // Global export for debugging
         window.pkRankings = rankings;
     </script>
-
-    <style>
-        /* 我的排名信息 */
-        .pk-my-rank-info {
-            padding: var(--pk-spacing-lg);
-            background: var(--pk-bg-glass);
-            border-radius: var(--pk-radius-lg);
-        }
-
-        /* 段位标签页 */
-        .pk-tier-tabs {
-            display: flex;
-            gap: var(--pk-spacing-md);
-            flex-wrap: wrap;
-        }
-
-        .pk-tier-tab {
-            padding: var(--pk-spacing-md) var(--pk-spacing-xl);
-            background: var(--pk-bg-glass);
-            border: 2px solid var(--pk-border-glass);
-            border-radius: var(--pk-radius-md);
-            cursor: pointer;
-            transition: var(--pk-transition-fast);
-            font-weight: 600;
-            color: var(--pk-text-primary);
-        }
-
-        .pk-tier-tab:hover {
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .pk-tier-tab.active {
-            border-color: var(--pk-primary);
-            background: rgba(99, 102, 241, 0.1);
-        }
-
-        /* 排行榜头部 */
-        .pk-leaderboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .pk-leaderboard-meta {
-            font-size: 0.875rem;
-            color: var(--pk-text-muted);
-        }
-
-        /* 排行榜列表项 */
-        .pk-rank-item {
-            position: relative;
-        }
-
-        .pk-rank-item::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 4px;
-            height: 60%;
-            border-radius: 0 4px 4px 0;
-            opacity: 0;
-            transition: var(--pk-transition);
-        }
-
-        .pk-rank-item.top1::before {
-            background: var(--tier-gold);
-            opacity: 1;
-        }
-
-        .pk-rank-item.top2::before {
-            background: var(--tier-silver);
-            opacity: 1;
-        }
-
-        .pk-rank-item.top3::before {
-            background: var(--tier-bronze);
-            opacity: 1;
-        }
-
-        .pk-rank-info {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: var(--pk-spacing-lg);
-        }
-
-        .pk-rank-stats {
-            display: flex;
-            gap: var(--pk-spacing-xl);
-        }
-
-        .pk-rank-stat {
-            text-align: center;
-        }
-
-        .pk-rank-stat-value {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--pk-primary);
-        }
-
-        .pk-rank-stat-label {
-            font-size: 0.75rem;
-            color: var(--pk-text-muted);
-            margin-top: 0.25rem;
-        }
-
-        /* 分页 */
-        .pk-pagination {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .pk-page-info {
-            font-weight: 600;
-        }
-
-        /* 段位分布 */
-        .pk-tier-distribution {
-            display: grid;
-            gap: var(--pk-spacing-md);
-        }
-
-        .pk-tier-dist-item {
-            background: var(--pk-bg-glass);
-            border-radius: var(--pk-radius-md);
-            padding: var(--pk-spacing-lg);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .pk-tier-dist-info {
-            display: flex;
-            align-items: center;
-            gap: var(--pk-spacing-md);
-        }
-
-        .pk-tier-dist-icon {
-            font-size: 2rem;
-        }
-
-        .pk-tier-dist-name {
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-
-        .pk-tier-dist-count {
-            color: var(--pk-text-muted);
-            font-size: 0.9rem;
-            margin-top: 0.25rem;
-        }
-
-        .pk-tier-dist-bar {
-            flex: 1;
-            max-width: 300px;
-            margin: 0 var(--pk-spacing-lg);
-        }
-
-        .pk-tier-dist-bar-bg {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: var(--pk-radius-full);
-            height: 8px;
-            overflow: hidden;
-        }
-
-        .pk-tier-dist-bar-fill {
-            height: 100%;
-            border-radius: var(--pk-radius-full);
-            transition: width 0.5s ease;
-        }
-
-        .pk-tier-dist-percent {
-            font-weight: 700;
-            font-size: 1.25rem;
-            min-width: 60px;
-            text-align: right;
-        }
-
-        /* 响应式 */
-        @media (max-width: 968px) {
-            .pk-my-rank-info .pk-flex-between {
-                flex-direction: column;
-                gap: var(--pk-spacing-lg);
-            }
-
-            .pk-rank-stats {
-                flex-direction: column;
-                gap: var(--pk-spacing-md);
-            }
-
-            .pk-tier-dist-bar {
-                max-width: 150px;
-            }
-
-            .pk-leaderboard-tabs {
-                overflow-x: auto;
-                flex-wrap: nowrap;
-            }
-        }
-    </style>
 </body>
 </html>

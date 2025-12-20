@@ -4,350 +4,363 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>章节内容</title>
-    
+
+    <!-- Apple Design CSS -->
+    <link rel="stylesheet" href="../styles/apple-design.css">
+
     <!-- 预加载所有常用依赖库 -->
-    
+
     <!-- KaTeX 数学公式渲染库 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-    
+
     <!-- GSAP 动画库 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
-    
+
     <!-- Highlight.js 代码高亮 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-light">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-dark" disabled>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    
+
     <!-- Three.js 3D渲染 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    
+
     <!-- Chart.js 图表库 -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <!-- D3.js 数据可视化 -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    
-    <!-- 通用样式 -->
+
     <style>
-        /* 重置样式 */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* 章节内容特定样式 */
+        .chapter-wrapper {
+            padding-top: 48px;
+            min-height: 100vh;
         }
-        
-        html, body {
-            width: 100%;
-            height: 100%;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+        .chapter-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px 22px 80px;
+        }
+
+        .chapter-header {
+            margin-bottom: 48px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .chapter-title {
+            font-size: 48px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            line-height: 1.1;
+        }
+
+        .chapter-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 15px;
+            color: var(--text-tertiary);
+        }
+
+        /* 内容区域样式 */
+        .chapter-body {
+            font-size: 19px;
             line-height: 1.7;
-            color: #333;
-            background: #fff;
-            overflow-x: hidden;
+            color: var(--text-secondary);
         }
-        
-        /* 容器样式 */
-        .max-w-7xl { max-width: 80rem; margin: 0 auto; }
-        .max-w-6xl { max-width: 72rem; margin: 0 auto; }
-        .max-w-4xl { max-width: 56rem; margin: 0 auto; }
-        .mx-auto { margin-left: auto; margin-right: auto; }
-        .text-center { text-align: center; }
-        .px-4 { padding-left: 1rem; padding-right: 1rem; }
-        .py-24 { padding-top: 6rem; padding-bottom: 6rem; }
-        .pt-20 { padding-top: 5rem; }
-        .mb-16 { margin-bottom: 4rem; }
-        .mb-20 { margin-bottom: 5rem; }
-        .mb-8 { margin-bottom: 2rem; }
-        .mb-6 { margin-bottom: 1.5rem; }
-        .min-h-screen { min-height: 100vh; }
-        .relative { position: relative; }
-        .flex { display: flex; }
-        .items-center { align-items: center; }
-        .justify-center { justify-content: center; }
-        .grid { display: grid; }
-        .gap-8 { gap: 2rem; }
-        .gap-10 { gap: 2.5rem; }
-        
-        /* 响应式网格 */
-        @media (min-width: 768px) {
-            .md\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-            .lg\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        }
-        
-        /* 标题样式 */
-        h1, h2, h3, h4, h5, h6 {
-            margin: 2rem 0 1rem 0;
+
+        .chapter-body h1,
+        .chapter-body h2,
+        .chapter-body h3,
+        .chapter-body h4,
+        .chapter-body h5,
+        .chapter-body h6 {
+            margin-top: 48px;
+            margin-bottom: 20px;
+            color: var(--text-primary);
             font-weight: 600;
-            line-height: 1.3;
+            letter-spacing: -0.02em;
         }
-        
-        h1 {
-            font-size: 2.5rem;
-            color: #1a202c;
-            border-bottom: 3px solid #4299e1;
-            padding-bottom: 0.5rem;
+
+        .chapter-body h1 {
+            font-size: 40px;
+            line-height: 1.1;
         }
-        
-        h2 {
-            font-size: 2rem;
-            color: #2d3748;
+
+        .chapter-body h2 {
+            font-size: 32px;
+            line-height: 1.15;
         }
-        
-        h3 {
-            font-size: 1.5rem;
-            color: #4a5568;
+
+        .chapter-body h3 {
+            font-size: 24px;
+            line-height: 1.2;
         }
-        
-        /* 段落和文本 */
-        p {
-            margin: 1rem 0;
-            line-height: 1.8;
-            color: #4a5568;
+
+        .chapter-body h4 {
+            font-size: 21px;
+            line-height: 1.25;
         }
-        
-        /* 区块样式 */
-        section {
-            padding: 3rem 1rem;
-            margin: 2rem 0;
+
+        .chapter-body p {
+            margin: 24px 0;
+            line-height: 1.7;
         }
-        
-        /* 知识卡片样式 */
-        .knowledge-card {
-            background: linear-gradient(145deg, rgba(66, 153, 225, 0.05) 0%, rgba(159, 122, 234, 0.05) 100%);
-            border: 1px solid rgba(66, 153, 225, 0.2);
-            border-radius: 16px;
-            padding: 2rem;
-            margin: 2rem auto;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+        .chapter-body ul,
+        .chapter-body ol {
+            margin: 24px 0;
+            padding-left: 32px;
         }
-        
-        .knowledge-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+
+        .chapter-body li {
+            margin: 12px 0;
+            line-height: 1.6;
         }
-        
-        /* 电影级标题样式（用于特殊章节） */
-        .cinematic-title {
-            font-size: clamp(2rem, 6vw, 4rem);
-            font-weight: 900;
-            letter-spacing: 0.05em;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-align: center;
-            margin: 2rem 0;
+
+        .chapter-body a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: color var(--transition-fast);
         }
-        
+
+        .chapter-body a:hover {
+            color: var(--accent-hover);
+            text-decoration: underline;
+        }
+
         /* 代码块样式 */
-        pre {
-            background: #f7fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 1rem;
+        .chapter-body pre {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 20px;
             overflow-x: auto;
-            margin: 1rem 0;
+            margin: 32px 0;
+            font-family: var(--font-mono);
+            font-size: 15px;
+            line-height: 1.6;
         }
-        
-        code {
-            background: #edf2f7;
-            padding: 0.2rem 0.4rem;
-            border-radius: 4px;
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+
+        .chapter-body code {
+            background: var(--bg-secondary);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-family: var(--font-mono);
             font-size: 0.9em;
+            color: var(--text-primary);
         }
-        
-        pre code {
+
+        .chapter-body pre code {
             background: none;
             padding: 0;
         }
-        
-        /* 列表样式 */
-        ul, ol {
-            margin: 1rem 0;
-            padding-left: 2rem;
+
+        /* 引用样式 */
+        .chapter-body blockquote {
+            border-left: 3px solid var(--accent);
+            padding-left: 20px;
+            margin: 32px 0;
+            color: var(--text-secondary);
+            font-style: italic;
+            background: var(--bg-secondary);
+            padding: 20px 20px 20px 24px;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
         }
-        
-        li {
-            margin: 0.5rem 0;
-            line-height: 1.6;
-        }
-        
-        /* 链接样式 */
-        a {
-            color: #4299e1;
-            text-decoration: none;
-            transition: color 0.2s ease;
-        }
-        
-        a:hover {
-            color: #3182ce;
-            text-decoration: underline;
-        }
-        
-        /* 图片样式 */
-        img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            margin: 1rem 0;
-        }
-        
+
         /* 表格样式 */
-        table {
+        .chapter-body table {
             width: 100%;
             border-collapse: collapse;
-            margin: 1rem 0;
-            background: white;
-            border-radius: 8px;
+            margin: 32px 0;
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
             overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
         }
-        
-        th, td {
-            padding: 0.75rem;
+
+        .chapter-body th,
+        .chapter-body td {
+            padding: 16px;
             text-align: left;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid var(--border-color);
         }
-        
-        th {
-            background: #f7fafc;
+
+        .chapter-body th {
+            background: var(--bg-secondary);
             font-weight: 600;
-            color: #2d3748;
+            color: var(--text-primary);
+            font-size: 15px;
         }
-        
-        /* 引用样式 */
-        blockquote {
-            border-left: 4px solid #4299e1;
-            padding-left: 1rem;
-            margin: 1rem 0;
-            color: #4a5568;
-            font-style: italic;
-            background: #f7fafc;
-            padding: 1rem;
-            border-radius: 0 8px 8px 0;
+
+        .chapter-body td {
+            font-size: 17px;
         }
-        
-        /* 动画和交互 */
-        .fade-in {
-            opacity: 0;
-            animation: fadeIn 1s ease-in forwards;
+
+        .chapter-body tr:last-child td {
+            border-bottom: none;
         }
-        
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-            }
+
+        /* 图片样式 */
+        .chapter-body img {
+            max-width: 100%;
+            height: auto;
+            border-radius: var(--radius-md);
+            margin: 32px 0;
+            display: block;
         }
-        
-        .slide-up {
-            transform: translateY(20px);
-            opacity: 0;
-            animation: slideUp 0.8s ease-out forwards;
+
+        /* 知识卡片样式 */
+        .chapter-body .knowledge-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            margin: 32px 0;
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
         }
-        
-        @keyframes slideUp {
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+
+        .chapter-body .knowledge-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-card);
         }
-        
-        /* 深色主题支持 */
-        @media (prefers-color-scheme: dark) {
-            body {
-                background: #1a202c;
-                color: #e2e8f0;
-            }
-            
-            .knowledge-card {
-                background: linear-gradient(145deg, rgba(45, 55, 72, 0.8) 0%, rgba(74, 85, 104, 0.8) 100%);
-                border-color: rgba(113, 128, 150, 0.2);
-            }
-            
-            pre {
-                background: #2d3748;
-                border-color: #4a5568;
-            }
-            
-            code {
-                background: #4a5568;
-            }
-            
-            th {
-                background: #2d3748;
-                color: #e2e8f0;
-            }
-            
-            blockquote {
-                background: #2d3748;
-                border-left-color: #63b3ed;
-            }
-        }
-        
-        /* 响应式设计 */
-        @media (max-width: 768px) {
-            section {
-                padding: 2rem 1rem;
-            }
-            
-            .knowledge-card {
-                padding: 1.5rem;
-                margin: 1rem;
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
-            
-            h2 {
-                font-size: 1.5rem;
-            }
-        }
-        
-        /* 加载动画样式 */
-        .loading {
+
+        /* 加载状态 */
+        .loading-wrapper {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            gap: 20px;
         }
-        
-        .spinner {
+
+        .loading-spinner {
             width: 40px;
             height: 40px;
-            border: 4px solid #e2e8f0;
-            border-top-color: #4299e1;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 1rem;
+            animation: spin 0.8s linear infinite;
         }
-        
+
         @keyframes spin {
-            to {
-                transform: rotate(360deg);
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 17px;
+            color: var(--text-secondary);
+        }
+
+        /* 错误状态 */
+        .error-wrapper {
+            text-align: center;
+            padding: 80px 22px;
+        }
+
+        .error-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .error-message {
+            font-size: 17px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .chapter-container {
+                padding: 40px 16px 60px;
+            }
+
+            .chapter-title {
+                font-size: 32px;
+            }
+
+            .chapter-body {
+                font-size: 17px;
+            }
+
+            .chapter-body h1 {
+                font-size: 28px;
+            }
+
+            .chapter-body h2 {
+                font-size: 24px;
+            }
+
+            .chapter-body h3 {
+                font-size: 21px;
+            }
+
+            .nav-menu {
+                display: none;
             }
         }
     </style>
 </head>
 <body>
-    <div id="loadingIndicator" class="loading">
-        <div class="spinner"></div>
-        <p>正在加载章节内容...</p>
+    <!-- 导航栏 -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="../index.html" class="nav-logo">学习平台</a>
+            <div class="nav-menu">
+                <a href="../index.html" class="nav-link">首页</a>
+                <a href="./courses.html" class="nav-link">课程</a>
+                <a href="./community.html" class="nav-link">社区</a>
+                <a href="./arena.html" class="nav-link">PK竞技</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="10" cy="10" r="4"></circle>
+                        <path d="M10 1v2M10 17v2M18.66 5.34l-1.42 1.42M4.76 15.24l-1.42 1.42M19 10h-2M3 10H1M18.66 14.66l-1.42-1.42M4.76 4.76L3.34 3.34"></path>
+                    </svg>
+                </button>
+                <div class="user-menu" id="userMenu">
+                    <!-- User avatar will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 加载状态 -->
+    <div id="loadingIndicator" class="loading-wrapper">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">正在加载章节内容...</p>
     </div>
-    
-    <div id="chapterContent" style="display: none;">
-        <!-- 章节内容将被动态插入到这里 -->
+
+    <!-- 章节内容 -->
+    <div id="chapterContent" class="chapter-wrapper" style="display: none;">
+        <div class="chapter-container">
+            <div class="chapter-header">
+                <h1 class="chapter-title" id="chapterTitle">章节标题</h1>
+                <div class="chapter-meta" id="chapterMeta">
+                    <!-- Meta info will be inserted here -->
+                </div>
+            </div>
+            <div class="chapter-body" id="chapterBody">
+                <!-- Chapter content will be inserted here -->
+            </div>
+        </div>
     </div>
 
     <script>
+        const API_BASE = '/api';
+
         // 全局变量
         let chapterData = null;
 
@@ -357,17 +370,112 @@
         let currentCourseId = null;
         let currentChapterId = null;
 
+        // 主题管理
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateHighlightTheme(savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateHighlightTheme(newTheme);
+        }
+
+        function updateHighlightTheme(theme) {
+            const lightTheme = document.getElementById('hljs-light');
+            const darkTheme = document.getElementById('hljs-dark');
+            if (theme === 'dark') {
+                lightTheme.disabled = true;
+                darkTheme.disabled = false;
+            } else {
+                lightTheme.disabled = false;
+                darkTheme.disabled = true;
+            }
+        }
+
+        // 用户认证
+        function initAuth() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            const userMenu = document.getElementById('userMenu');
+
+            if (token && user) {
+                try {
+                    const userData = JSON.parse(user);
+                    const initial = userData.username ? userData.username.charAt(0).toUpperCase() : 'U';
+                    userMenu.innerHTML = `
+                        <div class="user-avatar" onclick="toggleUserDropdown()">
+                            ${initial}
+                        </div>
+                        <div class="dropdown" id="userDropdown">
+                            <div class="dropdown-item" onclick="window.location.href='./profile.html'">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M13 14v-1.5a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3V14M8 7a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                                </svg>
+                                个人中心
+                            </div>
+                            <div class="dropdown-item" onclick="window.location.href='./my-courses.html'">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M2 4l6-2 6 2v7l-6 2-6-2V4z"/>
+                                    <path d="M2 4l6 2v7M14 4l-6 2"/>
+                                </svg>
+                                我的课程
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-item" onclick="logout()">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M11 14H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h8M11 11l3-3-3-3M6 8h8"/>
+                                </svg>
+                                退出登录
+                            </div>
+                        </div>
+                    `;
+                } catch (e) {
+                    console.error('解析用户数据失败:', e);
+                    showLoginButton();
+                }
+            } else {
+                showLoginButton();
+            }
+        }
+
+        function showLoginButton() {
+            const userMenu = document.getElementById('userMenu');
+            userMenu.innerHTML = `
+                <button class="btn btn-primary btn-sm" onclick="window.location.href='./login.html'">登录</button>
+            `;
+        }
+
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('show');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = './login.html';
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const userMenu = document.getElementById('userMenu');
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown && !userMenu.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
         // 获取URL参数
         function getUrlParameter(name) {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(name);
-        }
-
-        // 获取API Base URL
-        function getApiBase() {
-            return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-                ? 'http://localhost:8080/api'
-                : '/api';
         }
 
         // 开始学习会话
@@ -379,7 +487,7 @@
                     return;
                 }
 
-                const response = await fetch(`${getApiBase()}/study-sessions/start`, {
+                const response = await fetch(`${API_BASE}/study-sessions/start`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -396,9 +504,7 @@
                     const data = await response.json();
                     if (data.code === 200 && data.data) {
                         currentSessionId = data.data.sessionId;
-                        console.log('✅ 学习会话已开始:', currentSessionId);
-
-                        // 启动心跳定时器（每2分钟）
+                        console.log('学习会话已开始:', currentSessionId);
                         startHeartbeat();
                     }
                 }
@@ -415,7 +521,7 @@
                 const token = localStorage.getItem('token');
                 if (!token) return;
 
-                await fetch(`${getApiBase()}/study-sessions/heartbeat`, {
+                await fetch(`${API_BASE}/study-sessions/heartbeat`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -425,7 +531,7 @@
                         sessionId: currentSessionId
                     })
                 });
-                console.log('📡 心跳发送成功');
+                console.log('心跳发送成功');
             } catch (error) {
                 console.error('心跳发送失败:', error);
             }
@@ -452,7 +558,7 @@
                 if (!token) return;
 
                 // 使用 keepalive 确保请求在页面卸载时也能发送
-                await fetch(`${getApiBase()}/study-sessions/end`, {
+                await fetch(`${API_BASE}/study-sessions/end`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -464,7 +570,7 @@
                     keepalive: true
                 });
 
-                console.log('✅ 学习会话已结束');
+                console.log('学习会话已结束');
 
                 // 清理
                 if (heartbeatInterval) {
@@ -488,20 +594,20 @@
                 endStudySession();
             }
         });
-        
+
         // 初始化所有依赖库
         function initializeDependencies() {
             return new Promise((resolve) => {
                 let loadedCount = 0;
                 const totalLibraries = 4; // KaTeX, GSAP, hljs, 其他
-                
+
                 function checkComplete() {
                     loadedCount++;
                     if (loadedCount >= totalLibraries) {
                         resolve();
                     }
                 }
-                
+
                 // 初始化 KaTeX
                 if (typeof renderMathInElement !== 'undefined') {
                     console.log('KaTeX 已加载');
@@ -512,7 +618,7 @@
                         checkComplete();
                     }, 1000);
                 }
-                
+
                 // 初始化 GSAP
                 if (typeof gsap !== 'undefined') {
                     try {
@@ -528,7 +634,7 @@
                         checkComplete();
                     }, 1000);
                 }
-                
+
                 // 初始化 highlight.js
                 if (typeof hljs !== 'undefined') {
                     console.log('highlight.js 已加载');
@@ -539,7 +645,7 @@
                         checkComplete();
                     }, 1000);
                 }
-                
+
                 // 其他库检查
                 setTimeout(() => {
                     console.log('其他依赖库检查完成');
@@ -547,7 +653,7 @@
                 }, 500);
             });
         }
-        
+
         // 渲染数学公式
         function renderMathFormulas() {
             if (typeof renderMathInElement !== 'undefined') {
@@ -556,15 +662,15 @@
                         delimiters: [
                             {left: '$$', right: '$$', display: true},
                             {left: '$', right: '$', display: false},
-                            {left: '\\\\[', right: '\\\\]', display: true},
-                            {left: '\\\\(', right: '\\\\)', display: false}
+                            {left: '\\[', right: '\\]', display: true},
+                            {left: '\\(', right: '\\)', display: false}
                         ],
                         throwOnError: false,
                         errorColor: '#cc0000',
                         ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-                        strict: false, // 关闭严格模式，避免中文字符警告
-                        trust: true,   // 信任内容
-                        macros: {      // 添加对中文的支持
+                        strict: false,
+                        trust: true,
+                        macros: {
                             "\\text": "\\textrm"
                         }
                     });
@@ -574,7 +680,7 @@
                 }
             }
         }
-        
+
         // 高亮代码块
         function highlightCodeBlocks() {
             if (typeof hljs !== 'undefined') {
@@ -586,22 +692,18 @@
                 }
             }
         }
-        
-        // 初始化动画 - 只对实际存在的元素执行动画
+
+        // 初始化动画
         function initializeAnimations() {
             if (typeof gsap === 'undefined') {
                 console.log('GSAP未加载，跳过动画');
                 return;
             }
-            
+
             try {
-                // 通用内容动画 - 对所有可见的内容元素执行淡入动画
-                const allVisibleElements = document.querySelectorAll('#chapterContent > *, #chapterContent p, #chapterContent h1, #chapterContent h2, #chapterContent h3, #chapterContent section, #chapterContent div');
+                const allVisibleElements = document.querySelectorAll('.chapter-body > *, .chapter-body p, .chapter-body h1, .chapter-body h2, .chapter-body h3, .chapter-body section, .chapter-body div');
                 if (allVisibleElements.length > 0) {
-                    // 先设置初始状态
                     gsap.set(allVisibleElements, { opacity: 0, y: 20 });
-                    
-                    // 然后执行动画
                     gsap.to(allVisibleElements, {
                         opacity: 1,
                         y: 0,
@@ -609,12 +711,9 @@
                         stagger: 0.05,
                         ease: "power2.out"
                     });
-                    console.log('通用内容动画已执行，元素数量:', allVisibleElements.length);
-                } else {
-                    console.log('未找到需要动画的内容元素');
+                    console.log('内容动画已执行，元素数量:', allVisibleElements.length);
                 }
-                
-                // 检查并执行特定类的动画
+
                 const fadeInElements = document.querySelectorAll('.fade-in');
                 if (fadeInElements.length > 0) {
                     gsap.from('.fade-in', {
@@ -622,9 +721,8 @@
                         duration: 1,
                         stagger: 0.2
                     });
-                    console.log('fade-in动画已执行');
                 }
-                
+
                 const slideUpElements = document.querySelectorAll('.slide-up');
                 if (slideUpElements.length > 0) {
                     gsap.from('.slide-up', {
@@ -633,23 +731,33 @@
                         duration: 0.8,
                         stagger: 0.1
                     });
-                    console.log('slide-up动画已执行');
                 }
-                
+
                 console.log('动画初始化完成');
             } catch (error) {
                 console.warn('动画初始化失败:', error);
             }
         }
-        
+
+        // 显示错误
+        function showError(title, message) {
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            loadingIndicator.innerHTML = `
+                <div class="error-wrapper">
+                    <h2 class="error-title">${title}</h2>
+                    <p class="error-message">${message}</p>
+                    <button class="btn btn-primary" onclick="location.reload()">重新加载</button>
+                </div>
+            `;
+        }
+
         // 加载章节内容
         async function loadChapterContent() {
             const chapterId = getUrlParameter('chapterId');
             const courseId = getUrlParameter('courseId');
 
             if (!chapterId) {
-                document.getElementById('loadingIndicator').innerHTML =
-                    '<div style="text-align: center; color: #e53e3e;"><h2>错误</h2><p>未指定章节ID</p></div>';
+                showError('错误', '未指定章节ID');
                 return;
             }
 
@@ -659,7 +767,7 @@
 
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`/api/content/chapters/${chapterId}`, {
+                const response = await fetch(`${API_BASE}/content/chapters/${chapterId}`, {
                     headers: {
                         'Authorization': token ? `Bearer ${token}` : '',
                         'Content-Type': 'application/json'
@@ -683,14 +791,15 @@
 
                     // 更新页面标题
                     document.title = chapterTitle;
+                    document.getElementById('chapterTitle').textContent = chapterTitle;
 
                     // 插入内容
-                    const contentContainer = document.getElementById('chapterContent');
-                    contentContainer.innerHTML = htmlContent;
+                    const contentBody = document.getElementById('chapterBody');
+                    contentBody.innerHTML = htmlContent;
 
                     // 显示内容
                     document.getElementById('loadingIndicator').style.display = 'none';
-                    contentContainer.style.display = 'block';
+                    document.getElementById('chapterContent').style.display = 'block';
 
                     // 等待一小段时间让内容渲染
                     setTimeout(() => {
@@ -708,46 +817,48 @@
                         }
                     }, 100);
 
-                    // 延迟更长时间再执行动画，确保内容完全渲染和布局完成
+                    // 延迟执行动画
                     setTimeout(() => {
-                        // 初始化动画
                         initializeAnimations();
-                    }, 1000); // 增加延迟到1秒
+                    }, 1000);
 
                 } else if (result.code === 403) {
-                    document.getElementById('loadingIndicator').innerHTML =
-                        '<div style="text-align: center; color: #e53e3e;"><h2>权限不足</h2><p>' + (result.message || '需要购买课程才能查看此章节') + '</p></div>';
+                    showError('权限不足', result.message || '需要购买课程才能查看此章节');
                 } else if (result.code === 401) {
-                    document.getElementById('loadingIndicator').innerHTML =
-                        '<div style="text-align: center; color: #e53e3e;"><h2>需要登录</h2><p>请先登录再查看章节内容</p></div>';
+                    showError('需要登录', '请先登录再查看章节内容');
                 } else {
                     throw new Error(result.message || '获取章节内容失败');
                 }
 
             } catch (error) {
                 console.error('加载章节内容失败:', error);
-                document.getElementById('loadingIndicator').innerHTML =
-                    '<div style="text-align: center; color: #e53e3e;"><h2>加载失败</h2><p>' + error.message + '</p><button onclick="location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #4299e1; color: white; border: none; border-radius: 4px; cursor: pointer;">重新加载</button></div>';
+                showError('加载失败', error.message);
             }
         }
-        
+
         // 页面初始化
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('页面加载完成，开始初始化...');
-            
+
+            // 初始化主题
+            initTheme();
+
+            // 初始化认证
+            initAuth();
+
             // 初始化依赖库
             await initializeDependencies();
             console.log('依赖库初始化完成');
-            
+
             // 加载章节内容
             await loadChapterContent();
         });
-        
+
         // 错误处理
         window.addEventListener('error', function(e) {
             console.error('页面错误:', e.error);
         });
-        
+
         // 未捕获的 Promise 错误
         window.addEventListener('unhandledrejection', function(e) {
             console.error('未处理的 Promise 错误:', e.reason);

@@ -1,0 +1,536 @@
+/**
+ * AI 信息未来 - 简约暗黑主题
+ * Minimal Dark Theme - 性能优化版
+ */
+
+/* === 核心设计变量 === */
+:root {
+    --primary: #6366f1;
+    --primary-light: #818cf8;
+    --primary-dark: #4f46e5;
+    --secondary: #ec4899;
+    --accent: #06b6d4;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --error: #ef4444;
+
+    --bg-base: #0a0a0f;
+    --bg-card: #12121a;
+    --bg-elevated: #1a1a24;
+    --bg-hover: #222230;
+
+    --text-primary: #f4f4f5;
+    --text-secondary: #a1a1aa;
+    --text-muted: #71717a;
+
+    --border-color: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(255, 255, 255, 0.15);
+
+    --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.25s ease;
+}
+
+/* === 全局样式 === */
+body.cosmic-theme {
+    font-family: var(--font-sans);
+    background: var(--bg-base);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* === 简约背景 - 静态渐变，无动画 === */
+.cosmic-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background:
+        radial-gradient(ellipse at top right, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at bottom left, rgba(139, 92, 246, 0.05) 0%, transparent 50%),
+        var(--bg-base);
+    pointer-events: none;
+}
+
+/* 隐藏重型动画元素 */
+.cosmic-stars,
+.cosmic-orb,
+.cosmic-orb-1,
+.cosmic-orb-2,
+.cosmic-orb-3 {
+    display: none !important;
+}
+
+/* === 导航栏 === */
+.cosmic-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 0.875rem 0;
+    background: rgba(10, 10, 15, 0.95);
+    border-bottom: 1px solid var(--border-color);
+    transition: padding var(--transition-fast);
+}
+
+.cosmic-navbar.scrolled {
+    padding: 0.625rem 0;
+    box-shadow: var(--shadow-sm);
+}
+
+.cosmic-nav-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cosmic-logo {
+    font-size: 1.375rem;
+    font-weight: 700;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-decoration: none;
+}
+
+.cosmic-nav-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0.5rem 0.875rem;
+    border-radius: 6px;
+    transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.cosmic-nav-link:hover,
+.cosmic-nav-link.active {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+}
+
+/* === 按钮 === */
+.cosmic-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: var(--font-sans);
+    cursor: pointer;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.cosmic-btn-primary {
+    background: var(--gradient-primary);
+    color: white;
+}
+
+.cosmic-btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.cosmic-btn-secondary {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.cosmic-btn-secondary:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-hover);
+}
+
+.cosmic-btn-ghost {
+    background: transparent;
+    color: var(--primary-light);
+    border: 1px solid var(--primary);
+}
+
+.cosmic-btn-ghost:hover {
+    background: rgba(99, 102, 241, 0.1);
+}
+
+/* === 卡片 === */
+.cosmic-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.25rem;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.cosmic-card:hover {
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow-sm);
+}
+
+.cosmic-card-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+}
+
+/* === 玻璃效果 - 简化版，仅用于重要组件 === */
+.cosmic-glass {
+    background: rgba(18, 18, 26, 0.9);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+}
+
+/* === 表单 === */
+.cosmic-input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    font-family: var(--font-sans);
+    transition: border-color var(--transition-fast);
+}
+
+.cosmic-input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.cosmic-input::placeholder {
+    color: var(--text-muted);
+}
+
+/* === 徽章 === */
+.cosmic-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.cosmic-badge-primary {
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--primary-light);
+}
+
+.cosmic-badge-success {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+}
+
+.cosmic-badge-warning {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+}
+
+/* === 统计 === */
+.cosmic-stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.cosmic-stat-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+}
+
+/* === 进度条 === */
+.cosmic-progress {
+    width: 100%;
+    height: 6px;
+    background: var(--bg-elevated);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.cosmic-progress-bar {
+    height: 100%;
+    background: var(--gradient-primary);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+/* === 头像 === */
+.cosmic-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.cosmic-avatar-lg {
+    width: 64px;
+    height: 64px;
+    font-size: 1.5rem;
+}
+
+.cosmic-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* === 下拉菜单 === */
+.cosmic-dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    min-width: 180px;
+    box-shadow: var(--shadow-md);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: all var(--transition-fast);
+    z-index: 1001;
+}
+
+.cosmic-dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.cosmic-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.625rem 1rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.cosmic-dropdown-item:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.cosmic-dropdown-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 0.25rem 0;
+}
+
+/* === 模态框 === */
+.cosmic-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-normal);
+}
+
+.cosmic-modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.cosmic-modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    max-width: 480px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    transform: scale(0.95);
+    transition: transform var(--transition-normal);
+}
+
+.cosmic-modal-overlay.show .cosmic-modal {
+    transform: scale(1);
+}
+
+.cosmic-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.cosmic-modal-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.cosmic-modal-close {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.cosmic-modal-close:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.cosmic-modal-body {
+    padding: 1.25rem;
+}
+
+/* === 通知 === */
+.cosmic-toast {
+    position: fixed;
+    top: 80px;
+    right: 1.5rem;
+    padding: 0.875rem 1.25rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    transform: translateX(120%);
+    transition: transform var(--transition-normal);
+    z-index: 3000;
+}
+
+.cosmic-toast.show {
+    transform: translateX(0);
+}
+
+/* === 加载 === */
+.cosmic-spinner {
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--border-color);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.cosmic-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    min-height: 150px;
+    color: var(--text-secondary);
+}
+
+/* === 分割线 === */
+.cosmic-divider {
+    display: flex;
+    align-items: center;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.cosmic-divider::before,
+.cosmic-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-color);
+}
+
+.cosmic-divider span {
+    padding: 0 0.75rem;
+}
+
+/* === 文字渐变 === */
+.cosmic-text-gradient {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* === 响应式 === */
+@media (max-width: 768px) {
+    .cosmic-nav-container {
+        padding: 0 1rem;
+    }
+    .cosmic-card {
+        padding: 1rem;
+        border-radius: 10px;
+    }
+    .cosmic-stat-value {
+        font-size: 1.5rem;
+    }
+}
+
+/* === 滚动条 === */
+body.cosmic-theme::-webkit-scrollbar {
+    width: 8px;
+}
+
+body.cosmic-theme::-webkit-scrollbar-track {
+    background: var(--bg-base);
+}
+
+body.cosmic-theme::-webkit-scrollbar-thumb {
+    background: var(--bg-elevated);
+    border-radius: 4px;
+}
+
+body.cosmic-theme::-webkit-scrollbar-thumb:hover {
+    background: var(--bg-hover);
+}
+
+/* === 选择高亮 === */
+::selection {
+    background: rgba(99, 102, 241, 0.25);
+    color: white;
+}

@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>学习中心 - AI未来学院</title>
+    <title>学习中心 - AI 信息未来</title>
+    <link rel="stylesheet" href="../styles/apple-design.css">
     <style>
         body, html {
             margin: 0;
@@ -11,36 +12,59 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: #0f172a;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
-        
+
         #contentContainer {
             width: 100%;
             height: 100%;
             position: relative;
             overflow: hidden;
         }
-        
+
         .loading-container {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            color: white;
-            font-size: 1.5rem;
-            background: #0f172a;
+            background: var(--bg-primary);
+            gap: 20px;
         }
-        
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .loading-text {
+            font-size: 17px;
+            color: var(--text-secondary);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         .content-wrapper {
             width: 100%;
             height: 100%;
             position: relative;
-            background: white;
+            background: var(--bg-primary);
             overflow-y: auto;
+            padding: 80px 22px 40px;
+            transition: background var(--transition-normal);
         }
-        
-        /* 防止右键和选择 */
+
+        .content-inner {
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        /* Content protection */
         .content-wrapper {
             -webkit-user-select: none;
             -moz-user-select: none;
@@ -49,8 +73,7 @@
             -webkit-touch-callout: none;
             -webkit-tap-highlight-color: transparent;
         }
-        
-        /* 防止拖拽 */
+
         .content-wrapper * {
             -webkit-user-drag: none;
             -khtml-user-drag: none;
@@ -58,8 +81,7 @@
             -o-user-drag: none;
             user-drag: none;
         }
-        
-        /* 内容保护覆盖层 */
+
         .protection-overlay {
             position: fixed;
             top: 0;
@@ -70,27 +92,130 @@
             z-index: 9999;
             pointer-events: none;
         }
+
+        /* Error state */
+        .error-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: var(--bg-primary);
+            gap: 20px;
+            padding: 22px;
+            text-align: center;
+        }
+
+        .error-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: rgba(255, 59, 48, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .error-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .error-message {
+            font-size: 17px;
+            color: var(--text-secondary);
+            max-width: 500px;
+        }
+
+        /* Custom scrollbar */
+        .content-wrapper::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .content-wrapper::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        .content-wrapper::-webkit-scrollbar-thumb {
+            background: var(--border-strong);
+            border-radius: 4px;
+        }
+
+        .content-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--text-tertiary);
+        }
     </style>
 </head>
 <body>
-    <div id="loading" class="loading-container">🚀 正在加载章节内容...</div>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="/index.html" class="nav-logo">AI 信息未来</a>
+            <div class="nav-menu">
+                <a href="/index.html" class="nav-link">首页</a>
+                <a href="/src/pages/courses.html" class="nav-link active">课程</a>
+                <a href="/src/pages/community.html" class="nav-link">社区</a>
+                <a href="/src/pages/arena.html" class="nav-link">PK竞技</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="8" cy="8" r="3.5"/>
+                        <path d="M8 1v1M8 14v1M15 8h-1M2 8H1M12.95 12.95l-.7-.7M3.75 3.75l-.7-.7M12.95 3.05l-.7.7M3.75 12.25l-.7.7"/>
+                    </svg>
+                </button>
+                <div class="user-menu" id="userMenu">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Loading State -->
+    <div id="loading" class="loading-container">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">正在加载章节内容...</div>
+    </div>
+
+    <!-- Content Container -->
     <div id="contentContainer" style="display: none;">
-        <div class="content-wrapper" id="contentWrapper"></div>
+        <div class="content-wrapper" id="contentWrapper">
+            <div class="content-inner" id="contentInner"></div>
+        </div>
         <div class="protection-overlay" id="protectionOverlay"></div>
     </div>
 
     <script>
-        // 防调试措施
+        // Theme Management
+        const themeToggle = document.getElementById('themeToggle');
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', currentTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+        });
+
+        // User Avatar
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const userAvatar = document.getElementById('userAvatar');
+        if (user.username) {
+            userAvatar.textContent = user.username.charAt(0).toUpperCase();
+        }
+
+        // Anti-debugging measures
         (function() {
             'use strict';
-            
-            // 禁用右键菜单
+
+            // Disable right-click
             document.addEventListener('contextmenu', function(e) {
                 e.preventDefault();
                 return false;
             });
-            
-            // 禁用F12、Ctrl+Shift+I等开发者工具快捷键
+
+            // Disable developer tools shortcuts
             document.addEventListener('keydown', function(e) {
                 // F12
                 if (e.keyCode === 123) {
@@ -107,31 +232,31 @@
                     e.preventDefault();
                     return false;
                 }
-                // Ctrl+U (查看源代码)
+                // Ctrl+U (view source)
                 if (e.ctrlKey && e.keyCode === 85) {
                     e.preventDefault();
                     return false;
                 }
-                // Ctrl+S (保存)
+                // Ctrl+S (save)
                 if (e.ctrlKey && e.keyCode === 83) {
                     e.preventDefault();
                     return false;
                 }
             });
-            
-            // 检测开发者工具
+
+            // Detect developer tools
             let devtools = {
                 open: false,
                 orientation: null
             };
-            
+
             const threshold = 160;
             setInterval(function() {
-                if (window.outerHeight - window.innerHeight > threshold || 
+                if (window.outerHeight - window.innerHeight > threshold ||
                     window.outerWidth - window.innerWidth > threshold) {
                     if (!devtools.open) {
                         devtools.open = true;
-                        document.body.innerHTML = '<div style="color: white; text-align: center; margin-top: 50vh;">请关闭开发者工具</div>';
+                        showError('请关闭开发者工具');
                     }
                 } else {
                     devtools.open = false;
@@ -139,10 +264,10 @@
             }, 500);
         })();
 
-        // 内容保护的替换函数
+        // Content protection - Replace external libraries
         function replaceExternalLibs(htmlContent) {
-            console.log('🔍 处理外部资源...');
-            
+            console.log('Processing external resources...');
+
             const replacements = {
                 // Cloudflare CDN
                 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css': '/lib/highlightjs/github-dark.min.css',
@@ -157,10 +282,10 @@
                 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js': '/lib/katex/katex.min.js',
                 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js': '/lib/katex/auto-render.min.js'
             };
-            
+
             let modifiedHtml = htmlContent;
             let replacementCount = 0;
-            
+
             for (const [cdnUrl, localUrl] of Object.entries(replacements)) {
                 const beforeReplace = modifiedHtml.length;
                 modifiedHtml = modifiedHtml.split(cdnUrl).join(localUrl);
@@ -168,34 +293,34 @@
                     replacementCount++;
                 }
             }
-            
-            console.log(`📊 处理了 ${replacementCount} 个外部资源`);
+
+            console.log(`Processed ${replacementCount} external resources`);
             return modifiedHtml;
         }
 
-        // 安全内容渲染函数
+        // Secure content rendering
         function renderContentSecurely(htmlContent) {
-            const contentWrapper = document.getElementById('contentWrapper');
-            
-            // 清理内容，移除可能的安全风险
+            const contentInner = document.getElementById('contentInner');
+
+            // Clean content - remove security risks
             const cleanedContent = htmlContent
-                .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '') // 移除内联脚本（保留外部脚本引用）
-                .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '') // 移除事件处理器
-                .replace(/javascript:/gi, 'blocked:'); // 阻止javascript:协议
-            
-            // 直接插入内容到DOM，避免blob方式
-            contentWrapper.innerHTML = cleanedContent;
-            
-            // 重新执行必要的脚本（如highlight.js, KaTeX等）
+                .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '') // Remove inline scripts (keep external script refs)
+                .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '') // Remove event handlers
+                .replace(/javascript:/gi, 'blocked:'); // Block javascript: protocol
+
+            // Insert content directly to DOM
+            contentInner.innerHTML = cleanedContent;
+
+            // Re-execute necessary scripts (highlight.js, KaTeX, etc.)
             setTimeout(() => {
-                // 执行代码高亮
+                // Execute code highlighting
                 if (typeof hljs !== 'undefined') {
                     hljs.highlightAll();
                 }
-                
-                // 执行数学公式渲染
+
+                // Execute math formula rendering
                 if (typeof renderMathInElement !== 'undefined') {
-                    renderMathInElement(contentWrapper, {
+                    renderMathInElement(contentInner, {
                         delimiters: [
                             {left: "$$", right: "$$", display: true},
                             {left: "$", right: "$", display: false}
@@ -205,64 +330,81 @@
             }, 100);
         }
 
-        // 主加载函数
+        // Show error
+        function showError(message) {
+            const loading = document.getElementById('loading');
+            loading.innerHTML = `
+                <div class="error-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="#ff3b30" stroke-width="2">
+                        <circle cx="16" cy="16" r="14"/>
+                        <path d="M16 10v8M16 22v.5"/>
+                    </svg>
+                </div>
+                <div class="error-title">加载失败</div>
+                <div class="error-message">${message}</div>
+                <button class="btn btn-primary" onclick="window.history.back()">返回上一页</button>
+            `;
+            loading.className = 'error-container';
+        }
+
+        // Main loading function
         (async function () {
             const loadingIndicator = document.getElementById('loading');
             const contentContainer = document.getElementById('contentContainer');
-            
+
             try {
                 const urlParams = new URLSearchParams(window.location.search);
                 const chapterId = urlParams.get('chapterId');
                 if (!chapterId) {
                     throw new Error('URL中未找到章节ID (chapterId)');
                 }
-                
+
                 const response = await fetch(`/api/content/chapters/${chapterId}`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
                     }
                 });
-                
+
                 if (!response.ok) {
                     throw new Error(`无法获取章节内容，服务器状态: ${response.status}`);
                 }
-                
+
                 const data = await response.json();
-                
+
                 if (data.code === 200 && data.data && data.data.content && data.data.content.contentHtml) {
                     const originalHtml = data.data.content.contentHtml;
-                    console.log(`📄 获取内容成功`);
-                    
-                    // 替换外部库
+                    console.log('Content loaded successfully');
+
+                    // Replace external libraries
                     const processedHtml = replaceExternalLibs(originalHtml);
-                    
-                    // 安全渲染内容
+
+                    // Secure render content
                     renderContentSecurely(processedHtml);
-                    
-                    // 显示内容
+
+                    // Show content
                     loadingIndicator.style.display = 'none';
                     contentContainer.style.display = 'block';
-                    
-                    console.log('✅ 内容加载完成');
+
+                    console.log('Content rendering complete');
                 } else {
                     throw new Error(data.message || '未找到章节内容');
                 }
-                
+
             } catch (error) {
-                console.error('加载章节失败:', error);
-                loadingIndicator.textContent = `❌ 加载失败: ${error.message}`;
+                console.error('Chapter loading failed:', error);
+                showError(error.message);
             }
         })();
 
-        // 额外的保护措施
+        // Additional protection measures
         window.addEventListener('beforeunload', function() {
-            // 清理敏感数据
+            // Clean sensitive data
             if (window.contentData) {
                 delete window.contentData;
             }
         });
 
-        // 防止通过console访问内容
+        // Prevent access to content via console
         Object.defineProperty(window, 'contentData', {
             get: function() {
                 return undefined;
@@ -272,8 +414,8 @@
             }
         });
     </script>
-    
-    <!-- 预加载必要的库 -->
+
+    <!-- Preload necessary libraries -->
     <link rel="stylesheet" href="/lib/katex/katex.min.css">
     <link rel="stylesheet" href="/lib/highlightjs/github-dark.min.css">
     <script src="/lib/highlightjs/highlight.min.js"></script>

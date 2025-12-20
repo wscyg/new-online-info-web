@@ -3,311 +3,552 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>支付成功 - 未来信息在线教育</title>
-    <link rel="stylesheet" href="../styles/main.css">
+    <title>支付成功 - AI 信息未来</title>
+    <link rel="stylesheet" href="../styles/apple-design.css">
     <style>
-        .success-container {
-            max-width: 600px;
-            margin: 100px auto;
-            padding: 40px;
-            text-align: center;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        /* 页面容器 */
+        .page-wrapper {
+            min-height: 100vh;
+            padding-top: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
+        /* 成功容器 */
+        .success-container {
+            max-width: 580px;
+            width: 100%;
+            margin: 40px auto;
+            padding: 0 22px;
+        }
+
+        /* 成功卡片 */
+        .success-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border-color);
+            padding: 60px 48px;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+        }
+
+        /* 成功图标 */
         .success-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 30px;
-            background: #52c41a;
+            width: 96px;
+            height: 96px;
+            margin: 0 auto 32px;
+            background: linear-gradient(135deg, #34c759 0%, #30d158 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            animation: scaleIn 0.5s ease;
+            animation: scaleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         @keyframes scaleIn {
             from {
-                transform: scale(0);
+                transform: scale(0) rotate(-180deg);
                 opacity: 0;
             }
             to {
-                transform: scale(1);
+                transform: scale(1) rotate(0deg);
                 opacity: 1;
             }
         }
 
         .success-icon svg {
-            width: 50px;
-            height: 50px;
-            fill: white;
+            width: 56px;
+            height: 56px;
+            stroke: white;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
         }
 
+        /* 标题和描述 */
         .success-title {
-            font-size: 28px;
-            color: #333;
-            margin-bottom: 15px;
-            font-weight: 600;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+            margin-bottom: 12px;
         }
 
         .success-message {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 30px;
-            line-height: 1.6;
+            font-size: 17px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 40px;
         }
 
+        /* 订单信息卡片 */
         .order-info {
-            background: #f5f5f5;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin-bottom: 32px;
             text-align: left;
         }
 
         .order-info-item {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 14px;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .order-info-item:last-child {
-            margin-bottom: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .order-info-item:first-child {
+            padding-top: 0;
         }
 
         .order-info-label {
-            color: #999;
+            font-size: 15px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .order-info-label svg {
+            width: 18px;
+            height: 18px;
+            stroke: var(--text-tertiary);
+            stroke-width: 2;
+            fill: none;
         }
 
         .order-info-value {
-            color: #333;
+            font-size: 15px;
+            color: var(--text-primary);
             font-weight: 500;
+            font-variant-numeric: tabular-nums;
         }
 
+        .order-info-value.highlight {
+            color: var(--accent);
+            font-size: 19px;
+            font-weight: 600;
+        }
+
+        /* 操作按钮 */
         .action-buttons {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
-        .btn {
-            padding: 12px 30px;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s;
-            border: none;
+        /* 加载状态 */
+        .loading-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            padding: 20px 0;
         }
 
-        .btn-primary {
-            background: #1890ff;
-            color: white;
+        .loading-text {
+            font-size: 15px;
+            color: var(--text-secondary);
         }
 
-        .btn-primary:hover {
-            background: #40a9ff;
+        .progress-ring {
+            width: 32px;
+            height: 32px;
+            position: relative;
         }
 
-        .btn-secondary {
-            background: white;
-            color: #666;
-            border: 1px solid #d9d9d9;
+        .progress-ring circle {
+            fill: none;
+            stroke: var(--border-color);
+            stroke-width: 3;
         }
 
-        .btn-secondary:hover {
-            color: #1890ff;
-            border-color: #1890ff;
+        .progress-ring .progress {
+            stroke: var(--accent);
+            stroke-dasharray: 94.25;
+            stroke-dashoffset: 94.25;
+            animation: progress 2s linear infinite;
         }
 
-        .loading {
-            color: #999;
-            margin: 20px 0;
+        @keyframes progress {
+            0% { stroke-dashoffset: 94.25; }
+            50% { stroke-dashoffset: 0; }
+            100% { stroke-dashoffset: -94.25; }
         }
 
+        /* 错误消息 */
         .error-message {
-            color: #ff4d4f;
-            margin: 20px 0;
-            padding: 15px;
-            background: #fff2f0;
-            border: 1px solid #ffccc7;
-            border-radius: 5px;
+            background: rgba(255, 59, 48, 0.1);
+            border: 1px solid rgba(255, 59, 48, 0.2);
+            border-radius: var(--radius-md);
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: start;
+            gap: 12px;
+            text-align: left;
+        }
+
+        .error-message svg {
+            width: 20px;
+            height: 20px;
+            stroke: #ff3b30;
+            stroke-width: 2;
+            fill: none;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .error-message-text {
+            font-size: 15px;
+            color: #ff3b30;
+            line-height: 1.5;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .success-card {
+                padding: 48px 32px;
+            }
+
+            .success-title {
+                font-size: 28px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-buttons .btn {
+                width: 100%;
+            }
+        }
+
+        /* 隐藏辅助类 */
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
 <body>
-    <div class="success-container">
-        <div class="success-icon">
-            <svg viewBox="0 0 24 24">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-            </svg>
-        </div>
-        
-        <h1 class="success-title">支付成功！</h1>
-        <p class="success-message">您的订单已支付成功，正在为您激活课程...</p>
-        
-        <div class="order-info" id="orderInfo" style="display: none;">
-            <div class="order-info-item">
-                <span class="order-info-label">订单号：</span>
-                <span class="order-info-value" id="orderNo">-</span>
+    <!-- 导航栏 -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="home.html" class="nav-logo">AI 信息未来</a>
+            <div class="nav-menu">
+                <a href="home.html" class="nav-link">首页</a>
+                <a href="courses.html" class="nav-link">课程</a>
+                <a href="community.html" class="nav-link">社区</a>
+                <a href="pk-arena.html" class="nav-link">PK竞技</a>
             </div>
-            <div class="order-info-item">
-                <span class="order-info-label">支付金额：</span>
-                <span class="order-info-value" id="amount">-</span>
-            </div>
-            <div class="order-info-item">
-                <span class="order-info-label">支付时间：</span>
-                <span class="order-info-value" id="payTime">-</span>
-            </div>
-            <div class="order-info-item">
-                <span class="order-info-label">支付方式：</span>
-                <span class="order-info-value">支付宝</span>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" title="切换主题">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+                <div id="authArea"></div>
             </div>
         </div>
-        
-        <div class="loading" id="loading">
-            正在处理订单，请稍候...
-        </div>
-        
-        <div class="error-message" id="errorMessage" style="display: none;">
-        </div>
-        
-        <div class="action-buttons" id="actionButtons" style="display: none;">
-            <a href="my-courses.html" class="btn btn-primary">查看我的课程</a>
-            <a href="../index.html" class="btn btn-secondary">返回首页</a>
+    </nav>
+
+    <!-- 主内容区域 -->
+    <div class="page-wrapper">
+        <div class="success-container">
+            <div class="success-card">
+                <!-- 成功图标 -->
+                <div class="success-icon">
+                    <svg viewBox="0 0 24 24">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
+
+                <!-- 标题和描述 -->
+                <h1 class="success-title">支付成功</h1>
+                <p class="success-message" id="successMessage">您的订单已支付成功，正在为您激活课程...</p>
+
+                <!-- 加载状态 -->
+                <div class="loading-state" id="loadingState">
+                    <svg class="progress-ring" viewBox="0 0 36 36">
+                        <circle cx="18" cy="18" r="15"></circle>
+                        <circle class="progress" cx="18" cy="18" r="15"></circle>
+                    </svg>
+                    <div class="loading-text" id="loadingText">正在确认支付状态...</div>
+                </div>
+
+                <!-- 错误消息 -->
+                <div class="error-message hidden" id="errorMessage">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <div class="error-message-text" id="errorMessageText"></div>
+                </div>
+
+                <!-- 订单信息 -->
+                <div class="order-info hidden" id="orderInfo">
+                    <div class="order-info-item">
+                        <span class="order-info-label">
+                            <svg viewBox="0 0 24 24">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            订单号
+                        </span>
+                        <span class="order-info-value" id="orderNo">-</span>
+                    </div>
+                    <div class="order-info-item">
+                        <span class="order-info-label">
+                            <svg viewBox="0 0 24 24">
+                                <line x1="12" y1="1" x2="12" y2="23"></line>
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                            </svg>
+                            支付金额
+                        </span>
+                        <span class="order-info-value highlight" id="amount">-</span>
+                    </div>
+                    <div class="order-info-item">
+                        <span class="order-info-label">
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            支付时间
+                        </span>
+                        <span class="order-info-value" id="payTime">-</span>
+                    </div>
+                    <div class="order-info-item">
+                        <span class="order-info-label">
+                            <svg viewBox="0 0 24 24">
+                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                                <line x1="1" y1="10" x2="23" y2="10"></line>
+                            </svg>
+                            支付方式
+                        </span>
+                        <span class="order-info-value">支付宝</span>
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="action-buttons hidden" id="actionButtons">
+                    <a href="my-courses.html" class="btn btn-primary">查看我的课程</a>
+                    <a href="home.html" class="btn btn-secondary">返回首页</a>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
+        const API_BASE = '/api';
+
+        // 主题切换
+        function initTheme() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+            updateThemeIcon(theme);
+        }
+
+        function updateThemeIcon(theme) {
+            const themeToggle = document.getElementById('themeToggle');
+            if (!themeToggle) return;
+
+            const icon = theme === 'dark'
+                ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>'
+                : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+            themeToggle.innerHTML = icon;
+        }
+
+        document.getElementById('themeToggle')?.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        // 初始化用户信息
+        function initAuth() {
+            const token = localStorage.getItem('token');
+            const authArea = document.getElementById('authArea');
+            if (!authArea) return;
+
+            if (token) {
+                const username = localStorage.getItem('username') || '用户';
+                authArea.innerHTML = `
+                    <div class="user-menu">
+                        <div class="user-avatar" onclick="location.href='dashboard.html'">
+                            ${username.charAt(0).toUpperCase()}
+                        </div>
+                    </div>
+                `;
+            } else {
+                authArea.innerHTML = `
+                    <a href="login.html" class="btn btn-secondary btn-sm">登录</a>
+                `;
+            }
+        }
+
         // 获取URL参数
         const urlParams = new URLSearchParams(window.location.search);
         const orderNo = urlParams.get('out_trade_no');
         const totalAmount = urlParams.get('total_amount');
         const tradeNo = urlParams.get('trade_no');
-        
+
+        // DOM 元素
+        const elements = {
+            loadingState: document.getElementById('loadingState'),
+            loadingText: document.getElementById('loadingText'),
+            errorMessage: document.getElementById('errorMessage'),
+            errorMessageText: document.getElementById('errorMessageText'),
+            orderInfo: document.getElementById('orderInfo'),
+            actionButtons: document.getElementById('actionButtons'),
+            successMessage: document.getElementById('successMessage'),
+            orderNo: document.getElementById('orderNo'),
+            amount: document.getElementById('amount'),
+            payTime: document.getElementById('payTime')
+        };
+
+        // 显示错误
+        function showError(message) {
+            elements.loadingState.classList.add('hidden');
+            elements.errorMessageText.textContent = message;
+            elements.errorMessage.classList.remove('hidden');
+            elements.actionButtons.classList.remove('hidden');
+        }
+
+        // 显示成功
+        function showSuccess(isBundle = false) {
+            elements.loadingState.classList.add('hidden');
+            elements.orderInfo.classList.remove('hidden');
+            elements.actionButtons.classList.remove('hidden');
+
+            const message = isBundle
+                ? '您的课程包已激活成功，包内所有课程已解锁！'
+                : '您的课程已激活成功，现在可以开始学习了！';
+            elements.successMessage.textContent = message;
+        }
+
+        // 格式化时间
+        function formatTime(date) {
+            const pad = (n) => String(n).padStart(2, '0');
+            return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+        }
+
         // 显示订单信息
-        if (orderNo) {
-            document.getElementById('orderNo').textContent = orderNo;
-            document.getElementById('orderInfo').style.display = 'block';
+        function displayOrderInfo() {
+            if (orderNo) {
+                elements.orderNo.textContent = orderNo;
+            }
+
+            if (totalAmount) {
+                elements.amount.textContent = '¥' + totalAmount;
+            }
+
+            elements.payTime.textContent = formatTime(new Date());
         }
-        
-        if (totalAmount) {
-            document.getElementById('amount').textContent = '¥' + totalAmount;
-        }
-        
-        // 显示支付时间
-        const now = new Date();
-        const timeStr = now.getFullYear() + '-' + 
-                       String(now.getMonth() + 1).padStart(2, '0') + '-' + 
-                       String(now.getDate()).padStart(2, '0') + ' ' + 
-                       String(now.getHours()).padStart(2, '0') + ':' + 
-                       String(now.getMinutes()).padStart(2, '0') + ':' + 
-                       String(now.getSeconds()).padStart(2, '0');
-        document.getElementById('payTime').textContent = timeStr;
-        
+
         // 检查订单状态
         let checkAttempts = 0;
-        const maxAttempts = 10; // 最多重试10次
-        
+        const maxAttempts = 10;
+
         async function checkOrderStatus() {
             if (!orderNo) {
-                showError('订单号不存在');
+                showError('订单号不存在，请检查支付链接是否正确');
                 return;
             }
-            
+
             checkAttempts++;
-            
+            elements.loadingText.textContent = `正在确认支付状态 (${checkAttempts}/${maxAttempts})...`;
+
             try {
                 const token = localStorage.getItem('token');
-                const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:8070' : '';
-                const response = await fetch(`${apiUrl}/api/payment/status/${orderNo}`, {
+                const response = await fetch(`${API_BASE}/payment/status/${orderNo}`, {
                     headers: {
-                        'Authorization': token ? `Bearer ${token}` : ''
+                        'Authorization': token ? `Bearer ${token}` : '',
+                        'Content-Type': 'application/json'
                     }
                 });
-                
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
                 const data = await response.json();
-                
+
                 if (data.code === 200 && data.data) {
                     const status = data.data.tradeStatus || data.data.status;
-                    
+
                     if (status === 'TRADE_SUCCESS' || status === 'TRADE_FINISHED' || status === 'success') {
                         // 支付成功
-                        document.getElementById('loading').style.display = 'none';
-                        document.getElementById('actionButtons').style.display = 'flex';
-                        
-                        // 检查是否是课程包订阅
-                        if (orderNo.startsWith('BU')) {
-                            document.querySelector('.success-message').textContent = 
-                                '您的课程包已激活成功，包内所有课程已解锁！';
-                        } else {
-                            document.querySelector('.success-message').textContent = 
-                                '您的课程已激活成功，现在可以开始学习了！';
-                        }
+                        displayOrderInfo();
+                        showSuccess(orderNo.startsWith('BU'));
                     } else if (status === 'WAIT_BUYER_PAY' || status === 'pending') {
-                        // 等待支付或处理中，继续重试
+                        // 等待支付，继续重试
                         if (checkAttempts < maxAttempts) {
-                            document.getElementById('loading').textContent = `正在处理订单，请稍候...(${checkAttempts}/${maxAttempts})`;
-                            setTimeout(() => {
-                                checkOrderStatus();
-                            }, 3000); // 3秒后重试
+                            setTimeout(checkOrderStatus, 3000);
                         } else {
                             showError('订单处理超时，请刷新页面重试或联系客服');
                         }
                     } else {
-                        // 支付状态异常
                         showError('订单状态异常，请联系客服处理');
                     }
                 } else {
-                    // API返回错误，可能是订单还在处理中
+                    // API返回错误，可能订单还在处理中
                     if (checkAttempts < maxAttempts) {
-                        document.getElementById('loading').textContent = `正在确认支付状态...(${checkAttempts}/${maxAttempts})`;
-                        setTimeout(() => {
-                            checkOrderStatus();
-                        }, 3000); // 3秒后重试
+                        setTimeout(checkOrderStatus, 3000);
                     } else {
                         showError('获取订单状态失败，请刷新页面重试');
                     }
                 }
             } catch (error) {
                 console.error('检查订单状态失败:', error);
+
                 if (checkAttempts < maxAttempts) {
-                    document.getElementById('loading').textContent = `网络请求失败，重试中...(${checkAttempts}/${maxAttempts})`;
-                    setTimeout(() => {
-                        checkOrderStatus();
-                    }, 3000); // 3秒后重试
+                    elements.loadingText.textContent = `网络请求失败，重试中 (${checkAttempts}/${maxAttempts})...`;
+                    setTimeout(checkOrderStatus, 3000);
                 } else {
-                    showError('网络错误，请刷新页面重试');
+                    showError('网络错误，请检查网络连接后刷新页面重试');
                 }
             }
         }
-        
-        function showError(message) {
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('errorMessage').textContent = message;
-            document.getElementById('errorMessage').style.display = 'block';
-            document.getElementById('actionButtons').style.display = 'flex';
+
+        // 保存支付信息
+        function savePaymentInfo() {
+            if (orderNo) {
+                const paymentSuccess = {
+                    orderNo,
+                    amount: totalAmount,
+                    tradeNo,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem('lastPaymentSuccess', JSON.stringify(paymentSuccess));
+            }
         }
-        
-        // 延迟执行，确保订单已处理
-        setTimeout(() => {
-            checkOrderStatus();
-        }, 2000);
-        
-        // 保存支付成功信息到localStorage
-        if (orderNo) {
-            const paymentSuccess = {
-                orderNo: orderNo,
-                amount: totalAmount,
-                tradeNo: tradeNo,
-                timestamp: Date.now()
-            };
-            localStorage.setItem('lastPaymentSuccess', JSON.stringify(paymentSuccess));
-        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            initAuth();
+            displayOrderInfo();
+            savePaymentInfo();
+
+            // 延迟2秒后开始检查订单状态
+            setTimeout(() => {
+                checkOrderStatus();
+            }, 2000);
+        });
     </script>
 </body>
 </html>

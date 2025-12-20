@@ -3,49 +3,552 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>学习计划 - AI未来学院</title>
-    <link rel="stylesheet" href="../styles/main.css">
-    <link rel="stylesheet" href="../styles/study-plan.css">
+    <title>学习计划 - AI 信息未来</title>
+    <link rel="stylesheet" href="../styles/apple-design.css">
+    <style>
+        /* 页面布局 */
+        body {
+            padding-top: 48px;
+        }
+
+        .main-content {
+            padding: 48px 0;
+        }
+
+        /* 页头 */
+        .page-header {
+            padding: 40px 0 32px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .page-title {
+            font-size: 40px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* 日历区域 */
+        .calendar-section {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .calendar-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+            font-size: 18px;
+        }
+
+        .btn-icon:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            color: var(--text-secondary);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .calendar-day:hover {
+            background: var(--bg-hover);
+        }
+
+        .calendar-day.today {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .calendar-day.has-plan {
+            background: rgba(0, 113, 227, 0.1);
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .calendar-day.selected {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        /* 计划列表 */
+        .daily-plans {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .daily-plans h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+        }
+
+        .plans-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .plan-item {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            transition: all var(--transition-fast);
+        }
+
+        .plan-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .plan-item h4 {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .plan-item p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .plan-progress {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: var(--bg-hover);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 3px;
+            transition: width var(--transition-normal);
+        }
+
+        .plan-progress span {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        /* 目标和统计 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            padding: 32px;
+        }
+
+        .stat-card h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+        }
+
+        .goal-card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .goal-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .goal-card h3 {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .goal-progress {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .goal-progress span {
+            font-size: 15px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .stats-items {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+        }
+
+        .stat-label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity var(--transition-normal);
+        }
+
+        .modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            transform: scale(0.95);
+            transition: transform var(--transition-normal);
+        }
+
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 24px 24px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-hover);
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all var(--transition-fast);
+        }
+
+        .modal-close:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            font-family: var(--font-sans);
+            font-size: 17px;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            padding: 16px 24px 24px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+        }
+
+        .empty-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            background: var(--bg-hover);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: var(--text-tertiary);
+        }
+
+        .empty-text {
+            font-size: 17px;
+            color: var(--text-secondary);
+        }
+
+        /* SVG 图标 */
+        .icon {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 32px;
+            }
+
+            .calendar-section,
+            .daily-plans,
+            .stat-card {
+                padding: 24px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-items {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
 </head>
 <body>
-    <header class="page-header">
-        <div class="container">
-            <h1>学习计划</h1>
-            <button class="btn btn-primary" onclick="createPlan()">创建计划</button>
+    <!-- 导航栏 -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="/" class="nav-logo">AI 信息未来</a>
+            <div class="nav-menu">
+                <a href="/src/pages/index.html" class="nav-link">首页</a>
+                <a href="/src/pages/courses.html" class="nav-link">课程</a>
+                <a href="/src/pages/community.html" class="nav-link">社区</a>
+                <a href="/src/pages/arena.html" class="nav-link">PK竞技</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+                <div id="userSection"></div>
+            </div>
         </div>
-    </header>
+    </nav>
 
-    <div class="container">
-        <div class="plan-container">
-            <!-- Calendar View -->
+    <main class="main-content">
+        <div class="container">
+            <!-- 页头 -->
+            <div class="page-header">
+                <div class="header-content">
+                    <h1 class="page-title">学习计划</h1>
+                    <button class="btn btn-primary" onclick="createPlan()">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        创建计划
+                    </button>
+                </div>
+            </div>
+
+            <!-- 日历视图 -->
             <section class="calendar-section">
                 <div class="calendar-header">
-                    <button class="btn btn-icon" onclick="previousMonth()">←</button>
                     <h2 id="currentMonth">2024年8月</h2>
-                    <button class="btn btn-icon" onclick="nextMonth()">→</button>
+                    <div class="calendar-nav">
+                        <button class="btn-icon" onclick="previousMonth()" aria-label="上个月">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                        </button>
+                        <button class="btn-icon" onclick="nextMonth()" aria-label="下个月">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
                 <div class="calendar-grid" id="calendarGrid">
                     <!-- Calendar will be rendered here -->
                 </div>
             </section>
 
-            <!-- Daily Plans -->
+            <!-- 今日计划 -->
             <section class="daily-plans">
                 <h2>今日计划 <span id="selectedDate"></span></h2>
                 <div class="plans-list" id="plansList">
-                    <!-- Plans will be loaded here -->
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <svg class="icon" viewBox="0 0 24 24" style="width: 32px; height: 32px;">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                        </div>
+                        <p class="empty-text">暂无学习计划</p>
+                    </div>
                 </div>
             </section>
 
-            <!-- Study Goals -->
-            <section class="study-goals">
-                <h2>学习目标</h2>
-                <div class="goals-grid">
+            <!-- 目标和统计 -->
+            <div class="stats-grid">
+                <!-- 学习目标 -->
+                <div class="stat-card">
+                    <h2>学习目标</h2>
                     <div class="goal-card">
                         <h3>本周目标</h3>
                         <div class="goal-progress">
                             <div class="progress-bar">
-                                <div class="progress-fill" id="weekProgress"></div>
+                                <div class="progress-fill" id="weekProgress" style="width: 0%"></div>
                             </div>
                             <span id="weekProgressText">0/5 天</span>
                         </div>
@@ -54,47 +557,56 @@
                         <h3>本月目标</h3>
                         <div class="goal-progress">
                             <div class="progress-bar">
-                                <div class="progress-fill" id="monthProgress"></div>
+                                <div class="progress-fill" id="monthProgress" style="width: 0%"></div>
                             </div>
                             <span id="monthProgressText">0/20 天</span>
                         </div>
                     </div>
                 </div>
-            </section>
 
-            <!-- Statistics -->
-            <section class="plan-statistics">
-                <h2>学习统计</h2>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <span class="stat-label">总计划数</span>
-                        <span class="stat-value" id="totalPlans">0</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">已完成</span>
-                        <span class="stat-value" id="completedPlans">0</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">完成率</span>
-                        <span class="stat-value" id="completionRate">0%</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">连续天数</span>
-                        <span class="stat-value" id="streakDays">0</span>
+                <!-- 学习统计 -->
+                <div class="stat-card">
+                    <h2>学习统计</h2>
+                    <div class="stats-items">
+                        <div class="stat-item">
+                            <span class="stat-label">总计划数</span>
+                            <span class="stat-value" id="totalPlans">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">已完成</span>
+                            <span class="stat-value" id="completedPlans">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">完成率</span>
+                            <span class="stat-value" id="completionRate">0%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">连续天数</span>
+                            <span class="stat-value" id="streakDays">0</span>
+                        </div>
                     </div>
                 </div>
-            </section>
+            </div>
         </div>
+    </main>
 
-        <!-- Create/Edit Plan Modal -->
-        <div class="modal" id="planModal">
-            <div class="modal-content">
-                <span class="modal-close" onclick="closePlanModal()">&times;</span>
-                <h2 id="modalTitle">创建学习计划</h2>
-                <form id="planForm">
+    <!-- 创建/编辑计划模态框 -->
+    <div class="modal" id="planModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">创建学习计划</h2>
+                <button class="modal-close" onclick="closePlanModal()">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <form id="planForm">
+                <div class="modal-body">
                     <div class="form-group">
                         <label for="planTitle">计划标题</label>
-                        <input type="text" id="planTitle" required>
+                        <input type="text" id="planTitle" required placeholder="输入计划标题">
                     </div>
                     <div class="form-group">
                         <label for="planCourse">选择课程</label>
@@ -116,27 +628,161 @@
                     </div>
                     <div class="form-group">
                         <label for="planDescription">计划描述</label>
-                        <textarea id="planDescription" rows="3"></textarea>
+                        <textarea id="planDescription" rows="3" placeholder="简要描述学习计划"></textarea>
                     </div>
-                    <div class="modal-actions">
-                        <button type="button" class="btn btn-secondary" onclick="closePlanModal()">取消</button>
-                        <button type="submit" class="btn btn-primary">保存</button>
-                    </div>
-                </form>
-            </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closePlanModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
         </div>
     </div>
 
     <script>
         // 全局变量
         let studyPlans = [];
+        let currentDate = new Date();
+        let selectedDate = new Date();
         const API_BASE = '/api';
 
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
+            initUserSection();
+            renderCalendar();
             loadStudyPlans();
             loadStudyStats();
+            updateSelectedDate();
         });
+
+        // 主题切换
+        function initTheme() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // 用户区域初始化
+        function initUserSection() {
+            const userSection = document.getElementById('userSection');
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+            if (token && user.username) {
+                userSection.innerHTML = `
+                    <div class="user-avatar" onclick="toggleUserMenu()">
+                        ${user.username.charAt(0).toUpperCase()}
+                    </div>
+                `;
+            } else {
+                userSection.innerHTML = `
+                    <a href="/src/pages/login.html" class="btn btn-secondary btn-sm">登录</a>
+                `;
+            }
+        }
+
+        // 渲染日历
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+
+            // 更新月份标题
+            document.getElementById('currentMonth').textContent =
+                `${year}年${month + 1}月`;
+
+            // 获取当月第一天和最后一天
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startDay = firstDay.getDay();
+
+            const calendarGrid = document.getElementById('calendarGrid');
+            calendarGrid.innerHTML = '';
+
+            // 添加星期标题
+            const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
+            weekDays.forEach(day => {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = day;
+                dayElement.style.fontWeight = '600';
+                dayElement.style.cursor = 'default';
+                calendarGrid.appendChild(dayElement);
+            });
+
+            // 添加空白天数
+            for (let i = 0; i < startDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day';
+                calendarGrid.appendChild(emptyDay);
+            }
+
+            // 添加日期
+            const today = new Date();
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = day;
+
+                const date = new Date(year, month, day);
+
+                // 标记今天
+                if (date.toDateString() === today.toDateString()) {
+                    dayElement.classList.add('today');
+                }
+
+                // 标记选中日期
+                if (date.toDateString() === selectedDate.toDateString()) {
+                    dayElement.classList.add('selected');
+                }
+
+                // 检查是否有计划
+                const hasPlans = studyPlans.some(plan => {
+                    const planDate = new Date(plan.date || plan.planDate);
+                    return planDate.toDateString() === date.toDateString();
+                });
+
+                if (hasPlans) {
+                    dayElement.classList.add('has-plan');
+                }
+
+                dayElement.onclick = () => selectDate(date);
+                calendarGrid.appendChild(dayElement);
+            }
+        }
+
+        // 选择日期
+        function selectDate(date) {
+            selectedDate = date;
+            renderCalendar();
+            updateSelectedDate();
+            loadDailyPlans();
+        }
+
+        // 更新选中日期显示
+        function updateSelectedDate() {
+            const dateStr = `${selectedDate.getMonth() + 1}月${selectedDate.getDate()}日`;
+            document.getElementById('selectedDate').textContent = dateStr;
+        }
+
+        // 上一个月
+        function previousMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        }
+
+        // 下一个月
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        }
 
         // 加载学习计划
         async function loadStudyPlans() {
@@ -157,12 +803,53 @@
                     const data = await response.json();
                     if (data.code === 200 && data.data) {
                         studyPlans = data.data;
-                        renderStudyPlans(data.data);
+                        renderCalendar();
+                        loadDailyPlans();
                     }
                 }
             } catch (error) {
                 console.error('加载学习计划失败:', error);
             }
+        }
+
+        // 加载今日计划
+        function loadDailyPlans() {
+            const plansList = document.getElementById('plansList');
+
+            const dailyPlans = studyPlans.filter(plan => {
+                const planDate = new Date(plan.date || plan.planDate);
+                return planDate.toDateString() === selectedDate.toDateString();
+            });
+
+            if (!dailyPlans || dailyPlans.length === 0) {
+                plansList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <svg class="icon" viewBox="0 0 24 24" style="width: 32px; height: 32px;">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                        </div>
+                        <p class="empty-text">暂无学习计划</p>
+                    </div>
+                `;
+                return;
+            }
+
+            plansList.innerHTML = dailyPlans.map(plan => `
+                <div class="plan-item">
+                    <h4>${plan.title || plan.name}</h4>
+                    <p>${plan.description || ''}</p>
+                    <div class="plan-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${plan.progress || 0}%"></div>
+                        </div>
+                        <span>${plan.progress || 0}%</span>
+                    </div>
+                </div>
+            `).join('');
         }
 
         // 加载学习统计
@@ -188,45 +875,119 @@
             }
         }
 
-        // 渲染学习计划
-        function renderStudyPlans(plans) {
-            const plansList = document.getElementById('plansList');
-            if (!plans || plans.length === 0) {
-                plansList.innerHTML = '<p style="text-align:center;color:#999;">暂无学习计划</p>';
-                return;
-            }
-
-            plansList.innerHTML = plans.map(plan => `
-                <div class="plan-item">
-                    <h4>${plan.title || plan.name}</h4>
-                    <p>${plan.description || ''}</p>
-                    <div class="plan-progress">
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${plan.progress || 0}%"></div>
-                        </div>
-                        <span>${plan.progress || 0}%</span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
         // 更新统计
         function updateStats(stats) {
             document.getElementById('totalPlans').textContent = stats.total || 0;
             document.getElementById('completedPlans').textContent = stats.completed || 0;
             document.getElementById('completionRate').textContent = (stats.completionRate || 0) + '%';
             document.getElementById('streakDays').textContent = stats.streakDays || 0;
+
+            // 更新周目标进度
+            const weekProgress = (stats.weekDays || 0) / 5 * 100;
+            document.getElementById('weekProgress').style.width = weekProgress + '%';
+            document.getElementById('weekProgressText').textContent = `${stats.weekDays || 0}/5 天`;
+
+            // 更新月目标进度
+            const monthProgress = (stats.monthDays || 0) / 20 * 100;
+            document.getElementById('monthProgress').style.width = monthProgress + '%';
+            document.getElementById('monthProgressText').textContent = `${stats.monthDays || 0}/20 天`;
         }
 
         // 创建计划
         function createPlan() {
-            document.getElementById('planModal').style.display = 'flex';
+            const modal = document.getElementById('planModal');
+            modal.classList.add('show');
+
+            // 设置默认日期为选中日期
+            const dateStr = selectedDate.toISOString().split('T')[0];
+            document.getElementById('planDate').value = dateStr;
+
+            // 加载课程列表
+            loadCourses();
+        }
+
+        // 加载课程列表
+        async function loadCourses() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/courses`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.code === 200 && data.data) {
+                        const courseSelect = document.getElementById('planCourse');
+                        courseSelect.innerHTML = '<option value="">请选择课程</option>' +
+                            data.data.map(course =>
+                                `<option value="${course.id}">${course.title || course.name}</option>`
+                            ).join('');
+                    }
+                }
+            } catch (error) {
+                console.error('加载课程列表失败:', error);
+            }
         }
 
         // 关闭模态框
         function closePlanModal() {
-            document.getElementById('planModal').style.display = 'none';
+            const modal = document.getElementById('planModal');
+            modal.classList.remove('show');
+            document.getElementById('planForm').reset();
         }
+
+        // 提交计划表单
+        document.getElementById('planForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('请先登录');
+                return;
+            }
+
+            const formData = {
+                title: document.getElementById('planTitle').value,
+                courseId: document.getElementById('planCourse').value,
+                planDate: document.getElementById('planDate').value,
+                duration: document.getElementById('planTime').value,
+                reminderTime: document.getElementById('planReminder').value,
+                description: document.getElementById('planDescription').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/study-plans`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.code === 200) {
+                        closePlanModal();
+                        loadStudyPlans();
+                        loadStudyStats();
+                    }
+                }
+            } catch (error) {
+                console.error('创建计划失败:', error);
+            }
+        });
+
+        // 点击模态框背景关闭
+        document.getElementById('planModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePlanModal();
+            }
+        });
     </script>
 </body>
 </html>

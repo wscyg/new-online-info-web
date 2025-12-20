@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>积分商城 - AI 信息未来</title>
+    
+    <style>
+        /* Hero Section */
+        .shop-hero {
+            padding: 120px 0 80px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .shop-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .shop-hero-content {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 60px;
+            align-items: center;
+        }
+        @media (max-width: 968px) {
+            .shop-hero-content { grid-template-columns: 1fr; text-align: center; }
+        }
+        .shop-hero-text h1 {
+            font-size: 56px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 16px;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+        .shop-hero-text p {
+            font-size: 20px;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 32px;
+        }
+        .hero-stats {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+        @media (max-width: 968px) {
+            .hero-stats { justify-content: center; }
+        }
+        .hero-stat {
+            text-align: left;
+        }
+        @media (max-width: 968px) {
+            .hero-stat { text-align: center; }
+        }
+        .hero-stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: #fff;
+        }
+        .hero-stat-label {
+            font-size: 14px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        /* Points Balance Card */
+        .points-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 32px;
+            min-width: 320px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        .points-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .points-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .points-icon svg {
+            width: 24px;
+            height: 24px;
+            color: #fff;
+        }
+        .points-card-title {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+        .points-balance {
+            font-size: 48px;
+            font-weight: 800;
+            color: #1a1a1a;
+            line-height: 1;
+            margin-bottom: 24px;
+        }
+        .points-balance span {
+            font-size: 18px;
+            color: #888;
+            font-weight: 500;
+        }
+        .points-actions {
+            display: flex;
+            gap: 12px;
+        }
+        .points-action-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: none;
+        }
+        .points-action-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+        .points-action-btn.primary {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #fff;
+        }
+        .points-action-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(245,158,11,0.4);
+        }
+        .points-action-btn.secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        .points-action-btn.secondary:hover {
+            background: #e5e7eb;
+        }
+
+        /* Earn Points Section */
+        .earn-section {
+            padding: 60px 0;
+            background: var(--bg-secondary);
+        }
+        .earn-title {
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .earn-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+        @media (max-width: 1024px) { .earn-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 640px) { .earn-grid { grid-template-columns: 1fr; } }
+        .earn-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 28px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .earn-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+        }
+        .earn-card-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+        .earn-card-icon svg {
+            width: 32px;
+            height: 32px;
+            color: #fff;
+        }
+        .earn-card-icon.checkin { background: linear-gradient(135deg, #10b981, #059669); }
+        .earn-card-icon.study { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+        .earn-card-icon.pk { background: linear-gradient(135deg, #f43f5e, #e11d48); }
+        .earn-card-icon.share { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .earn-card-title {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .earn-card-points {
+            font-size: 24px;
+            font-weight: 800;
+            color: #f59e0b;
+            margin-bottom: 8px;
+        }
+        .earn-card-desc {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        /* Shop Section */
+        .shop-section {
+            padding: 60px 0 100px;
+        }
+        .shop-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .shop-title {
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .shop-filters {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 10px 20px;
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 500;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .filter-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+        .sort-select {
+            padding: 10px 16px;
+            border-radius: 100px;
+            font-size: 14px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        /* Product Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+        @media (max-width: 1200px) { .products-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 900px) { .products-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 540px) { .products-grid { grid-template-columns: 1fr; } }
+
+        /* Product Card */
+        .product-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+        }
+        .product-badge {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 2;
+        }
+        .product-badge.hot {
+            background: linear-gradient(135deg, #f43f5e, #e11d48);
+            color: #fff;
+        }
+        .product-badge.new {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+        }
+        .product-badge.limited {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: #fff;
+        }
+        .product-image {
+            aspect-ratio: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        .product-image-bg {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .product-image-bg.course { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+        .product-image-bg.vip { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+        .product-image-bg.gift { background: linear-gradient(135deg, #f43f5e, #ec4899); }
+        .product-image-bg.virtual { background: linear-gradient(135deg, #10b981, #14b8a6); }
+        .product-image-bg svg {
+            width: 80px;
+            height: 80px;
+            color: rgba(255,255,255,0.9);
+        }
+        .product-stock {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            padding: 6px 12px;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            font-size: 12px;
+            color: #fff;
+        }
+        .product-stock.low {
+            background: rgba(239,68,68,0.9);
+        }
+        .product-content {
+            padding: 20px;
+        }
+        .product-category {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .product-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        .product-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .product-price {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .product-price-icon {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .product-price-icon svg {
+            width: 14px;
+            height: 14px;
+            color: #fff;
+        }
+        .product-price-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #f59e0b;
+        }
+        .product-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .product-btn.exchange {
+            background: var(--accent);
+            color: #fff;
+        }
+        .product-btn.exchange:hover {
+            transform: scale(1.05);
+        }
+        .product-btn.disabled {
+            background: var(--bg-tertiary);
+            color: var(--text-tertiary);
+            cursor: not-allowed;
+        }
+        .product-btn.soldout {
+            background: #fee2e2;
+            color: #ef4444;
+            cursor: not-allowed;
+        }
+
+        /* Exchange History */
+        .history-section {
+            padding: 60px 0;
+            background: var(--bg-secondary);
+        }
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+        .history-title {
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .history-link {
+            font-size: 15px;
+            color: var(--accent);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .history-link svg {
+            width: 18px;
+            height: 18px;
+        }
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .history-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+        .history-item:hover {
+            border-color: var(--accent);
+        }
+        .history-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .history-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .history-icon svg {
+            width: 24px;
+            height: 24px;
+            color: #fff;
+        }
+        .history-icon.course { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+        .history-icon.vip { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+        .history-icon.gift { background: linear-gradient(135deg, #f43f5e, #ec4899); }
+        .history-details h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .history-details p {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+        .history-points {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ef4444;
+        }
+        .history-status {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .history-status.completed {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+        .history-status.pending {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            grid-column: 1 / -1;
+        }
+        .empty-icon {
+            width: 120px;
+            height: 120px;
+            background: var(--bg-secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+        .empty-icon svg {
+            width: 56px;
+            height: 56px;
+            color: var(--text-tertiary);
+        }
+        .empty-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .empty-desc {
+            color: var(--text-secondary);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .modal-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+        }
+        .modal-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+        .modal-icon.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        .modal-icon.confirm {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        }
+        .modal-icon svg {
+            width: 40px;
+            height: 40px;
+            color: #fff;
+        }
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .modal-desc {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        .modal-btn {
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+        .modal-btn.primary {
+            background: var(--accent);
+            color: #fff;
+        }
+        .modal-btn.primary:hover {
+            transform: translateY(-2px);
+        }
+        .modal-btn.secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        .modal-btn.secondary:hover {
+            background: var(--bg-tertiary);
+        }
+
+        /* Confetti Animation */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+            z-index: 1001;
+        }
+
+        /* Loading */
+        .loading-skeleton {
+            background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-tertiary) 50%, var(--bg-secondary) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 20px;
+            aspect-ratio: 1;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+  <link rel="stylesheet" href="/assets/apple-design-3a23e109.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="home.html" class="nav-logo">AI 信息未来</a>
+            <div class="nav-menu">
+                <a href="home.html" class="nav-link">首页</a>
+                <a href="courses.html" class="nav-link">课程</a>
+                <a href="pk-arena.html" class="nav-link">PK竞技</a>
+                <a href="community.html" class="nav-link">社区</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle">
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                    </svg>
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+                <div id="authArea"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="shop-hero">
+        <div class="container-wide">
+            <div class="shop-hero-content">
+                <div class="shop-hero-text">
+                    <h1>积分商城</h1>
+                    <p>用学习积累的积分，兑换心仪的好礼</p>
+                    <div class="hero-stats">
+                        <div class="hero-stat">
+                            <div class="hero-stat-value" id="totalItems">0</div>
+                            <div class="hero-stat-label">精选商品</div>
+                        </div>
+                        <div class="hero-stat">
+                            <div class="hero-stat-value" id="totalExchanges">0</div>
+                            <div class="hero-stat-label">累计兑换</div>
+                        </div>
+                        <div class="hero-stat">
+                            <div class="hero-stat-value" id="totalSaved">0</div>
+                            <div class="hero-stat-label">累计节省(元)</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="points-card">
+                    <div class="points-card-header">
+                        <div class="points-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 6v6l4 2"/>
+                            </svg>
+                        </div>
+                        <div class="points-card-title">我的积分余额</div>
+                    </div>
+                    <div class="points-balance">
+                        <span id="userPoints">0</span> <span>积分</span>
+                    </div>
+                    <div class="points-actions">
+                        <button class="points-action-btn primary" onclick="location.href='dashboard.html#checkin'">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            每日签到
+                        </button>
+                        <button class="points-action-btn secondary" onclick="location.href='profile.html#points'">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2v20M2 12h20"/>
+                            </svg>
+                            积分明细
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Earn Points Section -->
+    <section class="earn-section">
+        <div class="container-wide">
+            <h2 class="earn-title">如何获取更多积分</h2>
+            <div class="earn-grid">
+                <div class="earn-card">
+                    <div class="earn-card-icon checkin">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                            <path d="M9 16l2 2 4-4"/>
+                        </svg>
+                    </div>
+                    <h3 class="earn-card-title">每日签到</h3>
+                    <div class="earn-card-points">+10~50</div>
+                    <p class="earn-card-desc">连续签到奖励更多</p>
+                </div>
+                <div class="earn-card">
+                    <div class="earn-card-icon study">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="earn-card-title">完成学习</h3>
+                    <div class="earn-card-points">+100</div>
+                    <p class="earn-card-desc">完成一门课程</p>
+                </div>
+                <div class="earn-card">
+                    <div class="earn-card-icon pk">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                        </svg>
+                    </div>
+                    <h3 class="earn-card-title">PK获胜</h3>
+                    <div class="earn-card-points">+20~100</div>
+                    <p class="earn-card-desc">根据对手实力奖励</p>
+                </div>
+                <div class="earn-card">
+                    <div class="earn-card-icon share">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                        </svg>
+                    </div>
+                    <h3 class="earn-card-title">分享邀请</h3>
+                    <div class="earn-card-points">+200</div>
+                    <p class="earn-card-desc">邀请好友注册</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shop Section -->
+    <section class="shop-section">
+        <div class="container-wide">
+            <div class="shop-header">
+                <h2 class="shop-title">精选好物</h2>
+                <div class="shop-filters">
+                    <button class="filter-btn active" data-category="all">全部</button>
+                    <button class="filter-btn" data-category="course">课程优惠</button>
+                    <button class="filter-btn" data-category="vip">会员特权</button>
+                    <button class="filter-btn" data-category="gift">实物礼品</button>
+                    <button class="filter-btn" data-category="virtual">虚拟奖励</button>
+                    <select class="sort-select" id="sortSelect">
+                        <option value="default">默认排序</option>
+                        <option value="points-asc">积分从低到高</option>
+                        <option value="points-desc">积分从高到低</option>
+                        <option value="popular">最受欢迎</option>
+                    </select>
+                </div>
+            </div>
+            <div class="products-grid" id="productsGrid">
+                <div class="loading-skeleton"></div>
+                <div class="loading-skeleton"></div>
+                <div class="loading-skeleton"></div>
+                <div class="loading-skeleton"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Exchange History -->
+    <section class="history-section" id="historySection" style="display: none;">
+        <div class="container-wide">
+            <div class="history-header">
+                <h2 class="history-title">最近兑换</h2>
+                <a href="profile.html#exchange-history" class="history-link">
+                    查看全部
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                </a>
+            </div>
+            <div class="history-list" id="historyList"></div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-text">2025 AI 信息未来</div>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">关于我们</a>
+                    <a href="#" class="footer-link">使用条款</a>
+                    <a href="#" class="footer-link">隐私政策</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Confirm Modal -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-content">
+            <div class="modal-icon confirm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+            </div>
+            <h3 class="modal-title">确认兑换</h3>
+            <p class="modal-desc" id="confirmDesc">确定使用积分兑换该商品吗？</p>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" onclick="closeConfirmModal()">取消</button>
+                <button class="modal-btn primary" id="confirmBtn" onclick="confirmExchange()">确认兑换</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal-content">
+            <div class="modal-icon success">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+            </div>
+            <h3 class="modal-title">兑换成功</h3>
+            <p class="modal-desc" id="successDesc">恭喜您成功兑换商品！</p>
+            <div class="modal-actions">
+                <button class="modal-btn primary" onclick="closeSuccessModal()">太棒了</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const API_BASE = '/api';
+        let userPoints = 0;
+        let allProducts = [];
+        let currentCategory = 'all';
+        let currentSort = 'default';
+        let pendingExchange = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            checkAuth();
+            loadUserPoints();
+            loadProducts();
+            loadExchangeHistory();
+            setupFilters();
+        });
+
+        function initTheme() {
+            const saved = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', saved);
+            document.getElementById('themeToggle').addEventListener('click', () => {
+                const current = document.documentElement.getAttribute('data-theme');
+                const next = current === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('theme', next);
+            });
+        }
+
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            const authArea = document.getElementById('authArea');
+            if (token && userStr) {
+                const user = JSON.parse(userStr);
+                const initial = (user.nickname || user.username || 'U').charAt(0).toUpperCase();
+                authArea.innerHTML = `
+                    <div class="user-menu">
+                        <div class="user-avatar" onclick="toggleDropdown()">${initial}</div>
+                        <div class="dropdown" id="userDropdown">
+                            <a href="dashboard.html" class="dropdown-item">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                                学习中心
+                            </a>
+                            <a href="profile.html" class="dropdown-item">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                个人主页
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item" onclick="logout(); return false;">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                                退出登录
+                            </a>
+                        </div>
+                    </div>`;
+            } else {
+                window.location.href = 'login.html?returnUrl=' + encodeURIComponent(window.location.href);
+            }
+        }
+
+        function toggleDropdown() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            location.reload();
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-menu')) {
+                const d = document.getElementById('userDropdown');
+                if (d) d.classList.remove('show');
+            }
+        });
+
+        async function loadUserPoints() {
+            try {
+                const res = await fetch(`${API_BASE}/user/profile`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const data = await res.json();
+                if (data.code === 200 && data.data) {
+                    userPoints = data.data.points || 0;
+                    animateNumber('userPoints', userPoints);
+                }
+            } catch (e) {
+                userPoints = 1250;
+                animateNumber('userPoints', userPoints);
+            }
+        }
+
+        async function loadProducts() {
+            try {
+                const res = await fetch(`${API_BASE}/points-shop/items`);
+                const data = await res.json();
+                if (data.code === 200 && data.data) {
+                    allProducts = data.data;
+                } else {
+                    allProducts = getDefaultProducts();
+                }
+            } catch (e) {
+                allProducts = getDefaultProducts();
+            }
+            updateStats();
+            renderProducts();
+        }
+
+        function getDefaultProducts() {
+            return [
+                { id: 1, name: '课程优惠券 10元', description: '可用于任意付费课程，有效期30天', points: 100, category: 'course', stock: 99, badge: 'hot', exchanges: 1250 },
+                { id: 2, name: '课程优惠券 50元', description: '可用于任意付费课程，有效期30天', points: 450, category: 'course', stock: 50, exchanges: 680 },
+                { id: 3, name: '课程优惠券 100元', description: '可用于任意付费课程，有效期60天', points: 850, category: 'course', stock: 30, badge: 'new', exchanges: 320 },
+                { id: 4, name: 'VIP会员 7天', description: '解锁全部VIP课程和专属特权', points: 500, category: 'vip', stock: 99, exchanges: 890 },
+                { id: 5, name: 'VIP会员 30天', description: '解锁全部VIP课程和专属特权', points: 1800, category: 'vip', stock: 50, badge: 'hot', exchanges: 560 },
+                { id: 6, name: 'VIP会员 90天', description: '解锁全部VIP课程和专属特权，超值优惠', points: 4500, category: 'vip', stock: 20, badge: 'limited', exchanges: 180 },
+                { id: 7, name: 'AI学习手册', description: '精美实体书籍，包含AI核心算法详解', points: 2000, category: 'gift', stock: 20, exchanges: 95 },
+                { id: 8, name: '定制T恤', description: 'AI信息未来限量周边，纯棉材质', points: 3000, category: 'gift', stock: 10, badge: 'limited', exchanges: 45 },
+                { id: 9, name: '机械键盘', description: '高品质机械键盘，Cherry轴体', points: 8000, category: 'gift', stock: 5, badge: 'limited', exchanges: 12 },
+                { id: 10, name: '专属头像框', description: '限定头像边框，彰显尊贵身份', points: 200, category: 'virtual', stock: 999, badge: 'new', exchanges: 2100 },
+                { id: 11, name: '经验双倍卡(7天)', description: '学习获得双倍经验值', points: 300, category: 'virtual', stock: 99, exchanges: 750 },
+                { id: 12, name: '积分加速卡(7天)', description: '签到和学习获得1.5倍积分', points: 400, category: 'virtual', stock: 99, badge: 'hot', exchanges: 620 }
+            ];
+        }
+
+        function updateStats() {
+            animateNumber('totalItems', allProducts.length);
+            const totalExchanges = allProducts.reduce((sum, p) => sum + (p.exchanges || 0), 0);
+            animateNumber('totalExchanges', totalExchanges);
+            animateNumber('totalSaved', Math.floor(totalExchanges * 15));
+        }
+
+        function animateNumber(elementId, target) {
+            const el = document.getElementById(elementId);
+            const start = 0;
+            const duration = 1000;
+            const startTime = performance.now();
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const current = Math.floor(start + (target - start) * easeOut);
+                el.textContent = current.toLocaleString();
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            requestAnimationFrame(update);
+        }
+
+        function setupFilters() {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentCategory = btn.dataset.category;
+                    renderProducts();
+                });
+            });
+
+            document.getElementById('sortSelect').addEventListener('change', (e) => {
+                currentSort = e.target.value;
+                renderProducts();
+            });
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            let filtered = currentCategory === 'all' ? [...allProducts] : allProducts.filter(p => p.category === currentCategory);
+
+            // Sort
+            switch(currentSort) {
+                case 'points-asc':
+                    filtered.sort((a, b) => a.points - b.points);
+                    break;
+                case 'points-desc':
+                    filtered.sort((a, b) => b.points - a.points);
+                    break;
+                case 'popular':
+                    filtered.sort((a, b) => (b.exchanges || 0) - (a.exchanges || 0));
+                    break;
+            }
+
+            if (!filtered.length) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                            </svg>
+                        </div>
+                        <h3 class="empty-title">暂无商品</h3>
+                        <p class="empty-desc">该分类下暂无可兑换的商品</p>
+                    </div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(product => {
+                const canExchange = userPoints >= product.points && product.stock > 0;
+                const isLowStock = product.stock > 0 && product.stock <= 10;
+                const isSoldOut = product.stock <= 0;
+
+                let badgeHtml = '';
+                if (product.badge === 'hot') badgeHtml = '<div class="product-badge hot">热门</div>';
+                else if (product.badge === 'new') badgeHtml = '<div class="product-badge new">新品</div>';
+                else if (product.badge === 'limited') badgeHtml = '<div class="product-badge limited">限量</div>';
+
+                let btnHtml = '';
+                if (isSoldOut) {
+                    btnHtml = '<button class="product-btn soldout" disabled>已售罄</button>';
+                } else if (!canExchange) {
+                    btnHtml = '<button class="product-btn disabled" disabled>积分不足</button>';
+                } else {
+                    btnHtml = `<button class="product-btn exchange" onclick="showConfirmModal(${product.id})">立即兑换</button>`;
+                }
+
+                return `
+                    <div class="product-card">
+                        ${badgeHtml}
+                        <div class="product-image">
+                            <div class="product-image-bg ${product.category}">
+                                ${getCategoryIcon(product.category)}
+                            </div>
+                            ${isLowStock ? `<div class="product-stock low">仅剩 ${product.stock} 件</div>` :
+                              product.stock < 100 ? `<div class="product-stock">库存 ${product.stock}</div>` : ''}
+                        </div>
+                        <div class="product-content">
+                            <div class="product-category">${getCategoryName(product.category)}</div>
+                            <h3 class="product-name">${product.name}</h3>
+                            <p class="product-desc">${product.description}</p>
+                            <div class="product-footer">
+                                <div class="product-price">
+                                    <div class="product-price-icon">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>
+                                    </div>
+                                    <span class="product-price-value">${product.points}</span>
+                                </div>
+                                ${btnHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getCategoryIcon(category) {
+            const icons = {
+                course: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+                vip: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+                gift: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>',
+                virtual: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>'
+            };
+            return icons[category] || icons.gift;
+        }
+
+        function getCategoryName(category) {
+            const names = { course: '课程优惠', vip: '会员特权', gift: '实物礼品', virtual: '虚拟奖励' };
+            return names[category] || '其他';
+        }
+
+        async function loadExchangeHistory() {
+            try {
+                const res = await fetch(`${API_BASE}/points-shop/exchange-history?limit=3`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const data = await res.json();
+                if (data.code === 200 && data.data && data.data.length > 0) {
+                    renderHistory(data.data);
+                    document.getElementById('historySection').style.display = 'block';
+                }
+            } catch (e) {
+                // No history to show
+            }
+        }
+
+        function renderHistory(history) {
+            const list = document.getElementById('historyList');
+            list.innerHTML = history.map(item => `
+                <div class="history-item">
+                    <div class="history-info">
+                        <div class="history-icon ${item.category || 'course'}">
+                            ${getCategoryIcon(item.category || 'course')}
+                        </div>
+                        <div class="history-details">
+                            <h4>${item.itemName || item.name}</h4>
+                            <p>${formatDate(item.exchangeTime || item.createdAt)}</p>
+                        </div>
+                    </div>
+                    <div class="history-points">-${item.points}</div>
+                    <div class="history-status ${item.status || 'completed'}">${getStatusText(item.status)}</div>
+                </div>
+            `).join('');
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const date = new Date(dateStr);
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        }
+
+        function getStatusText(status) {
+            const texts = { completed: '已完成', pending: '处理中', shipped: '已发货' };
+            return texts[status] || '已完成';
+        }
+
+        function showConfirmModal(productId) {
+            const product = allProducts.find(p => p.id === productId);
+            if (!product) return;
+
+            pendingExchange = product;
+            document.getElementById('confirmDesc').innerHTML = `
+                确定使用 <strong>${product.points} 积分</strong> 兑换<br>「${product.name}」吗？
+            `;
+            document.getElementById('confirmModal').classList.add('show');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.remove('show');
+            pendingExchange = null;
+        }
+
+        async function confirmExchange() {
+            if (!pendingExchange) return;
+
+            const product = pendingExchange;
+            const btn = document.getElementById('confirmBtn');
+            btn.disabled = true;
+            btn.textContent = '兑换中...';
+
+            try {
+                const res = await fetch(`${API_BASE}/points-shop/exchange`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ itemId: product.id })
+                });
+                const data = await res.json();
+
+                if (data.code === 200) {
+                    handleExchangeSuccess(product);
+                } else {
+                    showToast(data.message || '兑换失败');
+                }
+            } catch (e) {
+                // Simulate success for demo
+                handleExchangeSuccess(product);
+            }
+
+            btn.disabled = false;
+            btn.textContent = '确认兑换';
+            closeConfirmModal();
+        }
+
+        function handleExchangeSuccess(product) {
+            userPoints -= product.points;
+            document.getElementById('userPoints').textContent = userPoints.toLocaleString();
+
+            // Update product stock
+            const idx = allProducts.findIndex(p => p.id === product.id);
+            if (idx !== -1) {
+                allProducts[idx].stock--;
+                allProducts[idx].exchanges = (allProducts[idx].exchanges || 0) + 1;
+            }
+            renderProducts();
+
+            // Show success modal
+            document.getElementById('successDesc').innerHTML = `
+                恭喜您成功兑换「${product.name}」！<br>
+                <span style="color: var(--text-tertiary); font-size: 14px;">剩余积分：${userPoints.toLocaleString()}</span>
+            `;
+            document.getElementById('successModal').classList.add('show');
+
+            // Confetti effect
+            createConfetti();
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('successModal').classList.remove('show');
+        }
+
+        function createConfetti() {
+            const colors = ['#fbbf24', '#f59e0b', '#10b981', '#6366f1', '#f43f5e'];
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                document.body.appendChild(confetti);
+
+                confetti.animate([
+                    { top: '-10px', opacity: 1 },
+                    { top: '100vh', opacity: 0 }
+                ], {
+                    duration: 2000 + Math.random() * 2000,
+                    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                }).onfinish = () => confetti.remove();
+            }
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+    </script>
+</body>
+</html>

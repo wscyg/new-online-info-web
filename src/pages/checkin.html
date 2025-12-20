@@ -3,158 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>每日签到 - AI学习平台</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>每日签到 - AI 信息未来</title>
+    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="home.html" class="nav-logo">AI 信息未来</a>
+            <div class="nav-menu">
+                <a href="home.html" class="nav-link">首页</a>
+                <a href="courses.html" class="nav-link">课程</a>
+                <a href="community.html" class="nav-link">社区</a>
+                <a href="checkin.html" class="nav-link active">签到</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" title="切换主题">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div id="authArea"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero 区域 -->
+    <section class="hero">
+        <div class="container">
+            <h1 class="hero-title">每日签到</h1>
+            <p class="hero-subtitle">坚持签到，解锁更多奖励</p>
+        </div>
+    </section>
+
+    <div id="message-area" style="position: fixed; top: 80px; right: 22px; z-index: 2000;"></div>
+
+    <!-- 统计数据 -->
+    <section class="section" style="padding-top: 40px;">
+        <div class="container">
+            <div class="grid grid-4">
+                <div class="card">
+                    <div class="card-body" style="text-align: center; padding: 32px 24px;">
+                        <div class="stat-label" style="color: var(--text-tertiary); font-size: 15px; margin-bottom: 8px;">连续签到</div>
+                        <div class="stat-value" id="consecutive-days" style="font-size: 40px; font-weight: 700; background: linear-gradient(135deg, #0071e3 0%, #147ce5 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">0</div>
+                        <div style="color: var(--text-tertiary); font-size: 13px; margin-top: 4px;">天</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body" style="text-align: center; padding: 32px 24px;">
+                        <div class="stat-label" style="color: var(--text-tertiary); font-size: 15px; margin-bottom: 8px;">累计签到</div>
+                        <div class="stat-value" id="total-days" style="font-size: 40px; font-weight: 700; background: linear-gradient(135deg, #0071e3 0%, #147ce5 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">0</div>
+                        <div style="color: var(--text-tertiary); font-size: 13px; margin-top: 4px;">天</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body" style="text-align: center; padding: 32px 24px;">
+                        <div class="stat-label" style="color: var(--text-tertiary); font-size: 15px; margin-bottom: 8px;">最长连续</div>
+                        <div class="stat-value" id="max-days" style="font-size: 40px; font-weight: 700; background: linear-gradient(135deg, #0071e3 0%, #147ce5 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">0</div>
+                        <div style="color: var(--text-tertiary); font-size: 13px; margin-top: 4px;">天</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body" style="text-align: center; padding: 32px 24px;">
+                        <div class="stat-label" style="color: var(--text-tertiary); font-size: 15px; margin-bottom: 8px;">签到积分</div>
+                        <div class="stat-value" id="total-points" style="font-size: 40px; font-weight: 700; background: linear-gradient(135deg, #34c759 0%, #30d158 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">0</div>
+                        <div style="color: var(--text-tertiary); font-size: 13px; margin-top: 4px;">分</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 签到区域 -->
+    <section class="section" style="padding-top: 40px; padding-bottom: 40px;">
+        <div class="container">
+            <div class="card" style="text-align: center;">
+                <div class="card-body" style="padding: 48px 24px;">
+                    <div class="checkin-animation" id="checkin-animation" style="display: none; font-size: 80px; margin-bottom: 20px; animation: bounce 0.6s ease;">
+                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#34c759" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                    </div>
+                    <h2 id="checkin-title" style="font-size: 32px; font-weight: 600; margin-bottom: 12px; color: var(--text-primary);">今日签到</h2>
+                    <p id="checkin-message" style="font-size: 17px; color: var(--text-secondary); margin-bottom: 32px;">点击下方按钮完成今日签到</p>
+                    <button class="btn btn-primary btn-lg" id="checkin-btn" onclick="doCheckIn()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                        立即签到
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 签到日历 -->
+    <section class="section" style="padding-top: 40px; padding-bottom: 40px;">
+        <div class="container">
+            <div class="card">
+                <div class="card-body" style="padding: 32px 24px;">
+                    <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 24px; color: var(--text-primary);">本月签到日历</h2>
+                    <div class="calendar" id="calendar" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px;">
+                        <div class="calendar-day header">日</div>
+                        <div class="calendar-day header">一</div>
+                        <div class="calendar-day header">二</div>
+                        <div class="calendar-day header">三</div>
+                        <div class="calendar-day header">四</div>
+                        <div class="calendar-day header">五</div>
+                        <div class="calendar-day header">六</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 签到奖励 -->
+    <section class="section" style="padding-top: 40px; padding-bottom: 40px;">
+        <div class="container">
+            <div class="card">
+                <div class="card-body" style="padding: 32px 24px;">
+                    <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 24px; color: var(--text-primary);">签到奖励</h2>
+                    <div class="rewards-grid" id="rewards-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 排行榜 -->
+    <section class="section" style="padding-top: 40px; padding-bottom: 80px;">
+        <div class="container">
+            <div class="card">
+                <div class="card-body" style="padding: 32px 24px;">
+                    <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 24px; color: var(--text-primary);">签到排行榜</h2>
+                    <div class="leaderboard-list" id="leaderboard-list" style="display: flex; flex-direction: column; gap: 12px;">
+                        <div class="loading"><div class="spinner"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-text">© 2025 AI 信息未来</div>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">关于我们</a>
+                    <a href="#" class="footer-link">使用条款</a>
+                    <a href="#" class="footer-link">隐私政策</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div id="toast" class="toast"></div>
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #8b5cf6;
-            --accent: #ec4899;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --dark: #1e293b;
-            --light: #f8fafc;
-            --gray: #64748b;
-            --white: #ffffff;
-            --gold: #fbbf24;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(to bottom right, #0f172a, #1e293b);
-            min-height: 100vh;
-            color: var(--white);
-            padding: 2rem;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #60a5fa, #c084fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
-        }
-
-        .header p {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 1.1rem;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 3rem;
-        }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
-        }
-
-        .stat-card .label {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-card .value {
-            font-size: 2rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #60a5fa, #c084fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .checkin-section {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1.5rem;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        .checkin-btn {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-            border: none;
-            padding: 1.25rem 3rem;
-            border-radius: 3rem;
-            font-size: 1.2rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
-            margin-top: 1rem;
-        }
-
-        .checkin-btn:hover:not(:disabled) {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.6);
-        }
-
-        .checkin-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .checkin-animation {
-            display: none;
-            font-size: 4rem;
-            animation: bounce 0.6s ease;
-        }
-
         @keyframes bounce {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.3); }
-        }
-
-        .calendar-section {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1.5rem;
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .calendar-section h2 {
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
-        }
-
-        .calendar {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 0.5rem;
+            50% { transform: scale(1.2); }
         }
 
         .calendar-day {
@@ -162,114 +171,94 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 0.5rem;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            color: var(--text-primary);
+            transition: all var(--transition-fast);
+            border: 1px solid transparent;
         }
 
         .calendar-day.header {
             font-weight: 600;
-            color: rgba(255, 255, 255, 0.6);
+            color: var(--text-secondary);
+            background: transparent;
         }
 
         .calendar-day.checked {
-            background: linear-gradient(135deg, #10b981, #059669);
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+            background: linear-gradient(135deg, #34c759 0%, #30d158 100%);
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(52, 199, 89, 0.3);
         }
 
         .calendar-day.today {
-            border: 2px solid var(--gold);
-        }
-
-        .rewards-section {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1.5rem;
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .rewards-section h2 {
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
-        }
-
-        .rewards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
+            border-color: var(--accent);
+            border-width: 2px;
         }
 
         .reward-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1rem;
-            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 24px;
             text-align: center;
-            transition: all 0.3s ease;
+            transition: all var(--transition-fast);
+        }
+
+        .reward-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
         }
 
         .reward-card.milestone {
-            border-color: var(--gold);
-            box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+            border-color: #fbbf24;
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(251, 191, 36, 0.05) 100%);
         }
 
         .reward-card.achieved {
-            opacity: 0.6;
-            background: rgba(16, 185, 129, 0.1);
+            opacity: 0.5;
         }
 
         .reward-card .days {
-            font-size: 2rem;
+            font-size: 28px;
             font-weight: 700;
-            color: var(--gold);
-            margin-bottom: 0.5rem;
+            color: var(--accent);
+            margin-bottom: 8px;
         }
 
         .reward-card .points {
-            font-size: 1.2rem;
-            color: var(--success);
-            margin-bottom: 0.5rem;
+            font-size: 19px;
+            font-weight: 600;
+            color: #34c759;
+            margin-bottom: 8px;
         }
 
         .reward-card .description {
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .leaderboard-section {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1.5rem;
-            padding: 2rem;
-        }
-
-        .leaderboard-section h2 {
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
-        }
-
-        .leaderboard-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
+            font-size: 13px;
+            color: var(--text-tertiary);
         }
 
         .leaderboard-item {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 0.75rem;
-            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: 16px 20px;
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 16px;
+            transition: all var(--transition-fast);
+        }
+
+        .leaderboard-item:hover {
+            background: var(--bg-hover);
         }
 
         .leaderboard-item .rank {
-            font-size: 1.5rem;
+            font-size: 20px;
             font-weight: 700;
-            min-width: 3rem;
+            min-width: 48px;
             text-align: center;
+            color: var(--text-secondary);
         }
 
         .leaderboard-item.rank-1 .rank {
@@ -289,131 +278,128 @@
         }
 
         .leaderboard-item .username {
+            font-size: 17px;
             font-weight: 600;
-            margin-bottom: 0.25rem;
+            color: var(--text-primary);
+            margin-bottom: 4px;
         }
 
         .leaderboard-item .days {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+            color: var(--text-secondary);
         }
 
-        .loading {
-            text-align: center;
-            padding: 2rem;
-            color: rgba(255, 255, 255, 0.6);
+        .message-notification {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 14px 20px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-md);
+            animation: slideIn 0.3s var(--ease-out);
         }
 
-        .error {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid var(--danger);
-            border-radius: 0.5rem;
-            padding: 1rem;
-            color: var(--danger);
-            margin-bottom: 1rem;
+        .message-notification.error {
+            border-color: #ff3b30;
+            background: rgba(255, 59, 48, 0.05);
+            color: #ff3b30;
         }
 
-        .success {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid var(--success);
-            border-radius: 0.5rem;
-            padding: 1rem;
-            color: var(--success);
-            margin-bottom: 1rem;
+        .message-notification.success {
+            border-color: #34c759;
+            background: rgba(52, 199, 89, 0.05);
+            color: #34c759;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(120%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
 
         @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
+            .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
             }
-
-            .rewards-grid {
-                grid-template-columns: 1fr;
+            .calendar-day {
+                font-size: 13px;
             }
-
             .calendar {
-                gap: 0.25rem;
+                gap: 4px;
             }
         }
     </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>每日签到</h1>
-            <p>坚持签到，解锁更多奖励</p>
-        </div>
 
-        <div id="message-area"></div>
-
-        <!-- 统计卡片 -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="label">连续签到</div>
-                <div class="value" id="consecutive-days">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="label">累计签到</div>
-                <div class="value" id="total-days">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="label">最长连续</div>
-                <div class="value" id="max-days">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="label">签到积分</div>
-                <div class="value" id="total-points">0</div>
-            </div>
-        </div>
-
-        <!-- 签到区域 -->
-        <div class="checkin-section">
-            <div class="checkin-animation" id="checkin-animation">🎉</div>
-            <h2 id="checkin-title">今日签到</h2>
-            <p id="checkin-message">点击下方按钮完成今日签到</p>
-            <button class="checkin-btn" id="checkin-btn" onclick="doCheckIn()">
-                立即签到
-            </button>
-        </div>
-
-        <!-- 签到日历 -->
-        <div class="calendar-section">
-            <h2>本月签到日历</h2>
-            <div class="calendar" id="calendar">
-                <div class="calendar-day header">日</div>
-                <div class="calendar-day header">一</div>
-                <div class="calendar-day header">二</div>
-                <div class="calendar-day header">三</div>
-                <div class="calendar-day header">四</div>
-                <div class="calendar-day header">五</div>
-                <div class="calendar-day header">六</div>
-            </div>
-        </div>
-
-        <!-- 签到奖励 -->
-        <div class="rewards-section">
-            <h2>签到奖励</h2>
-            <div class="rewards-grid" id="rewards-grid">
-                <!-- 动态加载 -->
-            </div>
-        </div>
-
-        <!-- 排行榜 -->
-        <div class="leaderboard-section">
-            <h2>签到排行榜</h2>
-            <div class="leaderboard-list" id="leaderboard-list">
-                <div class="loading">加载中...</div>
-            </div>
-        </div>
-    </div>
-
-    <script type="module" src="../utils/api.js"></script>
-    <script type="module">
-        import { checkinAPI } from '../utils/api.js';
-
+    <script>
+        const API_BASE = '/api';
         let currentStats = null;
 
-        // 初始化页面
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            checkAuth();
+            init();
+        });
+
+        function initTheme() {
+            const saved = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', saved);
+            updateThemeIcon(saved);
+            document.getElementById('themeToggle').addEventListener('click', () => {
+                const current = document.documentElement.getAttribute('data-theme');
+                const next = current === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('theme', next);
+                updateThemeIcon(next);
+            });
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = document.querySelector('#themeToggle i');
+            icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                location.href = 'login.html';
+                return;
+            }
+
+            const userStr = localStorage.getItem('user');
+            const authArea = document.getElementById('authArea');
+            if (token && userStr) {
+                const user = JSON.parse(userStr);
+                const initial = (user.nickname || user.username || 'U').charAt(0).toUpperCase();
+                authArea.innerHTML = `
+                    <div class="user-menu">
+                        <div class="user-avatar" onclick="toggleDropdown()">${user.avatar ? '<img src="'+user.avatar+'" alt="">' : initial}</div>
+                        <div class="dropdown" id="userDropdown">
+                            <div class="dropdown-item" onclick="location.href='dashboard.html'"><i class="fas fa-tachometer-alt"></i> 学习中心</div>
+                            <div class="dropdown-item" onclick="location.href='profile.html'"><i class="fas fa-user"></i> 个人主页</div>
+                            <div class="dropdown-item" onclick="location.href='my-courses.html'"><i class="fas fa-book"></i> 我的课程</div>
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出登录</div>
+                        </div>
+                    </div>`;
+            }
+        }
+
+        function toggleDropdown() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            location.href = 'login.html';
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-menu')) {
+                const d = document.getElementById('userDropdown');
+                if (d) d.classList.remove('show');
+            }
+        });
+
         async function init() {
             await loadStats();
             await loadCalendar();
@@ -421,19 +407,25 @@
             await loadLeaderboard();
         }
 
-        // 加载统计数据
         async function loadStats() {
             try {
-                const response = await checkinAPI.getStats();
-                if (response.success) {
-                    currentStats = response.data.stats;
+                const token = localStorage.getItem('token');
+                const response = await fetch(API_BASE + '/checkin/stats', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await response.json();
+
+                if (data.code === 200 && data.data) {
+                    currentStats = data.data.stats;
                     updateStatsUI(currentStats);
 
-                    // 更新签到状态
-                    if (response.data.checkedInToday) {
-                        document.getElementById('checkin-btn').disabled = true;
-                        document.getElementById('checkin-btn').textContent = '今日已签到';
-                        document.getElementById('checkin-message').textContent = '明天再来吧！';
+                    if (data.data.checkedInToday) {
+                        const btn = document.getElementById('checkin-btn');
+                        btn.disabled = true;
+                        btn.style.opacity = '0.5';
+                        btn.style.cursor = 'not-allowed';
+                        btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>今日已签到';
+                        document.getElementById('checkin-message').textContent = '明天再来吧';
                     }
                 }
             } catch (error) {
@@ -441,7 +433,6 @@
             }
         }
 
-        // 更新统计UI
         function updateStatsUI(stats) {
             document.getElementById('consecutive-days').textContent = stats.currentConsecutiveDays || 0;
             document.getElementById('total-days').textContent = stats.totalCheckinDays || 0;
@@ -449,96 +440,97 @@
             document.getElementById('total-points').textContent = stats.totalPointsEarned || 0;
         }
 
-        // 执行签到
-        window.doCheckIn = async function() {
+        async function doCheckIn() {
             const btn = document.getElementById('checkin-btn');
             const animation = document.getElementById('checkin-animation');
 
             btn.disabled = true;
-            btn.textContent = '签到中...';
+            btn.style.opacity = '0.5';
+            btn.innerHTML = '<div class="spinner" style="margin: 0 auto;"></div>';
 
             try {
-                const response = await checkinAPI.dailyCheckIn();
+                const token = localStorage.getItem('token');
+                const response = await fetch(API_BASE + '/checkin/daily', {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await response.json();
 
-                if (response.success) {
-                    // 显示动画
+                if (data.code === 200 && data.data) {
                     animation.style.display = 'block';
                     setTimeout(() => {
                         animation.style.display = 'none';
                     }, 1000);
 
-                    // 显示成功消息
-                    const msg = `签到成功！连续${response.data.consecutiveDays}天，获得${response.data.pointsEarned}积分`;
+                    const msg = `签到成功！连续${data.data.consecutiveDays}天，获得${data.data.pointsEarned}积分`;
                     showMessage(msg, 'success');
 
-                    // 更新UI
                     await loadStats();
                     await loadCalendar();
 
-                    btn.textContent = '今日已签到';
-                    document.getElementById('checkin-message').textContent = '明天再来吧！';
+                    btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>今日已签到';
+                    btn.style.cursor = 'not-allowed';
+                    document.getElementById('checkin-message').textContent = '明天再来吧';
                 } else {
-                    showMessage(response.message, 'error');
+                    showMessage(data.message || '签到失败', 'error');
                     btn.disabled = false;
-                    btn.textContent = '立即签到';
+                    btn.style.opacity = '1';
+                    btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>立即签到';
                 }
             } catch (error) {
                 showMessage('签到失败: ' + error.message, 'error');
                 btn.disabled = false;
-                btn.textContent = '立即签到';
+                btn.style.opacity = '1';
+                btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>立即签到';
             }
-        };
+        }
 
-        // 加载日历
         async function loadCalendar() {
             try {
+                const token = localStorage.getItem('token');
                 const now = new Date();
-                const response = await checkinAPI.getCalendar(now.getFullYear(), now.getMonth() + 1);
+                const response = await fetch(API_BASE + `/checkin/calendar?year=${now.getFullYear()}&month=${now.getMonth() + 1}`, {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await response.json();
 
-                if (response.success) {
-                    renderCalendar(response.data);
+                if (data.code === 200 && data.data) {
+                    renderCalendar(data.data);
                 }
             } catch (error) {
                 console.error('加载日历失败:', error);
             }
         }
 
-        // 渲染日历
         function renderCalendar(data) {
             const calendar = document.getElementById('calendar');
             const checkinDays = data.checkinDays || [];
 
-            // 获取本月第一天是星期几
             const firstDay = new Date(data.year, data.month - 1, 1).getDay();
             const daysInMonth = new Date(data.year, data.month, 0).getDate();
             const today = new Date().getDate();
             const currentMonth = new Date().getMonth() + 1;
             const currentYear = new Date().getFullYear();
 
-            // 清空日历（保留表头）
             while (calendar.children.length > 7) {
                 calendar.removeChild(calendar.lastChild);
             }
 
-            // 填充空白天
             for (let i = 0; i < firstDay; i++) {
                 const emptyDay = document.createElement('div');
                 emptyDay.className = 'calendar-day';
                 calendar.appendChild(emptyDay);
             }
 
-            // 填充日期
             for (let day = 1; day <= daysInMonth; day++) {
                 const dayElement = document.createElement('div');
                 dayElement.className = 'calendar-day';
                 dayElement.textContent = day;
 
-                // 标记已签到
                 if (checkinDays.includes(day)) {
                     dayElement.classList.add('checked');
                 }
 
-                // 标记今天
                 if (day === today && data.month === currentMonth && data.year === currentYear) {
                     dayElement.classList.add('today');
                 }
@@ -547,20 +539,22 @@
             }
         }
 
-        // 加载奖励配置
         async function loadRewards() {
             try {
-                const response = await checkinAPI.getRewards();
+                const token = localStorage.getItem('token');
+                const response = await fetch(API_BASE + '/checkin/rewards', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await response.json();
 
-                if (response.success) {
-                    renderRewards(response.data);
+                if (data.code === 200 && data.data) {
+                    renderRewards(data.data);
                 }
             } catch (error) {
                 console.error('加载奖励失败:', error);
             }
         }
 
-        // 渲染奖励
         function renderRewards(rewards) {
             const grid = document.getElementById('rewards-grid');
             grid.innerHTML = '';
@@ -585,35 +579,36 @@
                 card.innerHTML = `
                     <div class="days">Day ${reward.milestoneDays}</div>
                     <div class="points">+${reward.points} 积分</div>
-                    <div class="description">${bonusText || reward.description}</div>
+                    <div class="description">${bonusText || reward.description || '基础奖励'}</div>
                 `;
 
                 grid.appendChild(card);
             });
         }
 
-        // 加载排行榜
         async function loadLeaderboard() {
             try {
-                const response = await checkinAPI.getLeaderboard(10);
+                const token = localStorage.getItem('token');
+                const response = await fetch(API_BASE + '/checkin/leaderboard?limit=10', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await response.json();
 
-                if (response.success) {
-                    renderLeaderboard(response.data.leaderboard);
+                if (data.code === 200 && data.data) {
+                    renderLeaderboard(data.data.leaderboard || data.data);
                 }
             } catch (error) {
                 console.error('加载排行榜失败:', error);
-                document.getElementById('leaderboard-list').innerHTML =
-                    '<div class="loading">加载失败</div>';
+                document.getElementById('leaderboard-list').innerHTML = '<div class="loading" style="padding: 24px; text-align: center; color: var(--text-tertiary);">加载失败</div>';
             }
         }
 
-        // 渲染排行榜
         function renderLeaderboard(leaderboard) {
             const list = document.getElementById('leaderboard-list');
             list.innerHTML = '';
 
             if (!leaderboard || leaderboard.length === 0) {
-                list.innerHTML = '<div class="loading">暂无数据</div>';
+                list.innerHTML = '<div class="loading" style="padding: 24px; text-align: center; color: var(--text-tertiary);">暂无数据</div>';
                 return;
             }
 
@@ -634,21 +629,18 @@
             });
         }
 
-        // 显示消息
         function showMessage(message, type = 'info') {
             const messageArea = document.getElementById('message-area');
             const div = document.createElement('div');
-            div.className = type;
+            div.className = 'message-notification ' + type;
             div.textContent = message;
             messageArea.appendChild(div);
 
             setTimeout(() => {
-                div.remove();
+                div.style.animation = 'slideIn 0.3s var(--ease-out) reverse';
+                setTimeout(() => div.remove(), 300);
             }, 3000);
         }
-
-        // 页面加载时初始化
-        init();
     </script>
 </body>
 </html>

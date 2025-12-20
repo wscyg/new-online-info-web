@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>卡片学习播放器 - Transformer课程</title>
+
+    <!-- Apple Design CSS -->
+    <link rel="stylesheet" href="../styles/apple-design.css">
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css" media="(prefers-color-scheme: dark)">
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+
+    <!-- Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            padding-top: 48px;
+            min-height: 100vh;
+        }
+
+        /* Navigation Bar */
+        .card-nav {
+            position: fixed;
+            top: 48px;
+            left: 0;
+            right: 0;
+            z-index: 900;
+            height: 56px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 22px;
+            transition: background var(--transition-normal), border-color var(--transition-normal);
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 15px;
+            transition: color var(--transition-fast);
+        }
+
+        .back-link:hover {
+            color: var(--accent);
+        }
+
+        .chapter-info {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .user-stats-bar {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .stat-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .stat-badge svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        /* Main Content Area */
+        .main-player {
+            padding-top: 120px;
+            min-height: calc(100vh - 48px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: 140px;
+        }
+
+        /* Card Container */
+        .card-stage {
+            width: 100%;
+            max-width: 640px;
+            padding: 0 22px;
+            margin: 0 auto;
+        }
+
+        .learning-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-card);
+            padding: 40px;
+            min-height: 400px;
+            opacity: 0;
+            transform: translateY(20px) scale(0.98);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .learning-card.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .learning-card.exiting {
+            opacity: 0;
+            transform: translateX(-60px) scale(0.95);
+            transition: all 0.3s ease-in;
+        }
+
+        /* Card Type Badge */
+        .card-type {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-full);
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .card-type svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Card Title */
+        .card-headline {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+            line-height: 1.2;
+        }
+
+        /* Card Body */
+        .card-content {
+            font-size: 17px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        .card-content p {
+            margin-bottom: 16px;
+        }
+
+        .card-content ul {
+            margin: 16px 0;
+            padding-left: 24px;
+        }
+
+        .card-content li {
+            margin-bottom: 8px;
+        }
+
+        /* Handwriting Style */
+        .handwriting {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.5;
+            font-style: italic;
+        }
+
+        .wavy {
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 2px;
+        }
+
+        /* Mnemonic Box */
+        .mnemonic {
+            margin-top: 24px;
+            padding: 16px 20px;
+            background: rgba(0, 113, 227, 0.08);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 3px solid var(--accent);
+        }
+
+        .mnemonic svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .mnemonic-text {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        /* Card Signature */
+        .card-signature {
+            font-size: 14px;
+            color: var(--text-tertiary);
+            text-align: right;
+            margin-top: 24px;
+            font-style: italic;
+        }
+
+        /* Points Badge */
+        .points-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--accent);
+            color: white;
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+        }
+
+        /* Code Blocks */
+        .card-content pre {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+
+        .card-content pre code {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        /* Navigation Controls */
+        .player-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 32px;
+            margin-top: 40px;
+        }
+
+        .control-btn {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .control-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .control-btn:hover:not(:disabled) {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+            transform: scale(1.05);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .progress-text {
+            font-size: 17px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .progress-text .current {
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 21px;
+        }
+
+        /* Bottom Bar */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 72px;
+            background: var(--bg-secondary);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 0 22px;
+            z-index: 900;
+        }
+
+        .bottom-stat {
+            text-align: center;
+        }
+
+        .bottom-stat-value {
+            font-size: 21px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .bottom-stat-label {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .progress-bar-wrapper {
+            flex: 1;
+            max-width: 400px;
+            padding: 0 40px;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: var(--border-color);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 2px;
+            transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Points Float Animation */
+        .points-float {
+            position: fixed;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent);
+            pointer-events: none;
+            z-index: 2000;
+            animation: floatUp 1.5s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-80px) scale(1.3);
+            }
+        }
+
+        /* Completion Overlay */
+        .completion-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        .completion-screen.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .completion-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 24px;
+            animation: bounce 0.6s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        .completion-title {
+            font-size: 40px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .completion-subtitle {
+            font-size: 17px;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+
+        .completion-stats {
+            display: flex;
+            gap: 48px;
+            margin-bottom: 40px;
+        }
+
+        .completion-stat {
+            text-align: center;
+        }
+
+        .completion-stat-value {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: -0.02em;
+        }
+
+        .completion-stat-label {
+            font-size: 14px;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+        }
+
+        /* Template Selector */
+        .template-selector {
+            position: fixed;
+            top: 120px;
+            right: 22px;
+            z-index: 100;
+        }
+
+        .template-select {
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .template-select:hover {
+            border-color: var(--accent);
+        }
+
+        .template-select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-player {
+                padding-top: 80px;
+            }
+
+            .learning-card {
+                padding: 24px;
+                min-height: 300px;
+            }
+
+            .card-headline {
+                font-size: 24px;
+            }
+
+            .chapter-info {
+                display: none;
+            }
+
+            .user-stats-bar {
+                gap: 12px;
+            }
+
+            .template-selector {
+                top: 110px;
+                right: 16px;
+            }
+
+            .completion-title {
+                font-size: 32px;
+            }
+
+            .completion-stats {
+                gap: 32px;
+            }
+
+            .completion-stat-value {
+                font-size: 36px;
+            }
+        }
+
+        /* SVG Icons */
+        .icon {
+            display: inline-block;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="nav-logo">学习平台</div>
+            <div class="nav-menu">
+                <a href="../index.html" class="nav-link">首页</a>
+                <a href="courses.html" class="nav-link">课程</a>
+                <a href="community.html" class="nav-link">社区</a>
+                <a href="pk-arena.html" class="nav-link">PK竞技</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Card Navigation Bar -->
+    <div class="card-nav">
+        <a href="card-templates.html" class="back-link">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"/>
+                <polyline points="12 19 5 12 12 5"/>
+            </svg>
+            <span>返回</span>
+        </a>
+        <div class="chapter-info">Transformer 第1章：为什么需要 Transformer</div>
+        <div class="user-stats-bar">
+            <div class="stat-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                </svg>
+                <span class="stat-value" id="totalPoints">0</span>
+            </div>
+            <div class="stat-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+                </svg>
+                <span>3天</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Template Selector -->
+    <div class="template-selector">
+        <select class="template-select" id="templateSelect">
+            <option value="classic">经典便签</option>
+            <option value="handwritten">手写风格</option>
+            <option value="minimal">极简卡片</option>
+            <option value="dark">暗黑风格</option>
+            <option value="gradient">渐变卡片</option>
+        </select>
+    </div>
+
+    <!-- Main Player -->
+    <main class="main-player">
+        <div class="card-stage">
+            <div class="learning-card" id="cardContainer">
+                <!-- Card content will be rendered here -->
+            </div>
+        </div>
+
+        <!-- Player Controls -->
+        <div class="player-controls">
+            <button class="control-btn" id="prevBtn" disabled aria-label="Previous card">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"/>
+                </svg>
+            </button>
+            <div class="progress-text">
+                <span class="current" id="currentIndex">1</span> / <span id="totalCards">6</span>
+            </div>
+            <button class="control-btn" id="nextBtn" aria-label="Next card">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                </svg>
+            </button>
+        </div>
+    </main>
+
+    <!-- Bottom Bar -->
+    <div class="bottom-bar">
+        <div class="bottom-stat">
+            <div class="bottom-stat-value" id="timeSpent">0:00</div>
+            <div class="bottom-stat-label">学习时长</div>
+        </div>
+        <div class="progress-bar-wrapper">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+        </div>
+        <div class="bottom-stat">
+            <div class="bottom-stat-value" id="earnedPoints">0</div>
+            <div class="bottom-stat-label">本次积分</div>
+        </div>
+    </div>
+
+    <!-- Completion Screen -->
+    <div class="completion-screen" id="completionOverlay">
+        <svg class="completion-icon" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        <div class="completion-title">恭喜完成</div>
+        <div class="completion-subtitle">你已完成本章全部卡片学习</div>
+        <div class="completion-stats">
+            <div class="completion-stat">
+                <div class="completion-stat-value" id="finalCards">6</div>
+                <div class="completion-stat-label">完成卡片</div>
+            </div>
+            <div class="completion-stat">
+                <div class="completion-stat-value" id="finalTime">0:00</div>
+                <div class="completion-stat-label">学习时长</div>
+            </div>
+            <div class="completion-stat">
+                <div class="completion-stat-value" id="finalPoints">0</div>
+                <div class="completion-stat-label">获得积分</div>
+            </div>
+        </div>
+        <button class="btn btn-primary btn-lg" onclick="location.reload()">再学一遍</button>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+
+        // Card type icons (SVG)
+        const typeIcons = {
+            story: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
+            insight: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>',
+            formula: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3z"/><path d="M14 3h7v7h-7z"/><path d="M14 14h7v7h-7z"/><path d="M3 14h7v7H3z"/></svg>',
+            warning: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+            summary: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>'
+        };
+
+        // Card data
+        const cards = [
+            {
+                type: 'story',
+                typeName: '故事引入',
+                title: '2017年，Google Brain 的一个平凡下午',
+                content: `
+                    <p>研究员 Ashish Vaswani 盯着屏幕上的翻译结果，眉头紧锁。</p>
+                    <p class="handwriting" style="margin: 1rem 0;">
+                        "为什么长句子翻译总是<span class="wavy">丢失信息</span>？"
+                    </p>
+                    <p>这个问题，困扰了整个NLP领域十年...</p>
+                `,
+                signature: '故事开始',
+                points: 5
+            },
+            {
+                type: 'insight',
+                typeName: '核心洞察',
+                title: 'RNN 的致命缺陷',
+                content: `
+                    <p class="handwriting">
+                        "序列必须<span class="wavy">一个一个</span>处理"
+                    </p>
+                    <p style="margin-top: 1rem;">这意味着：</p>
+                    <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li>无法并行计算 - 训练慢</li>
+                        <li>长距离依赖丢失 - 翻译差</li>
+                        <li>梯度消失/爆炸 - 难训练</li>
+                    </ul>
+                `,
+                mnemonic: '串行是原罪',
+                signature: '问题根源',
+                points: 10
+            },
+            {
+                type: 'insight',
+                typeName: '核心洞察',
+                title: '为什么需要 Q、K、V？',
+                content: `
+                    <p class="handwriting">
+                        "点积是对称的 —<br>
+                        <span class="wavy">a·b = b·a</span><br>
+                        但语义关系不对称！"
+                    </p>
+                    <p style="margin-top: 1rem;">"我" 查询 "书" 和 "书" 查询 "我" 是不同的</p>
+                `,
+                mnemonic: 'Q问K答V给值',
+                signature: 'Transformer 核心洞察',
+                points: 10
+            },
+            {
+                type: 'formula',
+                typeName: '公式推导',
+                title: 'Attention 计算公式',
+                content: `
+                    <p>注意力机制的数学表达：</p>
+                    <p class="handwriting" style="text-align: center; font-size: 1.5rem; margin: 1.5rem 0;">
+                        Attention = softmax(<span class="wavy">QK<sup>T</sup>/√d<sub>k</sub></span>)V
+                    </p>
+                    <p>为什么除以 √d<sub>k</sub>？</p>
+                    <p style="color: var(--text-tertiary);">- 防止点积值过大导致softmax梯度消失</p>
+                `,
+                mnemonic: 'QK点积除根号，Softmax后乘V',
+                signature: '注意力机制',
+                points: 12
+            },
+            {
+                type: 'warning',
+                typeName: '误区警示',
+                title: '常见错误：忘记 Scaling',
+                content: `
+                    <p class="handwriting">
+                        <span class="wavy">直接 QK<sup>T</sup> 是错的！</span>
+                    </p>
+                    <p style="margin-top: 1rem;">当 d<sub>k</sub> = 512 时：</p>
+                    <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li>点积方差 ≈ 512</li>
+                        <li>Softmax 输出接近 one-hot</li>
+                        <li>梯度几乎为 0 - 训练崩溃</li>
+                    </ul>
+                `,
+                mnemonic: '维度大就除根号，梯度稳定训练好',
+                signature: '数值稳定性',
+                points: 8
+            },
+            {
+                type: 'summary',
+                typeName: '要点总结',
+                title: '本章核心要点',
+                content: `
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="color: var(--accent);">✓</span> RNN 的串行瓶颈导致训练慢、翻译差
+                        </li>
+                        <li style="margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="color: var(--accent);">✓</span> Attention 打破序列依赖，实现并行
+                        </li>
+                        <li style="margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="color: var(--accent);">✓</span> Q/K/V 分离打破对称性
+                        </li>
+                        <li style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="color: var(--accent);">✓</span> Scaling 保证数值稳定
+                        </li>
+                    </ul>
+                `,
+                mnemonic: '并行是王道，注意力是核心',
+                signature: '第一章总结',
+                points: 15
+            }
+        ];
+
+        // State management
+        let currentIndex = 0;
+        let totalPoints = 100;
+        let earnedPoints = 0;
+        let startTime = Date.now();
+        let completedCards = new Set();
+        let currentTemplate = 'classic';
+
+        // Theme management
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = document.querySelector('#themeToggle svg');
+            if (theme === 'dark') {
+                icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+            } else {
+                icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+            }
+        }
+
+        // Auth check
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            if (token && user) {
+                try {
+                    const userData = JSON.parse(user);
+                    // You can use userData here if needed
+                } catch (e) {
+                    console.error('Failed to parse user data:', e);
+                }
+            }
+        }
+
+        // Render card
+        function renderCard(card, index) {
+            const icon = typeIcons[card.type] || typeIcons.story;
+
+            return `
+                <div style="position: relative;">
+                    <div class="card-type">
+                        ${icon}
+                        <span>${card.typeName}</span>
+                    </div>
+                    <h2 class="card-headline">${card.title}</h2>
+                    <div class="card-content">
+                        ${card.content}
+                    </div>
+                    ${card.mnemonic ? `
+                        <div class="mnemonic">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="5"/>
+                                <line x1="12" y1="1" x2="12" y2="3"/>
+                                <line x1="12" y1="21" x2="12" y2="23"/>
+                                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                                <line x1="1" y1="12" x2="3" y2="12"/>
+                                <line x1="21" y1="12" x2="23" y2="12"/>
+                                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                            </svg>
+                            <span class="mnemonic-text">${card.mnemonic}</span>
+                        </div>
+                    ` : ''}
+                    ${card.signature ? `
+                        <p class="card-signature">— ${card.signature}</p>
+                    ` : ''}
+                    <div class="points-indicator">+${card.points}分</div>
+                </div>
+            `;
+        }
+
+        function showCard(index) {
+            const container = document.getElementById('cardContainer');
+            const card = cards[index];
+
+            // Exit animation
+            container.classList.remove('visible');
+            container.classList.add('exiting');
+
+            setTimeout(() => {
+                container.innerHTML = renderCard(card, index);
+                container.classList.remove('exiting');
+
+                // Enter animation
+                requestAnimationFrame(() => {
+                    container.classList.add('visible');
+                });
+
+                // Update UI
+                updateUI();
+
+                // Highlight code blocks
+                document.querySelectorAll('pre code').forEach(block => {
+                    hljs.highlightElement(block);
+                });
+            }, 300);
+        }
+
+        function updateUI() {
+            document.getElementById('currentIndex').textContent = currentIndex + 1;
+            document.getElementById('totalCards').textContent = cards.length;
+            document.getElementById('prevBtn').disabled = currentIndex === 0;
+            document.getElementById('nextBtn').disabled = currentIndex === cards.length - 1;
+
+            // Update progress bar
+            const progress = ((currentIndex + 1) / cards.length) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+        }
+
+        function showPointsAnimation(points) {
+            const float = document.createElement('div');
+            float.className = 'points-float';
+            float.textContent = `+${points}`;
+            float.style.left = '50%';
+            float.style.top = '40%';
+            float.style.transform = 'translateX(-50%)';
+            document.body.appendChild(float);
+
+            setTimeout(() => float.remove(), 1500);
+        }
+
+        function completeCard() {
+            if (!completedCards.has(currentIndex)) {
+                const points = cards[currentIndex].points;
+                earnedPoints += points;
+                totalPoints += points;
+                completedCards.add(currentIndex);
+
+                // Update display
+                document.getElementById('totalPoints').textContent = totalPoints;
+                document.getElementById('earnedPoints').textContent = earnedPoints;
+
+                // Points animation
+                showPointsAnimation(points);
+
+                // Confetti
+                confetti({
+                    particleCount: 30,
+                    spread: 60,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+
+        function showCompletion() {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+
+            document.getElementById('finalCards').textContent = cards.length;
+            document.getElementById('finalTime').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            document.getElementById('finalPoints').textContent = earnedPoints;
+
+            document.getElementById('completionOverlay').classList.add('visible');
+
+            // Big confetti
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+        }
+
+        // Event handlers
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            completeCard();
+
+            if (currentIndex < cards.length - 1) {
+                currentIndex++;
+                showCard(currentIndex);
+            } else {
+                showCompletion();
+            }
+        });
+
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                showCard(currentIndex);
+            }
+        });
+
+        document.getElementById('templateSelect').addEventListener('change', (e) => {
+            currentTemplate = e.target.value;
+            // Template switching logic can be added here
+        });
+
+        document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                document.getElementById('nextBtn').click();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                document.getElementById('prevBtn').click();
+            }
+        });
+
+        // Timer
+        setInterval(() => {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            document.getElementById('timeSpent').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }, 1000);
+
+        // Initialize
+        initTheme();
+        checkAuth();
+        document.getElementById('totalPoints').textContent = totalPoints;
+        showCard(0);
+    </script>
+</body>
+</html>

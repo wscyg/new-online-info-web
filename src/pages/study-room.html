@@ -3,20 +3,802 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>学习室 - AI学习平台</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../styles/design-system.css">
-    <link rel="stylesheet" href="../styles/theme.css">
-    <link rel="stylesheet" href="../styles/study-room.css">
+    <title>学习室 - AI 信息未来</title>
+    <link rel="stylesheet" href="../styles/apple-design.css">
+    <style>
+        /* Study Room Specific Styles */
+        body {
+            overflow: hidden;
+        }
+
+        .study-room-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navigation */
+        .room-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 22px;
+            height: 52px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-primary);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-logo {
+            font-size: 21px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav-link {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--text-primary);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .icon-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+
+        .icon-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .icon-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Room Header */
+        .room-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 22px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+
+        .back-btn:hover {
+            background: var(--bg-hover);
+            transform: scale(1.05);
+        }
+
+        .room-info h1 {
+            font-size: 19px;
+            font-weight: 600;
+            margin: 0 0 4px 0;
+        }
+
+        .room-info span {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Main Content */
+        .room-content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Sidebars */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: transform var(--transition-normal);
+        }
+
+        .sidebar.right {
+            border-right: none;
+            border-left: 1px solid var(--border-color);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sidebar-header h3 {
+            font-size: 17px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        /* Members List */
+        .member-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: background var(--transition-fast);
+            margin-bottom: 8px;
+        }
+
+        .member-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .member-avatar {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .member-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .member-status {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid var(--bg-secondary);
+        }
+
+        .member-status.online {
+            background: #34c759;
+        }
+
+        .member-status.offline {
+            background: var(--text-tertiary);
+        }
+
+        .member-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .member-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .member-role {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        /* Chat Area */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-primary);
+        }
+
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        /* Welcome Message */
+        .welcome-message {
+            text-align: center;
+            padding: 48px 24px;
+        }
+
+        .welcome-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .welcome-icon svg {
+            width: 32px;
+            height: 32px;
+            stroke: var(--accent);
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .welcome-message h3 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .welcome-message p {
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        /* Message Groups */
+        .message-group {
+            margin-bottom: 24px;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .message-header .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .message-header .message-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .message-author {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .message-time {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .message-content {
+            margin-left: 44px;
+            margin-bottom: 4px;
+        }
+
+        .message-content.own {
+            margin-left: 0;
+            margin-right: 0;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .message-text {
+            display: inline-block;
+            padding: 10px 14px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            line-height: 1.5;
+            color: var(--text-primary);
+            max-width: 600px;
+            word-wrap: break-word;
+        }
+
+        .message-content.own .message-text {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .message-image {
+            max-width: 300px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .message-code {
+            background: var(--bg-secondary);
+            padding: 12px;
+            border-radius: var(--radius-md);
+            font-family: var(--font-mono);
+            font-size: 13px;
+            overflow-x: auto;
+            margin-top: 8px;
+        }
+
+        /* Input Area */
+        .message-input-area {
+            border-top: 1px solid var(--border-color);
+            padding: 16px 22px;
+        }
+
+        .input-toolbar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .toolbar-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-md);
+            border: none;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+
+        .toolbar-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .input-container {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        #messageInput {
+            flex: 1;
+            min-height: 44px;
+            max-height: 120px;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-family: var(--font-sans);
+            font-size: 15px;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            resize: none;
+            transition: border-color var(--transition-fast);
+        }
+
+        #messageInput:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        #messageInput::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .send-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-md);
+            border: none;
+            background: var(--accent);
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+
+        .send-btn:hover:not(:disabled) {
+            background: var(--accent-hover);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Tools Section */
+        .tool-section {
+            margin-bottom: 24px;
+        }
+
+        .tool-section h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .note-item {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .note-author {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .note-content {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 4px;
+        }
+
+        .note-time {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .add-note-btn, .screen-share-btn, .add-doc-btn {
+            width: 100%;
+            padding: 10px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all var(--transition-fast);
+        }
+
+        .add-note-btn:hover, .screen-share-btn:hover, .add-doc-btn:hover {
+            background: var(--bg-hover);
+        }
+
+        .whiteboard-preview, .doc-item {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            margin-bottom: 8px;
+        }
+
+        .whiteboard-preview:hover, .doc-item:hover {
+            background: var(--bg-hover);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h3 {
+            font-size: 19px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+
+        .modal-close:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(80vh - 80px);
+        }
+
+        /* Emoji Picker */
+        .emoji-picker {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-fast);
+            z-index: 100;
+        }
+
+        .emoji-picker.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+        }
+
+        .emoji {
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: var(--radius-sm);
+            transition: background var(--transition-fast);
+        }
+
+        .emoji:hover {
+            background: var(--bg-hover);
+        }
+
+        /* Mobile Toolbar */
+        .mobile-toolbar {
+            display: none;
+            padding: 12px 22px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-primary);
+        }
+
+        .mobile-tools {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .mobile-tool-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: color var(--transition-fast);
+        }
+
+        .mobile-tool-btn:hover {
+            color: var(--accent);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .sidebar {
+                position: fixed;
+                top: 0;
+                bottom: 0;
+                z-index: 100;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.right {
+                right: 0;
+                transform: translateX(100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .mobile-toolbar {
+                display: block;
+            }
+
+            .message-content {
+                margin-left: 0;
+            }
+
+            .message-header {
+                margin-bottom: 8px;
+            }
+        }
+
+        /* System Message */
+        .system-message {
+            text-align: center;
+            padding: 12px;
+            margin: 16px 0;
+        }
+
+        .system-content {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-tertiary);
+            background: var(--bg-secondary);
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+        }
+
+        /* User Avatar in Nav */
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    </style>
 </head>
-<body>
+<body data-theme="light">
     <div class="study-room-container">
-        <!-- 头部导航 -->
+        <!-- Navigation -->
+        <nav class="room-nav">
+            <div class="nav-left">
+                <div class="nav-logo">AI 信息未来</div>
+                <div class="nav-menu">
+                    <a href="../index.html" class="nav-link">首页</a>
+                    <a href="courses.html" class="nav-link">课程</a>
+                    <a href="community.html" class="nav-link">社区</a>
+                    <a href="pk-arena.html" class="nav-link">PK竞技</a>
+                </div>
+            </div>
+            <div class="nav-actions">
+                <button class="icon-btn theme-toggle" id="themeToggle" aria-label="切换主题">
+                    <svg class="sun-icon" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                </button>
+                <div class="user-avatar" id="userAvatar">U</div>
+            </div>
+        </nav>
+
+        <!-- Room Header -->
         <header class="room-header">
             <div class="header-left">
                 <button class="back-btn" onclick="history.back()">
-                    <i class="fas fa-arrow-left"></i>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
                 </button>
                 <div class="room-info">
                     <h1 id="roomTitle">学习室</h1>
@@ -24,162 +806,213 @@
                 </div>
             </div>
             <div class="header-right">
-                <button class="room-settings-btn" onclick="toggleRoomSettings()">
-                    <i class="fas fa-cog"></i>
+                <button class="icon-btn" onclick="toggleRoomSettings()">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 1v6m0 6v10M5.5 4.5l4.5 4.5m6 6l4.5 4.5M1 12h6m6 0h10M5.5 19.5l4.5-4.5m6-6l4.5-4.5"/>
+                    </svg>
                 </button>
             </div>
         </header>
 
-        <!-- 主要内容区 -->
+        <!-- Main Content -->
         <div class="room-content">
-            <!-- 左侧 - 成员列表 -->
-            <aside class="members-sidebar" id="membersSidebar">
+            <!-- Left Sidebar - Members -->
+            <aside class="sidebar" id="membersSidebar">
                 <div class="sidebar-header">
                     <h3>在线成员</h3>
-                    <button class="toggle-sidebar" onclick="toggleMembersSidebar()">
-                        <i class="fas fa-times"></i>
+                    <button class="icon-btn" onclick="toggleMembersSidebar()">
+                        <svg viewBox="0 0 24 24">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
                     </button>
                 </div>
-                <div class="members-list" id="membersList">
-                    <!-- 成员列表将通过JS动态生成 -->
+                <div class="sidebar-content" id="membersList">
+                    <!-- Members will be populated by JS -->
                 </div>
             </aside>
 
-            <!-- 中间 - 聊天区域 -->
+            <!-- Chat Area -->
             <main class="chat-area">
-                <div class="chat-container">
-                    <!-- 聊天消息 -->
-                    <div class="messages-container" id="messagesContainer">
-                        <div class="welcome-message">
-                            <div class="welcome-icon">💬</div>
-                            <h3>欢迎来到学习室</h3>
-                            <p>在这里与其他学习者交流讨论，共同进步！</p>
+                <div class="messages-container" id="messagesContainer">
+                    <div class="welcome-message">
+                        <div class="welcome-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </svg>
                         </div>
+                        <h3>欢迎来到学习室</h3>
+                        <p>在这里与其他学习者交流讨论，共同进步</p>
                     </div>
+                </div>
 
-                    <!-- 输入区域 -->
-                    <div class="message-input-area">
-                        <div class="input-toolbar">
-                            <button class="toolbar-btn" onclick="insertEmoji()">
-                                <i class="fas fa-smile"></i>
-                            </button>
-                            <button class="toolbar-btn" onclick="uploadImage()">
-                                <i class="fas fa-image"></i>
-                            </button>
-                            <button class="toolbar-btn" onclick="insertCode()">
-                                <i class="fas fa-code"></i>
-                            </button>
-                        </div>
-                        <div class="input-container">
-                            <textarea 
-                                id="messageInput" 
-                                placeholder="输入消息..." 
-                                rows="3"
-                                onkeydown="handleInputKeydown(event)"
-                                oninput="handleInputChange()"
-                            ></textarea>
-                            <button id="sendButton" class="send-btn" onclick="sendMessage()" disabled>
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
-                        </div>
+                <!-- Input Area -->
+                <div class="message-input-area">
+                    <div class="input-toolbar">
+                        <button class="toolbar-btn" onclick="insertEmoji()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/>
+                            </svg>
+                        </button>
+                        <button class="toolbar-btn" onclick="uploadImage()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <path d="M21 15l-5-5L5 21"/>
+                            </svg>
+                        </button>
+                        <button class="toolbar-btn" onclick="insertCode()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="input-container">
+                        <textarea
+                            id="messageInput"
+                            placeholder="输入消息..."
+                            rows="1"
+                        ></textarea>
+                        <button id="sendButton" class="send-btn" onclick="sendMessage()" disabled>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="22" y1="2" x2="11" y2="13"/>
+                                <path d="M22 2L15 22l-4-9-9-4 20-7z"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
             </main>
 
-            <!-- 右侧 - 学习工具 -->
-            <aside class="tools-sidebar" id="toolsSidebar">
+            <!-- Right Sidebar - Tools -->
+            <aside class="sidebar right" id="toolsSidebar">
                 <div class="sidebar-header">
                     <h3>学习工具</h3>
-                    <button class="toggle-sidebar" onclick="toggleToolsSidebar()">
-                        <i class="fas fa-times"></i>
+                    <button class="icon-btn" onclick="toggleToolsSidebar()">
+                        <svg viewBox="0 0 24 24">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
                     </button>
                 </div>
-                
-                <div class="tools-content">
-                    <!-- 笔记工具 -->
+                <div class="sidebar-content">
+                    <!-- Shared Notes -->
                     <div class="tool-section">
                         <h4>共享笔记</h4>
-                        <div class="shared-notes" id="sharedNotes">
+                        <div id="sharedNotes">
                             <div class="note-item">
                                 <div class="note-author">学习者1</div>
-                                <div class="note-content">
-                                    深度学习中的反向传播算法是通过链式法则计算梯度...
-                                </div>
+                                <div class="note-content">深度学习中的反向传播算法是通过链式法则计算梯度...</div>
                                 <div class="note-time">5分钟前</div>
                             </div>
                         </div>
                         <button class="add-note-btn" onclick="addSharedNote()">
-                            <i class="fas fa-plus"></i> 添加笔记
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            <span>添加笔记</span>
                         </button>
                     </div>
 
-                    <!-- 白板工具 -->
+                    <!-- Whiteboard -->
                     <div class="tool-section">
                         <h4>协作白板</h4>
                         <div class="whiteboard-preview" onclick="openWhiteboard()">
-                            <i class="fas fa-chalkboard"></i>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="7" y1="7" x2="17" y2="7"/>
+                                <line x1="7" y1="12" x2="17" y2="12"/>
+                                <line x1="7" y1="17" x2="13" y2="17"/>
+                            </svg>
                             <span>打开白板</span>
                         </div>
                     </div>
 
-                    <!-- 屏幕共享 -->
+                    <!-- Screen Share -->
                     <div class="tool-section">
                         <h4>屏幕共享</h4>
                         <button class="screen-share-btn" onclick="toggleScreenShare()">
-                            <i class="fas fa-desktop"></i>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                                <line x1="8" y1="21" x2="16" y2="21"/>
+                                <line x1="12" y1="17" x2="12" y2="21"/>
+                            </svg>
                             <span>开始共享</span>
                         </button>
                     </div>
 
-                    <!-- 在线文档 -->
+                    <!-- Documents -->
                     <div class="tool-section">
                         <h4>协作文档</h4>
-                        <div class="doc-list" id="docList">
+                        <div id="docList">
                             <div class="doc-item" onclick="openDocument('doc1')">
-                                <i class="fas fa-file-alt"></i>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+                                </svg>
                                 <span>学习笔记</span>
                             </div>
                         </div>
                         <button class="add-doc-btn" onclick="createDocument()">
-                            <i class="fas fa-plus"></i> 新建文档
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            <span>新建文档</span>
                         </button>
                     </div>
                 </div>
             </aside>
         </div>
 
-        <!-- 移动端底部工具栏 -->
+        <!-- Mobile Toolbar -->
         <div class="mobile-toolbar">
-            <button class="mobile-tool-btn" onclick="toggleMembersSidebar()">
-                <i class="fas fa-users"></i>
-                <span>成员</span>
-            </button>
-            <button class="mobile-tool-btn" onclick="toggleToolsSidebar()">
-                <i class="fas fa-tools"></i>
-                <span>工具</span>
-            </button>
-            <button class="mobile-tool-btn" onclick="toggleVoiceChat()">
-                <i class="fas fa-microphone"></i>
-                <span>语音</span>
-            </button>
+            <div class="mobile-tools">
+                <button class="mobile-tool-btn" onclick="toggleMembersSidebar()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    <span>成员</span>
+                </button>
+                <button class="mobile-tool-btn" onclick="toggleToolsSidebar()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                    </svg>
+                    <span>工具</span>
+                </button>
+                <button class="mobile-tool-btn" onclick="toggleVoiceChat()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/>
+                    </svg>
+                    <span>语音</span>
+                </button>
+            </div>
         </div>
 
-        <!-- 弹窗模态框 -->
+        <!-- Modal -->
         <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
             <div class="modal-content" onclick="event.stopPropagation()">
                 <div class="modal-header">
                     <h3 id="modalTitle">标题</h3>
                     <button class="modal-close" onclick="closeModal()">
-                        <i class="fas fa-times"></i>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
                     </button>
                 </div>
                 <div class="modal-body" id="modalBody">
-                    <!-- 模态框内容 -->
+                    <!-- Modal content will be inserted here -->
                 </div>
             </div>
         </div>
 
-        <!-- 表情选择器 -->
+        <!-- Emoji Picker -->
         <div class="emoji-picker" id="emojiPicker">
             <div class="emoji-grid">
                 <span class="emoji" onclick="insertEmojiToInput('😀')">😀</span>
@@ -198,9 +1031,41 @@
         </div>
     </div>
 
-    <!-- 文件上传隐藏input -->
+    <!-- Hidden file input -->
     <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileUpload(event)">
 
     <script type="module" src="../scripts/study-room.js"></script>
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
+
+        // Load theme from localStorage
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        htmlElement.setAttribute('data-theme', savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            htmlElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // Update user avatar
+        const userAvatar = document.getElementById('userAvatar');
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            try {
+                const user = JSON.parse(userStr);
+                if (user.avatar) {
+                    userAvatar.innerHTML = `<img src="${user.avatar}" alt="${user.username}">`;
+                } else if (user.username) {
+                    userAvatar.textContent = user.username.charAt(0).toUpperCase();
+                }
+            } catch (e) {
+                console.error('Failed to parse user data:', e);
+            }
+        }
+    </script>
 </body>
 </html>

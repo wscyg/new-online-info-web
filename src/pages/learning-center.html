@@ -3,162 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>学习中心 - 在线教育平台</title>
+    <title>学习中心 - AI 信息未来</title>
+    <link rel="stylesheet" href="../styles/apple-design.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-            background: #f0f2f5;
-            min-height: 100vh;
+            padding-top: 48px;
+            background: var(--bg-secondary);
         }
-        
-        /* 顶部导航 */
-        .header {
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        
-        .nav-container {
+
+        .page-container {
             max-width: 1400px;
             margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            height: 65px;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 24px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .nav-menu {
-            display: flex;
-            gap: 30px;
-            list-style: none;
-        }
-        
-        .nav-item {
-            color: #4a5568;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-            position: relative;
-        }
-        
-        .nav-item.active {
-            color: #667eea;
-        }
-        
-        .nav-item.active::after {
-            content: '';
-            position: absolute;
-            bottom: -20px;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: #667eea;
-        }
-        
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .notification-btn {
-            position: relative;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #f7fafc;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            transition: all 0.3s;
-        }
-        
-        .notification-btn:hover {
-            background: #edf2f7;
-            transform: scale(1.05);
-        }
-        
-        .notification-badge {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            width: 10px;
-            height: 10px;
-            background: #ef4444;
-            border-radius: 50%;
-            border: 2px solid white;
-        }
-        
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-        
-        .user-avatar:hover {
-            transform: scale(1.05);
-        }
-        
-        /* 主容器 */
-        .main-container {
-            max-width: 1400px;
-            margin: 30px auto;
-            padding: 0 20px;
+            padding: 32px 22px;
             display: grid;
-            grid-template-columns: 300px 1fr 320px;
-            gap: 30px;
+            grid-template-columns: 280px 1fr 320px;
+            gap: 24px;
         }
-        
-        /* 左侧边栏 */
+
+        /* === 左侧边栏 === */
         .sidebar-left {
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
-        
-        .user-card {
-            background: white;
-            border-radius: 16px;
-            padding: 25px;
+
+        /* 用户卡片 */
+        .user-profile-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 28px 24px;
             text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
-        
-        .user-card-avatar {
+
+        .profile-avatar {
             width: 80px;
             height: 80px;
-            margin: 0 auto 15px;
+            margin: 0 auto 16px;
             border-radius: 50%;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
@@ -166,104 +47,124 @@
             justify-content: center;
             color: white;
             font-size: 32px;
+            font-weight: 600;
         }
-        
-        .user-card-name {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 5px;
+
+        .profile-avatar svg {
+            width: 40px;
+            height: 40px;
         }
-        
-        .user-card-level {
-            color: #718096;
-            font-size: 14px;
+
+        .profile-name {
+            font-size: 21px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .profile-level {
+            font-size: 13px;
+            color: var(--text-secondary);
             margin-bottom: 20px;
         }
-        
-        .user-stats {
+
+        .profile-stats {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
             padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid var(--border-color);
         }
-        
-        .user-stat {
+
+        .profile-stat {
             text-align: center;
         }
-        
-        .user-stat-value {
+
+        .profile-stat-value {
             font-size: 24px;
-            font-weight: bold;
-            color: #667eea;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: -0.02em;
         }
-        
-        .user-stat-label {
-            font-size: 12px;
-            color: #a0aec0;
-            margin-top: 5px;
+
+        .profile-stat-label {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
-        
-        .quick-links {
-            background: white;
-            border-radius: 16px;
+
+        /* 快速链接 */
+        .quick-nav {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
             padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
-        
-        .quick-links-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: #2d3748;
+
+        .quick-nav-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
         }
-        
-        .quick-link-item {
+
+        .quick-nav-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .quick-nav-item {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 12px;
-            margin-bottom: 8px;
-            border-radius: 10px;
+            padding: 10px 12px;
+            color: var(--text-secondary);
+            border-radius: var(--radius-sm);
+            transition: all var(--transition-fast);
             cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            color: #4a5568;
         }
-        
-        .quick-link-item:hover {
-            background: #f7fafc;
-            transform: translateX(5px);
+
+        .quick-nav-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            transform: translateX(2px);
         }
-        
-        .quick-link-icon {
-            width: 36px;
-            height: 36px;
+
+        .quick-nav-icon {
+            width: 32px;
+            height: 32px;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            background: var(--bg-hover);
         }
-        
-        /* 中间内容区 */
-        .content-area {
+
+        .quick-nav-icon svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* === 中间内容区 === */
+        .main-content {
             display: flex;
             flex-direction: column;
-            gap: 25px;
+            gap: 24px;
         }
-        
+
         /* 欢迎横幅 */
         .welcome-banner {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 20px;
-            padding: 30px;
+            border-radius: var(--radius-xl);
+            padding: 40px 32px;
             color: white;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
         }
-        
+
         .welcome-banner::before {
             content: '';
             position: absolute;
@@ -271,316 +172,356 @@
             right: -10%;
             width: 300px;
             height: 300px;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
             border-radius: 50%;
         }
-        
+
         .welcome-content {
             position: relative;
             z-index: 1;
         }
-        
+
         .welcome-title {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 10px;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
         }
-        
+
         .welcome-subtitle {
-            font-size: 16px;
-            opacity: 0.9;
-            margin-bottom: 25px;
+            font-size: 17px;
+            opacity: 0.95;
+            margin-bottom: 28px;
         }
-        
+
         .welcome-stats {
             display: flex;
-            gap: 40px;
+            gap: 48px;
         }
-        
-        .welcome-stat {
-            display: flex;
-            flex-direction: column;
-        }
-        
+
         .welcome-stat-value {
-            font-size: 32px;
-            font-weight: bold;
+            font-size: 40px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1;
         }
-        
+
         .welcome-stat-label {
-            font-size: 14px;
+            font-size: 13px;
             opacity: 0.9;
+            margin-top: 6px;
         }
-        
+
         /* 学习进度 */
         .progress-section {
-            background: white;
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 28px;
         }
-        
+
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
         }
-        
+
         .section-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #2d3748;
+            font-size: 21px;
+            font-weight: 600;
+            color: var(--text-primary);
         }
-        
+
         .section-link {
-            color: #667eea;
-            text-decoration: none;
             font-size: 14px;
-            font-weight: 500;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
-        
-        .course-progress-list {
+
+        .course-list {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 16px;
         }
-        
-        .course-progress-item {
+
+        .course-item {
             display: flex;
-            gap: 15px;
-            padding: 15px;
-            background: #f8fafc;
-            border-radius: 12px;
+            gap: 16px;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all var(--transition-fast);
         }
-        
-        .course-progress-item:hover {
-            background: #edf2f7;
+
+        .course-item:hover {
+            background: var(--bg-hover);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
-        
-        .course-thumbnail {
-            width: 80px;
-            height: 60px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-            flex-shrink: 0;
-        }
-        
-        .course-info {
-            flex: 1;
-        }
-        
-        .course-title {
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 5px;
-        }
-        
-        .course-meta {
-            font-size: 12px;
-            color: #718096;
-            margin-bottom: 10px;
-        }
-        
-        .progress-bar {
-            height: 8px;
-            background: #e2e8f0;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            border-radius: 4px;
-            transition: width 0.3s ease;
-        }
-        
-        .course-action {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+
+        .course-thumb {
             width: 100px;
-        }
-        
-        .continue-btn {
-            padding: 8px 16px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .continue-btn:hover {
-            background: #5a67d8;
-            transform: scale(1.05);
-        }
-        
-        /* 推荐课程 */
-        .recommendations {
-            background: white;
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-        
-        .course-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
-        
-        .course-card {
-            border-radius: 12px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 1px solid #e2e8f0;
-        }
-        
-        .course-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-        
-        .course-image {
-            height: 120px;
+            height: 75px;
+            border-radius: var(--radius-sm);
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-size: 32px;
+            flex-shrink: 0;
         }
-        
-        .course-content {
-            padding: 15px;
+
+        .course-thumb svg {
+            width: 40px;
+            height: 40px;
         }
-        
-        .course-category {
-            font-size: 12px;
-            color: #667eea;
-            font-weight: 500;
-            margin-bottom: 8px;
+
+        .course-details {
+            flex: 1;
+            min-width: 0;
         }
-        
+
         .course-name {
+            font-size: 17px;
             font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 8px;
-            line-height: 1.4;
+            color: var(--text-primary);
+            margin-bottom: 4px;
         }
-        
-        .course-instructor {
+
+        .course-chapter {
             font-size: 13px;
-            color: #718096;
+            color: var(--text-secondary);
             margin-bottom: 12px;
         }
-        
-        .course-footer {
+
+        .progress-track {
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 3px;
+            transition: width 0.5s var(--ease-out);
+        }
+
+        .course-action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .continue-btn {
+            padding: 8px 20px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: var(--radius-full);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+        }
+
+        .continue-btn:hover {
+            background: var(--accent-hover);
+            transform: scale(1.02);
+        }
+
+        /* 推荐课程 */
+        .recommendations {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+        }
+
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .rec-course-card {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .rec-course-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-card);
+        }
+
+        .rec-course-cover {
+            height: 140px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+        }
+
+        .rec-course-cover svg {
+            width: 48px;
+            height: 48px;
+        }
+
+        .rec-course-body {
+            padding: 16px;
+        }
+
+        .rec-course-category {
+            font-size: 12px;
+            color: var(--accent);
+            font-weight: 500;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .rec-course-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .rec-course-instructor {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .rec-course-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding-top: 12px;
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid var(--border-color);
         }
-        
-        .course-price {
-            font-size: 18px;
-            font-weight: bold;
-            color: #ef4444;
+
+        .rec-course-price {
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--accent);
         }
-        
-        .course-rating {
+
+        .rec-course-rating {
             display: flex;
             align-items: center;
-            gap: 5px;
-            font-size: 14px;
-            color: #f59e0b;
+            gap: 4px;
+            font-size: 13px;
+            color: var(--text-secondary);
         }
-        
-        /* 右侧边栏 */
+
+        .rec-course-rating svg {
+            width: 14px;
+            height: 14px;
+            fill: #f59e0b;
+        }
+
+        /* === 右侧边栏 === */
         .sidebar-right {
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
-        
+
         /* 学习计划 */
-        .study-plan {
-            background: white;
-            border-radius: 16px;
+        .study-calendar {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
             padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
-        
+
+        .calendar-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-            margin-top: 15px;
+            gap: 6px;
         }
-        
-        .calendar-day {
+
+        .calendar-cell {
             aspect-ratio: 1;
-            border-radius: 8px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            background: var(--bg-secondary);
             cursor: pointer;
-            transition: all 0.3s;
-            background: #f7fafc;
+            transition: all var(--transition-fast);
         }
-        
-        .calendar-day.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+        .calendar-cell:hover {
+            background: var(--bg-hover);
+        }
+
+        .calendar-cell.active {
+            background: var(--accent);
             color: white;
+            font-weight: 600;
         }
-        
-        .calendar-day:hover {
-            transform: scale(1.1);
-        }
-        
+
         /* 学习小组 */
         .study-groups {
-            background: white;
-            border-radius: 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
             padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
-        
+
+        .groups-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .group-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
         .group-item {
             display: flex;
             align-items: center;
             gap: 12px;
             padding: 12px;
-            margin-bottom: 10px;
-            background: #f8fafc;
-            border-radius: 10px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all var(--transition-fast);
         }
-        
+
         .group-item:hover {
-            background: #edf2f7;
-            transform: translateX(5px);
+            background: var(--bg-hover);
+            transform: translateX(2px);
         }
-        
-        .group-avatar {
+
+        .group-icon {
             width: 40px;
             height: 40px;
             border-radius: 8px;
@@ -590,275 +531,277 @@
             justify-content: center;
             color: white;
             font-size: 18px;
+            flex-shrink: 0;
         }
-        
-        .group-info {
+
+        .group-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .group-content {
             flex: 1;
+            min-width: 0;
         }
-        
+
         .group-name {
-            font-weight: 600;
-            color: #2d3748;
             font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
         }
-        
+
         .group-members {
-            font-size: 12px;
-            color: #718096;
+            font-size: 11px;
+            color: var(--text-secondary);
         }
-        
+
         .group-status {
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: #10b981;
+            background: #34c759;
+            flex-shrink: 0;
         }
-        
-        /* AI助手 */
-        .ai-assistant {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 28px;
-            cursor: pointer;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-            transition: all 0.3s;
-            z-index: 1000;
-        }
-        
-        .ai-assistant:hover {
-            transform: scale(1.1);
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
-        }
-        
-        .ai-assistant::before {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: inherit;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(1.5);
-                opacity: 0;
-            }
-        }
-        
+
         /* 排行榜 */
         .leaderboard {
-            background: white;
-            border-radius: 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
             padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
-        
-        .leaderboard-item {
+
+        .leaderboard-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .leaderboard-row {
             display: flex;
             align-items: center;
             gap: 12px;
             padding: 10px;
-            margin-bottom: 8px;
-            border-radius: 8px;
-            transition: all 0.3s;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            transition: all var(--transition-fast);
         }
-        
-        .leaderboard-item:hover {
-            background: #f8fafc;
+
+        .leaderboard-row:hover {
+            background: var(--bg-hover);
         }
-        
-        .leaderboard-rank {
-            width: 30px;
-            height: 30px;
+
+        .rank-badge {
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 14px;
-        }
-        
-        .rank-1 {
-            background: #ffd700;
-            color: white;
-        }
-        
-        .rank-2 {
-            background: #c0c0c0;
-            color: white;
-        }
-        
-        .rank-3 {
-            background: #cd7f32;
-            color: white;
-        }
-        
-        .leaderboard-user {
-            flex: 1;
-        }
-        
-        .leaderboard-name {
-            font-weight: 600;
-            color: #2d3748;
-            font-size: 14px;
-        }
-        
-        .leaderboard-score {
+            font-weight: 700;
             font-size: 12px;
-            color: #718096;
+            flex-shrink: 0;
         }
-        
-        .leaderboard-points {
-            font-weight: bold;
-            color: #667eea;
+
+        .rank-1 { background: #ffd700; color: white; }
+        .rank-2 { background: #c0c0c0; color: white; }
+        .rank-3 { background: #cd7f32; color: white; }
+        .rank-other { background: var(--bg-hover); color: var(--text-secondary); }
+
+        .rank-user {
+            flex: 1;
+            min-width: 0;
         }
-        
-        /* 响应式设计 */
+
+        .rank-user-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .rank-user-hours {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .rank-points {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        /* 响应式 */
         @media (max-width: 1200px) {
-            .main-container {
-                grid-template-columns: 250px 1fr;
+            .page-container {
+                grid-template-columns: 260px 1fr;
             }
-            
             .sidebar-right {
                 display: none;
             }
         }
-        
+
         @media (max-width: 768px) {
-            .main-container {
+            .page-container {
                 grid-template-columns: 1fr;
+                padding: 20px 16px;
             }
-            
             .sidebar-left {
                 display: none;
             }
-            
             .course-grid {
                 grid-template-columns: 1fr;
             }
-            
-            .nav-menu {
-                display: none;
+            .welcome-stats {
+                gap: 32px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- 顶部导航 -->
-    <header class="header">
-        <div class="nav-container">
-            <div class="logo">
-                <span>🎓</span>
-                <span>智慧学堂</span>
-            </div>
-            
-            <nav class="nav-menu">
-                <a href="#" class="nav-item active">学习中心</a>
-                <a href="courses.html" class="nav-item">课程库</a>
-                <a href="#" class="nav-item">直播课</a>
-                <a href="#" class="nav-item">社区</a>
-                <a href="#" class="nav-item">题库</a>
-                <a href="#" class="nav-item">证书</a>
-            </nav>
-            
-            <div class="user-menu">
-                <button class="notification-btn">
-                    🔔
-                    <span class="notification-badge"></span>
-                </button>
-                <div class="user-avatar">张</div>
-            </div>
-        </div>
-    </header>
+    <!-- 导航栏 -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="nav-logo">智慧学堂</div>
 
-    <!-- 主容器 -->
-    <div class="main-container">
-        <!-- 左侧边栏 -->
-        <aside class="sidebar-left">
-            <!-- 用户卡片 -->
-            <div class="user-card">
-                <div class="user-card-avatar">👤</div>
-                <div class="user-card-name">张三</div>
-                <div class="user-card-level">Lv.12 高级学员</div>
-                <div class="user-stats">
-                    <div class="user-stat">
-                        <div class="user-stat-value">156</div>
-                        <div class="user-stat-label">学习天数</div>
-                    </div>
-                    <div class="user-stat">
-                        <div class="user-stat-value">42</div>
-                        <div class="user-stat-label">完成课程</div>
-                    </div>
-                    <div class="user-stat">
-                        <div class="user-stat-value">2850</div>
-                        <div class="user-stat-label">积分</div>
-                    </div>
-                    <div class="user-stat">
-                        <div class="user-stat-value">28</div>
-                        <div class="user-stat-label">证书</div>
+            <div class="nav-menu">
+                <a href="../index.html" class="nav-link">首页</a>
+                <a href="courses.html" class="nav-link">课程</a>
+                <a href="#" class="nav-link">社区</a>
+                <a href="#" class="nav-link">PK竞技</a>
+            </div>
+
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+                <div class="user-menu">
+                    <div class="user-avatar" id="userAvatar">
+                        <span id="avatarText">U</span>
                     </div>
                 </div>
             </div>
-            
-            <!-- 快速链接 -->
-            <div class="quick-links">
-                <h3 class="quick-links-title">快速访问</h3>
-                <a href="profile-enhanced.html" class="quick-link-item">
-                    <div class="quick-link-icon" style="background: #fef2f2; color: #ef4444;">👤</div>
-                    <span>个人资料</span>
-                </a>
-                <a href="#" class="quick-link-item">
-                    <div class="quick-link-icon" style="background: #f0f9ff; color: #3b82f6;">📚</div>
-                    <span>我的课程</span>
-                </a>
-                <a href="#" class="quick-link-item">
-                    <div class="quick-link-icon" style="background: #f0fdf4; color: #10b981;">📝</div>
-                    <span>作业中心</span>
-                </a>
-                <a href="#" class="quick-link-item">
-                    <div class="quick-link-icon" style="background: #fef3c7; color: #f59e0b;">💳</div>
-                    <span>我的订单</span>
-                </a>
-                <a href="#" class="quick-link-item">
-                    <div class="quick-link-icon" style="background: #ede9fe; color: #8b5cf6;">🎁</div>
-                    <span>优惠券</span>
-                </a>
+        </div>
+    </nav>
+
+    <!-- 主容器 -->
+    <div class="page-container">
+        <!-- 左侧边栏 -->
+        <aside class="sidebar-left">
+            <!-- 用户资料卡片 -->
+            <div class="user-profile-card">
+                <div class="profile-avatar">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </div>
+                <div class="profile-name" id="profileName">用户</div>
+                <div class="profile-level">Lv.12 高级学员</div>
+                <div class="profile-stats">
+                    <div class="profile-stat">
+                        <div class="profile-stat-value" id="studyDays">0</div>
+                        <div class="profile-stat-label">学习天数</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="profile-stat-value" id="completedCourses">0</div>
+                        <div class="profile-stat-label">完成课程</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="profile-stat-value" id="totalPoints">0</div>
+                        <div class="profile-stat-label">积分</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="profile-stat-value" id="certificates">0</div>
+                        <div class="profile-stat-label">证书</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 快速导航 -->
+            <div class="quick-nav">
+                <h3 class="quick-nav-title">快速访问</h3>
+                <div class="quick-nav-list">
+                    <a href="profile-enhanced.html" class="quick-nav-item">
+                        <div class="quick-nav-icon" style="color: #ef4444;">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                            </svg>
+                        </div>
+                        <span>个人资料</span>
+                    </a>
+                    <a href="#" class="quick-nav-item">
+                        <div class="quick-nav-icon" style="color: #3b82f6;">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/>
+                            </svg>
+                        </div>
+                        <span>我的课程</span>
+                    </a>
+                    <a href="#" class="quick-nav-item">
+                        <div class="quick-nav-icon" style="color: #10b981;">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                            </svg>
+                        </div>
+                        <span>作业中心</span>
+                    </a>
+                    <a href="#" class="quick-nav-item">
+                        <div class="quick-nav-icon" style="color: #f59e0b;">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+                            </svg>
+                        </div>
+                        <span>我的订单</span>
+                    </a>
+                    <a href="#" class="quick-nav-item">
+                        <div class="quick-nav-icon" style="color: #8b5cf6;">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/>
+                            </svg>
+                        </div>
+                        <span>优惠券</span>
+                    </a>
+                </div>
             </div>
         </aside>
 
         <!-- 中间内容区 -->
-        <main class="content-area">
+        <main class="main-content">
             <!-- 欢迎横幅 -->
             <div class="welcome-banner">
                 <div class="welcome-content">
-                    <h1 class="welcome-title">欢迎回来，张三！</h1>
-                    <p class="welcome-subtitle">今天是您学习的第156天，继续保持！</p>
+                    <h1 class="welcome-title" id="welcomeTitle">欢迎回来</h1>
+                    <p class="welcome-subtitle" id="welcomeSubtitle">继续您的学习之旅</p>
                     <div class="welcome-stats">
-                        <div class="welcome-stat">
-                            <div class="welcome-stat-value">3.5</div>
+                        <div>
+                            <div class="welcome-stat-value" id="todayHours">0</div>
                             <div class="welcome-stat-label">今日学习时长(小时)</div>
                         </div>
-                        <div class="welcome-stat">
-                            <div class="welcome-stat-value">12</div>
+                        <div>
+                            <div class="welcome-stat-value" id="weekLessons">0</div>
                             <div class="welcome-stat-label">本周完成课时</div>
                         </div>
-                        <div class="welcome-stat">
-                            <div class="welcome-stat-value">95%</div>
+                        <div>
+                            <div class="welcome-stat-value" id="monthAttendance">0%</div>
                             <div class="welcome-stat-label">本月出勤率</div>
                         </div>
                     </div>
@@ -869,50 +812,15 @@
             <div class="progress-section">
                 <div class="section-header">
                     <h2 class="section-title">继续学习</h2>
-                    <a href="#" class="section-link">查看全部 →</a>
+                    <a href="#" class="section-link">
+                        查看全部
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </a>
                 </div>
-                <div class="course-progress-list">
-                    <div class="course-progress-item">
-                        <div class="course-thumbnail">📱</div>
-                        <div class="course-info">
-                            <div class="course-title">Vue 3 高级开发实战</div>
-                            <div class="course-meta">第8章 · 组合式API深入 · 共12课时</div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 65%;"></div>
-                            </div>
-                        </div>
-                        <div class="course-action">
-                            <button class="continue-btn">继续学习</button>
-                        </div>
-                    </div>
-                    
-                    <div class="course-progress-item">
-                        <div class="course-thumbnail">🎨</div>
-                        <div class="course-info">
-                            <div class="course-title">UI/UX设计原理与实践</div>
-                            <div class="course-meta">第3章 · 色彩理论 · 共8课时</div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 35%;"></div>
-                            </div>
-                        </div>
-                        <div class="course-action">
-                            <button class="continue-btn">继续学习</button>
-                        </div>
-                    </div>
-                    
-                    <div class="course-progress-item">
-                        <div class="course-thumbnail">🤖</div>
-                        <div class="course-info">
-                            <div class="course-title">人工智能入门到精通</div>
-                            <div class="course-meta">第5章 · 深度学习基础 · 共15课时</div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 80%;"></div>
-                            </div>
-                        </div>
-                        <div class="course-action">
-                            <button class="continue-btn">继续学习</button>
-                        </div>
-                    </div>
+                <div class="course-list" id="courseList">
+                    <!-- Courses will be loaded here -->
                 </div>
             </div>
 
@@ -920,60 +828,15 @@
             <div class="recommendations">
                 <div class="section-header">
                     <h2 class="section-title">为您推荐</h2>
-                    <a href="#" class="section-link">更多推荐 →</a>
+                    <a href="#" class="section-link">
+                        更多推荐
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </a>
                 </div>
-                <div class="course-grid">
-                    <div class="course-card">
-                        <div class="course-image">⚛️</div>
-                        <div class="course-content">
-                            <div class="course-category">前端开发</div>
-                            <div class="course-name">React 18 新特性详解</div>
-                            <div class="course-instructor">讲师：李明</div>
-                            <div class="course-footer">
-                                <span class="course-price">¥299</span>
-                                <span class="course-rating">⭐ 4.9</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="course-card">
-                        <div class="course-image">🐍</div>
-                        <div class="course-content">
-                            <div class="course-category">后端开发</div>
-                            <div class="course-name">Python高性能编程</div>
-                            <div class="course-instructor">讲师：王芳</div>
-                            <div class="course-footer">
-                                <span class="course-price">¥399</span>
-                                <span class="course-rating">⭐ 4.8</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="course-card">
-                        <div class="course-image">☁️</div>
-                        <div class="course-content">
-                            <div class="course-category">云计算</div>
-                            <div class="course-name">AWS云架构师认证</div>
-                            <div class="course-instructor">讲师：赵强</div>
-                            <div class="course-footer">
-                                <span class="course-price">¥599</span>
-                                <span class="course-rating">⭐ 5.0</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="course-card">
-                        <div class="course-image">📊</div>
-                        <div class="course-content">
-                            <div class="course-category">数据分析</div>
-                            <div class="course-name">数据可视化实战</div>
-                            <div class="course-instructor">讲师：刘洋</div>
-                            <div class="course-footer">
-                                <span class="course-price">¥199</span>
-                                <span class="course-rating">⭐ 4.7</span>
-                            </div>
-                        </div>
-                    </div>
+                <div class="course-grid" id="recommendedCourses">
+                    <!-- Recommended courses will be loaded here -->
                 </div>
             </div>
         </main>
@@ -981,179 +844,276 @@
         <!-- 右侧边栏 -->
         <aside class="sidebar-right">
             <!-- 学习计划 -->
-            <div class="study-plan">
-                <h3 class="quick-links-title">本月学习计划</h3>
-                <div class="calendar-grid">
-                    <div class="calendar-day">日</div>
-                    <div class="calendar-day">一</div>
-                    <div class="calendar-day">二</div>
-                    <div class="calendar-day">三</div>
-                    <div class="calendar-day">四</div>
-                    <div class="calendar-day">五</div>
-                    <div class="calendar-day">六</div>
-                    
-                    <div class="calendar-day active">1</div>
-                    <div class="calendar-day active">2</div>
-                    <div class="calendar-day active">3</div>
-                    <div class="calendar-day active">4</div>
-                    <div class="calendar-day active">5</div>
-                    <div class="calendar-day">6</div>
-                    <div class="calendar-day">7</div>
-                    <div class="calendar-day active">8</div>
-                    <div class="calendar-day active">9</div>
-                    <div class="calendar-day active">10</div>
-                    <div class="calendar-day active">11</div>
-                    <div class="calendar-day active">12</div>
-                    <div class="calendar-day">13</div>
-                    <div class="calendar-day">14</div>
-                    <div class="calendar-day active">15</div>
-                    <div class="calendar-day">16</div>
-                    <div class="calendar-day">17</div>
-                    <div class="calendar-day">18</div>
-                    <div class="calendar-day">19</div>
-                    <div class="calendar-day">20</div>
-                    <div class="calendar-day">21</div>
+            <div class="study-calendar">
+                <h3 class="calendar-title">本月学习计划</h3>
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar will be generated here -->
                 </div>
             </div>
 
             <!-- 学习小组 -->
             <div class="study-groups">
-                <h3 class="quick-links-title">我的学习小组</h3>
-                <div class="group-item">
-                    <div class="group-avatar">🚀</div>
-                    <div class="group-info">
-                        <div class="group-name">前端进阶小组</div>
-                        <div class="group-members">156 成员 · 12 在线</div>
+                <h3 class="groups-title">我的学习小组</h3>
+                <div class="group-list">
+                    <div class="group-item">
+                        <div class="group-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                        </div>
+                        <div class="group-content">
+                            <div class="group-name">前端进阶小组</div>
+                            <div class="group-members">156 成员 · 12 在线</div>
+                        </div>
+                        <div class="group-status"></div>
                     </div>
-                    <div class="group-status"></div>
-                </div>
-                <div class="group-item">
-                    <div class="group-avatar">💡</div>
-                    <div class="group-info">
-                        <div class="group-name">算法竞赛队</div>
-                        <div class="group-members">89 成员 · 8 在线</div>
+                    <div class="group-item">
+                        <div class="group-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M9 11.75c-.69 0-1.25.56-1.25 1.25s.56 1.25 1.25 1.25 1.25-.56 1.25-1.25-.56-1.25-1.25-1.25zm6 0c-.69 0-1.25.56-1.25 1.25s.56 1.25 1.25 1.25 1.25-.56 1.25-1.25-.56-1.25-1.25-1.25zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-.29.02-.58.05-.86 2.36-1.05 4.23-2.98 5.21-5.37C11.07 8.33 14.05 10 17.42 10c.78 0 1.53-.09 2.25-.26.21.71.33 1.47.33 2.26 0 4.41-3.59 8-8 8z"/>
+                            </svg>
+                        </div>
+                        <div class="group-content">
+                            <div class="group-name">算法竞赛队</div>
+                            <div class="group-members">89 成员 · 8 在线</div>
+                        </div>
+                        <div class="group-status"></div>
                     </div>
-                    <div class="group-status"></div>
-                </div>
-                <div class="group-item">
-                    <div class="group-avatar">🎯</div>
-                    <div class="group-info">
-                        <div class="group-name">项目实战营</div>
-                        <div class="group-members">234 成员 · 45 在线</div>
+                    <div class="group-item">
+                        <div class="group-icon" style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/>
+                            </svg>
+                        </div>
+                        <div class="group-content">
+                            <div class="group-name">项目实战营</div>
+                            <div class="group-members">234 成员 · 45 在线</div>
+                        </div>
+                        <div class="group-status"></div>
                     </div>
-                    <div class="group-status"></div>
                 </div>
             </div>
 
             <!-- 排行榜 -->
             <div class="leaderboard">
-                <h3 class="quick-links-title">学习排行榜</h3>
-                <div class="leaderboard-item">
-                    <div class="leaderboard-rank rank-1">1</div>
-                    <div class="leaderboard-user">
-                        <div class="leaderboard-name">王小明</div>
-                        <div class="leaderboard-score">本周学习 42 小时</div>
-                    </div>
-                    <div class="leaderboard-points">2890</div>
-                </div>
-                <div class="leaderboard-item">
-                    <div class="leaderboard-rank rank-2">2</div>
-                    <div class="leaderboard-user">
-                        <div class="leaderboard-name">李华</div>
-                        <div class="leaderboard-score">本周学习 38 小时</div>
-                    </div>
-                    <div class="leaderboard-points">2650</div>
-                </div>
-                <div class="leaderboard-item">
-                    <div class="leaderboard-rank rank-3">3</div>
-                    <div class="leaderboard-user">
-                        <div class="leaderboard-name">张三（你）</div>
-                        <div class="leaderboard-score">本周学习 35 小时</div>
-                    </div>
-                    <div class="leaderboard-points">2450</div>
-                </div>
-                <div class="leaderboard-item">
-                    <div class="leaderboard-rank" style="background: #e2e8f0; color: #4a5568;">4</div>
-                    <div class="leaderboard-user">
-                        <div class="leaderboard-name">赵六</div>
-                        <div class="leaderboard-score">本周学习 32 小时</div>
-                    </div>
-                    <div class="leaderboard-points">2280</div>
+                <h3 class="leaderboard-title">学习排行榜</h3>
+                <div class="leaderboard-list" id="leaderboardList">
+                    <!-- Leaderboard will be loaded here -->
                 </div>
             </div>
         </aside>
     </div>
 
-    <!-- AI助手 -->
-    <div class="ai-assistant" onclick="openAIChat()">
-        🤖
-    </div>
-
     <script>
-        // 页面加载完成后初始化
+        const API_BASE = '/api';
+        let userData = null;
+
+        // 初始化
         document.addEventListener('DOMContentLoaded', function() {
-            // 加载用户数据
+            initTheme();
+            checkAuth();
             loadUserData();
-            
-            // 初始化图表
-            initCharts();
-            
-            // 绑定事件
-            bindEvents();
+            loadCourses();
+            loadRecommendations();
+            generateCalendar();
+            loadLeaderboard();
         });
 
-        // 加载用户数据
-        function loadUserData() {
-            // 从localStorage或API获取用户数据
-            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-            
-            // 更新页面显示
-            updateDashboard(userData);
+        // 主题切换
+        function initTheme() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+            updateThemeIcon(theme);
         }
 
-        // 更新仪表板
-        function updateDashboard(userData) {
-            // 更新用户信息
-            if (userData.name) {
-                document.querySelector('.user-card-name').textContent = userData.name;
-                document.querySelector('.welcome-title').textContent = `欢迎回来，${userData.name}！`;
+        function updateThemeIcon(theme) {
+            const toggle = document.getElementById('themeToggle');
+            if (theme === 'dark') {
+                toggle.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                `;
+            } else {
+                toggle.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                `;
             }
-            
-            // 更新学习统计
-            // ...
         }
 
-        // 初始化图表
-        function initCharts() {
-            // 可以使用Chart.js或其他图表库
-            console.log('初始化图表...');
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        // 认证检查
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
         }
 
-        // 绑定事件
-        function bindEvents() {
-            // 课程卡片点击事件
-            document.querySelectorAll('.course-card').forEach(card => {
-                card.addEventListener('click', function() {
-                    console.log('点击课程卡片');
-                    // 跳转到课程详情页
-                });
-            });
-            
-            // 继续学习按钮
-            document.querySelectorAll('.continue-btn').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    console.log('继续学习');
-                    // 跳转到学习页面
-                });
-            });
+        // 加载用户数据
+        async function loadUserData() {
+            try {
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                userData = user;
+
+                if (user.username) {
+                    const initials = user.username.charAt(0).toUpperCase();
+                    document.getElementById('avatarText').textContent = initials;
+                    document.getElementById('profileName').textContent = user.username;
+                    document.getElementById('welcomeTitle').textContent = `欢迎回来，${user.username}`;
+                }
+
+                // Mock data for stats
+                document.getElementById('studyDays').textContent = '156';
+                document.getElementById('completedCourses').textContent = '42';
+                document.getElementById('totalPoints').textContent = '2850';
+                document.getElementById('certificates').textContent = '28';
+                document.getElementById('todayHours').textContent = '3.5';
+                document.getElementById('weekLessons').textContent = '12';
+                document.getElementById('monthAttendance').textContent = '95';
+                document.getElementById('welcomeSubtitle').textContent = '今天是您学习的第156天，继续保持！';
+
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
         }
 
-        // 打开AI助手聊天
-        function openAIChat() {
-            console.log('打开AI助手');
-            // TODO: 实现AI聊天功能
-            alert('AI学习助手功能开发中...');
+        // 加载课程
+        async function loadCourses() {
+            const courseList = document.getElementById('courseList');
+
+            // Mock course data
+            const courses = [
+                { id: 1, title: 'Vue 3 高级开发实战', chapter: '第8章 · 组合式API深入 · 共12课时', progress: 65 },
+                { id: 2, title: 'UI/UX设计原理与实践', chapter: '第3章 · 色彩理论 · 共8课时', progress: 35 },
+                { id: 3, title: '人工智能入门到精通', chapter: '第5章 · 深度学习基础 · 共15课时', progress: 80 }
+            ];
+
+            courseList.innerHTML = courses.map(course => `
+                <div class="course-item">
+                    <div class="course-thumb">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/>
+                        </svg>
+                    </div>
+                    <div class="course-details">
+                        <div class="course-name">${course.title}</div>
+                        <div class="course-chapter">${course.chapter}</div>
+                        <div class="progress-track">
+                            <div class="progress-bar" style="width: ${course.progress}%;"></div>
+                        </div>
+                    </div>
+                    <div class="course-action">
+                        <button class="continue-btn" onclick="continueCourse(${course.id})">继续学习</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 加载推荐课程
+        async function loadRecommendations() {
+            const grid = document.getElementById('recommendedCourses');
+
+            // Mock recommended courses
+            const courses = [
+                { id: 101, title: 'React 18 新特性详解', category: '前端开发', instructor: '李明', price: 299, rating: 4.9 },
+                { id: 102, title: 'Python高性能编程', category: '后端开发', instructor: '王芳', price: 399, rating: 4.8 },
+                { id: 103, title: 'AWS云架构师认证', category: '云计算', instructor: '赵强', price: 599, rating: 5.0 },
+                { id: 104, title: '数据可视化实战', category: '数据分析', instructor: '刘洋', price: 199, rating: 4.7 }
+            ];
+
+            grid.innerHTML = courses.map(course => `
+                <div class="rec-course-card" onclick="viewCourse(${course.id})">
+                    <div class="rec-course-cover">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/>
+                        </svg>
+                    </div>
+                    <div class="rec-course-body">
+                        <div class="rec-course-category">${course.category}</div>
+                        <div class="rec-course-title">${course.title}</div>
+                        <div class="rec-course-instructor">讲师：${course.instructor}</div>
+                        <div class="rec-course-footer">
+                            <span class="rec-course-price">¥${course.price}</span>
+                            <span class="rec-course-rating">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                </svg>
+                                ${course.rating}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 生成日历
+        function generateCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            const days = ['日', '一', '二', '三', '四', '五', '六'];
+            const activeDays = [1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 15];
+
+            let html = days.map(day => `<div class="calendar-cell">${day}</div>`).join('');
+
+            for (let i = 1; i <= 21; i++) {
+                const active = activeDays.includes(i) ? 'active' : '';
+                html += `<div class="calendar-cell ${active}">${i}</div>`;
+            }
+
+            grid.innerHTML = html;
+        }
+
+        // 加载排行榜
+        function loadLeaderboard() {
+            const list = document.getElementById('leaderboardList');
+
+            const users = [
+                { rank: 1, name: '王小明', hours: 42, points: 2890 },
+                { rank: 2, name: '李华', hours: 38, points: 2650 },
+                { rank: 3, name: '张三（你）', hours: 35, points: 2450 },
+                { rank: 4, name: '赵六', hours: 32, points: 2280 }
+            ];
+
+            list.innerHTML = users.map(user => `
+                <div class="leaderboard-row">
+                    <div class="rank-badge rank-${user.rank <= 3 ? user.rank : 'other'}">${user.rank}</div>
+                    <div class="rank-user">
+                        <div class="rank-user-name">${user.name}</div>
+                        <div class="rank-user-hours">本周学习 ${user.hours} 小时</div>
+                    </div>
+                    <div class="rank-points">${user.points}</div>
+                </div>
+            `).join('');
+        }
+
+        // 继续学习课程
+        function continueCourse(courseId) {
+            console.log('Continue course:', courseId);
+            window.location.href = `course-detail.html?id=${courseId}`;
+        }
+
+        // 查看课程
+        function viewCourse(courseId) {
+            console.log('View course:', courseId);
+            window.location.href = `course-detail.html?id=${courseId}`;
         }
     </script>
 </body>

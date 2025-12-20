@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习中 - AI 信息未来</title>
+    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+        }
+
+        /* Layout */
+        .learn-container {
+            display: flex;
+            height: 100vh;
+            background: var(--bg-primary);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 320px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            transition: transform 0.3s ease, width 0.3s ease;
+        }
+        .sidebar.collapsed {
+            width: 0;
+            transform: translateX(-320px);
+        }
+        .sidebar-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .sidebar-back {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--bg-tertiary);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+        .sidebar-back:hover {
+            background: var(--accent);
+            color: white;
+        }
+        .sidebar-title {
+            flex: 1;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .sidebar-progress {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .progress-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .progress-percent {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+        .progress-bar {
+            height: 6px;
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #6366f1);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        .chapter-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+        }
+        .chapter-group {
+            margin-bottom: 16px;
+        }
+        .chapter-group-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            padding: 8px 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .chapter-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+        }
+        .chapter-item:hover {
+            background: var(--bg-tertiary);
+        }
+        .chapter-item.active {
+            background: rgba(0, 113, 227, 0.1);
+        }
+        .chapter-item.completed .chapter-status {
+            background: #10b981;
+            color: white;
+        }
+        .chapter-status {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            flex-shrink: 0;
+        }
+        .chapter-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .chapter-name {
+            font-size: 14px;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .chapter-item.active .chapter-name {
+            color: var(--accent);
+            font-weight: 600;
+        }
+        .chapter-duration {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+        }
+        .chapter-lock {
+            color: var(--text-tertiary);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            height: 56px;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            flex-shrink: 0;
+        }
+        .top-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .toggle-sidebar {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--bg-secondary);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+        .toggle-sidebar:hover {
+            background: var(--bg-tertiary);
+        }
+        .chapter-title-bar {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .top-bar-btn {
+            height: 36px;
+            padding: 0 14px;
+            border-radius: 10px;
+            background: var(--bg-secondary);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        .top-bar-btn:hover {
+            background: var(--bg-tertiary);
+        }
+        .top-bar-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+        .content-main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+        }
+        .content-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+        }
+
+        /* Notes Panel */
+        .notes-panel {
+            width: 360px;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s ease;
+        }
+        .notes-panel.collapsed {
+            width: 0;
+            overflow: hidden;
+        }
+        .notes-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .notes-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .notes-close {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-tertiary);
+        }
+        .notes-close:hover {
+            background: var(--bg-tertiary);
+        }
+        .notes-tabs {
+            display: flex;
+            padding: 12px 20px;
+            gap: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .notes-tab {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+        .notes-tab.active {
+            background: var(--accent);
+            color: white;
+        }
+        .notes-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 20px;
+        }
+        .note-item {
+            background: var(--bg-primary);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+        .note-time {
+            font-size: 11px;
+            color: var(--accent);
+            margin-bottom: 6px;
+        }
+        .note-text {
+            font-size: 14px;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+        .note-input-area {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        .note-input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 14px;
+            resize: none;
+            min-height: 80px;
+        }
+        .note-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        .note-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+            gap: 8px;
+        }
+        .note-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        .note-btn.primary {
+            background: var(--accent);
+            color: white;
+        }
+        .note-btn.primary:hover {
+            background: var(--accent-hover);
+        }
+
+        /* Loading State */
+        .loading-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-secondary);
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+        }
+        .loading-state svg {
+            width: 80px;
+            height: 80px;
+            color: var(--accent);
+            opacity: 0.5;
+            margin-bottom: 20px;
+        }
+        .loading-state p {
+            font-size: 16px;
+            color: var(--text-tertiary);
+        }
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 16px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Complete Overlay */
+        .complete-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        .complete-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .complete-card {
+            background: var(--bg-primary);
+            border-radius: 24px;
+            padding: 48px;
+            text-align: center;
+            max-width: 480px;
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+        .complete-overlay.show .complete-card {
+            transform: scale(1);
+        }
+        .complete-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+        .complete-icon svg {
+            width: 40px;
+            height: 40px;
+            color: white;
+        }
+        .complete-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+        .complete-desc {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+        .complete-stats {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            margin-bottom: 32px;
+        }
+        .complete-stat {
+            text-align: center;
+        }
+        .complete-stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        .complete-stat-label {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+        }
+        .complete-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        .complete-btn {
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        .complete-btn.primary {
+            background: var(--accent);
+            color: white;
+        }
+        .complete-btn.secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                z-index: 100;
+                box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+            }
+            .sidebar.collapsed {
+                transform: translateX(-100%);
+            }
+            .notes-panel {
+                position: fixed;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                z-index: 100;
+                box-shadow: -4px 0 20px rgba(0,0,0,0.1);
+            }
+        }
+        @media (max-width: 768px) {
+            .sidebar { width: 100%; }
+            .notes-panel { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="learn-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <button class="sidebar-back" onclick="goBack()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <div class="sidebar-title" id="courseTitle">加载中...</div>
+            </div>
+            <div class="sidebar-progress">
+                <div class="progress-info">
+                    <span class="progress-label">课程进度</span>
+                    <span class="progress-percent" id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="chapter-list" id="chapterList">
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>加载章节...</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="top-bar">
+                <div class="top-bar-left">
+                    <button class="toggle-sidebar" onclick="toggleSidebar()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 12h18M3 6h18M3 18h18"/>
+                        </svg>
+                    </button>
+                    <span class="chapter-title-bar" id="currentChapterTitle">选择章节开始学习</span>
+                </div>
+                <div class="top-bar-right">
+                    <button class="top-bar-btn" onclick="toggleNotes()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                        笔记
+                    </button>
+                    <button class="top-bar-btn" onclick="markComplete()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                        完成
+                    </button>
+                    <button class="top-bar-btn" onclick="toggleTheme()">
+                        <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"/>
+                            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="content-area">
+                <div class="content-main" id="contentMain">
+                    <div class="loading-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                        <p>从左侧选择章节开始学习</p>
+                    </div>
+                </div>
+
+                <!-- Notes Panel -->
+                <div class="notes-panel collapsed" id="notesPanel">
+                    <div class="notes-header">
+                        <span class="notes-title">学习笔记</span>
+                        <button class="notes-close" onclick="toggleNotes()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 6L6 18M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="notes-tabs">
+                        <button class="notes-tab active" data-tab="my">我的笔记</button>
+                        <button class="notes-tab" data-tab="shared">精选笔记</button>
+                    </div>
+                    <div class="notes-content" id="notesContent">
+                        <div class="note-item">
+                            <div class="note-time">开始添加你的第一条笔记吧</div>
+                        </div>
+                    </div>
+                    <div class="note-input-area">
+                        <textarea class="note-input" id="noteInput" placeholder="记录学习心得..."></textarea>
+                        <div class="note-actions">
+                            <button class="note-btn primary" onclick="saveNote()">保存笔记</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Complete Overlay -->
+    <div class="complete-overlay" id="completeOverlay">
+        <div class="complete-card">
+            <div class="complete-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+            </div>
+            <h2 class="complete-title">章节完成!</h2>
+            <p class="complete-desc">恭喜你完成了本章节的学习，继续保持！</p>
+            <div class="complete-stats">
+                <div class="complete-stat">
+                    <div class="complete-stat-value" id="completePoints">+20</div>
+                    <div class="complete-stat-label">获得积分</div>
+                </div>
+                <div class="complete-stat">
+                    <div class="complete-stat-value" id="completeTime">15</div>
+                    <div class="complete-stat-label">学习分钟</div>
+                </div>
+            </div>
+            <div class="complete-actions">
+                <button class="complete-btn secondary" onclick="closeComplete()">返回</button>
+                <button class="complete-btn primary" onclick="nextChapter()">下一章节</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const API_BASE = '/api';
+        let currentCourseId = null;
+        let currentChapterId = null;
+        let chapters = [];
+        let currentChapterIndex = -1;
+        let studyStartTime = null;
+        let sessionId = null;
+        let notes = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            parseUrlParams();
+            loadCourseData();
+            setupNotesTabs();
+        });
+
+        function initTheme() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+            updateThemeIcon();
+        }
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            const theme = document.documentElement.getAttribute('data-theme');
+            const icon = document.getElementById('themeIcon');
+            if (theme === 'dark') {
+                icon.innerHTML = '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>';
+            } else {
+                icon.innerHTML = '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>';
+            }
+        }
+
+        function parseUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            currentCourseId = params.get('courseId');
+            currentChapterId = params.get('chapterId');
+
+            if (!currentCourseId) {
+                showToast('缺少课程ID');
+                setTimeout(() => goBack(), 2000);
+            }
+        }
+
+        async function loadCourseData() {
+            try {
+                // Load course info
+                const courseRes = await fetch(`${API_BASE}/courses/${currentCourseId}`);
+                const courseData = await courseRes.json();
+                if (courseData.code === 200 && courseData.data) {
+                    document.getElementById('courseTitle').textContent = courseData.data.title;
+                    document.title = `${courseData.data.title} - 学习中`;
+                }
+
+                // Load chapters
+                const chaptersRes = await fetch(`${API_BASE}/content/courses/${currentCourseId}/chapters`);
+                const chaptersData = await chaptersRes.json();
+                if (chaptersData.code === 200 && chaptersData.data) {
+                    chapters = flattenChapters(chaptersData.data);
+                    renderChapterList();
+                    updateProgress();
+
+                    // Auto-load chapter if specified
+                    if (currentChapterId) {
+                        loadChapter(currentChapterId);
+                    } else if (chapters.length > 0) {
+                        loadChapter(chapters[0].id);
+                    }
+                }
+
+                // Load user progress
+                loadUserProgress();
+            } catch (e) {
+                console.error('Load course data error:', e);
+                showToast('加载课程失败');
+            }
+        }
+
+        function flattenChapters(data) {
+            const result = [];
+            data.forEach(chapter => {
+                if (chapter.lessons && chapter.lessons.length > 0) {
+                    chapter.lessons.forEach(lesson => {
+                        result.push({
+                            id: lesson.id,
+                            title: lesson.title,
+                            duration: lesson.duration,
+                            parentTitle: chapter.title,
+                            completed: false
+                        });
+                    });
+                } else {
+                    result.push({
+                        id: chapter.id,
+                        title: chapter.title,
+                        duration: chapter.duration,
+                        completed: false
+                    });
+                }
+            });
+            return result;
+        }
+
+        function renderChapterList() {
+            const container = document.getElementById('chapterList');
+            let currentParent = '';
+            let html = '';
+
+            chapters.forEach((chapter, index) => {
+                if (chapter.parentTitle && chapter.parentTitle !== currentParent) {
+                    currentParent = chapter.parentTitle;
+                    html += `<div class="chapter-group-title">${currentParent}</div>`;
+                }
+
+                const isActive = chapter.id == currentChapterId;
+                const isCompleted = chapter.completed;
+
+                html += `
+                    <div class="chapter-item ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}"
+                         onclick="loadChapter(${chapter.id})" data-id="${chapter.id}">
+                        <div class="chapter-status">
+                            ${isCompleted ?
+                                '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>' :
+                                (index + 1)}
+                        </div>
+                        <div class="chapter-info">
+                            <div class="chapter-name">${chapter.title}</div>
+                            <div class="chapter-duration">${chapter.duration || '约10分钟'}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        async function loadChapter(chapterId) {
+            currentChapterId = chapterId;
+            currentChapterIndex = chapters.findIndex(c => c.id == chapterId);
+
+            // Update URL
+            const newUrl = `${window.location.pathname}?courseId=${currentCourseId}&chapterId=${chapterId}`;
+            window.history.replaceState({}, '', newUrl);
+
+            // Update UI
+            document.querySelectorAll('.chapter-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.id == chapterId);
+            });
+
+            const chapter = chapters.find(c => c.id == chapterId);
+            if (chapter) {
+                document.getElementById('currentChapterTitle').textContent = chapter.title;
+            }
+
+            // Load content
+            const contentMain = document.getElementById('contentMain');
+            contentMain.innerHTML = `
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>加载内容...</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch(`${API_BASE}/content/chapters/${chapterId}`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token') || ''}` }
+                });
+
+                if (!response.ok) throw new Error('加载失败');
+
+                const data = await response.json();
+
+                if (data.code === 200 && data.data?.content?.contentHtml) {
+                    renderContent(data.data.content.contentHtml);
+                    startStudySession();
+                    loadChapterNotes(chapterId);
+                } else {
+                    throw new Error(data.message || '内容为空');
+                }
+            } catch (e) {
+                contentMain.innerHTML = `
+                    <div class="loading-state">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--text-tertiary); margin-bottom: 16px;">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M15 9l-6 6M9 9l6 6"/>
+                        </svg>
+                        <p>加载内容失败: ${e.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderContent(html) {
+            const contentMain = document.getElementById('contentMain');
+
+            // Create iframe for isolated content
+            const iframe = document.createElement('iframe');
+            iframe.className = 'content-frame';
+            iframe.sandbox = 'allow-scripts allow-same-origin';
+            contentMain.innerHTML = '';
+            contentMain.appendChild(iframe);
+
+            // Process HTML
+            const processedHtml = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+                    <style>
+                        body {
+                            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+                            line-height: 1.8;
+                            color: #1d1d1f;
+                            max-width: 900px;
+                            margin: 0 auto;
+                            padding: 40px 48px;
+                            background: #fff;
+                        }
+                        h1, h2, h3, h4, h5, h6 {
+                            color: #1d1d1f;
+                            margin-top: 2em;
+                            margin-bottom: 0.5em;
+                        }
+                        h1 { font-size: 2.5em; margin-top: 0; }
+                        h2 { font-size: 1.8em; border-bottom: 1px solid #e5e5e5; padding-bottom: 0.3em; }
+                        h3 { font-size: 1.4em; }
+                        p { margin: 1em 0; }
+                        pre {
+                            background: #1e1e1e;
+                            border-radius: 12px;
+                            padding: 20px;
+                            overflow-x: auto;
+                        }
+                        code {
+                            font-family: 'SF Mono', Monaco, monospace;
+                            font-size: 0.9em;
+                        }
+                        :not(pre) > code {
+                            background: #f5f5f7;
+                            padding: 2px 6px;
+                            border-radius: 4px;
+                            color: #e83e8c;
+                        }
+                        img {
+                            max-width: 100%;
+                            border-radius: 12px;
+                            margin: 1.5em 0;
+                        }
+                        blockquote {
+                            border-left: 4px solid #0071e3;
+                            margin: 1.5em 0;
+                            padding: 0.5em 1.5em;
+                            background: #f5f5f7;
+                            border-radius: 0 12px 12px 0;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin: 1.5em 0;
+                        }
+                        th, td {
+                            border: 1px solid #e5e5e5;
+                            padding: 12px;
+                            text-align: left;
+                        }
+                        th { background: #f5f5f7; }
+                        a { color: #0071e3; text-decoration: none; }
+                        a:hover { text-decoration: underline; }
+                        ul, ol { padding-left: 1.5em; }
+                        li { margin: 0.5em 0; }
+                        .tip, .warning, .info {
+                            padding: 16px 20px;
+                            border-radius: 12px;
+                            margin: 1.5em 0;
+                        }
+                        .tip { background: #d1fae5; border-left: 4px solid #10b981; }
+                        .warning { background: #fef3c7; border-left: 4px solid #f59e0b; }
+                        .info { background: #dbeafe; border-left: 4px solid #3b82f6; }
+                    </style>
+                </head>
+                <body>${html}</body>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"><\/script>
+                <script>hljs.highlightAll();<\/script>
+                </html>
+            `;
+
+            const blob = new Blob([processedHtml], { type: 'text/html' });
+            iframe.src = URL.createObjectURL(blob);
+        }
+
+        async function startStudySession() {
+            studyStartTime = Date.now();
+
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return;
+
+                const res = await fetch(`${API_BASE}/study-sessions/start`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        courseId: currentCourseId,
+                        chapterId: currentChapterId,
+                        deviceType: 'web'
+                    })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.code === 200 && data.data) {
+                        sessionId = data.data.sessionId;
+                    }
+                }
+            } catch (e) {
+                console.error('Start session error:', e);
+            }
+        }
+
+        async function endStudySession() {
+            if (!sessionId) return;
+
+            try {
+                const token = localStorage.getItem('token');
+                await fetch(`${API_BASE}/study-sessions/end`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ sessionId }),
+                    keepalive: true
+                });
+                sessionId = null;
+            } catch (e) {
+                console.error('End session error:', e);
+            }
+        }
+
+        async function loadUserProgress() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return;
+
+                const res = await fetch(`${API_BASE}/progress/course/${currentCourseId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.code === 200 && data.data) {
+                        const completedIds = data.data.completedChapters || [];
+                        chapters.forEach(c => {
+                            c.completed = completedIds.includes(c.id);
+                        });
+                        renderChapterList();
+                        updateProgress();
+                    }
+                }
+            } catch (e) {
+                console.error('Load progress error:', e);
+            }
+        }
+
+        function updateProgress() {
+            const completed = chapters.filter(c => c.completed).length;
+            const total = chapters.length;
+            const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+            document.getElementById('progressPercent').textContent = `${percent}%`;
+            document.getElementById('progressFill').style.width = `${percent}%`;
+        }
+
+        async function markComplete() {
+            if (currentChapterIndex < 0) {
+                showToast('请先选择章节');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                const res = await fetch(`${API_BASE}/progress/complete`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        courseId: currentCourseId,
+                        chapterId: currentChapterId
+                    })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+
+                    // Update local state
+                    chapters[currentChapterIndex].completed = true;
+                    renderChapterList();
+                    updateProgress();
+
+                    // Show complete overlay
+                    const studyMinutes = Math.round((Date.now() - studyStartTime) / 60000);
+                    document.getElementById('completePoints').textContent = `+${data.data?.points || 20}`;
+                    document.getElementById('completeTime').textContent = studyMinutes > 0 ? studyMinutes : 1;
+                    document.getElementById('completeOverlay').classList.add('show');
+
+                    // End session
+                    endStudySession();
+                } else {
+                    showToast('标记完成失败');
+                }
+            } catch (e) {
+                console.error('Mark complete error:', e);
+                showToast('操作失败');
+            }
+        }
+
+        function nextChapter() {
+            closeComplete();
+            if (currentChapterIndex < chapters.length - 1) {
+                loadChapter(chapters[currentChapterIndex + 1].id);
+            } else {
+                showToast('恭喜完成所有章节!');
+                setTimeout(() => {
+                    window.location.href = `course-detail.html?id=${currentCourseId}`;
+                }, 2000);
+            }
+        }
+
+        function closeComplete() {
+            document.getElementById('completeOverlay').classList.remove('show');
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        }
+
+        function toggleNotes() {
+            document.getElementById('notesPanel').classList.toggle('collapsed');
+        }
+
+        function setupNotesTabs() {
+            document.querySelectorAll('.notes-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.notes-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    loadNotes(tab.dataset.tab);
+                });
+            });
+        }
+
+        async function loadChapterNotes(chapterId) {
+            try {
+                const token = localStorage.getItem('token');
+                const res = await fetch(`${API_BASE}/notes/chapter/${chapterId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    notes = data.data || [];
+                    renderNotes();
+                }
+            } catch (e) {
+                console.error('Load notes error:', e);
+            }
+        }
+
+        function loadNotes(type) {
+            // Implementation for shared notes
+            renderNotes();
+        }
+
+        function renderNotes() {
+            const container = document.getElementById('notesContent');
+            if (notes.length === 0) {
+                container.innerHTML = `
+                    <div class="note-item">
+                        <div class="note-time">暂无笔记</div>
+                        <div class="note-text">开始添加你的第一条笔记吧</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = notes.map(note => `
+                <div class="note-item">
+                    <div class="note-time">${formatTime(note.createdAt)}</div>
+                    <div class="note-text">${note.content}</div>
+                </div>
+            `).join('');
+        }
+
+        async function saveNote() {
+            const input = document.getElementById('noteInput');
+            const content = input.value.trim();
+
+            if (!content) {
+                showToast('请输入笔记内容');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                const res = await fetch(`${API_BASE}/notes`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        courseId: currentCourseId,
+                        chapterId: currentChapterId,
+                        content: content
+                    })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    notes.unshift(data.data || { content, createdAt: new Date() });
+                    renderNotes();
+                    input.value = '';
+                    showToast('笔记保存成功');
+                } else {
+                    showToast('保存失败');
+                }
+            } catch (e) {
+                console.error('Save note error:', e);
+                showToast('保存失败');
+            }
+        }
+
+        function formatTime(time) {
+            if (!time) return '刚刚';
+            const date = new Date(time);
+            const now = new Date();
+            const diff = now - date;
+
+            if (diff < 60000) return '刚刚';
+            if (diff < 3600000) return `${Math.floor(diff / 60000)} 分钟前`;
+            if (diff < 86400000) return `${Math.floor(diff / 3600000)} 小时前`;
+            return date.toLocaleDateString('zh-CN');
+        }
+
+        function goBack() {
+            endStudySession();
+            if (currentCourseId) {
+                window.location.href = `course-detail.html?id=${currentCourseId}`;
+            } else {
+                window.location.href = 'my-courses.html';
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', endStudySession);
+    </script>
+</body>
+</html>

@@ -3,51 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PK学习 - AI学习平台</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <title>PK学习 - AI 信息未来</title>
+    <link rel="stylesheet" href="../styles/apple-design.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        :root {
-            --primary: #6366f1;
-            --danger: #ef4444;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --dark: #1e293b;
-            --white: #ffffff;
-        }
-
+        /* PK学习页面特定样式 */
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(to bottom right, #0f172a, #1e293b);
-            min-height: 100vh;
-            color: var(--white);
+            padding-top: 48px;
+            padding-bottom: 100px;
         }
 
         /* PK状态栏 */
         .pk-status-bar {
-            background: rgba(30, 41, 59, 0.95);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            padding: 1rem 2rem;
+            position: fixed;
+            top: 48px;
+            left: 0;
+            right: 0;
+            z-index: 900;
+            background: rgba(251, 251, 253, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px 0;
+            transition: background var(--transition-normal);
+        }
+
+        [data-theme="dark"] .pk-status-bar {
+            background: rgba(22, 22, 23, 0.8);
         }
 
         .pk-status-container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
+            padding: 0 22px;
             display: grid;
             grid-template-columns: 1fr auto 1fr;
-            gap: 2rem;
+            gap: 32px;
             align-items: center;
         }
 
         .pk-player {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 16px;
         }
 
         .pk-player.opponent {
@@ -56,16 +53,24 @@
         }
 
         .pk-avatar {
-            width: 50px;
-            height: 50px;
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
             background: linear-gradient(135deg, #667eea, #764ba2);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            font-weight: 700;
-            border: 3px solid rgba(255, 255, 255, 0.2);
+            font-size: 20px;
+            font-weight: 600;
+            color: white;
+            border: 2px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .pk-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .pk-info {
@@ -73,182 +78,199 @@
         }
 
         .pk-name {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 0.25rem;
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
         }
 
         .pk-stats {
             display: flex;
-            gap: 1rem;
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.7);
+            gap: 16px;
+            font-size: 14px;
+            color: var(--text-secondary);
         }
 
         .pk-player.opponent .pk-stats {
             justify-content: flex-end;
         }
 
+        .pk-stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
         .pk-vs-section {
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .pk-timer {
-            font-size: 2rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, #ef4444, #f59e0b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-family: 'Monaco', monospace;
-            margin-bottom: 0.25rem;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent);
+            font-family: var(--font-mono);
+            letter-spacing: 0.02em;
+            margin-bottom: 4px;
         }
 
         .pk-battle-code {
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.5);
+            font-size: 13px;
+            color: var(--text-tertiary);
+            font-family: var(--font-mono);
         }
 
         /* 主要内容区 */
         .main-container {
-            max-width: 1000px;
-            margin: 2rem auto;
-            padding: 0 2rem;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 140px 22px 0;
         }
 
         /* 章节选择器 */
         .chapter-selector {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 32px;
         }
 
         .chapter-selector-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            font-size: 21px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
         }
 
         .chapter-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1rem;
+            gap: 12px;
         }
 
         .chapter-item {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 1rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 16px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all var(--transition-fast);
             position: relative;
         }
 
         .chapter-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--primary);
+            background: var(--bg-hover);
+            border-color: var(--accent);
         }
 
         .chapter-item.active {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
-            border-color: var(--primary);
+            background: rgba(0, 113, 227, 0.08);
+            border-color: var(--accent);
         }
 
         .chapter-item.completed::after {
-            content: '✓';
+            content: '';
             position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            width: 24px;
-            height: 24px;
-            background: var(--success);
+            top: 12px;
+            right: 12px;
+            width: 20px;
+            height: 20px;
+            background: #34c759;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            font-weight: 700;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+            background-size: 14px;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         .chapter-num {
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 0.5rem;
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-bottom: 6px;
         }
 
         .chapter-name {
-            font-weight: 600;
-            font-size: 0.95rem;
+            font-weight: 500;
+            font-size: 15px;
+            color: var(--text-primary);
         }
 
         /* 学习卡片 */
         .learning-card {
-            background: white;
-            border-radius: 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
             overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            margin-bottom: 2rem;
+            margin-bottom: 32px;
         }
 
         .learning-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 2rem;
+            padding: 32px;
         }
 
         .learning-title {
-            font-size: 1.75rem;
-            font-weight: 800;
-            margin-bottom: 0.5rem;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
         }
 
         .learning-meta {
             display: flex;
-            gap: 1.5rem;
-            font-size: 0.9rem;
+            gap: 16px;
+            font-size: 15px;
             opacity: 0.9;
         }
 
         .learning-content {
-            padding: 2rem;
-            color: #2d3748;
-            font-size: 1.05rem;
-            line-height: 1.8;
-        }
-
-        .learning-content h1, .learning-content h2, .learning-content h3 {
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-            color: #1e293b;
-        }
-
-        .learning-content p {
-            margin-bottom: 1rem;
-        }
-
-        .learning-content pre {
-            background: #2d3748;
-            color: #e2e8f0;
-            padding: 1.5rem;
-            border-radius: 12px;
-            overflow-x: auto;
-            margin: 1.5rem 0;
-            font-family: 'Monaco', 'Courier New', monospace;
-            font-size: 0.9rem;
+            padding: 32px;
+            color: var(--text-primary);
+            font-size: 17px;
             line-height: 1.6;
         }
 
+        .learning-content h1,
+        .learning-content h2,
+        .learning-content h3 {
+            margin-top: 32px;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .learning-content p {
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+        }
+
+        .learning-content pre {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            overflow-x: auto;
+            margin: 24px 0;
+            font-family: var(--font-mono);
+            font-size: 14px;
+            line-height: 1.6;
+            border: 1px solid var(--border-color);
+        }
+
+        [data-theme="dark"] .learning-content pre {
+            background: #000000;
+        }
+
         .learning-content code {
-            background: #edf2f7;
-            color: #e53e3e;
-            padding: 0.2rem 0.5rem;
+            background: var(--bg-secondary);
+            color: var(--accent);
+            padding: 2px 6px;
             border-radius: 4px;
             font-size: 0.9em;
+            font-family: var(--font-mono);
         }
 
         .learning-content pre code {
@@ -263,105 +285,94 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(30, 41, 59, 0.95);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 1.5rem 2rem;
+            z-index: 900;
+            background: rgba(251, 251, 253, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-top: 1px solid var(--border-color);
+            padding: 20px 0;
+            transition: background var(--transition-normal);
+        }
+
+        [data-theme="dark"] .learning-footer {
+            background: rgba(22, 22, 23, 0.8);
         }
 
         .footer-container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
+            padding: 0 22px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 24px;
         }
 
         .footer-progress {
             flex: 1;
-            margin-right: 2rem;
         }
 
         .progress-text {
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 0.5rem;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
         }
 
         .progress-bar-footer {
-            height: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
+            height: 6px;
+            background: var(--bg-secondary);
+            border-radius: 3px;
             overflow: hidden;
         }
 
         .progress-fill-footer {
             height: 100%;
             background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            transition: width 0.5s ease;
-            border-radius: 10px;
+            transition: width 0.5s var(--ease-out);
+            border-radius: 3px;
         }
 
         .footer-actions {
             display: flex;
-            gap: 1rem;
-        }
-
-        .action-btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: none;
-            font-size: 0.95rem;
-        }
-
-        .action-btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-        }
-
-        .action-btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .action-btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .action-btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+            gap: 12px;
         }
 
         /* 加载状态 */
         .loading {
             text-align: center;
-            padding: 4rem 2rem;
-            color: rgba(255, 255, 255, 0.7);
+            padding: 48px;
+            color: var(--text-secondary);
         }
 
         .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-top-color: #6366f1;
+            width: 32px;
+            height: 32px;
+            border: 2px solid var(--border-color);
+            border-top-color: var(--accent);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
+        /* SVG图标 */
+        .icon {
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
         /* 响应式 */
         @media (max-width: 768px) {
             .pk-status-container {
                 grid-template-columns: 1fr;
-                gap: 1rem;
+                gap: 16px;
             }
 
             .pk-vs-section {
@@ -374,12 +385,11 @@
 
             .footer-container {
                 flex-direction: column;
-                gap: 1rem;
+                gap: 16px;
             }
 
             .footer-progress {
                 width: 100%;
-                margin-right: 0;
             }
 
             .footer-actions {
@@ -387,13 +397,64 @@
                 flex-direction: column;
             }
 
-            .action-btn {
+            .footer-actions .btn {
                 width: 100%;
             }
         }
     </style>
 </head>
 <body>
+    <!-- 导航栏 -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="/index.html" class="nav-logo">AI 信息未来</a>
+            <div class="nav-menu">
+                <a href="/index.html" class="nav-link">首页</a>
+                <a href="/src/pages/courses.html" class="nav-link">课程</a>
+                <a href="/src/pages/community.html" class="nav-link">社区</a>
+                <a href="/src/pages/pk-arena.html" class="nav-link active">PK竞技</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+                <div class="user-menu">
+                    <div class="user-avatar" onclick="toggleUserMenu()" id="userAvatar">
+                        <span id="userInitial">U</span>
+                    </div>
+                    <div class="dropdown" id="userDropdown">
+                        <div class="dropdown-item" onclick="goToProfile()">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            个人中心
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item" onclick="logout()">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                            退出登录
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
     <!-- PK状态栏 -->
     <div class="pk-status-bar">
         <div class="pk-status-container">
@@ -403,8 +464,20 @@
                 <div class="pk-info">
                     <div class="pk-name" id="myName">加载中...</div>
                     <div class="pk-stats">
-                        <span id="myChapters">📚 0 章节</span>
-                        <span id="myTime">⏱️ 00:00</span>
+                        <div class="pk-stat-item">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                            </svg>
+                            <span id="myChapters">0 章节</span>
+                        </div>
+                        <div class="pk-stat-item">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            <span id="myTime">00:00</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -421,8 +494,20 @@
                 <div class="pk-info">
                     <div class="pk-name" id="oppName">等待对手...</div>
                     <div class="pk-stats">
-                        <span id="oppChapters">📚 0 章节</span>
-                        <span id="oppTime">⏱️ 00:00</span>
+                        <div class="pk-stat-item">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                            </svg>
+                            <span id="oppChapters">0 章节</span>
+                        </div>
+                        <div class="pk-stat-item">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            <span id="oppTime">00:00</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -433,10 +518,7 @@
     <div class="main-container">
         <!-- 章节选择器 -->
         <div class="chapter-selector">
-            <div class="chapter-selector-title">
-                <span>📚</span>
-                <span>选择章节</span>
-            </div>
+            <div class="chapter-selector-title">选择章节</div>
             <div class="chapter-list" id="chapterList">
                 <div class="loading">
                     <div class="loading-spinner"></div>
@@ -450,7 +532,7 @@
             <div class="learning-header">
                 <h1 class="learning-title" id="chapterTitle">章节标题</h1>
                 <div class="learning-meta">
-                    <span id="chapterMeta">⏱️ 15分钟</span>
+                    <span id="chapterMeta">15分钟</span>
                 </div>
             </div>
             <div class="learning-content" id="chapterContent">
@@ -472,10 +554,10 @@
                 </div>
             </div>
             <div class="footer-actions">
-                <button class="action-btn action-btn-secondary" onclick="exitPK()">
+                <button class="btn btn-secondary btn-sm" onclick="exitPK()">
                     退出PK
                 </button>
-                <button class="action-btn action-btn-primary" onclick="markCompleted()" id="completeBtn">
+                <button class="btn btn-primary btn-sm" onclick="markCompleted()" id="completeBtn">
                     完成本章
                 </button>
             </div>
@@ -483,6 +565,7 @@
     </div>
 
     <script>
+        const API_BASE = '/api';
         let battleId = null;
         let currentBattle = null;
         let currentChapterId = null;
@@ -490,8 +573,55 @@
         let startTime = Date.now();
         let timerInterval = null;
 
+        // 初始化主题
+        function initTheme() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+
+        // 切换主题
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // 用户菜单
+        function toggleUserMenu() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        function goToProfile() {
+            window.location.href = '/src/pages/profile.html';
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/index.html';
+        }
+
+        // 关闭下拉菜单
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('userDropdown');
+            const avatar = document.getElementById('userAvatar');
+            if (!avatar.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
         // 页面加载
         document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+
+            // 初始化用户信息
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (user.username) {
+                document.getElementById('userInitial').textContent = user.username.charAt(0).toUpperCase();
+            }
+
             const urlParams = new URLSearchParams(window.location.search);
             battleId = urlParams.get('battleId');
 
@@ -509,7 +639,7 @@
         async function loadBattleInfo() {
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`/api/pk/${battleId}`, {
+                const response = await fetch(`${API_BASE}/pk/${battleId}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
@@ -541,10 +671,10 @@
             document.getElementById('oppName').textContent = battle.player2Name || '等待对手';
 
             if (battle.player1Avatar) {
-                document.getElementById('myAvatar').innerHTML = `<img src="${battle.player1Avatar}" style="width:100%;height:100%;border-radius:50%;">`;
+                document.getElementById('myAvatar').innerHTML = `<img src="${battle.player1Avatar}">`;
             }
             if (battle.player2Avatar) {
-                document.getElementById('oppAvatar').innerHTML = `<img src="${battle.player2Avatar}" style="width:100%;height:100%;border-radius:50%;">`;
+                document.getElementById('oppAvatar').innerHTML = `<img src="${battle.player2Avatar}">`;
             }
         }
 
@@ -570,7 +700,7 @@
 
                 // 更新学习时间
                 const elapsed = Math.floor((Date.now() - startTime) / 60000);
-                document.getElementById('myTime').textContent = `⏱️ ${elapsed}分钟`;
+                document.getElementById('myTime').textContent = `${elapsed}分钟`;
 
                 // 定期同步进度
                 if (remaining % 30 === 0) {
@@ -605,7 +735,7 @@
             const container = document.getElementById('chapterList');
 
             if (chapters.length === 0) {
-                container.innerHTML = '<p style="text-align:center;color:rgba(255,255,255,0.5);">暂无章节</p>';
+                container.innerHTML = '<p style="text-align:center;color:var(--text-tertiary);">暂无章节</p>';
                 return;
             }
 
@@ -635,7 +765,7 @@
                     // 显示内容
                     document.getElementById('learningCard').style.display = 'block';
                     document.getElementById('chapterTitle').textContent = chapterData.chapter.title;
-                    document.getElementById('chapterMeta').textContent = `⏱️ ${chapterData.chapter.duration || 15}分钟`;
+                    document.getElementById('chapterMeta').textContent = `${chapterData.chapter.duration || 15}分钟`;
                     document.getElementById('chapterContent').innerHTML = chapterData.content.content_html || `<p>${chapterData.content.content_text || '暂无内容'}</p>`;
 
                     // 滚动到内容区
@@ -673,7 +803,7 @@
             });
 
             // 更新统计
-            document.getElementById('myChapters').textContent = `📚 ${completedChapters.size} 章节`;
+            document.getElementById('myChapters').textContent = `${completedChapters.size} 章节`;
             document.getElementById('progressText').textContent = `${completedChapters.size}/${chapterItems.length} 章节`;
 
             const progress = (completedChapters.size / chapterItems.length) * 100;
@@ -682,7 +812,7 @@
             // 同步到服务器
             syncProgress();
 
-            alert('✅ 已完成本章！继续加油！');
+            alert('已完成本章，继续加油！');
 
             // 自动跳到下一章
             const nextChapter = findNextIncompleteChapter();
@@ -710,7 +840,7 @@
                 const token = localStorage.getItem('token');
                 const elapsed = Math.floor((Date.now() - startTime) / 60000);
 
-                await fetch(`/api/pk/${battleId}/progress`, {
+                await fetch(`${API_BASE}/pk/${battleId}/progress`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -730,11 +860,11 @@
         async function endBattle() {
             clearInterval(timerInterval);
 
-            alert('⏰ 时间到！正在结算...');
+            alert('时间到！正在结算...');
 
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`/api/pk/${battleId}/settle`, {
+                const response = await fetch(`${API_BASE}/pk/${battleId}/settle`, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -747,9 +877,9 @@
                     const isWinner = result.winnerId === user.id;
 
                     if (isWinner) {
-                        alert(`🎉 恭喜获胜！\n\n完成章节：${completedChapters.size}\n用时：${Math.floor((Date.now() - startTime) / 60000)}分钟`);
+                        alert(`恭喜获胜！\n\n完成章节：${completedChapters.size}\n用时：${Math.floor((Date.now() - startTime) / 60000)}分钟`);
                     } else {
-                        alert(`😔 很遗憾，这次失败了\n\n完成章节：${completedChapters.size}\n用时：${Math.floor((Date.now() - startTime) / 60000)}分钟\n\n继续努力！`);
+                        alert(`很遗憾，这次失败了\n\n完成章节：${completedChapters.size}\n用时：${Math.floor((Date.now() - startTime) / 60000)}分钟\n\n继续努力！`);
                     }
 
                     window.location.href = 'pk-arena.html';

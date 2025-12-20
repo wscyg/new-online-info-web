@@ -410,9 +410,9 @@ class AuthAPI {
     }
 
     async login(credentials) {
-        // 适配后端接口，将username转换为loginAccount
+        // 统一使用username字段
         const loginData = {
-            loginAccount: credentials.username || credentials.loginAccount,
+            username: credentials.username || credentials.loginAccount,
             password: credentials.password,
             loginType: credentials.loginType || 'password',
             deviceType: 'web'
@@ -1096,6 +1096,72 @@ class RankingAPI {
     }
 }
 
+/**
+ * 连续签到API
+ * 提供签到、统计、排行榜等功能
+ */
+class CheckinAPI {
+    constructor(apiService) {
+        this.api = apiService;
+    }
+
+    /**
+     * 每日签到
+     */
+    async dailyCheckIn() {
+        return this.api.post('/checkin/daily');
+    }
+
+    /**
+     * 获取签到统计
+     */
+    async getStats() {
+        return this.api.get('/checkin/stats');
+    }
+
+    /**
+     * 获取签到日历
+     * @param {number} year - 年份（可选，默认当前年）
+     * @param {number} month - 月份（可选，默认当前月）
+     */
+    async getCalendar(year = null, month = null) {
+        const params = {};
+        if (year) params.year = year;
+        if (month) params.month = month;
+        return this.api.get('/checkin/calendar', params);
+    }
+
+    /**
+     * 补签
+     * @param {string} date - 补签日期（格式：2025-11-05）
+     */
+    async makeupCheckIn(date) {
+        return this.api.post('/checkin/makeup', null, { date });
+    }
+
+    /**
+     * 获取签到排行榜
+     * @param {number} limit - 返回数量（默认100）
+     */
+    async getLeaderboard(limit = 100) {
+        return this.api.get('/checkin/leaderboard', { limit });
+    }
+
+    /**
+     * 获取奖励配置
+     */
+    async getRewards() {
+        return this.api.get('/checkin/rewards');
+    }
+
+    /**
+     * 今日签到状态
+     */
+    async getTodayStatus() {
+        return this.api.get('/checkin/today');
+    }
+}
+
 const apiService = new ApiService();
 const authAPI = new AuthAPI(apiService);
 const userAPI = new UserAPI(apiService);
@@ -1113,6 +1179,7 @@ const achievementAPI = new AchievementAPI(apiService);
 const pkAPI = new PkAPI(apiService);
 const friendAPI = new FriendAPI(apiService);
 const rankingAPI = new RankingAPI(apiService);
+const checkinAPI = new CheckinAPI(apiService);
 
 window.API = {
     auth: authAPI,
@@ -1131,6 +1198,7 @@ window.API = {
     pk: pkAPI,
     friend: friendAPI,
     ranking: rankingAPI,
+    checkin: checkinAPI,
     service: apiService
 };
 
@@ -1151,5 +1219,6 @@ export {
     achievementAPI,
     pkAPI,
     friendAPI,
-    rankingAPI
+    rankingAPI,
+    checkinAPI
 };

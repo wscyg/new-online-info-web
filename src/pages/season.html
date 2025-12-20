@@ -3,233 +3,752 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PK赛季 - 在线学习平台</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <title>PK赛季 - AI 信息未来</title>
+    <link rel="stylesheet" href="../styles/apple-design.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
-        * {
-            font-family: 'Inter', sans-serif;
+        body {
+            padding-top: 48px;
         }
 
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .page-header {
+            background: linear-gradient(135deg, #0071e3 0%, #147ce5 100%);
+            color: white;
+            padding: 60px 0;
+            margin-top: -48px;
+            padding-top: 108px;
         }
 
-        .gradient-gold {
-            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+        .header-content {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 0 22px;
         }
 
-        .gradient-silver {
-            background: linear-gradient(135deg, #e0e7ff 0%, #cfd9ff 100%);
+        .header-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
         }
 
-        .gradient-bronze {
-            background: linear-gradient(135deg, #ffd194 0%, #d1913c 100%);
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            opacity: 0.9;
+            font-size: 15px;
+            transition: opacity var(--transition-fast);
         }
 
-        .card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
+        .back-link:hover {
+            opacity: 1;
         }
 
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        .refresh-btn {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: background var(--transition-fast);
+        }
+
+        .refresh-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .season-title {
+            font-size: 48px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+
+        .season-theme {
+            font-size: 21px;
+            opacity: 0.9;
+            margin-bottom: 32px;
+        }
+
+        .season-meta {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+        }
+
+        .main-content {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 48px 22px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            padding: 4px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            margin-bottom: 32px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 20px;
+            font-size: 15px;
+            color: var(--text-secondary);
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .tab-btn.active {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            border-left: 3px solid var(--accent);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+        }
+
+        .stat-subtext {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .description-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+
+        .leaderboard-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .leaderboard-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .leaderboard-table thead {
+            background: var(--bg-secondary);
+        }
+
+        .leaderboard-table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .leaderboard-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .leaderboard-table tr:hover {
+            background: var(--bg-hover);
         }
 
         .rank-badge {
-            display: inline-flex;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
             align-items: center;
             justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .rank-1 { background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color: white; }
+        .rank-2 { background: linear-gradient(135deg, #C0C0C0 0%, #808080 100%); color: white; }
+        .rank-3 { background: linear-gradient(135deg, #CD7F32 0%, #8B4513 100%); color: white; }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .player-avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            font-weight: 700;
-            font-size: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
-        .rank-1 { background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color: #fff; }
-        .rank-2 { background: linear-gradient(135deg, #C0C0C0 0%, #808080 100%); color: #fff; }
-        .rank-3 { background: linear-gradient(135deg, #CD7F32 0%, #8B4513 100%); color: #fff; }
-
-        .stat-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(245,248,255,0.9) 100%);
-            border-left: 4px solid #667eea;
+        .player-details {
+            display: flex;
+            flex-direction: column;
         }
 
-        .progress-ring {
-            transform: rotate(-90deg);
+        .player-name {
+            font-weight: 500;
+            color: var(--text-primary);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .player-id {
+            font-size: 12px;
+            color: var(--text-tertiary);
         }
 
-        .animate-fade-in {
-            animation: fadeIn 0.5s ease-out forwards;
-        }
-
-        .elo-badge {
+        .tier-badge {
             padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
-            display: inline-block;
+            border-radius: var(--radius-full);
+            font-size: 12px;
+            font-weight: 500;
         }
 
-        .tier-BRONZE { background: #cd7f32; color: white; }
-        .tier-SILVER { background: #c0c0c0; color: #333; }
-        .tier-GOLD { background: #ffd700; color: #333; }
-        .tier-PLATINUM { background: #e5e4e2; color: #333; }
-        .tier-DIAMOND { background: #b9f2ff; color: #0066cc; }
-        .tier-MASTER { background: #8a2be2; color: white; }
-        .tier-GRANDMASTER { background: #ff1493; color: white; }
-        .tier-CHALLENGER { background: #ff4500; color: white; }
+        .tier-BRONZE { background: rgba(205, 127, 50, 0.15); color: #cd7f32; }
+        .tier-SILVER { background: rgba(192, 192, 192, 0.15); color: #808080; }
+        .tier-GOLD { background: rgba(255, 215, 0, 0.15); color: #c5a300; }
+        .tier-PLATINUM { background: rgba(229, 228, 226, 0.15); color: #86868b; }
+        .tier-DIAMOND { background: rgba(185, 242, 255, 0.15); color: #0066cc; }
+        .tier-MASTER { background: rgba(138, 43, 226, 0.15); color: #8a2be2; }
+        .tier-GRANDMASTER { background: rgba(255, 20, 147, 0.15); color: #ff1493; }
+        .tier-CHALLENGER { background: rgba(255, 69, 0, 0.15); color: #ff4500; }
+
+        .rewards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .reward-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+        }
+
+        .reward-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-card);
+        }
+
+        .reward-header {
+            padding: 32px 24px;
+            text-align: center;
+            color: white;
+        }
+
+        .reward-header.champion {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        }
+
+        .reward-header.top3 {
+            background: linear-gradient(135deg, #C0C0C0 0%, #808080 100%);
+        }
+
+        .reward-header.top10 {
+            background: linear-gradient(135deg, #CD7F32 0%, #8B4513 100%);
+        }
+
+        .reward-header.default {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .reward-title {
+            font-size: 21px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .reward-rank {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .reward-body {
+            padding: 24px;
+        }
+
+        .reward-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .reward-item:last-child {
+            border-bottom: none;
+        }
+
+        .reward-label {
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        .reward-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .reward-desc {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-top: 12px;
+            line-height: 1.5;
+        }
+
+        .tasks-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .tasks-section-title {
+            font-size: 21px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            margin-bottom: 12px;
+            transition: background var(--transition-fast);
+        }
+
+        .task-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .task-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .task-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .task-reward {
+            text-align: right;
+            margin-left: 16px;
+        }
+
+        .task-points {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .task-requirement {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        @media (max-width: 768px) {
+            .season-title {
+                font-size: 32px;
+            }
+
+            .season-theme {
+                font-size: 17px;
+            }
+
+            .season-meta {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .leaderboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .leaderboard-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
     </style>
 </head>
-<body class="bg-gray-50">
-    <!-- Header -->
-    <div class="gradient-bg text-white p-6">
-        <div class="max-w-7xl mx-auto">
-            <div class="flex items-center justify-between mb-4">
-                <a href="dashboard.html" class="flex items-center text-white hover:text-gray-200 transition">
-                    <i class="ri-arrow-left-line mr-2"></i>
+<body data-theme="light">
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="dashboard.html" class="nav-logo">学习平台</a>
+            <div class="nav-menu">
+                <a href="dashboard.html" class="nav-link">首页</a>
+                <a href="courses.html" class="nav-link">课程</a>
+                <a href="community.html" class="nav-link">社区</a>
+                <a href="arena.html" class="nav-link active">PK竞技</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <svg class="icon" id="theme-icon-light" style="display: block;">
+                        <circle cx="10" cy="10" r="5"></circle>
+                        <line x1="10" y1="1" x2="10" y2="3"></line>
+                        <line x1="10" y1="17" x2="10" y2="19"></line>
+                        <line x1="3.22" y1="3.22" x2="4.64" y2="4.64"></line>
+                        <line x1="15.36" y1="15.36" x2="16.78" y2="16.78"></line>
+                        <line x1="1" y1="10" x2="3" y2="10"></line>
+                        <line x1="17" y1="10" x2="19" y2="10"></line>
+                        <line x1="3.22" y1="16.78" x2="4.64" y2="15.36"></line>
+                        <line x1="15.36" y1="4.64" x2="16.78" y2="3.22"></line>
+                    </svg>
+                    <svg class="icon" id="theme-icon-dark" style="display: none;">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+                <div class="user-menu">
+                    <div class="user-avatar" onclick="toggleUserMenu()">
+                        <span id="user-initial">U</span>
+                    </div>
+                    <div class="dropdown" id="user-dropdown">
+                        <div class="dropdown-item" onclick="location.href='profile.html'">个人资料</div>
+                        <div class="dropdown-item" onclick="location.href='settings.html'">设置</div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item" onclick="logout()">退出登录</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="header-content">
+            <div class="header-actions">
+                <a href="dashboard.html" class="back-link">
+                    <svg class="icon">
+                        <line x1="19" y1="10" x2="5" y2="10"></line>
+                        <polyline points="12 17 5 10 12 3"></polyline>
+                    </svg>
                     返回主页
                 </a>
-                <button onclick="refreshData()" class="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition">
-                    <i class="ri-refresh-line"></i>
+                <button class="refresh-btn" onclick="refreshData()">
+                    <svg class="icon">
+                        <polyline points="23 4 23 10 17 10"></polyline>
+                        <polyline points="1 16 1 10 7 10"></polyline>
+                        <path d="M3.51 15a9 9 0 0 0 14.85-3.36L23 10M1 10l4.64 1.64A9 9 0 0 0 20.49 5"></path>
+                    </svg>
                     刷新
                 </button>
             </div>
 
-            <h1 class="text-4xl font-bold mb-2" id="seasonTitle">加载中...</h1>
-            <p class="text-lg opacity-90" id="seasonTheme">正在获取赛季信息...</p>
+            <h1 class="season-title" id="seasonTitle">加载中...</h1>
+            <p class="season-theme" id="seasonTheme">正在获取赛季信息...</p>
 
-            <div class="mt-6 flex items-center gap-6">
-                <div class="flex items-center gap-2">
-                    <i class="ri-calendar-line text-xl"></i>
+            <div class="season-meta">
+                <div class="meta-item">
+                    <svg class="icon">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
                     <span id="seasonDates">...</span>
                 </div>
-                <div class="flex items-center gap-2">
-                    <i class="ri-time-line text-xl"></i>
+                <div class="meta-item">
+                    <svg class="icon">
+                        <circle cx="10" cy="10" r="8"></circle>
+                        <polyline points="10 6 10 10 13 11"></polyline>
+                    </svg>
                     <span id="seasonTimeLeft">...</span>
                 </div>
-                <div class="flex items-center gap-2">
-                    <i class="ri-group-line text-xl"></i>
+                <div class="meta-item">
+                    <svg class="icon">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
                     <span id="participantCount">...</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 py-8">
-        <!-- Tab Navigation -->
-        <div class="flex gap-2 mb-6 border-b border-gray-200">
-            <button onclick="switchTab('overview')" class="tab-btn px-6 py-3 font-medium transition active" data-tab="overview">
-                <i class="ri-home-line mr-2"></i>赛季概览
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="overview" onclick="switchTab('overview')">
+                <svg class="icon">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                赛季概览
             </button>
-            <button onclick="switchTab('leaderboard')" class="tab-btn px-6 py-3 font-medium transition" data-tab="leaderboard">
-                <i class="ri-trophy-line mr-2"></i>排行榜
+            <button class="tab-btn" data-tab="leaderboard" onclick="switchTab('leaderboard')">
+                <svg class="icon">
+                    <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                    <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                    <path d="M4 22h16"></path>
+                    <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+                    <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+                    <path d="M18 2H6v7a6 6 0 0 0 12 0V2z"></path>
+                </svg>
+                排行榜
             </button>
-            <button onclick="switchTab('rewards')" class="tab-btn px-6 py-3 font-medium transition" data-tab="rewards">
-                <i class="ri-gift-line mr-2"></i>奖励
+            <button class="tab-btn" data-tab="rewards" onclick="switchTab('rewards')">
+                <svg class="icon">
+                    <polyline points="20 12 20 22 4 22 4 12"></polyline>
+                    <rect x="2" y="7" width="20" height="5"></rect>
+                    <line x1="12" y1="22" x2="12" y2="7"></line>
+                    <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
+                    <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
+                </svg>
+                奖励
             </button>
-            <button onclick="switchTab('tasks')" class="tab-btn px-6 py-3 font-medium transition" data-tab="tasks">
-                <i class="ri-task-line mr-2"></i>任务
+            <button class="tab-btn" data-tab="tasks" onclick="switchTab('tasks')">
+                <svg class="icon">
+                    <polyline points="9 11 12 14 22 4"></polyline>
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                </svg>
+                任务
             </button>
         </div>
 
         <!-- Overview Tab -->
-        <div id="tab-overview" class="tab-content">
-            <!-- User Stats Card -->
-            <div class="card p-6 mb-6 animate-fade-in">
-                <h2 class="text-2xl font-bold mb-4 flex items-center">
-                    <i class="ri-user-star-line mr-2 text-purple-600"></i>
-                    我的赛季数据
-                </h2>
-
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4" id="userStatsGrid">
-                    <!-- Stats will be loaded here -->
-                </div>
+        <div class="tab-content active" id="tab-overview">
+            <h2 style="font-size: 28px; font-weight: 600; margin-bottom: 24px;">我的赛季数据</h2>
+            <div class="stats-grid" id="userStatsGrid">
+                <!-- Stats will be loaded here -->
             </div>
 
-            <!-- Description -->
-            <div class="card p-6 mb-6 animate-fade-in">
-                <h2 class="text-2xl font-bold mb-4">赛季说明</h2>
-                <p class="text-gray-700 leading-relaxed" id="seasonDescription">
+            <div class="description-card">
+                <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 16px;">赛季说明</h2>
+                <p style="color: var(--text-secondary); line-height: 1.6;" id="seasonDescription">
                     加载中...
                 </p>
             </div>
         </div>
 
         <!-- Leaderboard Tab -->
-        <div id="tab-leaderboard" class="tab-content hidden">
-            <div class="card p-6 animate-fade-in">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold flex items-center">
-                        <i class="ri-trophy-line mr-2 text-yellow-500"></i>
-                        赛季排行榜
-                    </h2>
-                    <div class="flex gap-2">
-                        <button onclick="loadLeaderboard(10)" class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition">Top 10</button>
-                        <button onclick="loadLeaderboard(50)" class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition">Top 50</button>
-                        <button onclick="loadLeaderboard(100)" class="px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition">Top 100</button>
+        <div class="tab-content" id="tab-leaderboard">
+            <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 32px;">
+                <div class="leaderboard-header">
+                    <h2 style="font-size: 28px; font-weight: 600; margin: 0;">赛季排行榜</h2>
+                    <div class="leaderboard-actions">
+                        <button class="btn btn-sm btn-secondary" onclick="loadLeaderboard(10)">Top 10</button>
+                        <button class="btn btn-sm btn-secondary" onclick="loadLeaderboard(50)">Top 50</button>
+                        <button class="btn btn-sm btn-primary" onclick="loadLeaderboard(100)">Top 100</button>
                     </div>
                 </div>
 
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">排名</th>
-                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">玩家</th>
-                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">ELO</th>
-                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">段位</th>
-                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">对战</th>
-                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">胜率</th>
-                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">连胜</th>
-                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">奖励</th>
-                            </tr>
-                        </thead>
-                        <tbody id="leaderboardBody">
-                            <!-- Leaderboard rows will be loaded here -->
-                        </tbody>
-                    </table>
-                </div>
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>排名</th>
+                            <th>玩家</th>
+                            <th>ELO</th>
+                            <th>段位</th>
+                            <th>对战</th>
+                            <th>胜率</th>
+                            <th>连胜</th>
+                            <th>奖励</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardBody">
+                        <!-- Leaderboard rows will be loaded here -->
+                    </tbody>
+                </table>
             </div>
         </div>
 
         <!-- Rewards Tab -->
-        <div id="tab-rewards" class="tab-content hidden">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="rewardsGrid">
+        <div class="tab-content" id="tab-rewards">
+            <div class="rewards-grid" id="rewardsGrid">
                 <!-- Reward cards will be loaded here -->
             </div>
         </div>
 
         <!-- Tasks Tab -->
-        <div id="tab-tasks" class="tab-content hidden">
-            <div class="space-y-4" id="tasksContainer">
-                <!-- Task cards will be loaded here -->
+        <div class="tab-content" id="tab-tasks">
+            <div id="tasksContainer">
+                <!-- Task sections will be loaded here -->
             </div>
         </div>
     </div>
 
     <script>
-        const API_BASE = 'http://localhost:8070/api';
+        const API_BASE = '/api';
         let currentSeasonId = null;
         let seasonData = null;
 
+        // Theme management
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const lightIcon = document.getElementById('theme-icon-light');
+            const darkIcon = document.getElementById('theme-icon-dark');
+            if (theme === 'dark') {
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'block';
+            } else {
+                lightIcon.style.display = 'block';
+                darkIcon.style.display = 'none';
+            }
+        }
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+        }
+
+        // User menu
+        function toggleUserMenu() {
+            const dropdown = document.getElementById('user-dropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        document.addEventListener('click', (e) => {
+            const userMenu = document.querySelector('.user-menu');
+            if (!userMenu.contains(e.target)) {
+                document.getElementById('user-dropdown').classList.remove('show');
+            }
+        });
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            location.href = 'login.html';
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', async () => {
+            initTheme();
+            checkAuth();
             await loadCurrentSeason();
             await loadUserStats();
         });
+
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+
+            if (!token) {
+                location.href = 'login.html';
+                return;
+            }
+
+            if (user) {
+                try {
+                    const userData = JSON.parse(user);
+                    const initial = userData.username ? userData.username[0].toUpperCase() : 'U';
+                    document.getElementById('user-initial').textContent = initial;
+                } catch (e) {
+                    console.error('Error parsing user data:', e);
+                }
+            }
+        }
 
         // Load current season
         async function loadCurrentSeason() {
@@ -319,29 +838,32 @@
         // Render user stats
         function renderUserStats(ranking) {
             const grid = document.getElementById('userStatsGrid');
+            const rankChange = ranking.rankChange || 0;
+            const changeSymbol = rankChange > 0 ? '↑' : rankChange < 0 ? '↓' : '—';
+
             grid.innerHTML = `
-                <div class="stat-card p-4 rounded-lg">
-                    <div class="text-gray-600 text-sm mb-1">当前排名</div>
-                    <div class="text-3xl font-bold text-purple-600">#${ranking.currentRank || '未上榜'}</div>
-                    <div class="text-sm text-gray-500 mt-1">${ranking.rankChange > 0 ? '↑' : ranking.rankChange < 0 ? '↓' : '—'} ${Math.abs(ranking.rankChange || 0)}</div>
+                <div class="stat-card">
+                    <div class="stat-label">当前排名</div>
+                    <div class="stat-value">#${ranking.currentRank || '未上榜'}</div>
+                    <div class="stat-subtext">${changeSymbol} ${Math.abs(rankChange)}</div>
                 </div>
 
-                <div class="stat-card p-4 rounded-lg">
-                    <div class="text-gray-600 text-sm mb-1">赛季ELO</div>
-                    <div class="text-3xl font-bold text-blue-600">${ranking.currentElo}</div>
-                    <div class="text-sm text-gray-500 mt-1">峰值: ${ranking.peakElo}</div>
+                <div class="stat-card">
+                    <div class="stat-label">赛季ELO</div>
+                    <div class="stat-value">${ranking.currentElo}</div>
+                    <div class="stat-subtext">峰值: ${ranking.peakElo}</div>
                 </div>
 
-                <div class="stat-card p-4 rounded-lg">
-                    <div class="text-gray-600 text-sm mb-1">对战记录</div>
-                    <div class="text-3xl font-bold text-green-600">${ranking.wins}胜${ranking.losses}负</div>
-                    <div class="text-sm text-gray-500 mt-1">胜率: ${ranking.winRate || 0}%</div>
+                <div class="stat-card">
+                    <div class="stat-label">对战记录</div>
+                    <div class="stat-value">${ranking.wins}胜${ranking.losses}负</div>
+                    <div class="stat-subtext">胜率: ${ranking.winRate || 0}%</div>
                 </div>
 
-                <div class="stat-card p-4 rounded-lg">
-                    <div class="text-gray-600 text-sm mb-1">连胜记录</div>
-                    <div class="text-3xl font-bold text-orange-600">${ranking.currentStreak || 0}</div>
-                    <div class="text-sm text-gray-500 mt-1">最高: ${ranking.maxWinStreak || 0}</div>
+                <div class="stat-card">
+                    <div class="stat-label">连胜记录</div>
+                    <div class="stat-value">${ranking.currentStreak || 0}</div>
+                    <div class="stat-subtext">最高: ${ranking.maxWinStreak || 0}</div>
                 </div>
             `;
         }
@@ -369,35 +891,37 @@
             tbody.innerHTML = leaderboard.map((entry, index) => {
                 const ranking = entry.ranking;
                 const reward = entry.reward;
-                const rankDisplay = index < 3 ? `<div class="rank-badge rank-${index + 1}">${index + 1}</div>` : `<div class="text-gray-700 font-semibold">${index + 1}</div>`;
+                const rankDisplay = index < 3
+                    ? `<div class="rank-badge rank-${index + 1}">${index + 1}</div>`
+                    : `<div style="font-weight: 600; color: var(--text-primary);">${index + 1}</div>`;
 
                 return `
-                    <tr class="border-b hover:bg-gray-50 transition">
-                        <td class="px-4 py-4">${rankDisplay}</td>
-                        <td class="px-4 py-4">
-                            <div class="flex items-center gap-2">
-                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400"></div>
-                                <div>
-                                    <div class="font-medium">${ranking.username || '匿名用户'}</div>
-                                    <div class="text-xs text-gray-500">ID: ${ranking.userId}</div>
+                    <tr>
+                        <td>${rankDisplay}</td>
+                        <td>
+                            <div class="player-info">
+                                <div class="player-avatar"></div>
+                                <div class="player-details">
+                                    <div class="player-name">${ranking.username || '匿名用户'}</div>
+                                    <div class="player-id">ID: ${ranking.userId}</div>
                                 </div>
                             </div>
                         </td>
-                        <td class="px-4 py-4">
-                            <div class="text-xl font-bold text-blue-600">${ranking.currentElo}</div>
+                        <td>
+                            <div style="font-size: 19px; font-weight: 600; color: var(--accent);">${ranking.currentElo}</div>
                         </td>
-                        <td class="px-4 py-4">
-                            <span class="elo-badge tier-${getTier(ranking.currentElo)}">${getTier(ranking.currentElo)}</span>
+                        <td>
+                            <span class="tier-badge tier-${getTier(ranking.currentElo)}">${getTier(ranking.currentElo)}</span>
                         </td>
-                        <td class="px-4 py-4">${ranking.totalBattles || 0}</td>
-                        <td class="px-4 py-4">
-                            <div class="text-green-600 font-semibold">${ranking.winRate || 0}%</div>
+                        <td>${ranking.totalBattles || 0}</td>
+                        <td>
+                            <div style="font-weight: 600; color: #34c759;">${ranking.winRate || 0}%</div>
                         </td>
-                        <td class="px-4 py-4">
-                            <div class="text-orange-600 font-semibold">${ranking.currentStreak || 0}</div>
+                        <td>
+                            <div style="font-weight: 600; color: #ff9500;">${ranking.currentStreak || 0}</div>
                         </td>
-                        <td class="px-4 py-4">
-                            <div class="text-sm text-gray-700">${reward ? reward.pointsReward + ' 积分' : '参与奖'}</div>
+                        <td>
+                            <div style="font-size: 13px; color: var(--text-secondary);">${reward ? reward.pointsReward + ' 积分' : '参与奖'}</div>
                         </td>
                     </tr>
                 `;
@@ -408,37 +932,38 @@
         function renderRewards(rewards) {
             const grid = document.getElementById('rewardsGrid');
             grid.innerHTML = rewards.map(reward => {
-                const gradientClass = reward.rankType === 'champion' ? 'gradient-gold' :
-                                     reward.rankType === 'top3' ? 'gradient-silver' :
-                                     reward.rankType === 'top10' ? 'gradient-bronze' : 'bg-gray-100';
+                const headerClass = reward.rankType === 'champion' ? 'champion' :
+                                   reward.rankType === 'top3' ? 'top3' :
+                                   reward.rankType === 'top10' ? 'top10' : 'default';
 
                 return `
-                    <div class="card p-6">
-                        <div class="${gradientClass} text-white p-4 rounded-lg mb-4 text-center">
-                            <div class="text-2xl font-bold mb-2">${reward.titleName || '参与奖'}</div>
-                            <div class="text-sm opacity-90">第 ${reward.rankRangeStart} - ${reward.rankRangeEnd} 名</div>
+                    <div class="reward-card">
+                        <div class="reward-header ${headerClass}">
+                            <div class="reward-title">${reward.titleName || '参与奖'}</div>
+                            <div class="reward-rank">第 ${reward.rankRangeStart} - ${reward.rankRangeEnd} 名</div>
                         </div>
 
-                        <div class="space-y-3">
-                            <div class="flex items-center justify-between py-2 border-b">
-                                <span class="text-gray-600">积分奖励</span>
-                                <span class="font-bold text-purple-600">${reward.pointsReward}</span>
+                        <div class="reward-body">
+                            <div class="reward-item">
+                                <span class="reward-label">积分奖励</span>
+                                <span class="reward-value">${reward.pointsReward}</span>
                             </div>
                             ${reward.vipDays > 0 ? `
-                            <div class="flex items-center justify-between py-2 border-b">
-                                <span class="text-gray-600">VIP天数</span>
-                                <span class="font-bold text-blue-600">${reward.vipDays}天</span>
+                            <div class="reward-item">
+                                <span class="reward-label">VIP天数</span>
+                                <span class="reward-value">${reward.vipDays}天</span>
                             </div>
                             ` : ''}
                             ${reward.badgeReward ? `
-                            <div class="flex items-center justify-between py-2">
-                                <span class="text-gray-600">专属徽章</span>
-                                <span class="text-sm text-gray-700">${reward.badgeReward}</span>
+                            <div class="reward-item">
+                                <span class="reward-label">专属徽章</span>
+                                <span class="reward-value">${reward.badgeReward}</span>
                             </div>
                             ` : ''}
+                            ${reward.description ? `
+                            <div class="reward-desc">${reward.description}</div>
+                            ` : ''}
                         </div>
-
-                        <p class="text-sm text-gray-500 mt-4">${reward.description}</p>
                     </div>
                 `;
             }).join('');
@@ -459,22 +984,21 @@
         }
 
         function renderTaskSection(title, tasks) {
+            if (!tasks || tasks.length === 0) return '';
+
             return `
-                <div class="card p-6">
-                    <h3 class="text-xl font-bold mb-4 flex items-center">
-                        <i class="ri-checkbox-circle-line mr-2 text-purple-600"></i>
-                        ${title}
-                    </h3>
-                    <div class="space-y-3">
+                <div class="tasks-section">
+                    <h3 class="tasks-section-title">${title}</h3>
+                    <div>
                         ${tasks.map(task => `
-                            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
-                                <div class="flex-1">
-                                    <div class="font-medium text-gray-900">${task.taskName}</div>
-                                    <div class="text-sm text-gray-600 mt-1">${task.taskDescription}</div>
+                            <div class="task-item">
+                                <div class="task-info">
+                                    <div class="task-name">${task.taskName}</div>
+                                    <div class="task-desc">${task.taskDescription}</div>
                                 </div>
-                                <div class="text-right ml-4">
-                                    <div class="text-lg font-bold text-purple-600">${task.pointsReward} 积分</div>
-                                    <div class="text-xs text-gray-500 mt-1">要求: ${task.requirementValue}</div>
+                                <div class="task-reward">
+                                    <div class="task-points">${task.pointsReward} 积分</div>
+                                    <div class="task-requirement">要求: ${task.requirementValue}</div>
                                 </div>
                             </div>
                         `).join('')}
@@ -499,18 +1023,15 @@
         function switchTab(tab) {
             // Update tab buttons
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active', 'border-b-2', 'border-purple-600', 'text-purple-600');
-                btn.classList.add('text-gray-600');
+                btn.classList.remove('active');
             });
-            const activeBtn = document.querySelector(`[data-tab="${tab}"]`);
-            activeBtn.classList.add('active', 'border-b-2', 'border-purple-600', 'text-purple-600');
-            activeBtn.classList.remove('text-gray-600');
+            document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
 
             // Update tab content
             document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.add('hidden');
+                content.classList.remove('active');
             });
-            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            document.getElementById(`tab-${tab}`).classList.add('active');
 
             // Load data if needed
             if (tab === 'leaderboard' && document.getElementById('leaderboardBody').children.length === 0) {
@@ -522,7 +1043,8 @@
         async function refreshData() {
             await loadCurrentSeason();
             await loadUserStats();
-            if (document.querySelector('[data-tab="leaderboard"]').classList.contains('active')) {
+            const activeTab = document.querySelector('.tab-btn.active').getAttribute('data-tab');
+            if (activeTab === 'leaderboard') {
                 await loadLeaderboard();
             }
         }

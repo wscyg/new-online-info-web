@@ -3,590 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>问答社区 - AI学习平台</title>
+    <title>问答社区 - AI 信息未来</title>
     <meta name="description" content="学习问答社区，互帮互助，共同成长">
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="../utils/theme-switcher.js"></script>
     <style>
-        /* Modern Design System */
-        :root {
-            --primary-50: #eff6ff;
-            --primary-100: #dbeafe;
-            --primary-200: #bfdbfe;
-            --primary-300: #93c5fd;
-            --primary-400: #60a5fa;
-            --primary-500: #3b82f6;
-            --primary-600: #2563eb;
-            --primary-700: #1d4ed8;
-            --primary-800: #1e40af;
-            --primary-900: #1e3a8a;
-
-            --secondary-50: #faf5ff;
-            --secondary-100: #f3e8ff;
-            --secondary-200: #e9d5ff;
-            --secondary-300: #d8b4fe;
-            --secondary-400: #c084fc;
-            --secondary-500: #a855f7;
-            --secondary-600: #9333ea;
-            --secondary-700: #7c2d12;
-            --secondary-800: #6b21a8;
-            --secondary-900: #581c87;
-
-            --success-50: #f0fdf4;
-            --success-100: #dcfce7;
-            --success-200: #bbf7d0;
-            --success-300: #86efac;
-            --success-400: #4ade80;
-            --success-500: #22c55e;
-            --success-600: #16a34a;
-            --success-700: #15803d;
-            --success-800: #166534;
-            --success-900: #14532d;
-
-            --warning-50: #fffbeb;
-            --warning-100: #fef3c7;
-            --warning-200: #fde68a;
-            --warning-300: #fcd34d;
-            --warning-400: #fbbf24;
-            --warning-500: #f59e0b;
-            --warning-600: #d97706;
-            --warning-700: #b45309;
-            --warning-800: #92400e;
-            --warning-900: #78350f;
-
-            --danger-50: #fef2f2;
-            --danger-100: #fee2e2;
-            --danger-200: #fecaca;
-            --danger-300: #fca5a5;
-            --danger-400: #f87171;
-            --danger-500: #ef4444;
-            --danger-600: #dc2626;
-            --danger-700: #b91c1c;
-            --danger-800: #991b1b;
-            --danger-900: #7f1d1d;
-
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-400: #9ca3af;
-            --gray-500: #6b7280;
-            --gray-600: #4b5563;
-            --gray-700: #374151;
-            --gray-800: #1f2937;
-            --gray-900: #111827;
-
-            /* Theme Variables */
-            --bg-primary: #ffffff;
-            --bg-secondary: var(--gray-50);
-            --bg-elevated: #ffffff;
-            --text-primary: var(--gray-900);
-            --text-secondary: var(--gray-600);
-            --text-tertiary: var(--gray-500);
-            --border-primary: var(--gray-200);
-            --border-secondary: var(--gray-100);
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-
-        /* Dark Theme */
-        [data-theme="dark"] {
-            --bg-primary: var(--gray-900);
-            --bg-secondary: var(--gray-800);
-            --bg-elevated: var(--gray-800);
-            --text-primary: var(--gray-100);
-            --text-secondary: var(--gray-300);
-            --text-tertiary: var(--gray-400);
-            --border-primary: var(--gray-700);
-            --border-secondary: var(--gray-600);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* Page Layout */
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            line-height: 1.6;
-            font-size: 14px;
-            transition: all 0.3s ease;
+            margin: 0;
+            padding-top: 48px;
+            min-height: 100vh;
         }
 
-        /* Navigation Bar */
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            background: var(--bg-elevated);
-            border-bottom: 1px solid var(--border-primary);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
-
-        .nav-container {
-            max-width: 1400px;
+        /* Main Container */
+        .qa-container {
+            max-width: 1024px;
             margin: 0 auto;
-            padding: 0 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 64px;
-        }
-
-        .nav-brand h1 {
-            font-size: 20px;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary-600), var(--secondary-600));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .nav-menu {
-            display: flex;
-            align-items: center;
+            padding: 40px 22px;
+            display: grid;
+            grid-template-columns: 200px 1fr 260px;
             gap: 32px;
         }
 
-        .nav-link {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: 500;
-            padding: 8px 16px;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-            position: relative;
-        }
-
-        .nav-link:hover,
-        .nav-link.active {
-            color: var(--primary-600);
-            background: var(--primary-50);
-        }
-
-        [data-theme="dark"] .nav-link:hover,
-        [data-theme="dark"] .nav-link.active {
-            background: var(--primary-900);
-        }
-
-        .user-menu-container {
-            position: relative;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 12px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-primary);
-            transition: all 0.2s ease;
-        }
-
-        .user-info:hover {
-            background: var(--bg-elevated);
-            border-color: var(--primary-200);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-500), var(--secondary-500));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 12px;
-            overflow: hidden;
-        }
-
-        .user-avatar img {
-            width: 100%;
-            height: 100%;
-            -o-object-fit: cover;
-               object-fit: cover;
-        }
-
-        .user-name {
-            font-weight: 500;
-            font-size: 14px;
-        }
-
-        .dropdown-arrow {
-            color: var(--text-tertiary);
-            font-size: 12px;
-            transition: transform 0.2s ease;
-        }
-
-        .user-menu-container.active .dropdown-arrow {
-            transform: rotate(180deg);
-        }
-
-        .dropdown-menu {
-            position: absolute;
-            top: calc(100% + 8px);
-            right: 0;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-primary);
-            border-radius: 12px;
-            box-shadow: var(--shadow-xl);
-            min-width: 200px;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-8px);
-            transition: all 0.2s ease;
-            z-index: 1001;
-        }
-
-        .dropdown-menu.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .dropdown-item {
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: var(--text-primary);
-            text-decoration: none;
-            transition: background 0.2s ease;
-            font-size: 14px;
-        }
-
-        .dropdown-item:hover {
-            background: var(--bg-secondary);
-        }
-
-        .dropdown-item:first-child {
-            border-radius: 12px 12px 0 0;
-        }
-
-        .dropdown-item:last-child {
-            border-radius: 0 0 12px 12px;
-        }
-
-        .dropdown-divider {
-            height: 1px;
-            background: var(--border-primary);
-            margin: 4px 0;
-        }
-
-        .theme-toggle {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            border: 1px solid var(--border-primary);
-            background: var(--bg-elevated);
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-        }
-
-        .theme-toggle:hover {
-            background: var(--bg-secondary);
-            border-color: var(--primary-200);
-        }
-
-        /* Main Layout */
-        .main-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 88px 24px 24px;
-            display: grid;
-            grid-template-columns: 240px 1fr 300px;
-            gap: 24px;
-            min-height: calc(100vh - 64px);
-        }
-
         /* Sidebar */
-        .sidebar {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-primary);
-            border-radius: 16px;
-            padding: 20px;
+        .qa-sidebar {
+            position: sticky;
+            top: 72px;
             height: -moz-fit-content;
             height: fit-content;
-            position: sticky;
-            top: 88px;
         }
 
         .sidebar-section {
-            margin-bottom: 24px;
-        }
-
-        .sidebar-section:last-child {
-            margin-bottom: 0;
+            margin-bottom: 32px;
         }
 
         .sidebar-title {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
-            margin-bottom: 12px;
             color: var(--text-primary);
+            margin-bottom: 12px;
         }
 
-        .nav-list {
-            list-style: none;
-        }
-
-        .nav-item {
-            margin-bottom: 2px;
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
 
         .sidebar-link {
-            display: block;
-            padding: 10px 12px;
+            padding: 8px 12px;
+            font-size: 15px;
             color: var(--text-secondary);
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-            font-size: 14px;
+            border-radius: var(--radius-sm);
+            transition: all var(--transition-fast);
         }
 
         .sidebar-link:hover,
         .sidebar-link.active {
-            background: var(--primary-50);
-            color: var(--primary-600);
-        }
-
-        [data-theme="dark"] .sidebar-link:hover,
-        [data-theme="dark"] .sidebar-link.active {
-            background: var(--primary-900);
+            background: var(--bg-hover);
+            color: var(--accent);
         }
 
         /* Main Content */
-        .main-content {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-primary);
-            border-radius: 16px;
-            overflow: hidden;
+        .qa-main {
+            min-width: 0;
         }
 
-        .content-header {
-            background: linear-gradient(135deg, var(--primary-50), var(--secondary-50));
-            padding: 40px 32px;
-            border-bottom: 1px solid var(--border-primary);
+        /* Header */
+        .qa-header {
             text-align: center;
+            margin-bottom: 48px;
         }
 
-        [data-theme="dark"] .content-header {
-            background: linear-gradient(135deg, var(--primary-900), var(--secondary-900));
-        }
-
-        .content-title {
-            font-size: 32px;
+        .qa-title {
+            font-size: 48px;
             font-weight: 700;
-            background: linear-gradient(135deg, var(--primary-600), var(--secondary-600));
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+            background: linear-gradient(180deg, var(--text-primary) 0%, var(--text-secondary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 12px;
         }
 
-        .content-subtitle {
+        .qa-subtitle {
+            font-size: 19px;
             color: var(--text-secondary);
-            font-size: 16px;
-            margin-bottom: 32px;
-        }
-
-        .ask-question-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, var(--primary-600), var(--secondary-600));
-            color: white;
-            padding: 14px 24px;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            box-shadow: var(--shadow-md);
-        }
-
-        .ask-question-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
         }
 
         /* Filter Bar */
         .filter-bar {
-            background: var(--bg-secondary);
-            padding: 20px 32px;
-            border-bottom: 1px solid var(--border-primary);
             display: flex;
-            gap: 24px;
             align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 32px;
             flex-wrap: wrap;
         }
 
         .filter-tabs {
             display: flex;
             gap: 8px;
+            background: var(--bg-secondary);
+            padding: 4px;
+            border-radius: var(--radius-md);
         }
 
         .filter-tab {
             padding: 8px 16px;
-            background: transparent;
-            border: 1px solid var(--border-primary);
-            color: var(--text-secondary);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-weight: 500;
             font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all var(--transition-fast);
         }
 
         .filter-tab:hover {
-            border-color: var(--primary-300);
-            background: var(--primary-50);
-            color: var(--primary-600);
+            color: var(--text-primary);
         }
 
         .filter-tab.active {
-            background: var(--primary-600);
-            border-color: var(--primary-600);
-            color: white;
+            background: var(--bg-card);
+            color: var(--accent);
+            box-shadow: var(--shadow-sm);
         }
 
-        .search-container {
+        .search-box {
             flex: 1;
-            max-width: 400px;
-            display: flex;
-            gap: 8px;
+            max-width: 320px;
+            position: relative;
         }
 
         .search-input {
-            flex: 1;
-            padding: 10px 12px 10px 40px;
-            border: 1px solid var(--border-primary);
-            border-radius: 8px;
-            background: var(--bg-elevated);
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            font-size: 15px;
             color: var(--text-primary);
-            font-size: 14px;
-            transition: all 0.2s ease;
-            position: relative;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            transition: all var(--transition-fast);
         }
 
         .search-input:focus {
             outline: none;
-            border-color: var(--primary-600);
-            box-shadow: 0 0 0 3px var(--primary-100);
-        }
-
-        .search-wrapper {
-            position: relative;
-            flex: 1;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
         }
 
         .search-icon {
             position: absolute;
-            left: 12px;
+            left: 14px;
             top: 50%;
             transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
             color: var(--text-tertiary);
-            font-size: 14px;
         }
 
-        .search-btn {
-            padding: 10px 16px;
-            background: var(--primary-600);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 14px;
-            transition: all 0.2s ease;
-        }
-
-        .search-btn:hover {
-            background: var(--primary-700);
-        }
-
-        /* Question List */
-        .questions-container {
-            padding: 24px 32px;
-        }
-
+        /* Question Card */
         .question-card {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-primary);
-            border-radius: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
             padding: 24px;
             margin-bottom: 16px;
-            transition: all 0.3s ease;
+            transition: all var(--transition-fast);
             cursor: pointer;
-            position: relative;
         }
 
         .question-card:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-            border-color: var(--primary-200);
+            box-shadow: var(--shadow-card);
         }
 
         .question-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
+            gap: 16px;
             margin-bottom: 12px;
         }
 
         .question-title {
-            font-size: 18px;
+            font-size: 19px;
             font-weight: 600;
             color: var(--text-primary);
             line-height: 1.4;
             flex: 1;
-            margin-right: 16px;
         }
 
-        .question-title:hover {
-            color: var(--primary-600);
-        }
-
-        .status-badge {
+        .question-status {
             padding: 4px 12px;
-            border-radius: 20px;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 500;
+            border-radius: var(--radius-full);
             white-space: nowrap;
         }
 
         .status-solved {
-            background: var(--success-100);
-            color: var(--success-700);
+            background: rgba(52, 199, 89, 0.1);
+            color: #34c759;
         }
 
         .status-open {
-            background: var(--warning-100);
-            color: var(--warning-700);
+            background: rgba(255, 149, 0, 0.1);
+            color: #ff9500;
         }
 
         .question-content {
+            font-size: 15px;
             color: var(--text-secondary);
             line-height: 1.6;
             margin-bottom: 16px;
@@ -594,93 +223,80 @@
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            font-size: 14px;
         }
 
         .question-meta {
             display: flex;
             align-items: center;
-            gap: 16px;
-            color: var(--text-tertiary);
+            gap: 20px;
             font-size: 13px;
+            color: var(--text-tertiary);
             margin-bottom: 12px;
         }
 
         .meta-item {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
         }
 
         .question-tags {
             display: flex;
-            gap: 6px;
+            gap: 8px;
             flex-wrap: wrap;
             margin-bottom: 16px;
         }
 
         .tag {
-            background: var(--gray-100);
-            color: var(--text-secondary);
-            padding: 4px 8px;
-            border-radius: 6px;
+            padding: 4px 10px;
             font-size: 12px;
             font-weight: 500;
-            border: 1px solid var(--border-secondary);
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+            border-radius: var(--radius-full);
         }
 
         .question-actions {
             display: flex;
             gap: 12px;
             padding-top: 16px;
-            border-top: 1px solid var(--border-secondary);
+            border-top: 1px solid var(--border-color);
         }
 
         .action-btn {
             display: flex;
             align-items: center;
             gap: 6px;
-            background: none;
-            border: 1px solid var(--border-primary);
-            color: var(--text-secondary);
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 13px;
+            padding: 8px 16px;
+            font-size: 14px;
             font-weight: 500;
+            color: var(--text-secondary);
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all var(--transition-fast);
         }
 
         .action-btn:hover {
-            border-color: var(--primary-300);
-            background: var(--primary-50);
-            color: var(--primary-600);
-        }
-
-        .action-btn.active {
-            background: var(--primary-600);
-            border-color: var(--primary-600);
-            color: white;
+            background: var(--bg-hover);
+            color: var(--accent);
+            border-color: var(--accent);
         }
 
         /* Answer Section */
         .answer-section {
-            border-top: 1px solid var(--border-primary);
+            display: none;
             margin-top: 16px;
             padding-top: 16px;
-            display: none;
-        }
-
-        .answers-list {
-            margin-bottom: 16px;
+            border-top: 1px solid var(--border-color);
         }
 
         .answer-item {
             background: var(--bg-secondary);
-            border: 1px solid var(--border-secondary);
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             padding: 16px;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
         }
 
         .answer-header {
@@ -691,52 +307,52 @@
         }
 
         .answer-author {
-            color: var(--primary-600);
+            font-size: 14px;
             font-weight: 500;
-            font-size: 13px;
+            color: var(--accent);
         }
 
         .answer-time {
-            color: var(--text-tertiary);
             font-size: 12px;
+            color: var(--text-tertiary);
         }
 
         .answer-content {
+            font-size: 15px;
             color: var(--text-primary);
             line-height: 1.6;
             margin-bottom: 12px;
-            font-size: 14px;
         }
 
         .answer-actions {
             display: flex;
-            gap: 8px;
             align-items: center;
+            gap: 12px;
         }
 
         .answer-like-btn {
-            background: none;
-            border: 1px solid var(--border-primary);
-            color: var(--text-secondary);
-            padding: 4px 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 12px;
             display: flex;
             align-items: center;
             gap: 4px;
+            padding: 4px 12px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all var(--transition-fast);
         }
 
         .answer-like-btn:hover {
-            border-color: var(--primary-300);
-            color: var(--primary-600);
+            border-color: #ff2d55;
+            color: #ff2d55;
         }
 
         .answer-like-btn.liked {
-            background: var(--primary-600);
-            border-color: var(--primary-600);
-            color: white;
+            background: rgba(255, 45, 85, 0.1);
+            border-color: #ff2d55;
+            color: #ff2d55;
         }
 
         .answer-form {
@@ -749,85 +365,52 @@
 
         .answer-input {
             width: 100%;
-            min-height: 80px;
-            padding: 12px;
-            border: 1px solid var(--border-primary);
-            border-radius: 8px;
-            background: var(--bg-elevated);
+            min-height: 100px;
+            padding: 14px 16px;
+            font-family: var(--font-sans);
+            font-size: 15px;
             color: var(--text-primary);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
             resize: vertical;
-            font-family: inherit;
-            font-size: 14px;
-            transition: all 0.2s ease;
+            transition: all var(--transition-fast);
+            margin-bottom: 12px;
         }
 
         .answer-input:focus {
             outline: none;
-            border-color: var(--primary-600);
-            box-shadow: 0 0 0 3px var(--primary-100);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
         }
 
-        .answer-actions-bar {
+        .answer-form-actions {
             display: flex;
             gap: 8px;
             justify-content: flex-end;
-            margin-top: 12px;
         }
 
-        .answer-btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 13px;
-            transition: all 0.2s ease;
-        }
-
-        .answer-btn-primary {
-            background: var(--primary-600);
-            color: white;
-        }
-
-        .answer-btn-primary:hover {
-            background: var(--primary-700);
-        }
-
-        .answer-btn-secondary {
-            background: var(--bg-elevated);
-            color: var(--text-secondary);
-            border: 1px solid var(--border-primary);
-        }
-
-        .answer-btn-secondary:hover {
-            background: var(--bg-secondary);
-        }
-
-        /* Right Sidebar */
-        .stats-sidebar {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-primary);
-            border-radius: 16px;
-            padding: 20px;
+        /* Stats Sidebar */
+        .qa-stats {
+            position: sticky;
+            top: 72px;
             height: -moz-fit-content;
             height: fit-content;
-            position: sticky;
-            top: 88px;
         }
 
-        .stats-widget {
-            margin-bottom: 24px;
+        .stats-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 20px;
         }
 
-        .stats-widget:last-child {
-            margin-bottom: 0;
-        }
-
-        .widget-title {
-            font-size: 16px;
+        .stats-title {
+            font-size: 15px;
             font-weight: 600;
-            margin-bottom: 16px;
             color: var(--text-primary);
+            margin-bottom: 16px;
         }
 
         .hot-tags {
@@ -837,35 +420,27 @@
         }
 
         .hot-tag {
-            background: var(--gray-100);
-            color: var(--text-secondary);
             padding: 6px 12px;
-            border-radius: 16px;
             font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: 1px solid var(--border-secondary);
             font-weight: 500;
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all var(--transition-fast);
         }
 
         .hot-tag:hover {
-            background: var(--primary-600);
-            color: white;
-            border-color: var(--primary-600);
-        }
-
-        .qa-stats {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+            background: var(--accent);
+            color: #fff;
         }
 
         .stat-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid var(--border-secondary);
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .stat-row:last-child {
@@ -873,276 +448,108 @@
         }
 
         .stat-label {
-            color: var(--text-secondary);
-            font-weight: 500;
             font-size: 14px;
+            color: var(--text-secondary);
         }
 
         .stat-value {
-            color: var(--primary-600);
+            font-size: 17px;
             font-weight: 600;
-            font-size: 16px;
+            color: var(--accent);
         }
 
         /* Modal */
         .modal {
             display: none;
             position: fixed;
-            z-index: 1001;
-            left: 0;
             top: 0;
-            width: 100%;
-            height: 100%;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
         }
 
         .modal-content {
-            position: relative;
-            background: var(--bg-elevated);
-            margin: 2% auto;
-            padding: 32px;
-            width: 90%;
-            max-width: 600px;
-            border-radius: 16px;
-            box-shadow: var(--shadow-xl);
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            width: 100%;
+            max-width: 640px;
             max-height: 90vh;
             overflow-y: auto;
+            box-shadow: var(--shadow-lg);
         }
 
         .modal-header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
+            justify-content: space-between;
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .modal-title {
-            font-size: 20px;
+            font-size: 21px;
             font-weight: 600;
             color: var(--text-primary);
         }
 
-        .close {
-            color: var(--text-tertiary);
-            font-size: 24px;
-            font-weight: bold;
-            cursor: pointer;
+        .close-btn {
             width: 32px;
             height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-        }
-
-        .close:hover {
-            background: var(--danger-100);
-            color: var(--danger-600);
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--text-primary);
-            font-size: 14px;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-primary);
-            border-radius: 8px;
-            background: var(--bg-elevated);
-            color: var(--text-primary);
-            font-family: inherit;
-            font-size: 14px;
-            transition: all 0.2s ease;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary-600);
-            box-shadow: 0 0 0 3px var(--primary-100);
-        }
-
-        .form-group textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        .image-upload-area {
-            border: 2px dashed var(--border-primary);
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            position: relative;
-        }
-
-        .image-upload-area:hover,
-        .image-upload-area.dragover {
-            border-color: var(--primary-600);
-            background: var(--primary-50);
-        }
-
-        .image-upload-area input[type="file"] {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-        }
-
-        .upload-icon {
-            font-size: 32px;
-            color: var(--text-tertiary);
-            margin-bottom: 8px;
-        }
-
-        .upload-text {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .image-preview {
-            margin-top: 12px;
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .preview-item {
-            position: relative;
-            width: 80px;
-            height: 80px;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid var(--border-primary);
-        }
-
-        .preview-item img {
-            width: 100%;
-            height: 100%;
-            -o-object-fit: cover;
-               object-fit: cover;
-        }
-
-        .remove-image {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            width: 20px;
-            height: 20px;
             border-radius: 50%;
-            background: var(--danger-500);
-            color: white;
             border: none;
+            background: var(--bg-hover);
+            color: var(--text-secondary);
             cursor: pointer;
-            font-size: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all var(--transition-fast);
         }
 
-        .form-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-            margin-top: 32px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-primary);
-        }
-
-        .btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: var(--primary-600);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-700);
-        }
-
-        .btn-secondary {
-            background: var(--bg-elevated);
-            color: var(--text-secondary);
-            border: 1px solid var(--border-primary);
-        }
-
-        .btn-secondary:hover {
+        .close-btn:hover {
             background: var(--bg-secondary);
+            color: var(--text-primary);
         }
 
-        /* Loading and Empty States */
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: var(--text-tertiary);
+        .modal-body {
+            padding: 24px;
         }
 
-        .loading-spinner {
-            width: 24px;
-            height: 24px;
-            border: 2px solid var(--border-primary);
-            border-top: 2px solid var(--primary-600);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 16px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
+        /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
-            color: var(--text-tertiary);
+            padding: 80px 20px;
         }
 
         .empty-icon {
-            font-size: 64px;
-            margin-bottom: 16px;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            color: var(--text-tertiary);
             opacity: 0.5;
         }
 
-        .empty-state h3 {
-            color: var(--text-primary);
-            font-size: 18px;
+        .empty-title {
+            font-size: 21px;
             font-weight: 600;
+            color: var(--text-primary);
             margin-bottom: 8px;
         }
 
-        .empty-state p {
+        .empty-text {
+            font-size: 15px;
+            color: var(--text-secondary);
             margin-bottom: 24px;
         }
 
@@ -1152,280 +559,154 @@
             justify-content: center;
             align-items: center;
             gap: 8px;
-            margin: 24px 0;
+            margin-top: 32px;
         }
 
         .page-btn {
-            padding: 8px 12px;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-primary);
-            color: var(--text-secondary);
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
+            min-width: 36px;
+            height: 36px;
+            padding: 0 12px;
             font-size: 14px;
-            transition: all 0.2s ease;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all var(--transition-fast);
         }
 
-        .page-btn:hover,
+        .page-btn:hover {
+            background: var(--bg-hover);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
         .page-btn.active {
-            background: var(--primary-600);
-            border-color: var(--primary-600);
-            color: white;
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
         }
 
-        /* Notification */
-        .notification {
-            position: fixed;
-            top: 88px;
-            right: 24px;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-primary);
-            border-radius: 12px;
-            padding: 16px 20px;
-            box-shadow: var(--shadow-xl);
-            z-index: 1002;
-            max-width: 350px;
-            animation: slideInRight 0.3s ease;
+        /* SVG Icons */
+        .icon {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
         }
 
-        .notification.success {
-            border-left: 4px solid var(--success-500);
-        }
-
-        .notification.error {
-            border-left: 4px solid var(--danger-500);
-        }
-
-        .notification.warning {
-            border-left: 4px solid var(--warning-500);
-        }
-
-        .notification.info {
-            border-left: 4px solid var(--primary-500);
-        }
-
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .qa-container {
+                grid-template-columns: 1fr;
             }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
 
-        /* Responsive Design */
-        @media (max-width: 1200px) {
-            .main-container {
-                grid-template-columns: 200px 1fr;
-                gap: 20px;
-            }
-            
-            .stats-sidebar {
+            .qa-sidebar,
+            .qa-stats {
                 display: none;
             }
         }
 
         @media (max-width: 768px) {
-            .main-container {
-                grid-template-columns: 1fr;
-                padding: 88px 16px 16px;
+            .qa-container {
+                padding: 24px 16px;
             }
-            
-            .sidebar {
-                order: 2;
-                position: static;
+
+            .qa-title {
+                font-size: 32px;
             }
-            
-            .nav-container {
-                padding: 0 16px;
+
+            .qa-subtitle {
+                font-size: 17px;
             }
-            
-            .nav-menu {
-                gap: 16px;
-            }
-            
+
             .filter-bar {
-                padding: 16px;
                 flex-direction: column;
                 align-items: stretch;
-                gap: 16px;
             }
-            
-            .filter-tabs {
-                justify-content: center;
-                flex-wrap: wrap;
-            }
-            
-            .search-container {
+
+            .search-box {
                 max-width: none;
             }
-            
-            .content-header {
-                padding: 32px 16px;
-            }
-            
-            .questions-container {
-                padding: 16px;
-            }
-            
-            .question-card {
-                padding: 20px;
-            }
-            
+
             .question-header {
                 flex-direction: column;
-                gap: 12px;
-            }
-            
-            .question-title {
-                margin-right: 0;
-            }
-            
-            .question-meta {
-                flex-wrap: wrap;
-                gap: 12px;
-            }
-            
-            .question-actions {
-                flex-wrap: wrap;
                 gap: 8px;
             }
-            
-            .answer-actions-bar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .modal-content {
-                margin: 5% auto;
-                width: 95%;
-                padding: 24px;
-            }
-        }
 
-        @media (max-width: 480px) {
-            .nav-menu {
-                display: none;
-            }
-            
-            .content-title {
-                font-size: 24px;
-            }
-            
-            .question-title {
-                font-size: 16px;
+            .question-actions {
+                flex-wrap: wrap;
             }
         }
     </style>
-
-    <!-- UX Enhancement Styles -->
-    
-  <link rel="stylesheet" href="/assets/theme-b29253a3.css">
-  <link rel="stylesheet" href="/assets/ux-enhancements-2fb285cd.css">
+  <link rel="stylesheet" href="/assets/apple-design-3a23e109.css">
 </head>
 <body>
-    <!-- 全局登录状态 -->
-    <div id="auth-header"></div>
-
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-brand">
-                <h1>AI学习平台</h1>
-            </div>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="nav-logo">AI 信息未来</div>
             <div class="nav-menu">
                 <a href="../../home.html" class="nav-link">首页</a>
                 <a href="courses.html" class="nav-link">课程</a>
-                <a href="dashboard.html" class="nav-link">学习中心</a>
-                <a href="qa.html" class="nav-link active">问答</a>
-                <a href="profile.html" class="nav-link">个人中心</a>
-                
-                <!-- Ask Question Button -->
-                <button class="ask-question-btn" onclick="showAskModal()" style="margin-left: 16px;">
-                    <i class="fas fa-plus"></i>
-                    我要提问
-                </button>
-                
-                <!-- Theme Toggle -->
-                <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="切换主题">
-                    <i class="fas fa-sun" data-theme-icon="light"></i>
-                    <i class="fas fa-moon" data-theme-icon="dark" style="display: none;"></i>
-                </button>
+                <a href="dashboard.html" class="nav-link">社区</a>
+                <a href="code-arena.html" class="nav-link">PK竞技</a>
             </div>
-            
-            <!-- User Menu -->
-            <div class="user-menu-container">
-                <div class="user-info" onclick="toggleUserMenu(event)">
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                    <svg class="icon" id="themeIcon">
+                        <circle cx="8" cy="8" r="4"/>
+                        <line x1="8" y1="1" x2="8" y2="3"/>
+                        <line x1="8" y1="13" x2="8" y2="15"/>
+                        <line x1="1" y1="8" x2="3" y2="8"/>
+                        <line x1="13" y1="8" x2="15" y2="8"/>
+                    </svg>
+                </button>
+                <div class="user-menu">
                     <div class="user-avatar" id="userAvatar">U</div>
-                    <span class="user-name" id="userName">加载中...</span>
-                    <span class="dropdown-arrow">▼</span>
-                </div>
-                <div class="dropdown-menu" id="userDropdown">
-                    <a href="profile.html" class="dropdown-item">
-                        <i class="fas fa-user"></i> 个人资料
-                    </a>
-                    <a href="dashboard.html" class="dropdown-item">
-                        <i class="fas fa-graduation-cap"></i> 学习中心
-                    </a>
-                    <a href="orders.html" class="dropdown-item">
-                        <i class="fas fa-shopping-bag"></i> 我的订单
-                    </a>
-                    <a href="certificates.html" class="dropdown-item">
-                        <i class="fas fa-certificate"></i> 我的证书
-                    </a>
-                    <a href="points-shop.html" class="dropdown-item">
-                        <i class="fas fa-gift"></i> 积分商城
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item" onclick="logout()">
-                        <i class="fas fa-sign-out-alt"></i> 退出登录
-                    </a>
+                    <div class="dropdown" id="userDropdown">
+                        <a href="profile.html" class="dropdown-item">个人资料</a>
+                        <a href="dashboard.html" class="dropdown-item">学习中心</a>
+                        <a href="orders.html" class="dropdown-item">我的订单</a>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item" onclick="logout()">退出登录</div>
+                    </div>
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- Main Container -->
-    <div class="main-container">
+    <div class="qa-container">
         <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-section">
-                <h3 class="sidebar-title">导航</h3>
-                <nav>
-                    <ul class="nav-list">
-                        <li class="nav-item"><a href="../../home.html" class="sidebar-link">首页</a></li>
-                        <li class="nav-item"><a href="dashboard.html" class="sidebar-link">学习中心</a></li>
-                        <li class="nav-item"><a href="courses.html" class="sidebar-link">课程</a></li>
-                        <li class="nav-item"><a href="qa.html" class="sidebar-link active">问答</a></li>
-                    </ul>
-                </nav>
-            </div>
-            
+        <aside class="qa-sidebar">
             <div class="sidebar-section">
                 <h3 class="sidebar-title">分类</h3>
-                <nav>
-                    <ul class="nav-list">
-                        <li class="nav-item"><a href="#" class="sidebar-link filter-link" data-filter="all">所有问题</a></li>
-                        <li class="nav-item"><a href="#" class="sidebar-link filter-link" data-filter="unanswered">待解答</a></li>
-                        <li class="nav-item"><a href="#" class="sidebar-link filter-link" data-filter="answered">已解答</a></li>
-                        <li class="nav-item"><a href="#" class="sidebar-link filter-link" data-filter="my">我的提问</a></li>
-                    </ul>
+                <nav class="sidebar-nav">
+                    <a href="#" class="sidebar-link active" data-filter="all">所有问题</a>
+                    <a href="#" class="sidebar-link" data-filter="unanswered">待解答</a>
+                    <a href="#" class="sidebar-link" data-filter="answered">已解答</a>
+                    <a href="#" class="sidebar-link" data-filter="my">我的提问</a>
                 </nav>
             </div>
         </aside>
 
         <!-- Main Content -->
-        <main class="main-content">
+        <main class="qa-main">
             <!-- Header -->
-            <div class="content-header">
-                <h1 class="content-title">问答社区</h1>
-                <p class="content-subtitle">学习路上遇到问题？在这里提问，与同学们互帮互助，共同成长！</p>
-                <button class="ask-question-btn" onclick="showAskModal()">
-                    <i class="fas fa-plus"></i>
-                    我要提问
+            <div class="qa-header">
+                <h1 class="qa-title">问答社区</h1>
+                <p class="qa-subtitle">学习路上遇到问题？在这里提问，与同学们互帮互助，共同成长</p>
+                <button class="btn btn-primary" onclick="showAskModal()">
+                    <svg class="icon">
+                        <line x1="8" y1="4" x2="8" y2="12"/>
+                        <line x1="4" y1="8" x2="12" y2="8"/>
+                    </svg>
+                    提出问题
                 </button>
             </div>
 
@@ -1435,276 +716,170 @@
                     <button class="filter-tab active" data-sort="newest">最新</button>
                     <button class="filter-tab" data-sort="votes">最多赞</button>
                     <button class="filter-tab" data-sort="answers">最多回答</button>
-                    <button class="filter-tab" data-sort="views">最多浏览</button>
                 </div>
-                <div class="search-container">
-                    <div class="search-wrapper">
-                        <i class="fas fa-search search-icon"></i>
-                        <input type="text" class="search-input" placeholder="搜索问题..." id="searchInput">
-                    </div>
-                    <button class="search-btn" onclick="performSearch()">搜索</button>
+                <div class="search-box">
+                    <svg class="icon search-icon">
+                        <circle cx="8" cy="8" r="6"/>
+                        <line x1="12" y1="12" x2="15" y2="15"/>
+                    </svg>
+                    <input type="text" class="search-input" placeholder="搜索问题..." id="searchInput">
                 </div>
             </div>
 
             <!-- Questions List -->
-            <div class="questions-container">
-                <div class="question-list" id="questionsList">
-                    <div class="loading">
-                        <div class="loading-spinner"></div>
-                        正在加载问题...
-                    </div>
+            <div id="questionsList">
+                <div class="loading">
+                    <div class="spinner"></div>
                 </div>
+            </div>
 
-                <!-- Pagination -->
-                <div class="pagination" id="pagination" style="display: none;">
-                    <button class="page-btn" onclick="loadQuestions(currentPage - 1)">&laquo;</button>
-                    <span id="pageNumbers"></span>
-                    <button class="page-btn" onclick="loadQuestions(currentPage + 1)">&raquo;</button>
-                </div>
+            <!-- Pagination -->
+            <div class="pagination" id="pagination" style="display: none;">
+                <button class="page-btn" onclick="loadQuestions(currentPage - 1)">
+                    <svg class="icon">
+                        <polyline points="11 5 6 8 11 11"/>
+                    </svg>
+                </button>
+                <span id="pageNumbers"></span>
+                <button class="page-btn" onclick="loadQuestions(currentPage + 1)">
+                    <svg class="icon">
+                        <polyline points="5 5 10 8 5 11"/>
+                    </svg>
+                </button>
             </div>
         </main>
 
         <!-- Stats Sidebar -->
-        <aside class="stats-sidebar">
-            <div class="stats-widget">
-                <h3 class="widget-title">热门标签</h3>
+        <aside class="qa-stats">
+            <div class="stats-section">
+                <h3 class="stats-title">热门标签</h3>
                 <div class="hot-tags" id="hotTags">
-                    <div class="hot-tag">Vue.js</div>
-                    <div class="hot-tag">React</div>
-                    <div class="hot-tag">JavaScript</div>
-                    <div class="hot-tag">Python</div>
-                    <div class="hot-tag">机器学习</div>
-                    <div class="hot-tag">深度学习</div>
-                    <div class="hot-tag">Web开发</div>
-                    <div class="hot-tag">算法</div>
+                    <span class="hot-tag">Vue.js</span>
+                    <span class="hot-tag">React</span>
+                    <span class="hot-tag">JavaScript</span>
+                    <span class="hot-tag">Python</span>
+                    <span class="hot-tag">AI</span>
                 </div>
             </div>
 
-            <div class="stats-widget">
-                <h3 class="widget-title">问题统计</h3>
-                <div class="qa-stats">
-                    <div class="stat-row">
-                        <span class="stat-label">总问题</span>
-                        <span class="stat-value" id="totalQuestions">1,234</span>
-                    </div>
-                    <div class="stat-row">
-                        <span class="stat-label">已解决</span>
-                        <span class="stat-value" id="solvedQuestions">856</span>
-                    </div>
-                    <div class="stat-row">
-                        <span class="stat-label">待回答</span>
-                        <span class="stat-value" id="openQuestions">378</span>
-                    </div>
-                    <div class="stat-row">
-                        <span class="stat-label">今日新问题</span>
-                        <span class="stat-value" id="todayQuestions">12</span>
-                    </div>
+            <div class="stats-section">
+                <h3 class="stats-title">统计</h3>
+                <div class="stat-row">
+                    <span class="stat-label">总问题</span>
+                    <span class="stat-value" id="totalQuestions">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">已解决</span>
+                    <span class="stat-value" id="solvedQuestions">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">待回答</span>
+                    <span class="stat-value" id="openQuestions">0</span>
                 </div>
             </div>
         </aside>
     </div>
 
     <!-- Ask Question Modal -->
-    <div id="askModal" class="modal">
+    <div class="modal" id="askModal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 class="modal-title">提出问题</h2>
-                <span class="close" onclick="hideAskModal()">&times;</span>
+                <button class="close-btn" onclick="hideAskModal()">
+                    <svg class="icon">
+                        <line x1="4" y1="4" x2="12" y2="12"/>
+                        <line x1="12" y1="4" x2="4" y2="12"/>
+                    </svg>
+                </button>
             </div>
-            <form id="askForm">
-                <div class="form-group">
-                    <label for="questionTitle">问题标题 *</label>
-                    <input type="text" id="questionTitle" required placeholder="简洁明确地描述你的问题">
-                </div>
-                
-                <div class="form-group">
-                    <label for="questionCourse">相关课程</label>
-                    <select id="questionCourse">
-                        <option value="">选择相关课程(可选)</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="questionContent">问题详情 *</label>
-                    <textarea id="questionContent" rows="8" required placeholder="详细描述你遇到的问题，包括代码、错误信息等"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="questionImages">上传图片</label>
-                    <div class="image-upload-area" id="imageUploadArea">
-                        <input type="file" id="questionImages" multiple accept="image/*">
-                        <div class="upload-icon">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                        </div>
-                        <div class="upload-text">
-                            点击上传图片或拖拽到此区域<br>
-                            <small>支持 JPG、PNG、GIF 格式，最大 5MB</small>
-                        </div>
+            <div class="modal-body">
+                <form id="askForm">
+                    <div class="form-group">
+                        <label class="form-label">问题标题</label>
+                        <input type="text" class="form-input" id="questionTitle" placeholder="简洁明确地描述你的问题" required>
                     </div>
-                    <div class="image-preview" id="imagePreview"></div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="questionTags">标签</label>
-                    <input type="text" id="questionTags" placeholder="用逗号分隔，如: Vue,JavaScript,前端">
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="hideAskModal()">
-                        <i class="fas fa-times"></i>
-                        取消
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-paper-plane"></i>
-                        发布问题
-                    </button>
-                </div>
-            </form>
+                    <div class="form-group">
+                        <label class="form-label">相关课程</label>
+                        <select class="form-input" id="questionCourse">
+                            <option value="">选择相关课程(可选)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">问题详情</label>
+                        <textarea class="form-input" id="questionContent" rows="6" placeholder="详细描述你遇到的问题，包括代码、错误信息等" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">标签</label>
+                        <input type="text" class="form-input" id="questionTags" placeholder="用逗号分隔，如: Vue,JavaScript,前端">
+                    </div>
+                    <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+                        <button type="button" class="btn btn-secondary" onclick="hideAskModal()">取消</button>
+                        <button type="submit" class="btn btn-primary">发布问题</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
-    <!-- Scripts -->
-    <!-- UX Enhancement Scripts -->
-    <script src="../utils/ux-utils.js"></script>
-
-    <script src="../components/auth-init.js"></script>
-    <script src="../components/user-auth.js"></script>
-    <script src="../utils/realtime-sync.js"></script>
     <script>
-        // Global variables
-        const API_BASE_URL = '/api';
+        const API_BASE = '/api';
         let currentPage = 1;
-        let currentFilters = {
-            search: '',
-            status: '',
-            course: '',
-            sort: 'newest'
-        };
-        let lastQuestionCount = 0;
-        let questionsData = [];
-        let uploadedImages = [];
+        let currentFilters = { search: '', status: '', sort: 'newest' };
 
-        // 实时数据同步
-        function initRealTimeSync() {
-            // 订阅问题相关的实时更新
-            if (window.realTimeSync) {
-                window.realTimeSync.subscribe('questions', handleQuestionUpdate);
-                window.realTimeSync.subscribe('new_question', handleNewQuestion);
-                window.realTimeSync.subscribe('question_likes', handleQuestionLikes);
-                window.realTimeSync.subscribe('connection', handleConnectionStatus);
-            }
-        }
-        
-        function handleQuestionUpdate(data) {
-            console.log('Question update received:', data);
-            // 根据数据类型处理更新
-            if (data.type === 'manual_trigger') {
-                // 手动触发的新问题
-                showNotification('有新问题发布！', 'info');
-                if (currentPage === 1) {
-                    loadQuestions(1);
-                }
-            }
-        }
-        
-        function handleNewQuestion(data) {
-            console.log('New question received:', data);
-            if (data.type === 'new_question') {
-                showNotification(`新问题：${data.data.title}`, 'info');
-                if (currentPage === 1 && currentFilters.sort === 'newest') {
-                    // 在首页且按最新排序时，自动刷新显示新问题
-                    loadQuestions(1);
-                }
-            }
-        }
-        
-        function handleQuestionLikes(data) {
-            if (data.type === 'question_likes_updated') {
-                // 更新页面上的点赞数
-                const questionElement = document.querySelector(`[data-question-id="${data.questionId}"]`);
-                if (questionElement) {
-                    const likeButton = questionElement.querySelector('.like-count');
-                    if (likeButton) {
-                        likeButton.textContent = data.newLikeCount;
-                    }
-                }
-            }
-        }
-        
-        function handleConnectionStatus(data) {
-            if (data.status === 'connected') {
-                console.log('Real-time sync connected');
-                // 显示连接状态指示器
-                showNotification('实时同步已连接', 'success');
-            } else if (data.status === 'disconnected') {
-                console.log('Real-time sync disconnected');
-                showNotification('实时同步已断开', 'warning');
-            }
-        }
-
-        // Initialize page
+        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            initializeQAPage();
             initializeTheme();
-            // 延迟初始化WebSocket，确保页面完全加载
-            setTimeout(() => {
-                initRealTimeSync();
-            }, 1000);
+            loadUserInfo();
+            loadQuestions();
+            loadQAStatistics();
+            loadHotTags();
+            loadCourses();
+            setupEventListeners();
         });
 
-        async function initializeQAPage() {
-            try {
-                await Promise.all([
-                    loadUserInfo(),
-                    loadQuestions(),
-                    loadHotTags(),
-                    loadQAStatistics(),
-                    loadCourses()
-                ]);
-                setupEventListeners();
-                setupImageUpload();
-            } catch (error) {
-                console.error('QA页面初始化失败:', error);
-                showNotification('页面加载失败，请刷新重试', 'error');
-            }
+        // Theme Management
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
         }
 
-        // Load user info
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // User Menu
+        document.getElementById('userAvatar').addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('userDropdown').classList.toggle('show');
+        });
+
+        document.addEventListener('click', function() {
+            document.getElementById('userDropdown').classList.remove('show');
+        });
+
+        // Load User Info
         async function loadUserInfo() {
             try {
-                const savedUser = localStorage.getItem('user');
-                let user = null;
-                
-                if (localStorage.getItem('token')) {
-                    try {
-                        const response = await fetch(`${API_BASE_URL}/user/profile`, {
-                            headers: {
-                                'Authorization': `Bearer ${localStorage.getItem('token')}`
-                            }
-                        });
+                const token = localStorage.getItem('token');
+                if (!token) return;
 
-                        if (response.ok) {
-                            const data = await response.json();
-                            if (data.success && data.data) {
-                                user = data.data.user || data.data;
-                            }
+                const response = await fetch(`${API_BASE}/user/profile`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.data) {
+                        const user = data.data.user || data.data;
+                        const avatar = document.getElementById('userAvatar');
+                        if (user.avatar) {
+                            avatar.innerHTML = `<img src="${user.avatar}" alt="头像" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+                        } else {
+                            avatar.textContent = (user.nickname || user.username || 'U').charAt(0).toUpperCase();
                         }
-                    } catch (error) {
-                        console.log('Using cached user data');
-                    }
-                }
-                
-                if (!user && savedUser) {
-                    user = JSON.parse(savedUser);
-                }
-                
-                if (user) {
-                    document.getElementById('userName').textContent = user.nickname || user.username || '用户';
-                    const avatar = document.getElementById('userAvatar');
-                    if (user.avatar) {
-                        avatar.innerHTML = `<img src="${user.avatar}" alt="头像">`;
-                    } else {
-                        avatar.textContent = (user.nickname || user.username || 'U').charAt(0).toUpperCase();
                     }
                 }
             } catch (error) {
@@ -1712,55 +887,33 @@
             }
         }
 
-        // Load questions
+        // Load Questions
         async function loadQuestions(page = 1) {
             const questionsList = document.getElementById('questionsList');
-            if (!questionsList) return;
+            questionsList.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
 
             try {
-                questionsList.innerHTML = `
-                    <div class="loading">
-                        <div class="loading-spinner"></div>
-                        正在加载问题...
-                    </div>
-                `;
-
-                // 映射前端参数到后端期望的参数名
-                const backendParams = {
+                const params = new URLSearchParams({
                     page: page,
                     size: 10,
-                    category: 'all', // 后端期望category，默认all
+                    category: 'all',
                     sort: currentFilters.sort === 'newest' ? 'latest' : currentFilters.sort || 'latest'
-                };
-
-                const params = new URLSearchParams(backendParams);
+                });
 
                 const token = localStorage.getItem('token');
-                const headers = {};
-                if (token) {
-                    headers['Authorization'] = `Bearer ${token}`;
-                }
+                const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
 
-                const response = await fetch(`${API_BASE_URL}/qa/questions?${params}`, {
-                    headers: headers
-                });
-                
+                const response = await fetch(`${API_BASE}/qa/questions?${params}`, { headers });
+
                 if (response.ok) {
                     const data = await response.json();
                     if (data.success && data.data) {
-                        questionsData = data.data.questions || data.data;
-                        const totalPages = data.data.totalPages || Math.ceil(data.data.total / 10) || 1;
+                        const questions = data.data.questions || data.data;
                         currentPage = page;
-                        
-                        // 检查是否有新问题
-                        const currentQuestionCount = data.data.total || questionsData.length;
-                        if (page === 1 && currentQuestionCount > lastQuestionCount && lastQuestionCount > 0) {
-                            showNotification('有新问题发布！', 'info');
-                        }
-                        lastQuestionCount = currentQuestionCount;
-                        
-                        if (questionsData.length > 0) {
-                            renderQuestions(questionsData);
+
+                        if (questions.length > 0) {
+                            renderQuestions(questions);
+                            const totalPages = data.data.totalPages || Math.ceil(data.data.total / 10) || 1;
                             renderPagination(totalPages);
                         } else {
                             showEmptyState();
@@ -1768,172 +921,141 @@
                         return;
                     }
                 }
-                
+
                 showEmptyState();
-                
             } catch (error) {
                 console.error('Loading questions failed:', error);
                 showEmptyState();
             }
         }
 
-        // Render questions
+        // Render Questions
         function renderQuestions(questions) {
             const questionsList = document.getElementById('questionsList');
-            if (!questionsList) return;
-
-            const questionsHTML = questions.map(question => `
-                <div class="question-card" data-question-id="${question.id}">
-                    <div class="question-header" onclick="viewQuestion(${question.id})">
-                        <div class="question-title">${question.title}</div>
-                        <div class="status-badge ${question.is_solved ? 'status-solved' : 'status-open'}">
-                            ${question.is_solved ? '已解决' : '待解答'}
-                        </div>
+            const questionsHTML = questions.map(q => `
+                <div class="question-card" data-question-id="${q.id}">
+                    <div class="question-header" onclick="viewQuestion(${q.id})">
+                        <h3 class="question-title">${q.title}</h3>
+                        <span class="question-status ${q.is_solved ? 'status-solved' : 'status-open'}">
+                            ${q.is_solved ? '已解决' : '待解答'}
+                        </span>
                     </div>
-                    
-                    <div class="question-content" onclick="viewQuestion(${question.id})">${question.content}</div>
-                    
+                    <div class="question-content" onclick="viewQuestion(${q.id})">${q.content}</div>
                     <div class="question-meta">
                         <div class="meta-item">
-                            <i class="fas fa-eye"></i>
-                            <span>${question.view_count || 0}</span>
+                            <svg class="icon"><circle cx="8" cy="8" r="6"/></svg>
+                            <span>${q.view_count || 0} 浏览</span>
                         </div>
                         <div class="meta-item">
-                            <i class="fas fa-comments"></i>
-                            <span>${question.answer_count || 0}</span>
+                            <svg class="icon"><path d="M3 12h12v2H3v-2zm0-4h12v2H3V8zm0-4h12v2H3V4z"/></svg>
+                            <span>${q.answer_count || 0} 回答</span>
                         </div>
                         <div class="meta-item">
-                            <i class="fas fa-user"></i>
-                            <span>${question.user_name || '匿名用户'}</span>
+                            <svg class="icon"><circle cx="8" cy="4" r="3"/><path d="M2 14c0-2.5 3-4 6-4s6 1.5 6 4"/></svg>
+                            <span>${q.user_name || '匿名'}</span>
                         </div>
                         <div class="meta-item">
-                            <i class="fas fa-clock"></i>
-                            <span>${formatTime(question.created_at)}</span>
+                            <span>${formatTime(q.created_at)}</span>
                         </div>
                     </div>
-                    
-                    ${question.tags ? `
-                        <div class="question-tags">
-                            ${(Array.isArray(question.tags) ? question.tags : JSON.parse(question.tags || '[]'))
-                                .map(tag => `<span class="tag">${tag}</span>`).join('')}
-                        </div>
-                    ` : ''}
-
+                    ${q.tags ? `<div class="question-tags">${(Array.isArray(q.tags) ? q.tags : JSON.parse(q.tags || '[]')).map(tag => `<span class="tag">${tag}</span>`).join('')}</div>` : ''}
                     <div class="question-actions">
-                        <button class="action-btn" onclick="toggleAnswers(${question.id}, event)">
-                            <i class="fas fa-comments"></i>
-                            <span>查看回答 (${question.answer_count || 0})</span>
+                        <button class="action-btn" onclick="toggleAnswers(${q.id}, event)">
+                            <svg class="icon"><path d="M3 12h12v2H3v-2zm0-4h12v2H3V8z"/></svg>
+                            查看回答 (${q.answer_count || 0})
                         </button>
-                        <button class="action-btn" onclick="showAnswerForm(${question.id}, event)">
-                            <i class="fas fa-edit"></i>
-                            <span>写回答</span>
+                        <button class="action-btn" onclick="showAnswerForm(${q.id}, event)">
+                            <svg class="icon"><path d="M4 12h8v2H4v-2zm0-4h12v2H4V8zm0-4h12v2H4V4z"/></svg>
+                            写回答
                         </button>
-                        <button class="action-btn" onclick="likeQuestion(${question.id}, event)">
-                            <i class="fas fa-heart"></i>
-                            <span>${question.like_count || 0}</span>
+                        <button class="action-btn" onclick="likeQuestion(${q.id}, event)">
+                            <svg class="icon"><path d="M8 2l2 4 4 1-3 3 1 4-4-2-4 2 1-4-3-3 4-1z"/></svg>
+                            ${q.like_count || 0}
                         </button>
                     </div>
-
-                    <div class="answer-section" id="answers-${question.id}">
-                        <div class="answers-list" id="answers-list-${question.id}">
-                            <div class="loading">
-                                <div class="loading-spinner"></div>
-                                正在加载回答...
-                            </div>
-                        </div>
-                        
-                        <div class="answer-form hidden" id="answer-form-${question.id}">
-                            <textarea class="answer-input" placeholder="写下你的回答..." id="answer-input-${question.id}"></textarea>
-                            <div class="image-upload-area" onclick="triggerAnswerImageUpload(${question.id})">
-                                <input type="file" id="answer-images-${question.id}" multiple accept="image/*" style="display: none;">
-                                <i class="fas fa-image"></i>
-                                <span>添加图片</span>
-                            </div>
-                            <div class="image-preview" id="answer-images-preview-${question.id}"></div>
-                            <div class="answer-actions-bar">
-                                <button class="answer-btn answer-btn-secondary" onclick="hideAnswerForm(${question.id})">
-                                    <i class="fas fa-times"></i>
-                                    取消
-                                </button>
-                                <button class="answer-btn answer-btn-primary" onclick="submitAnswer(${question.id})">
-                                    <i class="fas fa-paper-plane"></i>
-                                    发布回答
-                                </button>
+                    <div class="answer-section" id="answers-${q.id}">
+                        <div id="answers-list-${q.id}"></div>
+                        <div class="answer-form hidden" id="answer-form-${q.id}">
+                            <textarea class="answer-input" placeholder="写下你的回答..." id="answer-input-${q.id}"></textarea>
+                            <div class="answer-form-actions">
+                                <button class="btn btn-secondary btn-sm" onclick="hideAnswerForm(${q.id})">取消</button>
+                                <button class="btn btn-primary btn-sm" onclick="submitAnswer(${q.id})">发布</button>
                             </div>
                         </div>
                     </div>
                 </div>
             `).join('');
-
             questionsList.innerHTML = questionsHTML;
         }
 
-        // Show empty state
+        // Show Empty State
         function showEmptyState() {
-            const questionsList = document.getElementById('questionsList');
-            if (!questionsList) return;
-
-            questionsList.innerHTML = `
+            document.getElementById('questionsList').innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-icon">
-                        <i class="fas fa-question-circle"></i>
-                    </div>
-                    <h3>暂无相关问题</h3>
-                    <p>还没有符合条件的问题，快来提出第一个问题吧！</p>
-                    <button class="btn btn-primary" onclick="showAskModal()">
-                        <i class="fas fa-plus"></i>
-                        我要提问
-                    </button>
+                    <svg class="empty-icon" viewBox="0 0 80 80">
+                        <circle cx="40" cy="40" r="30" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <text x="40" y="50" text-anchor="middle" font-size="32" fill="currentColor">?</text>
+                    </svg>
+                    <h3 class="empty-title">暂无相关问题</h3>
+                    <p class="empty-text">还没有符合条件的问题，快来提出第一个问题吧</p>
+                    <button class="btn btn-primary" onclick="showAskModal()">提出问题</button>
                 </div>
             `;
         }
 
-        // Render pagination
+        // Render Pagination
         function renderPagination(totalPages) {
             const pagination = document.getElementById('pagination');
             const pageNumbers = document.getElementById('pageNumbers');
-            
-            if (!pagination || !pageNumbers || totalPages <= 1) {
-                if (pagination) pagination.style.display = 'none';
+
+            if (totalPages <= 1) {
+                pagination.style.display = 'none';
                 return;
             }
 
             pagination.style.display = 'flex';
-
             let pagesHTML = '';
             for (let i = 1; i <= Math.min(totalPages, 10); i++) {
-                pagesHTML += `
-                    <button class="page-btn ${i === currentPage ? 'active' : ''}" 
-                            onclick="loadQuestions(${i})">${i}</button>
-                `;
+                pagesHTML += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="loadQuestions(${i})">${i}</button>`;
             }
-
             pageNumbers.innerHTML = pagesHTML;
         }
 
-        // Load hot tags
+        // Load QA Statistics
+        async function loadQAStatistics() {
+            try {
+                const token = localStorage.getItem('token');
+                const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+                const response = await fetch(`${API_BASE}/qa/questions/statistics`, { headers });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.data) {
+                        const stats = data.data;
+                        if (stats.total !== undefined) document.getElementById('totalQuestions').textContent = stats.total.toLocaleString();
+                        if (stats.solved !== undefined) document.getElementById('solvedQuestions').textContent = stats.solved.toLocaleString();
+                        if (stats.open !== undefined) document.getElementById('openQuestions').textContent = stats.open.toLocaleString();
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load statistics:', error);
+            }
+        }
+
+        // Load Hot Tags
         async function loadHotTags() {
             try {
                 const token = localStorage.getItem('token');
-                const headers = {};
-                if (token) {
-                    headers['Authorization'] = `Bearer ${token}`;
-                }
-                const response = await fetch(`${API_BASE_URL}/qa/questions/tags/popular`, {
-                    headers: headers
-                });
+                const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+                const response = await fetch(`${API_BASE}/qa/questions/tags/popular`, { headers });
+
                 if (response.ok) {
                     const data = await response.json();
-                    if (data.success && data.data && Array.isArray(data.data)) {
+                    if (data.success && data.data && data.data.length > 0) {
                         const hotTagsContainer = document.getElementById('hotTags');
-                        if (hotTagsContainer && data.data.length > 0) {
-                            const tagsHTML = data.data.map(tag => 
-                                `<div class="hot-tag">${tag.name || tag}</div>`
-                            ).join('');
-                            hotTagsContainer.innerHTML = tagsHTML;
-                            
-                            setupHotTagsListeners();
-                        }
+                        hotTagsContainer.innerHTML = data.data.map(tag =>
+                            `<span class="hot-tag" onclick="searchByTag('${tag.name || tag}')">${tag.name || tag}</span>`
+                        ).join('');
                     }
                 }
             } catch (error) {
@@ -1941,63 +1063,16 @@
             }
         }
 
-        // Load QA statistics
-        async function loadQAStatistics() {
+        // Load Courses
+        async function loadCourses() {
             try {
-                const token = localStorage.getItem('token');
-                const headers = {};
-                if (token) {
-                    headers['Authorization'] = `Bearer ${token}`;
-                }
-                const response = await fetch(`${API_BASE_URL}/qa/questions/statistics`, {
-                    headers: headers
-                });
+                const response = await fetch(`${API_BASE}/courses`);
                 if (response.ok) {
                     const data = await response.json();
                     if (data.success && data.data) {
-                        const stats = data.data;
-                        
-                        if (stats.total !== undefined) {
-                            const totalElement = document.getElementById('totalQuestions');
-                            if (totalElement) totalElement.textContent = stats.total.toLocaleString();
-                        }
-                        
-                        if (stats.solved !== undefined) {
-                            const solvedElement = document.getElementById('solvedQuestions');
-                            if (solvedElement) solvedElement.textContent = stats.solved.toLocaleString();
-                        }
-                        
-                        if (stats.open !== undefined) {
-                            const openElement = document.getElementById('openQuestions');
-                            if (openElement) openElement.textContent = stats.open.toLocaleString();
-                        }
-                        
-                        if (stats.today !== undefined) {
-                            const todayElement = document.getElementById('todayQuestions');
-                            if (todayElement) todayElement.textContent = stats.today.toLocaleString();
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error('Failed to load QA statistics:', error);
-            }
-        }
-
-        // Load courses
-        async function loadCourses() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/courses`);
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.success && data.data && Array.isArray(data.data)) {
                         const courseSelect = document.getElementById('questionCourse');
-                        if (courseSelect) {
-                            let optionsHTML = '<option value="">选择相关课程(可选)</option>';
-                            data.data.forEach(course => {
-                                optionsHTML += `<option value="${course.id}">${course.title || course.name}</option>`;
-                            });
-                            courseSelect.innerHTML = optionsHTML;
-                        }
+                        courseSelect.innerHTML = '<option value="">选择相关课程(可选)</option>' +
+                            data.data.map(course => `<option value="${course.id}">${course.title || course.name}</option>`).join('');
                     }
                 }
             } catch (error) {
@@ -2005,20 +1080,17 @@
             }
         }
 
-        // Setup event listeners
+        // Event Listeners
         function setupEventListeners() {
-            // Search input
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput) {
-                let searchTimer;
-                searchInput.addEventListener('input', function(e) {
-                    clearTimeout(searchTimer);
-                    searchTimer = setTimeout(() => {
-                        currentFilters.search = e.target.value;
-                        loadQuestions(1);
-                    }, 500);
-                });
-            }
+            // Search
+            let searchTimer;
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(() => {
+                    currentFilters.search = e.target.value;
+                    loadQuestions(1);
+                }, 500);
+            });
 
             // Filter tabs
             document.querySelectorAll('.filter-tab').forEach(tab => {
@@ -2030,161 +1102,49 @@
                 });
             });
 
-            // Filter links
-            document.querySelectorAll('.filter-link').forEach(link => {
+            // Sidebar links
+            document.querySelectorAll('.sidebar-link').forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
-                    document.querySelectorAll('.filter-link').forEach(l => l.classList.remove('active'));
+                    document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
                     this.classList.add('active');
                     currentFilters.status = this.dataset.filter === 'all' ? '' : this.dataset.filter;
                     loadQuestions(1);
                 });
             });
 
-            setupHotTagsListeners();
-
             // Ask form
-            const askForm = document.getElementById('askForm');
-            if (askForm) {
-                askForm.addEventListener('submit', handleAskSubmit);
-            }
+            document.getElementById('askForm').addEventListener('submit', handleAskSubmit);
 
-            // Modal click outside to close
-            window.addEventListener('click', function(event) {
-                const askModal = document.getElementById('askModal');
-                if (event.target === askModal) {
-                    hideAskModal();
-                }
+            // Modal close on outside click
+            document.getElementById('askModal').addEventListener('click', function(e) {
+                if (e.target === this) hideAskModal();
             });
         }
 
-        function setupHotTagsListeners() {
-            document.querySelectorAll('.hot-tag').forEach(tag => {
-                tag.addEventListener('click', function() {
-                    const searchInput = document.getElementById('searchInput');
-                    if (searchInput) {
-                        searchInput.value = this.textContent;
-                        currentFilters.search = this.textContent;
-                        loadQuestions(1);
-                    }
-                });
-            });
-        }
-
-        // Setup image upload
-        function setupImageUpload() {
-            const uploadArea = document.getElementById('imageUploadArea');
-            const fileInput = document.getElementById('questionImages');
-            const imagePreview = document.getElementById('imagePreview');
-
-            if (uploadArea && fileInput) {
-                // Drag and drop
-                uploadArea.addEventListener('dragover', function(e) {
-                    e.preventDefault();
-                    uploadArea.classList.add('dragover');
-                });
-
-                uploadArea.addEventListener('dragleave', function(e) {
-                    e.preventDefault();
-                    uploadArea.classList.remove('dragover');
-                });
-
-                uploadArea.addEventListener('drop', function(e) {
-                    e.preventDefault();
-                    uploadArea.classList.remove('dragover');
-                    const files = e.dataTransfer.files;
-                    handleImageFiles(files, imagePreview);
-                });
-
-                // File input change
-                fileInput.addEventListener('change', function(e) {
-                    handleImageFiles(e.target.files, imagePreview);
-                });
-            }
-        }
-
-        function handleImageFiles(files, previewContainer) {
-            Array.from(files).forEach(file => {
-                if (file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const previewItem = document.createElement('div');
-                        previewItem.className = 'preview-item';
-                        previewItem.innerHTML = `
-                            <img src="${e.target.result}" alt="预览">
-                            <button class="remove-image" onclick="removeImage(this)">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        `;
-                        previewContainer.appendChild(previewItem);
-                        uploadedImages.push(file);
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    showNotification('图片格式不支持或文件过大', 'warning');
-                }
-            });
-        }
-
-        function removeImage(button) {
-            const previewItem = button.parentElement;
-            const index = Array.from(previewItem.parentElement.children).indexOf(previewItem);
-            uploadedImages.splice(index, 1);
-            previewItem.remove();
-        }
-
-        function triggerAnswerImageUpload(questionId) {
-            const fileInput = document.getElementById(`answer-images-${questionId}`);
-            if (fileInput) {
-                fileInput.click();
-                
-                fileInput.addEventListener('change', function(e) {
-                    const previewContainer = document.getElementById(`answer-images-preview-${questionId}`);
-                    handleImageFiles(e.target.files, previewContainer);
-                }, { once: true });
-            }
-        }
-
-        // Modal functions
+        // Modal Functions
         function showAskModal() {
             const token = localStorage.getItem('token');
             if (!token) {
-                showNotification('请先登录后再提问', 'warning');
-                setTimeout(() => {
-                    window.location.href = '/src/pages/login.html?returnUrl=qa.html';
-                }, 1500);
+                showToast('请先登录后再提问', 'warning');
+                setTimeout(() => window.location.href = '/src/pages/login.html?returnUrl=qa.html', 1500);
                 return;
             }
-
-            const modal = document.getElementById('askModal');
-            if (modal) {
-                modal.style.display = 'block';
-                document.body.style.overflow = 'hidden';
-            }
+            document.getElementById('askModal').classList.add('show');
         }
 
         function hideAskModal() {
-            const modal = document.getElementById('askModal');
-            if (modal) {
-                modal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-                const form = document.getElementById('askForm');
-                if (form) form.reset();
-                
-                // Clear uploaded images
-                uploadedImages = [];
-                const imagePreview = document.getElementById('imagePreview');
-                if (imagePreview) imagePreview.innerHTML = '';
-            }
+            document.getElementById('askModal').classList.remove('show');
+            document.getElementById('askForm').reset();
         }
 
-        // Handle ask form submission
+        // Handle Ask Submit
         async function handleAskSubmit(e) {
             e.preventDefault();
 
             const tagsInput = document.getElementById('questionTags').value;
             const tagsArray = tagsInput ? tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
-            
+
             const questionData = {
                 title: document.getElementById('questionTitle').value,
                 content: document.getElementById('questionContent').value,
@@ -2194,7 +1154,7 @@
 
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`${API_BASE_URL}/qa/questions`, {
+                const response = await fetch(`${API_BASE}/qa/questions`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -2205,273 +1165,181 @@
 
                 const data = await response.json();
                 if (response.ok && data.success) {
-                    // 清空表单
-                    document.getElementById('questionTitle').value = '';
-                    document.getElementById('questionContent').value = '';
-                    if (document.getElementById('questionCourse')) {
-                        document.getElementById('questionCourse').value = '';
-                    }
-                    if (document.getElementById('questionTags')) {
-                        document.getElementById('questionTags').value = '';
-                    }
-                    if (document.getElementById('questionImages')) {
-                        document.getElementById('questionImages').value = '';
-                    }
-                    if (document.getElementById('imagePreview')) {
-                        document.getElementById('imagePreview').innerHTML = '';
-                    }
-                    
                     hideAskModal();
-                    showNotification('问题发布成功！', 'success');
-                    
-                    // 重置筛选条件为最新，确保新问题显示在顶部
+                    showToast('问题发布成功！', 'success');
                     currentFilters = { sort: 'newest' };
-                    
-                    // 设置活跃的筛选标签
-                    document.querySelectorAll('.filter-tab').forEach(tab => {
-                        tab.classList.remove('active');
-                    });
-                    const newestTab = document.querySelector('[data-sort="newest"]');
-                    if (newestTab) {
-                        newestTab.classList.add('active');
-                    }
-                    
-                    // 重新加载问题列表
+                    document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
+                    document.querySelector('[data-sort="newest"]').classList.add('active');
                     await loadQuestions(1);
                 } else {
-                    showNotification('发布失败：' + (data.message || '请稍后重试'), 'error');
+                    showToast('发布失败：' + (data.message || '请稍后重试'), 'error');
                 }
             } catch (error) {
                 console.error('Ask question failed:', error);
-                showNotification('发布失败，请稍后重试', 'error');
+                showToast('发布失败，请稍后重试', 'error');
             }
         }
 
-        // Answer functions
+        // Answer Functions
         async function toggleAnswers(questionId, event) {
             event.stopPropagation();
-            
             const answerSection = document.getElementById(`answers-${questionId}`);
-            const answersList = document.getElementById(`answers-list-${questionId}`);
-            
-            if (!answerSection || !answersList) return;
-            
-            if (answerSection.style.display === 'none' || !answerSection.style.display) {
+
+            if (answerSection.style.display === 'block') {
+                answerSection.style.display = 'none';
+            } else {
                 answerSection.style.display = 'block';
                 await loadAnswers(questionId);
-            } else {
-                answerSection.style.display = 'none';
             }
         }
 
         async function loadAnswers(questionId) {
             const answersList = document.getElementById(`answers-list-${questionId}`);
-            if (!answersList) return;
+            answersList.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
 
             try {
-                answersList.innerHTML = `
-                    <div class="loading">
-                        <div class="loading-spinner"></div>
-                        正在加载回答...
-                    </div>
-                `;
-                
-                const response = await fetch(`${API_BASE_URL}/qa/questions/${questionId}/answers`);
-                
+                const response = await fetch(`${API_BASE}/qa/questions/${questionId}/answers`);
+
                 if (response.ok) {
                     const data = await response.json();
-                    if (data.success && data.data && Array.isArray(data.data)) {
-                        const answers = data.data;
-                        
-                        if (answers.length > 0) {
-                            const answersHTML = answers.map(answer => `
-                                <div class="answer-item">
-                                    <div class="answer-header">
-                                        <span class="answer-author">${answer.username || '匿名用户'}</span>
-                                        <span class="answer-time">${formatTime(answer.created_at)}</span>
-                                    </div>
-                                    <div class="answer-content">${answer.content}</div>
-                                    <div class="answer-actions">
-                                        <button class="answer-like-btn ${answer.user_liked ? 'liked' : ''}" 
-                                                onclick="likeAnswer(${answer.id}, ${questionId})">
-                                            <i class="fas fa-heart"></i>
-                                            <span>${answer.like_count || 0}</span>
-                                        </button>
-                                        ${answer.is_accepted ? '<span style="color: var(--success-600); font-weight: 600;"><i class="fas fa-check-circle"></i> 已采纳</span>' : ''}
-                                    </div>
+                    if (data.success && data.data && data.data.length > 0) {
+                        answersList.innerHTML = data.data.map(answer => `
+                            <div class="answer-item">
+                                <div class="answer-header">
+                                    <span class="answer-author">${answer.username || '匿名用户'}</span>
+                                    <span class="answer-time">${formatTime(answer.created_at)}</span>
                                 </div>
-                            `).join('');
-                            
-                            answersList.innerHTML = answersHTML;
-                        } else {
-                            answersList.innerHTML = '<div style="text-align: center; color: var(--text-tertiary); padding: 20px;">暂无回答，快来抢沙发吧！</div>';
-                        }
-                        return;
+                                <div class="answer-content">${answer.content}</div>
+                                <div class="answer-actions">
+                                    <button class="answer-like-btn ${answer.user_liked ? 'liked' : ''}" onclick="likeAnswer(${answer.id}, ${questionId})">
+                                        <svg class="icon"><path d="M8 2l2 4 4 1-3 3 1 4-4-2-4 2 1-4-3-3 4-1z"/></svg>
+                                        ${answer.like_count || 0}
+                                    </button>
+                                    ${answer.is_accepted ? '<span style="color:#34c759;font-size:13px;">已采纳</span>' : ''}
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        answersList.innerHTML = '<div style="text-align:center;color:var(--text-tertiary);padding:20px;">暂无回答，快来抢沙发吧！</div>';
                     }
                 }
-                
-                answersList.innerHTML = '<div style="text-align: center; color: var(--text-tertiary); padding: 20px;">暂无回答，快来抢沙发吧！</div>';
-                
             } catch (error) {
                 console.error('Failed to load answers:', error);
-                answersList.innerHTML = '<div style="text-align: center; color: var(--text-tertiary); padding: 20px;">加载失败，请稍后重试</div>';
+                answersList.innerHTML = '<div style="text-align:center;color:var(--text-tertiary);padding:20px;">加载失败，请稍后重试</div>';
             }
         }
 
         function showAnswerForm(questionId, event) {
             event.stopPropagation();
-            
             const token = localStorage.getItem('token');
             if (!token) {
-                showNotification('请先登录后再回答问题', 'warning');
+                showToast('请先登录后再回答问题', 'warning');
                 return;
             }
-            
+
             const answerSection = document.getElementById(`answers-${questionId}`);
             const answerForm = document.getElementById(`answer-form-${questionId}`);
-            
-            if (!answerSection || !answerForm) return;
-            
-            if (answerSection.style.display === 'none' || !answerSection.style.display) {
+
+            if (answerSection.style.display !== 'block') {
                 answerSection.style.display = 'block';
                 loadAnswers(questionId);
             }
-            
+
             answerForm.classList.remove('hidden');
-            
-            const textarea = document.getElementById(`answer-input-${questionId}`);
-            if (textarea) {
-                textarea.focus();
-            }
+            document.getElementById(`answer-input-${questionId}`).focus();
         }
 
         function hideAnswerForm(questionId) {
-            const answerForm = document.getElementById(`answer-form-${questionId}`);
-            const textarea = document.getElementById(`answer-input-${questionId}`);
-            
-            if (answerForm) {
-                answerForm.classList.add('hidden');
-            }
-            
-            if (textarea) {
-                textarea.value = '';
-            }
+            document.getElementById(`answer-form-${questionId}`).classList.add('hidden');
+            document.getElementById(`answer-input-${questionId}`).value = '';
         }
 
         async function submitAnswer(questionId) {
             const textarea = document.getElementById(`answer-input-${questionId}`);
-            if (!textarea || !textarea.value.trim()) {
-                showNotification('请输入回答内容', 'warning');
+            if (!textarea.value.trim()) {
+                showToast('请输入回答内容', 'warning');
                 return;
             }
-            
-            const token = localStorage.getItem('token');
-            if (!token) {
-                showNotification('请先登录后再回答问题', 'warning');
-                return;
-            }
-            
+
             try {
-                const response = await fetch(`${API_BASE_URL}/qa/questions/${questionId}/answers`, {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/qa/questions/${questionId}/answers`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({
-                        content: textarea.value.trim()
-                    })
+                    body: JSON.stringify({ content: textarea.value.trim() })
                 });
-                
+
                 const data = await response.json();
-                
                 if (response.ok && data.success) {
                     hideAnswerForm(questionId);
-                    showNotification('回答发布成功！', 'success');
-                    
+                    showToast('回答发布成功！', 'success');
                     await loadAnswers(questionId);
-                    updateAnswerCount(questionId);
-                    
                 } else {
-                    showNotification('发布失败：' + (data.message || '请稍后重试'), 'error');
+                    showToast('发布失败：' + (data.message || '请稍后重试'), 'error');
                 }
-                
             } catch (error) {
                 console.error('Submit answer failed:', error);
-                showNotification('发布失败，请稍后重试', 'error');
+                showToast('发布失败，请稍后重试', 'error');
             }
         }
 
         async function likeQuestion(questionId, event) {
             event.stopPropagation();
-            
             const token = localStorage.getItem('token');
             if (!token) {
-                showNotification('请先登录', 'warning');
+                showToast('请先登录', 'warning');
                 return;
             }
-            
+
             try {
-                const response = await fetch(`${API_BASE_URL}/qa/questions/${questionId}/like`, {
+                const response = await fetch(`${API_BASE}/qa/questions/${questionId}/like`, {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
-                
-                const data = await response.json();
-                
-                if (response.ok && data.success) {
-                    updateLikeCount(questionId, data.data.likeCount, true);
-                } else {
-                    showNotification('操作失败', 'error');
+
+                if (response.ok) {
+                    showToast('操作成功', 'success');
+                    loadQuestions(currentPage);
                 }
-                
             } catch (error) {
                 console.error('Like question failed:', error);
-                showNotification('操作失败', 'error');
             }
         }
 
         async function likeAnswer(answerId, questionId) {
             const token = localStorage.getItem('token');
             if (!token) {
-                showNotification('请先登录', 'warning');
+                showToast('请先登录', 'warning');
                 return;
             }
-            
+
             try {
-                const response = await fetch(`${API_BASE_URL}/qa/answers/${answerId}/like`, {
+                const response = await fetch(`${API_BASE}/qa/answers/${answerId}/like`, {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
-                
-                const data = await response.json();
-                
-                if (response.ok && data.success) {
+
+                if (response.ok) {
                     await loadAnswers(questionId);
-                } else {
-                    showNotification('操作失败', 'error');
                 }
-                
             } catch (error) {
                 console.error('Like answer failed:', error);
-                showNotification('操作失败', 'error');
             }
         }
 
-        // Utility functions
+        // Utility Functions
         function formatTime(timeString) {
             const now = new Date();
             const time = new Date(timeString);
             const diff = now - time;
-            
+
             const minutes = Math.floor(diff / 60000);
             const hours = Math.floor(minutes / 60);
             const days = Math.floor(hours / 24);
-            
+
             if (days > 0) return `${days}天前`;
             if (hours > 0) return `${hours}小时前`;
             if (minutes > 0) return `${minutes}分钟前`;
@@ -2482,156 +1350,50 @@
             window.location.href = `question-detail.html?id=${questionId}`;
         }
 
-        function performSearch() {
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput) {
-                currentFilters.search = searchInput.value;
-                loadQuestions(1);
-            }
-        }
-
-        function updateAnswerCount(questionId) {
-            const questionCard = document.querySelector(`[data-question-id="${questionId}"]`);
-            if (questionCard) {
-                const answerCountElement = questionCard.querySelector('.meta-item:nth-child(2) span');
-                if (answerCountElement) {
-                    const currentCount = parseInt(answerCountElement.textContent) || 0;
-                    answerCountElement.textContent = currentCount + 1;
-                }
-                
-                const actionBtn = questionCard.querySelector('.action-btn');
-                if (actionBtn) {
-                    const span = actionBtn.querySelector('span');
-                    if (span) {
-                        const currentCount = parseInt(span.textContent.match(/\d+/)?.[0] || '0');
-                        span.textContent = `查看回答 (${currentCount + 1})`;
-                    }
-                }
-            }
-        }
-
-        function updateLikeCount(questionId, newCount, isLiked) {
-            const questionCard = document.querySelector(`[data-question-id="${questionId}"]`);
-            if (questionCard) {
-                const likeBtn = questionCard.querySelector('.action-btn:last-child span');
-                if (likeBtn) {
-                    likeBtn.textContent = newCount;
-                }
-            }
-        }
-
-        // User menu functions
-        function toggleUserMenu(event) {
-            if (event) {
-                event.stopPropagation();
-            }
-            const dropdown = document.getElementById('userDropdown');
-            const container = document.querySelector('.user-menu-container');
-            if (dropdown && container) {
-                dropdown.classList.toggle('show');
-                container.classList.toggle('active');
-            }
+        function searchByTag(tag) {
+            document.getElementById('searchInput').value = tag;
+            currentFilters.search = tag;
+            loadQuestions(1);
         }
 
         function logout() {
             if (confirm('确定要退出登录吗？')) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
-                localStorage.removeItem('refreshToken');
-                showNotification('已退出登录', 'success');
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
+                showToast('已退出登录', 'success');
+                setTimeout(() => window.location.reload(), 1000);
             }
         }
 
-        // Theme functions
-        function initializeTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            updateThemeIcon(savedTheme);
-        }
+        function showToast(message, type = 'info') {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
 
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            updateThemeIcon(newTheme);
-        }
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
 
-        function updateThemeIcon(theme) {
-            const lightIcon = document.querySelector('[data-theme-icon="light"]');
-            const darkIcon = document.querySelector('[data-theme-icon="dark"]');
-            
-            if (theme === 'dark') {
-                if (lightIcon) lightIcon.style.display = 'inline';
-                if (darkIcon) darkIcon.style.display = 'none';
-            } else {
-                if (lightIcon) lightIcon.style.display = 'none';
-                if (darkIcon) darkIcon.style.display = 'inline';
-            }
-        }
-
-        function showNotification(message, type = 'info') {
-            const existing = document.querySelector('.notification');
-            if (existing) {
-                existing.remove();
-            }
-
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.textContent = message;
-            
-            document.body.appendChild(notification);
-            
+            setTimeout(() => toast.classList.add('show'), 10);
             setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 5000);
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            const userMenu = document.querySelector('.user-menu-container');
-            if (userMenu && !userMenu.contains(event.target)) {
-                const dropdown = document.getElementById('userDropdown');
-                if (dropdown) {
-                    dropdown.classList.remove('show');
-                    userMenu.classList.remove('active');
-                }
-            }
-        });
 
         // Global exports
         window.showAskModal = showAskModal;
         window.hideAskModal = hideAskModal;
-        window.viewQuestion = viewQuestion;
         window.loadQuestions = loadQuestions;
-        window.performSearch = performSearch;
-        window.toggleTheme = toggleTheme;
         window.toggleAnswers = toggleAnswers;
         window.showAnswerForm = showAnswerForm;
         window.hideAnswerForm = hideAnswerForm;
         window.submitAnswer = submitAnswer;
         window.likeQuestion = likeQuestion;
         window.likeAnswer = likeAnswer;
-        window.toggleUserMenu = toggleUserMenu;
+        window.viewQuestion = viewQuestion;
+        window.searchByTag = searchByTag;
         window.logout = logout;
-        window.removeImage = removeImage;
-        window.triggerAnswerImageUpload = triggerAnswerImageUpload;
-    </script>
-
-    <!-- 全局登录状态组件 -->
-    <script src="../utils/auth-header.js"></script>
-    <script>
-        // 初始化登录状态组件
-        document.addEventListener('DOMContentLoaded', () => {
-            AuthHeader.init('auth-header', {
-                showLinks: false  // qa页面已有自己的导航
-            });
-        });
     </script>
 </body>
 </html>

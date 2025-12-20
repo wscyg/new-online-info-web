@@ -410,9 +410,9 @@ class AuthAPI {
     }
 
     async login(credentials) {
-        // 适配后端接口，将username转换为loginAccount
+        // 统一使用username字段
         const loginData = {
-            loginAccount: credentials.username || credentials.loginAccount,
+            username: credentials.username || credentials.loginAccount,
             password: credentials.password,
             loginType: credentials.loginType || 'password',
             deviceType: 'web'

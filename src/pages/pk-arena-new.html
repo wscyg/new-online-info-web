@@ -3,190 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PK竞技场 - 在线学习平台</title>
+    <title>PK竞技场 - AI 信息未来</title>
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="../styles/pk-styles.css">
+    <!-- Apple Design CSS -->
+    <link rel="stylesheet" href="../styles/apple-design.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <!-- 外部依赖 -->
     <script src="https://cdn.jsdelivr.net/npm/zustand@4.4.1/index.umd.js"></script>
     <script src="https://unpkg.com/dompurify@3.0.6/dist/purify.min.js"></script>
 </head>
-<body>
+<body data-theme="light">
     <!-- 导航栏 -->
-    <nav class="pk-navbar">
-        <div class="pk-nav-container">
-            <a href="../pages/dashboard.html" class="pk-nav-brand">🎓 在线学习平台</a>
-            <ul class="pk-nav-menu">
-                <li><a href="dashboard.html" class="pk-nav-link">仪表盘</a></li>
-                <li><a href="courses.html" class="pk-nav-link">课程</a></li>
-                <li><a href="pk-arena-new.html" class="pk-nav-link active">PK竞技场</a></li>
-                <li><a href="pk-rankings-new.html" class="pk-nav-link">排行榜</a></li>
-                <li><a href="pk-friends-new.html" class="pk-nav-link">好友</a></li>
-                <li><a href="profile.html" class="pk-nav-link">个人中心</a></li>
-            </ul>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="../pages/dashboard.html" class="nav-logo">AI 信息未来</a>
+            <div class="nav-menu">
+                <a href="dashboard.html" class="nav-link">首页</a>
+                <a href="courses.html" class="nav-link">课程</a>
+                <a href="community.html" class="nav-link">社区</a>
+                <a href="pk-arena-new.html" class="nav-link active">PK竞技</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path class="sun-icon" d="M10 2.5a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 2.5zM10 13a3 3 0 100-6 3 3 0 000 6zm7.5-3a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5a.75.75 0 01.75.75zM10 16.5a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zM5.25 10a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5a.75.75 0 01.75.75zM4.81 15.19a.75.75 0 011.06 0l1.06 1.06a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zM15.19 4.81a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 01-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zM15.19 15.19a.75.75 0 00-1.06 0l-1.06 1.06a.75.75 0 001.06 1.06l1.06-1.06a.75.75 0 000-1.06zM4.81 4.81a.75.75 0 000 1.06l1.06 1.06a.75.75 0 001.06-1.06L5.87 4.81a.75.75 0 00-1.06 0z"/>
+                        <path class="moon-icon" style="display: none;" d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+                    </svg>
+                </button>
+                <div class="user-menu">
+                    <div class="user-avatar" id="userAvatar"></div>
+                </div>
+            </div>
         </div>
     </nav>
 
     <!-- 主容器 -->
-    <div class="pk-container">
+    <div class="container-wide" style="margin-top: 80px; padding-bottom: 80px;">
         <!-- 页面标题 -->
-        <div class="pk-page-header">
-            <h1 class="pk-page-title">⚔️ PK竞技场</h1>
-            <p class="pk-page-subtitle">挑战你的对手，展现你的实力！</p>
+        <div class="hero" style="padding: 60px 0 40px;">
+            <h1 class="hero-title" style="font-size: 40px;">PK竞技场</h1>
+            <p class="hero-subtitle" style="font-size: 19px;">挑战你的对手，展现你的实力</p>
         </div>
 
         <!-- 用户统计信息 -->
-        <div class="pk-card pk-mb-4" id="userStatsCard">
-            <div class="pk-flex pk-flex-between">
-                <div>
-                    <h3 class="pk-card-title">我的战绩</h3>
-                    <div class="pk-flex pk-flex-gap pk-mt-2">
-                        <div class="pk-stat-box">
-                            <div class="pk-stat-value" id="userElo">1200</div>
-                            <div class="pk-stat-label">ELO分数</div>
-                        </div>
-                        <div class="pk-stat-box">
-                            <div class="pk-stat-value" id="userWins">0</div>
-                            <div class="pk-stat-label">胜场</div>
-                        </div>
-                        <div class="pk-stat-box">
-                            <div class="pk-stat-value" id="userLosses">0</div>
-                            <div class="pk-stat-label">负场</div>
-                        </div>
-                        <div class="pk-stat-box">
-                            <div class="pk-stat-value" id="userWinRate">0%</div>
-                            <div class="pk-stat-label">胜率</div>
+        <div class="card" style="margin-bottom: 32px;" id="userStatsCard">
+            <div class="card-body">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <h3 class="card-title">我的战绩</h3>
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-top: 20px;">
+                            <div class="stat">
+                                <div class="stat-value" id="userElo" style="font-size: 32px;">1200</div>
+                                <div class="stat-label">ELO分数</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="userWins" style="font-size: 32px;">0</div>
+                                <div class="stat-label">胜场</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="userLosses" style="font-size: 32px;">0</div>
+                                <div class="stat-label">负场</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="userWinRate" style="font-size: 32px;">0%</div>
+                                <div class="stat-label">胜率</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div>
-                    <span class="pk-player-tier" id="userTier"></span>
+                    <div>
+                        <span class="badge badge-primary" id="userTier" style="font-size: 14px; padding: 8px 16px;">白银</span>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- 对战模式选择 -->
-        <div class="pk-card pk-mb-4">
-            <h3 class="pk-card-title pk-mb-3">选择对战模式</h3>
-            <div class="pk-grid pk-grid-3 pk-grid-gap">
-                <div class="pk-mode-card" data-mode="QUICK">
-                    <div class="pk-mode-icon">⚡</div>
-                    <div class="pk-mode-name">快速模式</div>
-                    <div class="pk-mode-desc">5题 · 10分钟</div>
-                </div>
-                <div class="pk-mode-card active" data-mode="STANDARD">
-                    <div class="pk-mode-icon">🎯</div>
-                    <div class="pk-mode-name">标准模式</div>
-                    <div class="pk-mode-desc">10题 · 20分钟</div>
-                </div>
-                <div class="pk-mode-card" data-mode="LONG">
-                    <div class="pk-mode-icon">🔥</div>
-                    <div class="pk-mode-name">长篇模式</div>
-                    <div class="pk-mode-desc">20题 · 40分钟</div>
+        <div class="card" style="margin-bottom: 32px;">
+            <div class="card-body">
+                <h3 class="card-title" style="margin-bottom: 24px;">选择对战模式</h3>
+                <div class="grid grid-3">
+                    <div class="mode-card" data-mode="QUICK">
+                        <div class="mode-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                            </svg>
+                        </div>
+                        <div class="mode-name">快速模式</div>
+                        <div class="mode-desc">5题 · 10分钟</div>
+                    </div>
+                    <div class="mode-card active" data-mode="STANDARD">
+                        <div class="mode-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 6v6l4 2"/>
+                            </svg>
+                        </div>
+                        <div class="mode-name">标准模式</div>
+                        <div class="mode-desc">10题 · 20分钟</div>
+                    </div>
+                    <div class="mode-card" data-mode="LONG">
+                        <div class="mode-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z"/>
+                            </svg>
+                        </div>
+                        <div class="mode-name">长篇模式</div>
+                        <div class="mode-desc">20题 · 40分钟</div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- 匹配区域 -->
-        <div class="pk-card pk-mb-4">
-            <div id="matchingIdleView">
-                <h3 class="pk-card-title pk-mb-3">开始匹配</h3>
+        <div class="card" style="margin-bottom: 32px;">
+            <div class="card-body">
+                <div id="matchingIdleView">
+                    <h3 class="card-title" style="margin-bottom: 24px;">开始匹配</h3>
 
-                <!-- 课程选择 -->
-                <div class="pk-form-group">
-                    <label class="pk-form-label">选择课程</label>
-                    <select class="pk-form-select" id="courseSelect">
-                        <option value="">加载中...</option>
-                    </select>
-                </div>
-
-                <!-- 匹配按钮 -->
-                <div class="pk-flex pk-flex-gap">
-                    <button class="pk-btn pk-btn-primary pk-btn-lg pk-btn-full" id="quickMatchBtn">
-                        <span>🎲</span>
-                        <span>快速匹配</span>
-                    </button>
-                    <button class="pk-btn pk-btn-outline pk-btn-lg" id="inviteFriendBtn">
-                        <span>👥</span>
-                        <span>邀请好友</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- 匹配中视图 -->
-            <div id="matchingView" class="pk-hidden">
-                <div class="pk-matching-animation">
-                    <h3 class="pk-card-title">正在匹配对手...</h3>
-                    <div class="pk-matching-dots">
-                        <div class="pk-matching-dot"></div>
-                        <div class="pk-matching-dot"></div>
-                        <div class="pk-matching-dot"></div>
-                    </div>
-                    <p class="pk-text-muted">
-                        已匹配 <span id="matchingDuration">0</span> 秒
-                    </p>
-                    <button class="pk-btn pk-btn-danger" id="cancelMatchBtn">取消匹配</button>
-                </div>
-            </div>
-
-            <!-- 匹配成功视图 -->
-            <div id="matchFoundView" class="pk-hidden">
-                <h3 class="pk-card-title pk-text-center pk-mb-3">找到对手！</h3>
-                <div class="pk-grid pk-grid-3 pk-grid-gap" style="align-items: center;">
-                    <!-- 玩家1 -->
-                    <div class="pk-player-card">
-                        <canvas id="player1AvatarCanvas" width="120" height="160" class="pk-avatar-canvas"></canvas>
-                        <div class="pk-player-name" id="player1Name"></div>
-                        <span class="pk-player-tier" id="player1Tier"></span>
+                    <!-- 课程选择 -->
+                    <div class="form-group">
+                        <label class="form-label">选择课程</label>
+                        <select class="form-input" id="courseSelect">
+                            <option value="">加载中...</option>
+                        </select>
                     </div>
 
-                    <!-- VS -->
-                    <div class="pk-vs-badge">VS</div>
-
-                    <!-- 玩家2 -->
-                    <div class="pk-player-card">
-                        <canvas id="player2AvatarCanvas" width="120" height="160" class="pk-avatar-canvas"></canvas>
-                        <div class="pk-player-name" id="player2Name"></div>
-                        <span class="pk-player-tier" id="player2Tier"></span>
+                    <!-- 匹配按钮 -->
+                    <div style="display: flex; gap: 16px;">
+                        <button class="btn btn-primary btn-lg" id="quickMatchBtn" style="flex: 1;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="7" height="7"/>
+                                <rect x="14" y="3" width="7" height="7"/>
+                                <rect x="14" y="14" width="7" height="7"/>
+                                <rect x="3" y="14" width="7" height="7"/>
+                            </svg>
+                            <span>快速匹配</span>
+                        </button>
+                        <button class="btn btn-outline btn-lg" id="inviteFriendBtn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 010 7.75"/>
+                            </svg>
+                            <span>邀请好友</span>
+                        </button>
                     </div>
                 </div>
-                <div class="pk-text-center pk-mt-4">
-                    <p class="pk-text-muted pk-mb-2">对战将在 <span id="countdownTimer">5</span> 秒后开始</p>
-                    <button class="pk-btn pk-btn-primary pk-btn-lg" id="startBattleBtn">立即开始</button>
+
+                <!-- 匹配中视图 -->
+                <div id="matchingView" style="display: none;">
+                    <div style="text-align: center; padding: 48px 0;">
+                        <h3 class="card-title">正在匹配对手...</h3>
+                        <div style="margin: 32px 0;">
+                            <div class="spinner" style="margin: 0 auto;"></div>
+                        </div>
+                        <p style="color: var(--text-secondary); margin-bottom: 24px;">
+                            已匹配 <span id="matchingDuration">0</span> 秒
+                        </p>
+                        <button class="btn btn-outline" id="cancelMatchBtn">取消匹配</button>
+                    </div>
+                </div>
+
+                <!-- 匹配成功视图 -->
+                <div id="matchFoundView" style="display: none;">
+                    <h3 class="card-title" style="text-align: center; margin-bottom: 32px;">找到对手!</h3>
+                    <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 32px; align-items: center;">
+                        <!-- 玩家1 -->
+                        <div style="text-align: center;">
+                            <canvas id="player1AvatarCanvas" width="120" height="160" style="border: 2px solid var(--border-color); border-radius: var(--radius-lg); background: var(--bg-secondary); display: block; margin: 0 auto 16px;"></canvas>
+                            <div style="font-weight: 600; margin-bottom: 8px;" id="player1Name"></div>
+                            <span class="badge badge-primary" id="player1Tier"></span>
+                        </div>
+
+                        <!-- VS -->
+                        <div style="font-size: 32px; font-weight: 700; color: var(--text-secondary);">VS</div>
+
+                        <!-- 玩家2 -->
+                        <div style="text-align: center;">
+                            <canvas id="player2AvatarCanvas" width="120" height="160" style="border: 2px solid var(--border-color); border-radius: var(--radius-lg); background: var(--bg-secondary); display: block; margin: 0 auto 16px;"></canvas>
+                            <div style="font-weight: 600; margin-bottom: 8px;" id="player2Name"></div>
+                            <span class="badge badge-primary" id="player2Tier"></span>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 32px;">
+                        <p style="color: var(--text-secondary); margin-bottom: 16px;">对战将在 <span id="countdownTimer">5</span> 秒后开始</p>
+                        <button class="btn btn-primary btn-lg" id="startBattleBtn">立即开始</button>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- 在线好友列表 -->
-        <div class="pk-card pk-mb-4">
-            <h3 class="pk-card-title pk-mb-3">在线好友 <span id="onlineFriendsCount" class="pk-text-muted">(0)</span></h3>
-            <div id="onlineFriendsList" class="pk-grid pk-grid-3 pk-grid-gap">
-                <!-- 动态加载 -->
+        <div class="card" style="margin-bottom: 32px;">
+            <div class="card-body">
+                <h3 class="card-title" style="margin-bottom: 24px;">在线好友 <span id="onlineFriendsCount" style="color: var(--text-tertiary); font-weight: 400;">(0)</span></h3>
+                <div id="onlineFriendsList" class="grid grid-3">
+                    <!-- 动态加载 -->
+                </div>
             </div>
         </div>
 
         <!-- 最近对战 -->
-        <div class="pk-card">
-            <h3 class="pk-card-title pk-mb-3">最近对战</h3>
-            <div id="recentBattlesList" class="pk-battles-list">
-                <!-- 动态加载 -->
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title" style="margin-bottom: 24px;">最近对战</h3>
+                <div id="recentBattlesList">
+                    <!-- 动态加载 -->
+                </div>
             </div>
         </div>
     </div>
 
     <!-- 好友邀请模态框 -->
-    <div class="pk-modal" id="inviteModal">
-        <div class="pk-modal-content">
-            <div class="pk-modal-header">
-                <h3 class="pk-modal-title">邀请好友PK</h3>
-                <button class="pk-modal-close" id="closeInviteModal">&times;</button>
+    <div id="inviteModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 2000; align-items: center; justify-content: center;">
+        <div style="background: var(--bg-card); border-radius: var(--radius-lg); max-width: 600px; width: 90%; max-height: 80vh; overflow: hidden; box-shadow: var(--shadow-lg);">
+            <div style="padding: 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="font-size: 21px; font-weight: 600; margin: 0;">邀请好友PK</h3>
+                <button id="closeInviteModal" style="width: 32px; height: 32px; border-radius: 50%; border: none; background: var(--bg-hover); color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 24px; line-height: 1;">&times;</button>
             </div>
-            <div class="pk-modal-body">
-                <div id="friendsListForInvite">
-                    <!-- 动态加载好友列表 -->
-                </div>
+            <div style="padding: 24px; overflow-y: auto; max-height: calc(80vh - 80px);" id="friendsListForInvite">
+                <!-- 动态加载好友列表 -->
             </div>
         </div>
     </div>
@@ -210,107 +248,190 @@
         window.pkArena = arena;
     </script>
 
+    <!-- 主题切换脚本 -->
+    <script>
+        // 主题切换
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        const body = document.body;
+        const sunIcon = themeToggle.querySelector('.sun-icon');
+        const moonIcon = themeToggle.querySelector('.moon-icon');
+
+        // 从 localStorage 读取主题
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        body.setAttribute('data-theme', savedTheme);
+        html.setAttribute('data-theme', savedTheme);
+
+        // 更新图标显示
+        if (savedTheme === 'dark') {
+            sunIcon.style.display = 'none';
+            moonIcon.style.display = 'block';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+            body.setAttribute('data-theme', newTheme);
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+
+            // 切换图标
+            if (newTheme === 'dark') {
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+            } else {
+                sunIcon.style.display = 'block';
+                moonIcon.style.display = 'none';
+            }
+        });
+
+        // 用户头像初始化
+        const userAvatar = document.getElementById('userAvatar');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (user.nickname) {
+            userAvatar.textContent = user.nickname.charAt(0).toUpperCase();
+        }
+
+        // 模态框控制
+        const inviteModal = document.getElementById('inviteModal');
+        const inviteFriendBtn = document.getElementById('inviteFriendBtn');
+        const closeInviteModal = document.getElementById('closeInviteModal');
+
+        inviteFriendBtn?.addEventListener('click', () => {
+            inviteModal.style.display = 'flex';
+        });
+
+        closeInviteModal?.addEventListener('click', () => {
+            inviteModal.style.display = 'none';
+        });
+
+        inviteModal?.addEventListener('click', (e) => {
+            if (e.target === inviteModal) {
+                inviteModal.style.display = 'none';
+            }
+        });
+    </script>
+
     <style>
         /* 模式卡片样式 */
-        .pk-mode-card {
-            background: var(--pk-bg-glass);
-            border: 2px solid var(--pk-border-glass);
-            border-radius: var(--pk-radius-lg);
-            padding: var(--pk-spacing-xl);
+        .mode-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 32px;
             text-align: center;
             cursor: pointer;
-            transition: var(--pk-transition);
+            transition: all var(--transition-fast);
         }
 
-        .pk-mode-card:hover {
-            background: rgba(255, 255, 255, 0.08);
-            transform: translateY(-4px);
+        .mode-card:hover {
+            border-color: var(--border-strong);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-card);
         }
 
-        .pk-mode-card.active {
-            border-color: var(--pk-primary);
-            box-shadow: var(--pk-shadow-glow);
+        .mode-card.active {
+            border-color: var(--accent);
+            background: rgba(0, 113, 227, 0.05);
         }
 
-        .pk-mode-icon {
-            font-size: 3rem;
-            margin-bottom: var(--pk-spacing-md);
+        .mode-icon {
+            color: var(--accent);
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: center;
         }
 
-        .pk-mode-name {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: var(--pk-spacing-sm);
+        .mode-name {
+            font-size: 19px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
         }
 
-        .pk-mode-desc {
-            color: var(--pk-text-muted);
-            font-size: 0.9rem;
+        .mode-desc {
+            color: var(--text-secondary);
+            font-size: 15px;
         }
 
         /* 好友卡片 */
-        .pk-friend-card {
-            background: var(--pk-bg-glass);
-            border: 1px solid var(--pk-border-glass);
-            border-radius: var(--pk-radius-md);
-            padding: var(--pk-spacing-md);
+        .friend-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 20px;
             display: flex;
             align-items: center;
-            gap: var(--pk-spacing-md);
+            gap: 16px;
             cursor: pointer;
-            transition: var(--pk-transition);
+            transition: all var(--transition-fast);
         }
 
-        .pk-friend-card:hover {
-            background: rgba(255, 255, 255, 0.08);
+        .friend-card:hover {
+            border-color: var(--border-strong);
+            box-shadow: var(--shadow-sm);
         }
 
-        .pk-friend-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: var(--pk-radius-full);
+        .friend-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
             background: linear-gradient(135deg, #667eea, #764ba2);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
-            font-size: 1.25rem;
+            color: #fff;
+            font-weight: 600;
+            font-size: 17px;
         }
 
-        .pk-friend-info {
+        .friend-info {
             flex: 1;
         }
 
-        .pk-friend-name {
+        .friend-name {
             font-weight: 600;
-            margin-bottom: 0.25rem;
+            margin-bottom: 4px;
+            color: var(--text-primary);
         }
 
-        .pk-friend-status {
-            font-size: 0.875rem;
-            color: var(--pk-text-muted);
+        .friend-status {
+            font-size: 14px;
+            color: var(--text-secondary);
         }
 
-        .pk-friend-status.online {
-            color: var(--pk-success);
+        .friend-status.online {
+            color: #34c759;
         }
 
-        .pk-friend-status.online::before {
+        .friend-status.online::before {
             content: "●";
-            margin-right: 0.25rem;
+            margin-right: 6px;
         }
 
-        /* Avatar Canvas样式 */
-        .pk-avatar-canvas {
-            border: 2px solid rgba(79, 70, 229, 0.5);
-            border-radius: 12px;
-            background: rgba(15, 23, 42, 0.8);
-            display: block;
-            margin: 0 auto 1rem;
+        /* 统计卡片响应式 */
+        @media (max-width: 768px) {
+            .stat {
+                padding: 16px;
+            }
+
+            .stat-value {
+                font-size: 24px !important;
+            }
+
+            .hero-title {
+                font-size: 32px !important;
+            }
+
+            .hero-subtitle {
+                font-size: 17px !important;
+            }
         }
 
-        .pk-player-card {
-            text-align: center;
+        /* 隐藏类 */
+        .pk-hidden {
+            display: none !important;
         }
     </style>
 </body>

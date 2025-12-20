@@ -20,8 +20,8 @@ class CardPlayer {
             : 'http://42.194.245.66:8070/api';
 
         // DOM元素
-        this.cardTitle = document.getElementById('card-title');
-        this.cardHtml = document.getElementById('card-html');
+        this.cardTitle = document.getElementById('cardTitle');
+        this.cardHtml = document.getElementById('cardHtml');
         this.prevBtn = document.getElementById('prevBtn');
         this.nextBtn = document.getElementById('nextBtn');
         this.pageIndicator = document.getElementById('pageIndicator');
@@ -35,7 +35,7 @@ class CardPlayer {
      * 初始化播放器
      */
     async init() {
-        console.log(`🚀 卡片播放器初始化，章节ID: ${this.chapterId}`);
+        console.log(`[CardPlayer] Initializing with chapter ID: ${this.chapterId}`);
 
         try {
             await this.loadCards();
@@ -46,7 +46,7 @@ class CardPlayer {
                 this.showError('该章节暂无卡片内容');
             }
         } catch (error) {
-            console.error('初始化失败:', error);
+            console.error('[CardPlayer] Initialization failed:', error);
             this.showError('加载失败: ' + error.message);
         }
     }
@@ -72,10 +72,10 @@ class CardPlayer {
             }
 
             this.cards = result.data.cards;
-            console.log(`✅ 成功加载 ${this.cards.length} 张卡片`);
+            console.log(`[CardPlayer] Successfully loaded ${this.cards.length} cards`);
 
         } catch (error) {
-            console.error('❌ 加载卡片失败:', error);
+            console.error('[CardPlayer] Failed to load cards:', error);
             throw error;
         } finally {
             this.isLoading = false;
@@ -94,7 +94,7 @@ class CardPlayer {
         const card = this.cards[index];
         this.currentIndex = index;
 
-        console.log(`📄 渲染卡片 ${index + 1}/${this.cards.length}: ${card.title}`);
+        console.log(`[CardPlayer] Rendering card ${index + 1}/${this.cards.length}: ${card.title}`);
 
         // 1. 清空容器（淡出动画）
         gsap.to([this.cardTitle, this.cardHtml], {
@@ -127,7 +127,7 @@ class CardPlayer {
                 });
 
                 // 5. 滚动到顶部
-                document.getElementById('card-container').scrollTop = 0;
+                document.getElementById('cardContainer').scrollTop = 0;
             }
         });
 
@@ -167,7 +167,7 @@ class CardPlayer {
         const canvas = this.cardHtml.querySelector('canvas');
 
         if (canvas) {
-            console.log('🎨 检测到Canvas元素，初始化可视化...');
+            console.log('[CardPlayer] Canvas element detected, initializing visualization...');
             // 这里可以添加Three.js、D3.js等可视化库的初始化代码
             // 示例：简单的粒子背景
             this.drawSimpleParticles(canvas);
@@ -332,17 +332,19 @@ class CardPlayer {
      * 显示错误信息
      */
     showError(message) {
-        this.cardTitle.textContent = '❌ 出错了';
+        this.cardTitle.textContent = '加载失败';
         this.cardHtml.innerHTML = `
             <div style="text-align: center; padding: 2rem;">
-                <p style="font-size: 1.2rem; color: #ef4444;">${message}</p>
+                <p style="font-size: 1.2rem; color: var(--text-secondary);">${message}</p>
                 <button onclick="window.location.reload()"
-                        style="margin-top: 1.5rem; padding: 0.75rem 2rem;
-                               background: rgba(79, 70, 229, 0.3);
-                               border: 1px solid rgba(79, 70, 229, 0.5);
-                               border-radius: 12px; cursor: pointer;
-                               color: #e2e8f0; font-size: 1rem;">
-                    🔄 重新加载
+                        style="margin-top: 1.5rem; padding: 12px 24px;
+                               background: var(--accent);
+                               border: 1px solid var(--accent);
+                               border-radius: 980px; cursor: pointer;
+                               color: #fff; font-size: 15px;
+                               font-family: var(--font-sans);
+                               transition: all 0.2s ease;">
+                    重新加载
                 </button>
             </div>
         `;

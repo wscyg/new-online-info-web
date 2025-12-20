@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>幸运抽奖 - AI 信息未来</title>
+    
+    <style>
+        /* Hero Section */
+        .lottery-hero {
+            padding: 120px 0 60px;
+            background: linear-gradient(135deg, #ec4899 0%, #f43f5e 50%, #f97316 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .lottery-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .lottery-hero::after {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+            top: -300px;
+            right: -200px;
+            border-radius: 50%;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+        .hero-title {
+            font-size: 56px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 16px;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.2);
+        }
+        .hero-desc {
+            font-size: 20px;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 32px;
+        }
+
+        /* Chances Card */
+        .chances-card {
+            display: inline-flex;
+            align-items: center;
+            gap: 24px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 20px 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        .chances-info {
+            text-align: left;
+        }
+        .chances-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        .chances-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: #f43f5e;
+        }
+        .chances-value span {
+            font-size: 16px;
+            color: #888;
+            font-weight: 500;
+        }
+        .chances-divider {
+            width: 1px;
+            height: 50px;
+            background: #e5e7eb;
+        }
+        .get-chances-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #f43f5e, #ec4899);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .get-chances-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(244,63,94,0.4);
+        }
+        .get-chances-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Main Content */
+        .lottery-main {
+            padding: 60px 0 100px;
+        }
+        .lottery-layout {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 40px;
+        }
+        @media (max-width: 1024px) {
+            .lottery-layout { grid-template-columns: 1fr; }
+        }
+
+        /* Lottery Container */
+        .lottery-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 40px;
+        }
+        .lottery-title {
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        /* Nine Grid Lottery */
+        .lottery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .lottery-item {
+            aspect-ratio: 1;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            transition: all 0.2s;
+            cursor: default;
+            position: relative;
+            overflow: hidden;
+        }
+        .lottery-item.active {
+            border-color: #f43f5e;
+            background: rgba(244,63,94,0.1);
+            transform: scale(1.05);
+            z-index: 2;
+        }
+        .lottery-item.active::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 14px;
+            box-shadow: 0 0 20px rgba(244,63,94,0.5);
+        }
+        .lottery-item.center {
+            background: linear-gradient(135deg, #f43f5e, #ec4899);
+            border-color: transparent;
+            cursor: pointer;
+        }
+        .lottery-item.center:hover:not(.spinning) {
+            transform: scale(1.05);
+            box-shadow: 0 12px 32px rgba(244,63,94,0.4);
+        }
+        .lottery-item.center:active:not(.spinning) {
+            transform: scale(0.98);
+        }
+        .lottery-item.center.spinning {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        .lottery-item.won {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-color: #fbbf24;
+            animation: pulse 0.5s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1.05); }
+            50% { transform: scale(1.1); }
+        }
+        .lottery-icon {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .lottery-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+        .lottery-item.center .lottery-icon svg {
+            color: #fff;
+        }
+        .lottery-name {
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+            color: var(--text-primary);
+        }
+        .lottery-item.center .lottery-name {
+            color: #fff;
+            font-size: 16px;
+        }
+        .lottery-item.won .lottery-name {
+            color: #fff;
+        }
+
+        /* Prize Probability */
+        .lottery-probability {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+        }
+
+        /* Sidebar */
+        .lottery-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Prize Pool Card */
+        .prize-pool-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+        }
+        .prize-pool-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .prize-pool-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .prize-pool-badge {
+            padding: 4px 12px;
+            background: linear-gradient(135deg, #f43f5e, #ec4899);
+            color: #fff;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .prize-pool-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .prize-pool-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+        }
+        .prize-pool-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .prize-pool-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+        .prize-pool-icon.gold { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #fff; }
+        .prize-pool-icon.purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: #fff; }
+        .prize-pool-icon.blue { background: linear-gradient(135deg, #3b82f6, #2563eb); color: #fff; }
+        .prize-pool-icon.green { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
+        .prize-pool-icon.gray { background: var(--bg-tertiary); color: var(--text-secondary); }
+        .prize-pool-info {
+            flex: 1;
+        }
+        .prize-pool-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        .prize-pool-rate {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        /* Get Chances Card */
+        .get-chances-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+        }
+        .get-chances-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        .get-chances-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .get-chances-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            transition: all 0.2s;
+        }
+        .get-chances-item:hover {
+            background: var(--bg-tertiary);
+        }
+        .get-chances-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(244,63,94,0.1);
+            color: #f43f5e;
+        }
+        .get-chances-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+        .get-chances-text {
+            flex: 1;
+        }
+        .get-chances-text h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        .get-chances-text p {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+        .get-chances-reward {
+            font-size: 14px;
+            font-weight: 700;
+            color: #f43f5e;
+        }
+
+        /* History Card */
+        .history-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+        }
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .history-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .history-link {
+            font-size: 14px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .history-link svg {
+            width: 16px;
+            height: 16px;
+        }
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+        }
+        .history-prize {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .history-time {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+        .history-empty {
+            text-align: center;
+            padding: 32px 20px;
+            color: var(--text-tertiary);
+        }
+        .history-empty svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        /* Result Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-overlay.show {
+            display: flex;
+        }
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 28px;
+            padding: 48px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+            animation: modalBounce 0.5s ease-out;
+        }
+        @keyframes modalBounce {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .modal-confetti {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .modal-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 24px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: iconPulse 1s ease-in-out infinite;
+            box-shadow: 0 12px 40px rgba(251,191,36,0.4);
+        }
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .modal-icon svg {
+            width: 48px;
+            height: 48px;
+            color: #fff;
+        }
+        .modal-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #f43f5e, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .modal-prize {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 32px;
+        }
+        .modal-btn {
+            padding: 16px 48px;
+            background: linear-gradient(135deg, #f43f5e, #ec4899);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(244,63,94,0.4);
+        }
+
+        /* Confetti */
+        .confetti-piece {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+            z-index: 1001;
+            border-radius: 2px;
+        }
+    </style>
+  <link rel="stylesheet" href="/assets/apple-design-3a23e109.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="home.html" class="nav-logo">AI 信息未来</a>
+            <div class="nav-menu">
+                <a href="home.html" class="nav-link">首页</a>
+                <a href="courses.html" class="nav-link">课程</a>
+                <a href="pk-arena.html" class="nav-link">PK竞技</a>
+                <a href="community.html" class="nav-link">社区</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle">
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                    </svg>
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+                <div id="authArea"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="lottery-hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">幸运大转盘</h1>
+                <p class="hero-desc">每日签到获得抽奖机会，赢取丰厚奖励</p>
+                <div class="chances-card">
+                    <div class="chances-info">
+                        <div class="chances-label">今日剩余抽奖次数</div>
+                        <div class="chances-value"><span id="chancesCount">0</span> <span>次</span></div>
+                    </div>
+                    <div class="chances-divider"></div>
+                    <button class="get-chances-btn" onclick="location.href='dashboard.html#checkin'">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v20M2 12h20"/>
+                        </svg>
+                        获取更多
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="lottery-main">
+        <div class="container-wide">
+            <div class="lottery-layout">
+                <!-- Lottery Grid -->
+                <div class="lottery-container">
+                    <h2 class="lottery-title">九宫格抽奖</h2>
+                    <div class="lottery-grid" id="lotteryGrid"></div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="lottery-sidebar">
+                    <!-- Prize Pool -->
+                    <div class="prize-pool-card">
+                        <div class="prize-pool-header">
+                            <h3 class="prize-pool-title">奖池一览</h3>
+                            <span class="prize-pool-badge">100%中奖</span>
+                        </div>
+                        <div class="prize-pool-list">
+                            <div class="prize-pool-item">
+                                <div class="prize-pool-icon gold">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                    </svg>
+                                </div>
+                                <div class="prize-pool-info">
+                                    <div class="prize-pool-name">VIP会员 7天</div>
+                                    <div class="prize-pool-rate">概率 1%</div>
+                                </div>
+                            </div>
+                            <div class="prize-pool-item">
+                                <div class="prize-pool-icon purple">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="2" y="5" width="20" height="14" rx="2"/>
+                                        <path d="M2 10h20"/>
+                                    </svg>
+                                </div>
+                                <div class="prize-pool-info">
+                                    <div class="prize-pool-name">课程优惠券</div>
+                                    <div class="prize-pool-rate">概率 15%</div>
+                                </div>
+                            </div>
+                            <div class="prize-pool-item">
+                                <div class="prize-pool-icon blue">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <path d="M12 6v6l4 2"/>
+                                    </svg>
+                                </div>
+                                <div class="prize-pool-info">
+                                    <div class="prize-pool-name">50-200积分</div>
+                                    <div class="prize-pool-rate">概率 30%</div>
+                                </div>
+                            </div>
+                            <div class="prize-pool-item">
+                                <div class="prize-pool-icon green">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <path d="M12 6v6l4 2"/>
+                                    </svg>
+                                </div>
+                                <div class="prize-pool-info">
+                                    <div class="prize-pool-name">10-30积分</div>
+                                    <div class="prize-pool-rate">概率 50%</div>
+                                </div>
+                            </div>
+                            <div class="prize-pool-item">
+                                <div class="prize-pool-icon gray">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                                        <line x1="9" y1="9" x2="9.01" y2="9"/>
+                                        <line x1="15" y1="9" x2="15.01" y2="9"/>
+                                    </svg>
+                                </div>
+                                <div class="prize-pool-info">
+                                    <div class="prize-pool-name">谢谢参与</div>
+                                    <div class="prize-pool-rate">概率 4%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Get Chances -->
+                    <div class="get-chances-card">
+                        <h3 class="get-chances-title">获取抽奖机会</h3>
+                        <div class="get-chances-list">
+                            <div class="get-chances-item" onclick="location.href='dashboard.html#checkin'">
+                                <div class="get-chances-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                        <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+                                        <line x1="3" y1="10" x2="21" y2="10"/>
+                                    </svg>
+                                </div>
+                                <div class="get-chances-text">
+                                    <h4>每日签到</h4>
+                                    <p>签到即可获得抽奖机会</p>
+                                </div>
+                                <span class="get-chances-reward">+1次</span>
+                            </div>
+                            <div class="get-chances-item" onclick="location.href='courses.html'">
+                                <div class="get-chances-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                                    </svg>
+                                </div>
+                                <div class="get-chances-text">
+                                    <h4>完成课程</h4>
+                                    <p>完成一章内容</p>
+                                </div>
+                                <span class="get-chances-reward">+1次</span>
+                            </div>
+                            <div class="get-chances-item" onclick="location.href='pk-arena.html'">
+                                <div class="get-chances-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                                    </svg>
+                                </div>
+                                <div class="get-chances-text">
+                                    <h4>PK获胜</h4>
+                                    <p>赢得一场PK对战</p>
+                                </div>
+                                <span class="get-chances-reward">+2次</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- History -->
+                    <div class="history-card">
+                        <div class="history-header">
+                            <h3 class="history-title">中奖记录</h3>
+                            <a href="#" class="history-link">
+                                查看全部
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="9 18 15 12 9 6"/>
+                                </svg>
+                            </a>
+                        </div>
+                        <div class="history-list" id="historyList">
+                            <div class="history-empty">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M12 8v4l3 3"/>
+                                </svg>
+                                <p>暂无中奖记录</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-text">2025 AI 信息未来</div>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">关于我们</a>
+                    <a href="#" class="footer-link">使用条款</a>
+                    <a href="#" class="footer-link">隐私政策</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Result Modal -->
+    <div class="modal-overlay" id="resultModal">
+        <div class="modal-content">
+            <div class="modal-confetti" id="modalConfetti"></div>
+            <div class="modal-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                    <path d="M2 17l10 5 10-5"/>
+                    <path d="M2 12l10 5 10-5"/>
+                </svg>
+            </div>
+            <h3 class="modal-title">恭喜中奖</h3>
+            <p class="modal-prize" id="modalPrize">10积分</p>
+            <button class="modal-btn" onclick="closeModal()">收下奖励</button>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const API_BASE = '/api';
+        let chances = 0;
+        let isSpinning = false;
+
+        const prizes = [
+            { id: 1, name: '10积分', icon: 'coin', color: '#10b981', prob: '25%' },
+            { id: 2, name: '20积分', icon: 'coin', color: '#10b981', prob: '15%' },
+            { id: 3, name: '50积分', icon: 'coin', color: '#3b82f6', prob: '10%' },
+            { id: 4, name: '谢谢参与', icon: 'smile', color: '#9ca3af', prob: '4%' },
+            { id: 0, name: '开始抽奖', icon: 'play', isCenter: true },
+            { id: 5, name: '100积分', icon: 'star', color: '#f59e0b', prob: '5%' },
+            { id: 6, name: '优惠券5元', icon: 'ticket', color: '#8b5cf6', prob: '8%' },
+            { id: 7, name: '优惠券10元', icon: 'ticket', color: '#8b5cf6', prob: '5%' },
+            { id: 8, name: 'VIP 1天', icon: 'crown', color: '#f59e0b', prob: '1%' }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            checkAuth();
+            renderLottery();
+            loadChances();
+            loadHistory();
+        });
+
+        function initTheme() {
+            const saved = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', saved);
+            document.getElementById('themeToggle').addEventListener('click', () => {
+                const current = document.documentElement.getAttribute('data-theme');
+                const next = current === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('theme', next);
+            });
+        }
+
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            const authArea = document.getElementById('authArea');
+            if (token && userStr) {
+                const user = JSON.parse(userStr);
+                const initial = (user.nickname || user.username || 'U').charAt(0).toUpperCase();
+                authArea.innerHTML = `
+                    <div class="user-menu">
+                        <div class="user-avatar" onclick="toggleDropdown()">${initial}</div>
+                        <div class="dropdown" id="userDropdown">
+                            <a href="dashboard.html" class="dropdown-item">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                                学习中心
+                            </a>
+                            <a href="profile.html" class="dropdown-item">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                个人主页
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item" onclick="logout(); return false;">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                                退出登录
+                            </a>
+                        </div>
+                    </div>`;
+            } else {
+                window.location.href = 'login.html?returnUrl=' + encodeURIComponent(window.location.href);
+            }
+        }
+
+        function toggleDropdown() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            location.reload();
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-menu')) {
+                const d = document.getElementById('userDropdown');
+                if (d) d.classList.remove('show');
+            }
+        });
+
+        function getIcon(type) {
+            const icons = {
+                coin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M8 10h8M8 14h8"/></svg>',
+                star: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+                ticket: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v0a3 3 0 0 1-3 3v0a3 3 0 0 1 3 3v0a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3v0a3 3 0 0 1 3-3v0a3 3 0 0 1-3-3z"/><path d="M9 6v12"/></svg>',
+                crown: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M2 17l3-10 5 6 2-10 2 10 5-6 3 10z"/><rect x="2" y="17" width="20" height="4" rx="1"/></svg>',
+                smile: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>',
+                play: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>'
+            };
+            return icons[type] || icons.coin;
+        }
+
+        function renderLottery() {
+            const grid = document.getElementById('lotteryGrid');
+            grid.innerHTML = prizes.map((prize, i) => `
+                <div class="lottery-item ${prize.isCenter ? 'center' : ''}" data-index="${i}" ${prize.isCenter ? 'onclick="startLottery()"' : ''}>
+                    <div class="lottery-icon" style="${prize.color && !prize.isCenter ? `color: ${prize.color}` : ''}">${getIcon(prize.icon)}</div>
+                    <div class="lottery-name">${prize.name}</div>
+                    ${prize.prob ? `<div class="lottery-probability">${prize.prob}</div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        async function loadChances() {
+            try {
+                const res = await fetch(`${API_BASE}/lottery/chances`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const data = await res.json();
+                if (data.code === 200) {
+                    chances = data.data || 0;
+                }
+            } catch (e) {
+                chances = 3;
+            }
+            document.getElementById('chancesCount').textContent = chances;
+        }
+
+        async function loadHistory() {
+            try {
+                const res = await fetch(`${API_BASE}/lottery/history`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const data = await res.json();
+                if (data.code === 200 && data.data && data.data.length > 0) {
+                    renderHistory(data.data);
+                }
+            } catch (e) {
+                // Keep empty state
+            }
+        }
+
+        function renderHistory(list) {
+            const container = document.getElementById('historyList');
+            container.innerHTML = list.slice(0, 5).map(item => `
+                <div class="history-item">
+                    <div class="history-prize">${item.prizeName || item.name}</div>
+                    <div class="history-time">${formatDate(item.createdAt || item.time)}</div>
+                </div>
+            `).join('');
+        }
+
+        async function startLottery() {
+            if (isSpinning) return;
+            if (chances <= 0) {
+                showToast('抽奖次数不足，去完成任务获取更多机会吧');
+                return;
+            }
+
+            isSpinning = true;
+            chances--;
+            document.getElementById('chancesCount').textContent = chances;
+
+            const centerItem = document.querySelector('.lottery-item.center');
+            centerItem.classList.add('spinning');
+
+            const items = document.querySelectorAll('.lottery-item:not(.center)');
+            const sequence = [0, 1, 2, 5, 8, 7, 6, 3];
+            let current = 0;
+            let speed = 80;
+            let rounds = 3;
+            let totalSteps = rounds * 8 + Math.floor(Math.random() * 8);
+            let step = 0;
+
+            const animate = () => {
+                items.forEach(item => item.classList.remove('active'));
+                const realIndex = sequence[current % 8];
+                items[realIndex].classList.add('active');
+                current++;
+                step++;
+
+                if (step < totalSteps) {
+                    if (step > totalSteps - 10) {
+                        speed = Math.min(speed + 30, 400);
+                    } else if (step > totalSteps / 2) {
+                        speed = Math.min(speed + 10, 200);
+                    }
+                    setTimeout(animate, speed);
+                } else {
+                    const winIndex = sequence[(current - 1) % 8];
+                    items[winIndex].classList.add('won');
+                    const prize = prizes.filter(p => !p.isCenter)[winIndex];
+
+                    setTimeout(() => {
+                        document.getElementById('modalPrize').textContent = prize.name;
+                        document.getElementById('resultModal').classList.add('show');
+                        createConfetti();
+                    }, 600);
+
+                    isSpinning = false;
+                    centerItem.classList.remove('spinning');
+                    saveLotteryResult(prize);
+                }
+            };
+
+            animate();
+        }
+
+        async function saveLotteryResult(prize) {
+            try {
+                await fetch(`${API_BASE}/lottery/draw`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ prizeId: prize.id })
+                });
+            } catch (e) {}
+        }
+
+        function closeModal() {
+            document.getElementById('resultModal').classList.remove('show');
+            document.querySelectorAll('.lottery-item').forEach(item => {
+                item.classList.remove('active', 'won');
+            });
+        }
+
+        function createConfetti() {
+            const colors = ['#f43f5e', '#ec4899', '#fbbf24', '#10b981', '#6366f1', '#8b5cf6'];
+            for (let i = 0; i < 60; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti-piece';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                document.body.appendChild(confetti);
+
+                confetti.animate([
+                    { top: '-10px', opacity: 1 },
+                    { top: '100vh', opacity: 0 }
+                ], {
+                    duration: 2500 + Math.random() * 2000,
+                    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                }).onfinish = () => confetti.remove();
+            }
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+
+            if (minutes < 1) return '刚刚';
+            if (minutes < 60) return `${minutes}分钟前`;
+            if (hours < 24) return `${hours}小时前`;
+            if (days < 7) return `${days}天前`;
+            return date.toLocaleDateString('zh-CN');
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+    </script>
+</body>
+</html>

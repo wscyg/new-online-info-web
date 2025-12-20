@@ -135,38 +135,54 @@ class PKRankings {
      * 渲染我的排名
      */
     renderMyRank() {
-        const container = document.getElementById('myRankCard');
-        if (!container) return;
-
         const { rankings, userStats } = this.state;
         const myRanking = rankings.myRanking || {};
         const rank = myRanking.rank || 0;
-        const percentage = myRanking.percentage || 0;
 
-        container.innerHTML = `
-            <div class="my-rank-display">
-                <div class="rank-number">#${rank || '未上榜'}</div>
-                <div class="rank-label">我的排名</div>
-                ${rank > 0 ? `
-                    <div class="rank-percentage">超越了 ${percentage.toFixed(1)}% 的玩家</div>
-                ` : ''}
-            </div>
-            <div class="my-stats">
-                <div class="stat-item">
-                    <div class="stat-icon">${window.getTierIcon(userStats.tier)}</div>
-                    <div class="stat-value">${window.getTierName(userStats.tier)}</div>
-                    <div class="stat-label">当前段位</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">${userStats.elo || 1200}</div>
-                    <div class="stat-label">ELO分数</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">${userStats.winRate || 0}%</div>
-                    <div class="stat-label">胜率</div>
-                </div>
-            </div>
-        `;
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+        // Update avatar
+        const myAvatar = document.getElementById('myAvatar');
+        if (myAvatar && user.username) {
+            myAvatar.textContent = user.username[0].toUpperCase();
+        }
+
+        // Update name
+        const myName = document.getElementById('myName');
+        if (myName) {
+            myName.textContent = user.username || '用户名';
+        }
+
+        // Update tier
+        const myTier = document.getElementById('myTier');
+        if (myTier) {
+            const tierIcon = window.getTierIcon(userStats.tier);
+            myTier.innerHTML = `${tierIcon} <span>${window.getTierName(userStats.tier)}</span>`;
+        }
+
+        // Update rank
+        const myRankEl = document.getElementById('myRank');
+        if (myRankEl) {
+            myRankEl.textContent = rank > 0 ? `#${rank}` : '#-';
+        }
+
+        // Update ELO
+        const myElo = document.getElementById('myElo');
+        if (myElo) {
+            myElo.textContent = userStats.elo || 1200;
+        }
+
+        // Update wins
+        const myWins = document.getElementById('myWins');
+        if (myWins) {
+            myWins.textContent = userStats.wins || 0;
+        }
+
+        // Update win rate
+        const myWinRate = document.getElementById('myWinRate');
+        if (myWinRate) {
+            myWinRate.textContent = `${userStats.winRate || 0}%`;
+        }
     }
 
     /**
@@ -174,13 +190,22 @@ class PKRankings {
      */
     renderLeaderboard() {
         const container = document.getElementById('leaderboardList');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const pagination = document.getElementById('pagination');
+
         if (!container) return;
 
         const { rankings } = this.state;
         const leaderboard = rankings.leaderboard || [];
 
+        // Hide loading
+        if (loadingIndicator) {
+            loadingIndicator.classList.add('hidden');
+        }
+
         if (leaderboard.length === 0) {
             container.innerHTML = '<div class="empty-state">暂无排行榜数据</div>';
+            container.classList.remove('hidden');
             return;
         }
 
@@ -192,34 +217,34 @@ class PKRankings {
             const tierInfo = window.TIERS[user.tier] || window.TIERS.SILVER;
 
             return `
-                <div class="leaderboard-item ${isCurrentUser ? 'current-user' : ''} ${rank <= 3 ? 'top-' + rank : ''}">
+                <div class="rank-item ${isCurrentUser ? 'current-user' : ''}">
                     <div class="rank-badge ${rank <= 3 ? 'medal' : ''}">
-                        ${rank <= 3 ? this.getMedalIcon(rank) : rank}
+                        ${rank <= 3 ? this.getMedalSVG(rank) : rank}
                     </div>
-                    <div class="user-avatar" style="border-color: ${tierInfo.color}">
+                    <div class="rank-avatar" style="border-color: ${tierInfo.color}">
                         ${user.avatar
                             ? `<img src="${user.avatar}" alt="${user.nickname}">`
                             : user.nickname[0].toUpperCase()
                         }
                     </div>
-                    <div class="user-info">
-                        <div class="user-name">${user.nickname}</div>
-                        <div class="user-tier">
-                            ${tierInfo.icon} ${tierInfo.name}
+                    <div class="rank-user-info">
+                        <div class="rank-user-name">${user.nickname}</div>
+                        <div class="rank-user-tier">
+                            ${window.getTierIcon(user.tier)} <span>${tierInfo.name}</span>
                         </div>
                     </div>
-                    <div class="user-stats">
-                        <div class="stat-item">
-                            <div class="stat-label">ELO</div>
-                            <div class="stat-value">${user.elo || 1200}</div>
+                    <div class="rank-stats">
+                        <div class="rank-stat">
+                            <div class="rank-stat-value">${user.elo || 1200}</div>
+                            <div class="rank-stat-label">ELO</div>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-label">胜率</div>
-                            <div class="stat-value">${user.winRate || 0}%</div>
+                        <div class="rank-stat">
+                            <div class="rank-stat-value">${user.winRate || 0}%</div>
+                            <div class="rank-stat-label">胜率</div>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-label">对局</div>
-                            <div class="stat-value">${user.totalBattles || 0}</div>
+                        <div class="rank-stat">
+                            <div class="rank-stat-value">${user.totalBattles || 0}</div>
+                            <div class="rank-stat-label">对局</div>
                         </div>
                     </div>
                     ${user.rankChange ? `
@@ -231,18 +256,23 @@ class PKRankings {
                 </div>
             `;
         }).join('');
+
+        // Show container and pagination
+        container.classList.remove('hidden');
+        if (pagination && leaderboard.length > 0) {
+            pagination.classList.remove('hidden');
+        }
     }
 
     /**
-     * 获取奖牌图标
+     * 获取奖牌SVG图标
      */
-    getMedalIcon(rank) {
-        const medals = {
-            1: '🥇',
-            2: '🥈',
-            3: '🥉'
-        };
-        return medals[rank] || rank;
+    getMedalSVG(rank) {
+        const colors = ['#ffd700', '#c0c0c0', '#cd7f32'];
+        const color = colors[rank - 1];
+        return `<svg width="24" height="24" viewBox="0 0 24 24" fill="${color}">
+            <path d="M12 2L15 9L22 10L17 15L18 22L12 18L6 22L7 15L2 10L9 9L12 2Z"/>
+        </svg>`;
     }
 
     /**
@@ -267,9 +297,11 @@ class PKRankings {
                             : 0;
 
                         return `
-                            <div class="tier-item" data-tier="${tierKey}">
-                                <div class="tier-icon" style="color: ${tierInfo.color}">
-                                    ${tierInfo.icon}
+                            <div class="tier-dist-item" data-tier="${tierKey}">
+                                <div class="tier-icon">
+                                    <svg width="40" height="40" viewBox="0 0 40 40" fill="${tierInfo.color}">
+                                        <circle cx="20" cy="20" r="16"/>
+                                    </svg>
                                 </div>
                                 <div class="tier-info">
                                     <div class="tier-name">${tierInfo.name}</div>
@@ -280,14 +312,14 @@ class PKRankings {
                                     <div class="tier-percentage">${percentage}%</div>
                                 </div>
                                 <div class="tier-progress">
-                                    <div class="progress-bar" style="width: ${percentage}%; background: ${tierInfo.color}"></div>
+                                    <div class="tier-progress-bar" style="width: ${percentage}%; background: ${tierInfo.color}"></div>
                                 </div>
                             </div>
                         `;
                     }).join('');
 
                 // 绑定点击事件查看该段位玩家
-                container.querySelectorAll('.tier-item').forEach(item => {
+                container.querySelectorAll('.tier-dist-item').forEach(item => {
                     item.addEventListener('click', (e) => {
                         const tier = e.currentTarget.dataset.tier;
                         this.viewTierPlayers(tier);
@@ -323,27 +355,123 @@ class PKRankings {
         const tierInfo = window.TIERS[tier];
         const modal = document.createElement('div');
         modal.className = 'tier-players-modal';
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 9999;
+        `;
         modal.innerHTML = `
-            <div class="modal-overlay"></div>
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>${tierInfo.icon} ${tierInfo.name} 段位玩家</h3>
-                    <button class="close-btn">✕</button>
+            <div class="modal-overlay" style="
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(10px);
+            "></div>
+            <div class="modal-content" style="
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: var(--bg-card);
+                border-radius: var(--radius-lg);
+                border: 1px solid var(--border-color);
+                box-shadow: var(--shadow-lg);
+                max-width: 500px;
+                width: 90%;
+                max-height: 80vh;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+            ">
+                <div class="modal-header" style="
+                    padding: 24px;
+                    border-bottom: 1px solid var(--border-color);
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                ">
+                    <h3 style="
+                        font-size: 21px;
+                        font-weight: 600;
+                        color: var(--text-primary);
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                    ">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="${tierInfo.color}">
+                            <circle cx="10" cy="10" r="8"/>
+                        </svg>
+                        ${tierInfo.name} 段位玩家
+                    </h3>
+                    <button class="close-btn" style="
+                        width: 32px;
+                        height: 32px;
+                        border-radius: 50%;
+                        border: none;
+                        background: var(--bg-hover);
+                        color: var(--text-secondary);
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 20px;
+                    ">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="
+                    padding: 16px;
+                    overflow-y: auto;
+                ">
                     ${players.map(player => `
-                        <div class="player-item">
-                            <div class="player-avatar">
+                        <div class="player-item" style="
+                            display: flex;
+                            align-items: center;
+                            gap: 12px;
+                            padding: 12px;
+                            border-radius: var(--radius-md);
+                            transition: background var(--transition-fast);
+                        " onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='transparent'">
+                            <div class="player-avatar" style="
+                                width: 40px;
+                                height: 40px;
+                                border-radius: 50%;
+                                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                color: #fff;
+                                font-size: 16px;
+                                font-weight: 600;
+                            ">
                                 ${player.avatar
-                                    ? `<img src="${player.avatar}" alt="${player.nickname}">`
+                                    ? `<img src="${player.avatar}" alt="${player.nickname}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`
                                     : player.nickname[0].toUpperCase()
                                 }
                             </div>
-                            <div class="player-info">
-                                <div class="player-name">${player.nickname}</div>
-                                <div class="player-elo">ELO: ${player.elo}</div>
+                            <div class="player-info" style="flex: 1;">
+                                <div class="player-name" style="
+                                    font-size: 15px;
+                                    font-weight: 600;
+                                    color: var(--text-primary);
+                                ">${player.nickname}</div>
+                                <div class="player-elo" style="
+                                    font-size: 13px;
+                                    color: var(--text-secondary);
+                                ">ELO: ${player.elo}</div>
                             </div>
-                            <div class="player-stats">
+                            <div class="player-stats" style="
+                                font-size: 13px;
+                                color: var(--text-secondary);
+                            ">
                                 ${player.wins}胜 ${player.losses}负
                             </div>
                         </div>

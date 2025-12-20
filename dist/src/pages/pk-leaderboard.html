@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PK排行榜 - AI 信息未来</title>
+    
+    <style>
+        body {
+            padding-top: 48px;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            text-align: center;
+            padding: 80px 0 60px;
+        }
+
+        .page-title {
+            font-size: 56px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #ef4444 0%, #f59e0b 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            font-size: 21px;
+            color: var(--text-secondary);
+        }
+
+        /* 时间筛选 */
+        .time-filters {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 48px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            color: var(--text-secondary);
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .filter-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--border-strong);
+        }
+
+        .filter-btn.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        /* 我的排名卡片 */
+        .my-rank-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            padding: 32px;
+            margin-bottom: 48px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .my-rank-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+            text-align: center;
+        }
+
+        .my-rank-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 24px;
+        }
+
+        .my-rank-stat {
+            text-align: center;
+            padding: 24px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+        }
+
+        .my-rank-value {
+            font-size: 40px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .my-rank-label {
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        /* 排行榜 */
+        .leaderboard {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .leaderboard-header {
+            padding: 24px 32px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .leaderboard-title {
+            font-size: 21px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .leaderboard-title svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .leaderboard-list {
+            padding: 16px;
+        }
+
+        .leaderboard-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all var(--transition-fast);
+        }
+
+        .leaderboard-item:hover {
+            background: var(--bg-hover);
+            transform: translateX(4px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .rank-badge {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .rank-1 {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+        }
+
+        .rank-2 {
+            background: linear-gradient(135deg, #c0c0c0, #e0e0e0);
+            color: #000;
+            box-shadow: 0 4px 12px rgba(192, 192, 192, 0.3);
+        }
+
+        .rank-3 {
+            background: linear-gradient(135deg, #cd7f32, #e8a87c);
+            color: #000;
+            box-shadow: 0 4px 12px rgba(205, 127, 50, 0.3);
+        }
+
+        .rank-other {
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+        }
+
+        .player-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 600;
+            color: white;
+            flex-shrink: 0;
+            border: 2px solid var(--border-color);
+        }
+
+        .player-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            -o-object-fit: cover;
+               object-fit: cover;
+        }
+
+        .player-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .player-name {
+            font-size: 19px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-primary);
+        }
+
+        .player-level {
+            display: inline-block;
+            background: rgba(0, 113, 227, 0.1);
+            color: var(--accent);
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .player-stats {
+            display: flex;
+            gap: 20px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stat-item svg {
+            width: 16px;
+            height: 16px;
+            opacity: 0.7;
+        }
+
+        .player-score {
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .score-value {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .score-label {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+        }
+
+        .trend-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .trend-up {
+            background: rgba(52, 199, 89, 0.1);
+            color: #34c759;
+        }
+
+        .trend-down {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .trend-badge svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .badges {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .badge-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-hover);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+        }
+
+        /* 加载和空状态 */
+        .loading {
+            text-align: center;
+            padding: 60px 24px;
+            color: var(--text-secondary);
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 24px;
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 16px;
+            opacity: 0.3;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 36px;
+            }
+
+            .page-subtitle {
+                font-size: 17px;
+            }
+
+            .leaderboard-item {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .player-score {
+                text-align: center;
+            }
+
+            .player-stats {
+                justify-content: center;
+            }
+
+            .player-name {
+                justify-content: center;
+            }
+
+            .my-rank-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+  <link rel="stylesheet" href="/assets/apple-design-3a23e109.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="nav-logo">AI 信息未来</div>
+            <div class="nav-menu">
+                <a href="dashboard.html" class="nav-link">首页</a>
+                <a href="plaza.html" class="nav-link">课程</a>
+                <a href="pk-arena.html" class="nav-link">社区</a>
+                <a href="pk-leaderboard.html" class="nav-link active">PK竞技</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-wide">
+        <!-- 页头 -->
+        <div class="page-header">
+            <h1 class="page-title">PK排行榜</h1>
+            <p class="page-subtitle">最强对决，王者诞生</p>
+        </div>
+
+        <!-- 我的排名 -->
+        <div class="my-rank-card" id="myRankCard" style="display: none;">
+            <div class="my-rank-title">我的PK数据</div>
+            <div class="my-rank-stats">
+                <div class="my-rank-stat">
+                    <div class="my-rank-value" id="myRankValue">#15</div>
+                    <div class="my-rank-label">当前排名</div>
+                </div>
+                <div class="my-rank-stat">
+                    <div class="my-rank-value" id="myWinsValue">25</div>
+                    <div class="my-rank-label">总胜场</div>
+                </div>
+                <div class="my-rank-stat">
+                    <div class="my-rank-value" id="myWinRateValue">65%</div>
+                    <div class="my-rank-label">胜率</div>
+                </div>
+                <div class="my-rank-stat">
+                    <div class="my-rank-value" id="myPointsValue">+1250</div>
+                    <div class="my-rank-label">净赢积分</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 时间筛选 -->
+        <div class="time-filters">
+            <button class="filter-btn" data-range="today">今日</button>
+            <button class="filter-btn active" data-range="week">本周</button>
+            <button class="filter-btn" data-range="month">本月</button>
+            <button class="filter-btn" data-range="all">全部</button>
+        </div>
+
+        <!-- 排行榜 -->
+        <div class="leaderboard">
+            <div class="leaderboard-header">
+                <div class="leaderboard-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                        <path d="M4 22h16"></path>
+                        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+                        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+                        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+                    </svg>
+                    <span>PK战神榜</span>
+                </div>
+            </div>
+            <div class="leaderboard-list" id="leaderboardList">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>加载中...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let currentTimeRange = 'week';
+
+        // 主题切换
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const themeToggle = document.getElementById('themeToggle');
+            if (theme === 'dark') {
+                themeToggle.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                `;
+            } else {
+                themeToggle.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                `;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            loadLeaderboard();
+            loadMyStats();
+            setupFilters();
+
+            // 主题切换事件
+            document.getElementById('themeToggle').addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeIcon(newTheme);
+            });
+        });
+
+        // 设置筛选器
+        function setupFilters() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    currentTimeRange = btn.dataset.range;
+                    loadLeaderboard();
+                });
+            });
+        }
+
+        // 加载排行榜
+        async function loadLeaderboard() {
+            const listEl = document.getElementById('leaderboardList');
+            listEl.innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>加载中...</p></div>';
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/pk/leaderboard?timeRange=${currentTimeRange}&limit=50`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const leaderboard = data.data || [];
+
+                    if (leaderboard.length === 0) {
+                        listEl.innerHTML = `
+                            <div class="empty-state">
+                                <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                                    <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                                    <path d="M4 22h16"></path>
+                                    <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+                                    <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+                                    <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+                                </svg>
+                                <p>暂无排行数据</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    renderLeaderboard(leaderboard);
+                } else {
+                    listEl.innerHTML = `
+                        <div class="empty-state">
+                            <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            <p>加载失败，请稍后重试</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('加载排行榜失败:', error);
+                listEl.innerHTML = `
+                    <div class="empty-state">
+                        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <p>网络错误，请稍后重试</p>
+                    </div>
+                `;
+            }
+        }
+
+        // 渲染排行榜
+        function renderLeaderboard(leaderboard) {
+            const listEl = document.getElementById('leaderboardList');
+
+            listEl.innerHTML = leaderboard.map((item, index) => {
+                const rank = index + 1;
+                const rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : 'rank-other';
+                const rankDisplay = rank <= 3 ? ['#1', '#2', '#3'][rank - 1] : rank;
+
+                return `
+                    <div class="leaderboard-item">
+                        <div class="rank-badge ${rankClass}">
+                            ${rankDisplay}
+                        </div>
+
+                        <div class="player-avatar">
+                            ${item.avatar ?
+                                `<img src="${item.avatar}" alt="${item.username}">` :
+                                (item.username ? item.username.charAt(0).toUpperCase() : 'U')
+                            }
+                        </div>
+
+                        <div class="player-info">
+                            <div class="player-name">
+                                ${item.username || '未知用户'}
+                                <span class="player-level">Lv.${item.level || Math.floor(item.wins / 5) + 1}</span>
+                                ${item.rankChange ? `
+                                    <span class="trend-badge ${item.rankChange > 0 ? 'trend-up' : 'trend-down'}">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            ${item.rankChange > 0
+                                                ? '<polyline points="18 15 12 9 6 15"></polyline>'
+                                                : '<polyline points="6 9 12 15 18 9"></polyline>'}
+                                        </svg>
+                                        ${Math.abs(item.rankChange)}
+                                    </span>
+                                ` : ''}
+                            </div>
+                            <div class="player-stats">
+                                <div class="stat-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                                        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                                        <path d="M4 22h16"></path>
+                                        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+                                        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+                                        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+                                    </svg>
+                                    <span>${item.wins || 0} 胜</span>
+                                </div>
+                                <div class="stat-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <line x1="15" y1="9" x2="9" y2="15"></line>
+                                        <line x1="9" y1="9" x2="15" y2="15"></line>
+                                    </svg>
+                                    <span>${item.losses || 0} 负</span>
+                                </div>
+                                <div class="stat-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="12" y1="20" x2="12" y2="10"></line>
+                                        <line x1="18" y1="20" x2="18" y2="4"></line>
+                                        <line x1="6" y1="20" x2="6" y2="16"></line>
+                                    </svg>
+                                    <span>${calculateWinRate(item.wins, item.losses)}% 胜率</span>
+                                </div>
+                                <div class="stat-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
+                                    </svg>
+                                    <span>${item.currentWinStreak || 0} 连胜</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="player-score">
+                            <div class="score-value">${item.totalPointsWon || 0}</div>
+                            <div class="score-label">总赢积分</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 加载我的统计
+        async function loadMyStats() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/pk/statistics`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const stats = data.data || {};
+
+                    document.getElementById('myRankCard').style.display = 'block';
+                    document.getElementById('myRankValue').textContent = `#${stats.myRank || '-'}`;
+                    document.getElementById('myWinsValue').textContent = stats.wins || 0;
+                    document.getElementById('myWinRateValue').textContent = `${stats.winRate || 0}%`;
+                    document.getElementById('myPointsValue').textContent = `+${stats.totalPointsWon || 0}`;
+                }
+            } catch (error) {
+                console.error('加载我的统计失败:', error);
+            }
+        }
+
+        // 计算胜率
+        function calculateWinRate(wins, losses) {
+            const total = (wins || 0) + (losses || 0);
+            if (total === 0) return 0;
+            return Math.round((wins / total) * 100);
+        }
+    </script>
+</body>
+</html>

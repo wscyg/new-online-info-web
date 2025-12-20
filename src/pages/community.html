@@ -3,1087 +3,1020 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>学习社区 - 在线教育平台</title>
+    <title>学习社区 - AI 信息未来</title>
+    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* 社区特定样式 */
+        .community-header {
+            padding: 80px 0 40px;
+            text-align: center;
         }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-            background: #f8f8f8;
-            min-height: 100vh;
+
+        .community-title {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
         }
-        
-        /* 顶部导航 */
-        .header {
-            background: white;
-            box-shadow: 0 1px 0 rgba(0,0,0,0.08);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+
+        .community-subtitle {
+            font-size: 21px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
         }
-        
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
+
+        .community-actions {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            height: 56px;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 20px;
-            font-weight: bold;
-            color: #ff2442;
-        }
-        
-        .search-bar {
-            flex: 1;
-            max-width: 400px;
-            margin: 0 40px;
-        }
-        
-        .search-input {
-            width: 100%;
-            padding: 8px 16px;
-            border: 1px solid #e8e8e8;
-            border-radius: 100px;
-            background: #f5f5f5;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-        
-        .search-input:focus {
-            outline: none;
-            background: white;
-            border-color: #ff2442;
-        }
-        
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 24px;
-        }
-        
-        .nav-link {
-            color: #333;
-            text-decoration: none;
-            font-size: 15px;
-            transition: color 0.3s;
-        }
-        
-        .nav-link:hover {
-            color: #ff2442;
-        }
-        
-        .publish-btn {
-            padding: 8px 20px;
-            background: #ff2442;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .publish-btn:hover {
-            background: #ff1428;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(255, 36, 66, 0.3);
-        }
-        
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
             justify-content: center;
-            color: white;
-            cursor: pointer;
+            gap: 16px;
         }
-        
-        /* 分类标签 */
-        .category-tabs {
-            background: white;
-            border-bottom: 1px solid #f0f0f0;
+
+        /* 社区标签 */
+        .community-tabs {
             position: sticky;
-            top: 56px;
+            top: 48px;
             z-index: 999;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
         }
-        
+
         .tabs-container {
             max-width: 1200px;
             margin: 0 auto;
+            padding: 0 22px;
             display: flex;
-            padding: 0 20px;
+            gap: 32px;
             overflow-x: auto;
             scrollbar-width: none;
         }
-        
+
         .tabs-container::-webkit-scrollbar {
             display: none;
         }
-        
+
         .tab-item {
-            padding: 16px 20px;
-            color: #666;
-            cursor: pointer;
+            padding: 16px 0;
+            font-size: 15px;
+            color: var(--text-secondary);
             white-space: nowrap;
-            transition: all 0.3s;
-            position: relative;
-        }
-        
-        .tab-item.active {
-            color: #ff2442;
-            font-weight: 500;
-        }
-        
-        .tab-item.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 24px;
-            height: 3px;
-            background: #ff2442;
-            border-radius: 2px;
-        }
-        
-        .tab-item:hover {
-            color: #ff2442;
-        }
-        
-        /* 主内容区 */
-        .main-container {
-            max-width: 1200px;
-            margin: 24px auto;
-            padding: 0 20px;
-        }
-        
-        /* 瀑布流布局 */
-        .waterfall-container {
-            column-count: 5;
-            column-gap: 16px;
-        }
-        
-        /* 笔记卡片 */
-        .note-card {
-            break-inside: avoid;
-            margin-bottom: 16px;
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-        
-        .note-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-        }
-        
-        .note-cover {
+            transition: color var(--transition-fast);
             position: relative;
-            width: 100%;
-            overflow: hidden;
+            border-bottom: 2px solid transparent;
         }
-        
-        .note-cover img {
-            width: 100%;
-            display: block;
+
+        .tab-item:hover {
+            color: var(--text-primary);
         }
-        
-        .note-type-badge {
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            padding: 4px 8px;
-            background: rgba(0, 0, 0, 0.6);
-            color: white;
-            font-size: 12px;
-            border-radius: 4px;
-            backdrop-filter: blur(8px);
-        }
-        
-        .video-duration {
-            position: absolute;
-            bottom: 8px;
-            right: 8px;
-            padding: 2px 6px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            font-size: 12px;
-            border-radius: 4px;
-        }
-        
-        .note-content {
-            padding: 12px;
-        }
-        
-        .note-title {
-            font-size: 14px;
-            color: #333;
-            line-height: 1.5;
-            margin-bottom: 8px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+
+        .tab-item.active {
+            color: var(--text-primary);
             font-weight: 500;
+            border-bottom-color: var(--accent);
         }
-        
-        .note-author {
+
+        /* 搜索和排序栏 */
+        .search-sort-bar {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 22px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-top: 12px;
+            gap: 16px;
+            flex-wrap: wrap;
         }
-        
-        .author-info {
+
+        .search-box {
+            flex: 1;
+            min-width: 280px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 44px 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            background: var(--bg-card);
+            font-size: 15px;
+            color: var(--text-primary);
+            transition: all var(--transition-fast);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .search-box button {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 8px 12px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 14px;
+            transition: background var(--transition-fast);
+        }
+
+        .search-box button:hover {
+            background: var(--accent-hover);
+        }
+
+        .sort-select {
+            padding: 12px 36px 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            background: var(--bg-card);
+            font-size: 15px;
+            color: var(--text-primary);
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            min-width: 140px;
+        }
+
+        .sort-select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* 社区内容区 */
+        .community-main {
+            max-width: 1200px;
+            margin: 32px auto;
+            padding: 0 22px;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 32px;
+        }
+
+        /* 帖子列表 */
+        .posts-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .post-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            cursor: pointer;
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+        }
+
+        .post-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-card);
+        }
+
+        .post-header {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
+            margin-bottom: 16px;
         }
-        
-        .author-avatar {
-            width: 24px;
-            height: 24px;
+
+        .post-avatar {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 12px;
-        }
-        
-        .author-name {
-            font-size: 12px;
-            color: #666;
-        }
-        
-        .note-likes {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 12px;
-            color: #666;
-        }
-        
-        .like-icon {
-            color: #ff2442;
-        }
-        
-        /* 发布弹窗 */
-        .publish-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 2000;
-            animation: fadeIn 0.3s;
-        }
-        
-        .publish-modal.show {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .publish-container {
-            background: white;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 800px;
-            max-height: 90vh;
-            overflow: hidden;
-            animation: slideUp 0.3s;
-        }
-        
-        @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
-        .publish-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        
-        .publish-title {
-            font-size: 18px;
+            color: #fff;
+            font-size: 16px;
             font-weight: 600;
         }
-        
-        .close-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: #f5f5f5;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            transition: all 0.3s;
-        }
-        
-        .close-btn:hover {
-            background: #e8e8e8;
-        }
-        
-        .publish-body {
-            padding: 20px;
-            max-height: calc(90vh - 140px);
-            overflow-y: auto;
-        }
-        
-        .upload-area {
-            border: 2px dashed #e8e8e8;
-            border-radius: 8px;
-            padding: 40px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-bottom: 20px;
-        }
-        
-        .upload-area:hover {
-            border-color: #ff2442;
-            background: #fff5f5;
-        }
-        
-        .upload-icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-        }
-        
-        .upload-text {
-            color: #666;
-            font-size: 14px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-label {
-            font-size: 14px;
-            color: #333;
-            margin-bottom: 8px;
-            display: block;
-            font-weight: 500;
-        }
-        
-        .form-input {
+
+        .post-avatar img {
             width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #e8e8e8;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
         }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: #ff2442;
-        }
-        
-        textarea.form-input {
-            resize: vertical;
-            min-height: 120px;
-            font-family: inherit;
-        }
-        
-        .tag-input-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            padding: 8px;
-            border: 1px solid #e8e8e8;
-            border-radius: 8px;
-            min-height: 44px;
-        }
-        
-        .tag {
-            padding: 4px 12px;
-            background: #f5f5f5;
-            border-radius: 16px;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .tag-remove {
-            cursor: pointer;
-            color: #999;
-        }
-        
-        .tag-input {
-            border: none;
-            outline: none;
+
+        .post-author-info {
             flex: 1;
-            min-width: 100px;
-            font-size: 14px;
         }
-        
-        .category-select {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
+
+        .post-author-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
         }
-        
-        .category-option {
-            padding: 8px 16px;
-            border: 1px solid #e8e8e8;
-            border-radius: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 14px;
+
+        .post-time {
+            font-size: 13px;
+            color: var(--text-tertiary);
         }
-        
-        .category-option:hover {
-            border-color: #ff2442;
-            color: #ff2442;
+
+        .post-category {
+            font-size: 12px;
+            padding: 4px 10px;
+            background: rgba(0, 113, 227, 0.1);
+            color: var(--accent);
+            border-radius: var(--radius-full);
         }
-        
-        .category-option.selected {
-            background: #ff2442;
-            color: white;
-            border-color: #ff2442;
+
+        .post-title {
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            line-height: 1.4;
         }
-        
-        .publish-footer {
-            padding: 20px;
-            border-top: 1px solid #f0f0f0;
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-        }
-        
-        .btn {
-            padding: 8px 24px;
-            border-radius: 20px;
-            border: none;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .btn-cancel {
-            background: #f5f5f5;
-            color: #666;
-        }
-        
-        .btn-cancel:hover {
-            background: #e8e8e8;
-        }
-        
-        .btn-publish {
-            background: #ff2442;
-            color: white;
-        }
-        
-        .btn-publish:hover {
-            background: #ff1428;
-        }
-        
-        /* 图片预览 */
-        .image-preview-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        
-        .image-preview {
-            position: relative;
-            padding-bottom: 100%;
-            background: #f5f5f5;
-            border-radius: 8px;
+
+        .post-content {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
             overflow: hidden;
         }
-        
-        .image-preview img {
-            position: absolute;
-            top: 0;
-            left: 0;
+
+        .post-images {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .post-image {
+            aspect-ratio: 1;
+            background: var(--bg-secondary);
+            overflow: hidden;
+        }
+
+        .post-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        
-        .image-remove {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            width: 24px;
-            height: 24px;
-            background: rgba(0, 0, 0, 0.6);
-            color: white;
-            border-radius: 50%;
+
+        .post-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .post-tag {
+            font-size: 13px;
+            padding: 4px 10px;
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+            border-radius: var(--radius-full);
+        }
+
+        .post-footer {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .post-action {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            transition: color var(--transition-fast);
+        }
+
+        .post-action:hover {
+            color: var(--accent);
+        }
+
+        .post-action.liked {
+            color: #ff3b30;
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .sidebar-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+        }
+
+        .sidebar-title {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .topic-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .topic-item:last-child {
+            border-bottom: none;
+        }
+
+        .topic-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            font-size: 16px;
+            color: #fff;
+            font-size: 18px;
         }
-        
-        /* 浮动操作按钮 */
+
+        .topic-info {
+            flex: 1;
+        }
+
+        .topic-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .topic-count {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        /* 发布按钮 */
         .fab {
             position: fixed;
-            bottom: 24px;
-            right: 24px;
+            bottom: 32px;
+            right: 32px;
             width: 56px;
             height: 56px;
             border-radius: 50%;
-            background: #ff2442;
-            color: white;
+            background: var(--accent);
+            color: #fff;
             border: none;
+            box-shadow: var(--shadow-lg);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
-            box-shadow: 0 4px 12px rgba(255, 36, 66, 0.3);
-            transition: all 0.3s;
+            transition: transform var(--transition-fast);
             z-index: 100;
         }
-        
+
         .fab:hover {
             transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(255, 36, 66, 0.4);
         }
-        
-        /* 加载更多 */
-        .load-more {
-            text-align: center;
-            padding: 40px;
+
+        /* 发布弹窗 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity var(--transition-normal);
         }
-        
-        .load-more-btn {
-            padding: 10px 32px;
-            background: white;
-            border: 1px solid #e8e8e8;
-            border-radius: 20px;
-            color: #666;
+
+        .modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-size: 19px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg-hover);
+            color: var(--text-secondary);
             cursor: pointer;
-            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
         }
-        
-        .load-more-btn:hover {
-            border-color: #ff2442;
-            color: #ff2442;
+
+        .modal-close:hover {
+            background: var(--bg-secondary);
         }
-        
-        /* 响应式设计 */
-        @media (max-width: 1200px) {
-            .waterfall-container {
-                column-count: 4;
+
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 20px 24px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* 加载更多 */
+        .load-more-container {
+            text-align: center;
+            padding: 32px 0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 0;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .empty-text {
+            font-size: 17px;
+            color: var(--text-tertiary);
+        }
+
+        @media (max-width: 768px) {
+            .community-main {
+                grid-template-columns: 1fr;
             }
-        }
-        
-        @media (max-width: 900px) {
-            .waterfall-container {
-                column-count: 3;
-            }
-        }
-        
-        @media (max-width: 600px) {
-            .waterfall-container {
-                column-count: 2;
-            }
-            
-            .search-bar {
+
+            .sidebar {
                 display: none;
             }
-            
-            .category-select {
+
+            .post-images {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
 </head>
 <body>
-    <!-- 顶部导航 -->
-    <header class="header">
-        <div class="nav-container">
-            <div class="logo">
-                <span>📚</span>
-                <span>学习圈</span>
+    <!-- 导航栏 -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="home.html" class="nav-logo">AI 信息未来</a>
+            <div class="nav-menu">
+                <a href="home.html" class="nav-link">首页</a>
+                <a href="courses.html" class="nav-link">课程</a>
+                <a href="online-plaza.html" class="nav-link">在线广场</a>
+                <a href="community.html" class="nav-link active">社区</a>
+                <a href="pk-arena.html" class="nav-link">PK竞技</a>
             </div>
-            
-            <div class="search-bar">
-                <input type="text" class="search-input" placeholder="搜索学习笔记、经验分享...">
-            </div>
-            
             <div class="nav-actions">
-                <a href="#" class="nav-link">发现</a>
-                <a href="#" class="nav-link">关注</a>
-                <a href="#" class="nav-link">消息</a>
-                <button class="publish-btn" onclick="showPublishModal()">发布</button>
-                <div class="user-avatar" onclick="goToProfile()">张</div>
+                <button class="theme-toggle" id="themeToggle" title="切换主题">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div id="authArea"></div>
             </div>
         </div>
-    </header>
+    </nav>
+
+    <!-- 社区头部 -->
+    <section class="community-header">
+        <div class="container">
+            <h1 class="community-title">学习社区</h1>
+            <p class="community-subtitle">分享经验，交流知识，共同成长</p>
+            <div class="community-actions">
+                <button class="btn btn-primary" onclick="showPublishModal()">
+                    <i class="fas fa-pen"></i>
+                    发布帖子
+                </button>
+            </div>
+        </div>
+    </section>
 
     <!-- 分类标签 -->
-    <div class="category-tabs">
+    <div class="community-tabs">
         <div class="tabs-container">
-            <div class="tab-item active" onclick="switchCategory('推荐')">推荐</div>
-            <div class="tab-item" onclick="switchCategory('前端开发')">前端开发</div>
-            <div class="tab-item" onclick="switchCategory('后端开发')">后端开发</div>
-            <div class="tab-item" onclick="switchCategory('人工智能')">人工智能</div>
-            <div class="tab-item" onclick="switchCategory('数据分析')">数据分析</div>
-            <div class="tab-item" onclick="switchCategory('产品设计')">产品设计</div>
-            <div class="tab-item" onclick="switchCategory('考试认证')">考试认证</div>
-            <div class="tab-item" onclick="switchCategory('职场经验')">职场经验</div>
-            <div class="tab-item" onclick="switchCategory('读书笔记')">读书笔记</div>
-            <div class="tab-item" onclick="switchCategory('项目实战')">项目实战</div>
+            <div class="tab-item active" data-category="all">全部</div>
+            <div class="tab-item" data-category="tech">技术文章</div>
+            <div class="tab-item" data-category="interview">面试经验</div>
+            <div class="tab-item" data-category="offer">Offer分享</div>
+            <div class="tab-item" data-category="qa">问答讨论</div>
         </div>
     </div>
 
+    <!-- 搜索和排序栏 -->
+    <div class="search-sort-bar">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="搜索帖子标题、内容...">
+            <button onclick="searchPosts()">搜索</button>
+        </div>
+        <select class="sort-select" id="sortSelect" onchange="changeSortOrder()">
+            <option value="hot">热门优先</option>
+            <option value="latest">最新发布</option>
+            <option value="likes">最多点赞</option>
+            <option value="views">最多浏览</option>
+        </select>
+    </div>
+
     <!-- 主内容区 -->
-    <main class="main-container">
-        <div class="waterfall-container" id="notesContainer">
-            <!-- 笔记卡片 1 -->
-            <div class="note-card" onclick="viewNote(1)">
-                <div class="note-cover">
-                    <div style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
-                    <span class="note-type-badge">学习笔记</span>
-                </div>
-                <div class="note-content">
-                    <h3 class="note-title">Vue3 Composition API 完全指南：从入门到实战项目开发</h3>
-                    <div class="note-author">
-                        <div class="author-info">
-                            <div class="author-avatar">李</div>
-                            <span class="author-name">李明</span>
-                        </div>
-                        <div class="note-likes">
-                            <span class="like-icon">❤️</span>
-                            <span>2.3k</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 笔记卡片 2 -->
-            <div class="note-card" onclick="viewNote(2)">
-                <div class="note-cover">
-                    <div style="height: 260px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
-                    <span class="note-type-badge">项目总结</span>
-                </div>
-                <div class="note-content">
-                    <h3 class="note-title">我是如何用React Native开发一个日活10万的APP的</h3>
-                    <div class="note-author">
-                        <div class="author-info">
-                            <div class="author-avatar">王</div>
-                            <span class="author-name">王小芳</span>
-                        </div>
-                        <div class="note-likes">
-                            <span class="like-icon">❤️</span>
-                            <span>5.6k</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 笔记卡片 3 -->
-            <div class="note-card" onclick="viewNote(3)">
-                <div class="note-cover">
-                    <div style="height: 180px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);"></div>
-                    <span class="video-duration">15:23</span>
-                    <span class="note-type-badge">视频教程</span>
-                </div>
-                <div class="note-content">
-                    <h3 class="note-title">Python数据分析实战：用Pandas处理百万级数据</h3>
-                    <div class="note-author">
-                        <div class="author-info">
-                            <div class="author-avatar">张</div>
-                            <span class="author-name">张三</span>
-                        </div>
-                        <div class="note-likes">
-                            <span class="like-icon">❤️</span>
-                            <span>1.8k</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 笔记卡片 4 -->
-            <div class="note-card" onclick="viewNote(4)">
-                <div class="note-cover">
-                    <div style="height: 220px; background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);"></div>
-                    <span class="note-type-badge">面试经验</span>
-                </div>
-                <div class="note-content">
-                    <h3 class="note-title">字节跳动前端面试全流程详解（已拿offer）</h3>
-                    <div class="note-author">
-                        <div class="author-info">
-                            <div class="author-avatar">赵</div>
-                            <span class="author-name">赵六</span>
-                        </div>
-                        <div class="note-likes">
-                            <span class="like-icon">❤️</span>
-                            <span>8.9k</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 笔记卡片 5 -->
-            <div class="note-card" onclick="viewNote(5)">
-                <div class="note-cover">
-                    <div style="height: 190px; background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);"></div>
-                    <span class="note-type-badge">学习方法</span>
-                </div>
-                <div class="note-content">
-                    <h3 class="note-title">如何高效学习：我的个人知识管理系统</h3>
-                    <div class="note-author">
-                        <div class="author-info">
-                            <div class="author-avatar">刘</div>
-                            <span class="author-name">刘洋</span>
-                        </div>
-                        <div class="note-likes">
-                            <span class="like-icon">❤️</span>
-                            <span>3.2k</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 笔记卡片 6 -->
-            <div class="note-card" onclick="viewNote(6)">
-                <div class="note-cover">
-                    <div style="height: 240px; background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);"></div>
-                    <span class="note-type-badge">算法详解</span>
-                </div>
-                <div class="note-content">
-                    <h3 class="note-title">LeetCode刷题500道后的算法心得总结</h3>
-                    <div class="note-author">
-                        <div class="author-info">
-                            <div class="author-avatar">陈</div>
-                            <span class="author-name">陈晨</span>
-                        </div>
-                        <div class="note-likes">
-                            <span class="like-icon">❤️</span>
-                            <span>6.7k</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 笔记卡片 7 -->
-            <div class="note-card" onclick="viewNote(7)">
-                <div class="note-cover">
-                    <div style="height: 210px; background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);"></div>
-                    <span class="note-type-badge">设计教程</span>
-                </div>
-                <div class="note-content">
-                    <h3 class="note-title">从零开始学UI设计：配色原理与实践</h3>
-                    <div class="note-author">
-                        <div class="author-info">
-                            <div class="author-avatar">周</div>
-                            <span class="author-name">周雨</span>
-                        </div>
-                        <div class="note-likes">
-                            <span class="like-icon">❤️</span>
-                            <span>4.1k</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 笔记卡片 8 -->
-            <div class="note-card" onclick="viewNote(8)">
-                <div class="note-cover">
-                    <div style="height: 170px; background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);"></div>
-                    <span class="note-type-badge">工具推荐</span>
-                </div>
-                <div class="note-content">
-                    <h3 class="note-title">提升开发效率的10个VSCode插件推荐</h3>
-                    <div class="note-author">
-                        <div class="author-info">
-                            <div class="author-avatar">吴</div>
-                            <span class="author-name">吴敏</span>
-                        </div>
-                        <div class="note-likes">
-                            <span class="like-icon">❤️</span>
-                            <span>2.9k</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 笔记卡片 9 -->
-            <div class="note-card" onclick="viewNote(9)">
-                <div class="note-cover">
-                    <div style="height: 230px; background: linear-gradient(135deg, #fddb92 0%, #d1fdff 100%);"></div>
-                    <span class="note-type-badge">架构设计</span>
-                </div>
-                <div class="note-content">
-                    <h3 class="note-title">微服务架构实战：从单体应用到分布式系统</h3>
-                    <div class="note-author">
-                        <div class="author-info">
-                            <div class="author-avatar">郑</div>
-                            <span class="author-name">郑强</span>
-                        </div>
-                        <div class="note-likes">
-                            <span class="like-icon">❤️</span>
-                            <span>5.3k</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 笔记卡片 10 -->
-            <div class="note-card" onclick="viewNote(10)">
-                <div class="note-cover">
-                    <div style="height: 250px; background: linear-gradient(135deg, #b8cbb8 0%, #cf6cc9 100%);"></div>
-                    <span class="note-type-badge">考证经验</span>
-                </div>
-                <div class="note-content">
-                    <h3 class="note-title">PMP考试一次通过经验分享（附完整资料）</h3>
-                    <div class="note-author">
-                        <div class="author-info">
-                            <div class="author-avatar">孙</div>
-                            <span class="author-name">孙丽</span>
-                        </div>
-                        <div class="note-likes">
-                            <span class="like-icon">❤️</span>
-                            <span>7.2k</span>
-                        </div>
-                    </div>
-                </div>
+    <div class="community-main">
+        <!-- 帖子列表 -->
+        <div class="posts-container" id="postsContainer">
+            <div class="loading">
+                <div class="spinner"></div>
             </div>
         </div>
 
-        <!-- 加载更多 -->
-        <div class="load-more">
-            <button class="load-more-btn" onclick="loadMore()">加载更多</button>
-        </div>
-    </main>
-
-    <!-- 发布弹窗 -->
-    <div class="publish-modal" id="publishModal">
-        <div class="publish-container">
-            <div class="publish-header">
-                <h2 class="publish-title">发布笔记</h2>
-                <button class="close-btn" onclick="closePublishModal()">×</button>
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <!-- 热门话题 -->
+            <div class="sidebar-card">
+                <h3 class="sidebar-title">热门话题</h3>
+                <div class="topic-item">
+                    <div class="topic-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                        </svg>
+                    </div>
+                    <div class="topic-info">
+                        <div class="topic-name">算法与数据结构</div>
+                        <div class="topic-count">1,234 讨论</div>
+                    </div>
+                </div>
+                <div class="topic-item">
+                    <div class="topic-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 16v-4M12 8h.01"/>
+                        </svg>
+                    </div>
+                    <div class="topic-info">
+                        <div class="topic-name">面试技巧</div>
+                        <div class="topic-count">987 讨论</div>
+                    </div>
+                </div>
+                <div class="topic-item">
+                    <div class="topic-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+                    <div class="topic-info">
+                        <div class="topic-name">项目实战</div>
+                        <div class="topic-count">756 讨论</div>
+                    </div>
+                </div>
+                <div class="topic-item">
+                    <div class="topic-icon" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+                        </svg>
+                    </div>
+                    <div class="topic-info">
+                        <div class="topic-name">学习方法</div>
+                        <div class="topic-count">654 讨论</div>
+                    </div>
+                </div>
             </div>
-            
-            <div class="publish-body">
-                <!-- 图片上传 -->
-                <div class="upload-area" onclick="selectImages()">
-                    <div class="upload-icon">📷</div>
-                    <div class="upload-text">点击上传图片/视频（最多9张）</div>
-                </div>
-                <input type="file" id="imageInput" multiple accept="image/*,video/*" style="display: none;">
-                
-                <!-- 图片预览 -->
-                <div class="image-preview-container" id="imagePreview" style="display: none;">
-                    <!-- 预览图片将动态添加 -->
-                </div>
-                
-                <!-- 标题输入 -->
+
+            <!-- 社区规则 -->
+            <div class="sidebar-card">
+                <h3 class="sidebar-title">社区规则</h3>
+                <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.6;">
+                    1. 尊重他人，友善交流<br>
+                    2. 分享有价值的内容<br>
+                    3. 禁止发布广告信息<br>
+                    4. 保护个人隐私安全
+                </p>
+            </div>
+        </aside>
+    </div>
+
+    <!-- 发布帖子弹窗 -->
+    <div class="modal" id="publishModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">发布帖子</h3>
+                <button class="modal-close" onclick="closePublishModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
                 <div class="form-group">
                     <label class="form-label">标题</label>
-                    <input type="text" class="form-input" id="noteTitle" placeholder="填写标题会有更多赞哦～" maxlength="50">
+                    <input type="text" class="form-input" id="postTitle" placeholder="输入帖子标题" maxlength="100">
                 </div>
-                
-                <!-- 内容输入 -->
                 <div class="form-group">
-                    <label class="form-label">正文</label>
-                    <textarea class="form-input" id="noteContent" placeholder="分享你的学习心得、经验、笔记..." maxlength="1000"></textarea>
+                    <label class="form-label">内容</label>
+                    <textarea class="form-input" id="postContent" placeholder="分享你的想法和经验..." rows="8" maxlength="2000"></textarea>
                 </div>
-                
-                <!-- 分类选择 -->
                 <div class="form-group">
-                    <label class="form-label">选择分类</label>
-                    <div class="category-select">
-                        <div class="category-option" onclick="selectCategory(this)">学习笔记</div>
-                        <div class="category-option" onclick="selectCategory(this)">项目总结</div>
-                        <div class="category-option" onclick="selectCategory(this)">面试经验</div>
-                        <div class="category-option" onclick="selectCategory(this)">工具推荐</div>
-                        <div class="category-option" onclick="selectCategory(this)">算法详解</div>
-                        <div class="category-option" onclick="selectCategory(this)">架构设计</div>
-                        <div class="category-option" onclick="selectCategory(this)">考证经验</div>
-                        <div class="category-option" onclick="selectCategory(this)">职场分享</div>
-                    </div>
-                </div>
-                
-                <!-- 标签输入 -->
-                <div class="form-group">
-                    <label class="form-label">添加标签</label>
-                    <div class="tag-input-container" onclick="focusTagInput()">
-                        <div class="tag">
-                            前端开发
-                            <span class="tag-remove" onclick="removeTag(this)">×</span>
-                        </div>
-                        <div class="tag">
-                            Vue3
-                            <span class="tag-remove" onclick="removeTag(this)">×</span>
-                        </div>
-                        <input type="text" class="tag-input" id="tagInput" placeholder="输入标签，回车添加">
-                    </div>
+                    <label class="form-label">分类</label>
+                    <select class="form-input" id="postCategory">
+                        <option value="tech">技术文章</option>
+                        <option value="interview">面试经验</option>
+                        <option value="offer">Offer分享</option>
+                        <option value="qa">问答讨论</option>
+                    </select>
                 </div>
             </div>
-            
-            <div class="publish-footer">
-                <button class="btn btn-cancel" onclick="closePublishModal()">取消</button>
-                <button class="btn btn-publish" onclick="publishNote()">发布笔记</button>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closePublishModal()">取消</button>
+                <button class="btn btn-primary" onclick="publishPost()">发布</button>
             </div>
         </div>
     </div>
 
     <!-- 浮动发布按钮 -->
-    <button class="fab" onclick="showPublishModal()">+</button>
+    <button class="fab" onclick="showPublishModal()">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <div id="toast" class="toast"></div>
 
     <script>
+        const API_BASE = '/api';
+
+        let currentCategory = 'all';
+        let currentSort = 'hot';
+        let currentKeyword = '';
+        let currentPage = 1;
+        let isLoading = false;
+        let hasMore = true;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            checkAuth();
+            initTabs();
+            loadPosts();
+            initInfiniteScroll();
+            initSearchEnter();
+        });
+
+        // 初始化搜索回车事件
+        function initSearchEnter() {
+            document.getElementById('searchInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    searchPosts();
+                }
+            });
+        }
+
+        // 搜索帖子
+        function searchPosts() {
+            currentKeyword = document.getElementById('searchInput').value.trim();
+            currentPage = 1;
+            hasMore = true;
+            loadPosts();
+        }
+
+        // 更改排序
+        function changeSortOrder() {
+            currentSort = document.getElementById('sortSelect').value;
+            currentPage = 1;
+            hasMore = true;
+            loadPosts();
+        }
+
+        // 主题初始化
+        function initTheme() {
+            const saved = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', saved);
+            updateThemeIcon(saved);
+            document.getElementById('themeToggle').addEventListener('click', () => {
+                const current = document.documentElement.getAttribute('data-theme');
+                const next = current === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('theme', next);
+                updateThemeIcon(next);
+            });
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = document.querySelector('#themeToggle i');
+            icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        // 认证检查
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            const authArea = document.getElementById('authArea');
+            if (token && userStr) {
+                const user = JSON.parse(userStr);
+                const initial = (user.nickname || user.username || 'U').charAt(0).toUpperCase();
+                authArea.innerHTML = `
+                    <div class="user-menu">
+                        <div class="user-avatar" onclick="toggleDropdown()">${user.avatar ? '<img src="'+user.avatar+'" alt="">' : initial}</div>
+                        <div class="dropdown" id="userDropdown">
+                            <div class="dropdown-item" onclick="location.href='dashboard.html'"><i class="fas fa-tachometer-alt"></i> 学习中心</div>
+                            <div class="dropdown-item" onclick="location.href='profile.html'"><i class="fas fa-user"></i> 个人主页</div>
+                            <div class="dropdown-item" onclick="location.href='my-courses.html'"><i class="fas fa-book"></i> 我的课程</div>
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出登录</div>
+                        </div>
+                    </div>`;
+            } else {
+                authArea.innerHTML = '<a href="login.html" class="btn btn-sm btn-secondary">登录</a> <a href="register.html" class="btn btn-sm btn-primary">注册</a>';
+            }
+        }
+
+        function toggleDropdown() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            location.reload();
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-menu')) {
+                const d = document.getElementById('userDropdown');
+                if (d) d.classList.remove('show');
+            }
+        });
+
+        // 标签初始化
+        function initTabs() {
+            document.querySelectorAll('.tab-item').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    currentCategory = tab.getAttribute('data-category');
+                    currentPage = 1;
+                    hasMore = true;
+                    document.getElementById('postsContainer').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+                    loadPosts();
+                });
+            });
+        }
+
+        // 加载帖子
+        async function loadPosts(append = false) {
+            if (isLoading || !hasMore) return;
+            isLoading = true;
+
+            try {
+                // 构建URL参数
+                let url = `${API_BASE}/community/notes?page=${currentPage}&size=10`;
+
+                if (currentCategory !== 'all') {
+                    url += `&category=${encodeURIComponent(currentCategory)}`;
+                }
+
+                if (currentSort && currentSort !== 'hot') {
+                    url += `&sort=${encodeURIComponent(currentSort)}`;
+                }
+
+                if (currentKeyword && currentKeyword.trim()) {
+                    url += `&keyword=${encodeURIComponent(currentKeyword.trim())}`;
+                }
+
+                const res = await fetch(url);
+                const data = await res.json();
+
+                if (data.code === 200 && data.data) {
+                    const posts = data.data.items || data.data || [];
+                    hasMore = data.data.hasNext || false;
+
+                    const container = document.getElementById('postsContainer');
+
+                    if (!append) {
+                        container.innerHTML = '';
+                    }
+
+                    if (posts.length === 0 && !append) {
+                        container.innerHTML = `
+                            <div class="empty-state">
+                                <div class="empty-icon">
+                                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                                        <circle cx="12" cy="7" r="4"/>
+                                    </svg>
+                                </div>
+                                <p class="empty-text">暂无帖子，快来发布第一条吧！</p>
+                            </div>`;
+                        return;
+                    }
+
+                    posts.forEach(post => {
+                        container.appendChild(createPostCard(post));
+                    });
+
+                    if (hasMore && !append) {
+                        const loadMoreDiv = document.createElement('div');
+                        loadMoreDiv.className = 'load-more-container';
+                        loadMoreDiv.innerHTML = '<p style="color: var(--text-tertiary); font-size: 14px;">滚动加载更多...</p>';
+                        container.appendChild(loadMoreDiv);
+                    }
+                }
+            } catch (error) {
+                console.error('加载帖子失败:', error);
+                if (!append) {
+                    document.getElementById('postsContainer').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M12 8v4M12 16h.01"/>
+                                </svg>
+                            </div>
+                            <p class="empty-text">加载失败，请稍后重试</p>
+                        </div>`;
+                }
+            } finally {
+                isLoading = false;
+            }
+        }
+
+        // 创建帖子卡片
+        function createPostCard(post) {
+            const card = document.createElement('div');
+            card.className = 'post-card';
+            card.onclick = () => viewPost(post.id);
+
+            const author = post.author || {};
+            const initial = (author.nickname || author.username || 'U').charAt(0).toUpperCase();
+
+            const categoryLabels = {
+                'tech': '技术文章',
+                'interview': '面试经验',
+                'offer': 'Offer分享',
+                'qa': '问答讨论'
+            };
+
+            const colors = [
+                'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)'
+            ];
+
+            const timeAgo = formatTimeAgo(post.createdAt);
+
+            card.innerHTML = `
+                <div class="post-header">
+                    <div class="post-avatar" style="background: ${colors[(post.userId || 0) % colors.length]}">
+                        ${author.avatar ? '<img src="'+author.avatar+'" alt="">' : initial}
+                    </div>
+                    <div class="post-author-info">
+                        <div class="post-author-name">${author.nickname || author.username || '匿名用户'}</div>
+                        <div class="post-time">${timeAgo}</div>
+                    </div>
+                    <div class="post-category">${categoryLabels[post.category] || '其他'}</div>
+                </div>
+                <h3 class="post-title">${post.title || '无标题'}</h3>
+                <div class="post-content">${post.content || post.summary || ''}</div>
+                ${post.tags && post.tags.length > 0 ? `
+                    <div class="post-tags">
+                        ${post.tags.map(tag => `<span class="post-tag">${tag}</span>`).join('')}
+                    </div>
+                ` : ''}
+                <div class="post-footer">
+                    <div class="post-action" onclick="event.stopPropagation(); likePost(${post.id})">
+                        <i class="far fa-heart"></i>
+                        <span>${post.likeCount || 0}</span>
+                    </div>
+                    <div class="post-action" onclick="event.stopPropagation(); viewComments(${post.id})">
+                        <i class="far fa-comment"></i>
+                        <span>${post.commentCount || 0}</span>
+                    </div>
+                    <div class="post-action" onclick="event.stopPropagation(); viewPost(${post.id})">
+                        <i class="far fa-eye"></i>
+                        <span>${post.viewCount || 0}</span>
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // 格式化时间
+        function formatTimeAgo(dateStr) {
+            if (!dateStr) return '刚刚';
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000);
+
+            if (diff < 60) return '刚刚';
+            if (diff < 3600) return Math.floor(diff / 60) + ' 分钟前';
+            if (diff < 86400) return Math.floor(diff / 3600) + ' 小时前';
+            if (diff < 2592000) return Math.floor(diff / 86400) + ' 天前';
+            return date.toLocaleDateString();
+        }
+
+        // 无限滚动
+        function initInfiniteScroll() {
+            window.addEventListener('scroll', () => {
+                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
+                    if (hasMore && !isLoading) {
+                        currentPage++;
+                        loadPosts(true);
+                    }
+                }
+            });
+        }
+
         // 显示发布弹窗
         function showPublishModal() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showToast('请先登录');
+                setTimeout(() => location.href = 'login.html', 1000);
+                return;
+            }
             document.getElementById('publishModal').classList.add('show');
         }
-        
+
         // 关闭发布弹窗
         function closePublishModal() {
             document.getElementById('publishModal').classList.remove('show');
+            document.getElementById('postTitle').value = '';
+            document.getElementById('postContent').value = '';
         }
-        
-        // 选择图片
-        function selectImages() {
-            document.getElementById('imageInput').click();
-        }
-        
-        // 处理图片上传
-        document.getElementById('imageInput').addEventListener('change', function(e) {
-            const files = e.target.files;
-            const previewContainer = document.getElementById('imagePreview');
-            
-            if (files.length > 0) {
-                previewContainer.style.display = 'grid';
-                previewContainer.innerHTML = '';
-                
-                for (let i = 0; i < Math.min(files.length, 9); i++) {
-                    const file = files[i];
-                    const reader = new FileReader();
-                    
-                    reader.onload = function(e) {
-                        const preview = document.createElement('div');
-                        preview.className = 'image-preview';
-                        preview.innerHTML = `
-                            <img src="${e.target.result}" alt="">
-                            <span class="image-remove" onclick="removeImage(this)">×</span>
-                        `;
-                        previewContainer.appendChild(preview);
-                    };
-                    
-                    reader.readAsDataURL(file);
-                }
-            }
-        });
-        
-        // 移除图片
-        function removeImage(element) {
-            element.parentElement.remove();
-            const previewContainer = document.getElementById('imagePreview');
-            if (previewContainer.children.length === 0) {
-                previewContainer.style.display = 'none';
-            }
-        }
-        
-        // 选择分类
-        function selectCategory(element) {
-            // 移除其他选中状态
-            document.querySelectorAll('.category-option').forEach(option => {
-                option.classList.remove('selected');
-            });
-            // 添加选中状态
-            element.classList.add('selected');
-        }
-        
-        // 聚焦标签输入
-        function focusTagInput() {
-            document.getElementById('tagInput').focus();
-        }
-        
-        // 移除标签
-        function removeTag(element) {
-            event.stopPropagation();
-            element.parentElement.remove();
-        }
-        
-        // 添加标签
-        document.getElementById('tagInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && this.value.trim()) {
-                e.preventDefault();
-                const tag = document.createElement('div');
-                tag.className = 'tag';
-                tag.innerHTML = `
-                    ${this.value}
-                    <span class="tag-remove" onclick="removeTag(this)">×</span>
-                `;
-                this.parentElement.insertBefore(tag, this);
-                this.value = '';
-            }
-        });
-        
-        const API_BASE = window.location.hostname === 'localhost'
-            ? 'http://localhost:8070/api'
-            : 'http://42.194.245.66:8070/api';
 
-        // 发布笔记
-        async function publishNote() {
-            const title = document.getElementById('noteTitle').value.trim();
-            const content = document.getElementById('noteContent').value.trim();
-            const categorySelect = document.querySelector('.modal select') || { value: 'tech' };
-            const category = categorySelect.value || 'tech';
+        // 发布帖子
+        async function publishPost() {
+            const title = document.getElementById('postTitle').value.trim();
+            const content = document.getElementById('postContent').value.trim();
+            const category = document.getElementById('postCategory').value;
 
             if (!title || !content) {
-                alert('请填写标题和内容');
+                showToast('请填写标题和内容');
                 return;
             }
 
             const token = localStorage.getItem('token');
             if (!token) {
-                alert('请先登录');
-                window.location.href = 'login.html';
+                showToast('请先登录');
+                setTimeout(() => location.href = 'login.html', 1000);
                 return;
             }
 
-            // 收集标签
-            const tagElements = document.querySelectorAll('.selected-tag');
-            const tags = Array.from(tagElements).map(el => el.textContent.replace('×', '').trim());
-
             try {
-                const response = await fetch(`${API_BASE}/community/notes`, {
+                const res = await fetch(`${API_BASE}/community/notes`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1094,196 +1027,77 @@
                         content,
                         category,
                         type: 'article',
-                        tags,
                         summary: content.substring(0, 200)
                     })
                 });
 
-                const result = await response.json();
+                const data = await res.json();
 
-                if (result.code === 200 || result.success) {
-                    alert('✅ 发布成功！');
+                if (data.code === 200 || data.success) {
+                    showToast('发布成功');
                     closePublishModal();
-
-                    // 清空表单
-                    document.getElementById('noteTitle').value = '';
-                    document.getElementById('noteContent').value = '';
-                    document.getElementById('imagePreview').innerHTML = '';
-                    document.getElementById('imagePreview').style.display = 'none';
-
-                    // 重新加载笔记列表
-                    loadNotes('all');
+                    currentPage = 1;
+                    hasMore = true;
+                    document.getElementById('postsContainer').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+                    loadPosts();
                 } else {
-                    alert('发布失败: ' + (result.message || '未知错误'));
+                    showToast('发布失败: ' + (data.message || '未知错误'));
                 }
             } catch (error) {
-                console.error('发布笔记失败:', error);
-                alert('发布失败，请稍后重试');
-            }
-        }
-        
-        let currentPage = 1;
-        let currentCategory = 'all';
-        let isLoading = false;
-        let hasMore = true;
-
-        // 切换分类
-        function switchCategory(category) {
-            // 更新标签样式
-            document.querySelectorAll('.tab-item').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            event.target.classList.add('active');
-
-            currentCategory = category;
-            currentPage = 1;
-            hasMore = true;
-
-            // 清空现有内容
-            document.getElementById('notesContainer').innerHTML = '';
-
-            // 加载对应分类的内容
-            loadNotes(category);
-        }
-
-        // 查看笔记详情
-        function viewNote(noteId) {
-            window.location.href = `note-detail.html?id=${noteId}`;
-        }
-
-        // 前往个人主页
-        function goToProfile() {
-            window.location.href = 'social-profile.html';
-        }
-
-        // 加载更多
-        function loadMore() {
-            if (!isLoading && hasMore) {
-                currentPage++;
-                loadNotes(currentCategory, true);
+                console.error('发布失败:', error);
+                showToast('发布失败，请稍后重试');
             }
         }
 
-        // 加载笔记
-        async function loadNotes(category = 'all', append = false) {
-            if (isLoading) return;
-            isLoading = true;
+        // 查看帖子
+        function viewPost(postId) {
+            location.href = `note-detail.html?id=${postId}`;
+        }
 
-            const container = document.getElementById('notesContainer');
-
-            if (!append) {
-                container.innerHTML = '<div style="text-align: center; padding: 40px; color: #999;">加载中...</div>';
+        // 点赞帖子
+        async function likePost(postId) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showToast('请先登录');
+                return;
             }
 
             try {
-                const response = await fetch(
-                    `${API_BASE}/community/notes?category=${category}&page=${currentPage}&size=20&sort=hot`
-                );
-
-                const result = await response.json();
-
-                if (result.code === 200 && result.data) {
-                    const notes = result.data.items || [];
-                    hasMore = result.data.hasNext;
-
-                    if (!append) {
-                        container.innerHTML = '';
+                const res = await fetch(`${API_BASE}/community/notes/${postId}/like`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
                     }
+                });
 
-                    if (notes.length === 0 && !append) {
-                        container.innerHTML = `
-                            <div style="text-align: center; padding: 60px; color: #999;">
-                                <div style="font-size: 48px; margin-bottom: 16px;">📝</div>
-                                <p>暂无笔记，快来发布第一篇吧！</p>
-                            </div>
-                        `;
-                        return;
-                    }
-
-                    notes.forEach(note => {
-                        const noteCard = createNoteCard(note);
-                        container.appendChild(noteCard);
-                    });
-                } else {
-                    if (!append) {
-                        container.innerHTML = '<div style="text-align: center; padding: 40px; color: #999;">加载失败</div>';
-                    }
+                const data = await res.json();
+                if (data.code === 200 || data.success) {
+                    showToast('点赞成功');
+                    loadPosts();
                 }
             } catch (error) {
-                console.error('加载笔记失败:', error);
-                if (!append) {
-                    container.innerHTML = '<div style="text-align: center; padding: 40px; color: #999;">加载失败，请稍后重试</div>';
-                }
-            } finally {
-                isLoading = false;
+                console.error('点赞失败:', error);
             }
         }
 
-        // 创建笔记卡片
-        function createNoteCard(note) {
-            const colors = [
-                'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-                'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-                'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)',
-                'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)'
-            ];
-
-            const noteCard = document.createElement('div');
-            noteCard.className = 'note-card';
-            noteCard.onclick = () => viewNote(note.id);
-
-            const height = Math.floor(Math.random() * 80) + 160;
-            const coverImage = note.coverImages && note.coverImages.length > 0
-                ? `<img src="${note.coverImages[0]}" style="width: 100%; height: ${height}px; object-fit: cover;">`
-                : `<div style="height: ${height}px; background: ${colors[note.id % colors.length]};"></div>`;
-
-            const author = note.author || {};
-            const avatarInitial = (author.nickname || author.username || '用')[0];
-
-            const categoryLabels = {
-                'interview': '面试经验',
-                'offer': 'Offer分享',
-                'tech': '技术文章',
-                'qa': '问答讨论'
-            };
-
-            noteCard.innerHTML = `
-                <div class="note-cover">
-                    ${coverImage}
-                    <span class="note-type-badge">${categoryLabels[note.category] || '学习笔记'}</span>
-                </div>
-                <div class="note-content">
-                    <h3 class="note-title">${note.title || '无标题'}</h3>
-                    <div class="note-author">
-                        <div class="author-info">
-                            <div class="author-avatar" style="background: ${colors[(note.userId || 0) % colors.length]}">
-                                ${author.avatar ? `<img src="${author.avatar}" style="width: 100%; height: 100%; border-radius: 50%;">` : avatarInitial}
-                            </div>
-                            <span class="author-name">${author.nickname || author.username || '匿名用户'}</span>
-                        </div>
-                        <div class="note-likes">
-                            <span class="like-icon">❤️</span>
-                            <span>${note.likeCount || 0}</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            return noteCard;
+        // 查看评论
+        function viewComments(postId) {
+            viewPost(postId);
         }
 
-        // 无限滚动
-        window.addEventListener('scroll', () => {
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
-                loadMore();
-            }
-        });
+        // 显示提示
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
 
-        // 页面加载完成后初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            loadNotes('all');
+        // 点击模态框外部关闭
+        document.getElementById('publishModal').addEventListener('click', (e) => {
+            if (e.target.id === 'publishModal') {
+                closePublishModal();
+            }
         });
     </script>
 </body>

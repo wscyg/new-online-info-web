@@ -3,239 +3,275 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>社区广场 - AI学习平台</title>
-    <meta name="description" content="分享学习心得，探索AI世界">
+    <title>社区广场 - AI 信息未来</title>
     
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* Page specific styles */
+        .page-header {
+            padding: 100px 0 40px;
+            text-align: center;
+            background: var(--bg-secondary);
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #f8f8f8;
-            color: #333;
+        .page-title {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 12px;
         }
 
-        /* 导航栏 */
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            z-index: 1000;
-            padding: 0 20px;
+        .page-desc {
+            font-size: 19px;
+            color: var(--text-secondary);
         }
 
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
+        /* Search and Actions Bar */
+        .search-actions-bar {
+            padding: 24px 0;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 48px;
+            z-index: 100;
+        }
+
+        .search-actions-inner {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            height: 60px;
-        }
-
-        .nav-logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            background: linear-gradient(135deg, #ff6b6b, #ff8787);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .nav-search {
-            flex: 1;
-            max-width: 500px;
-            margin: 0 40px;
+            gap: 16px;
         }
 
         .search-box {
-            position: relative;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 10px 40px 10px 15px;
-            border: 1px solid #e8e8e8;
-            border-radius: 20px;
-            background: #f5f5f5;
-            transition: all 0.3s;
-        }
-
-        .search-input:focus {
-            outline: none;
-            background: white;
-            border-color: #ff6b6b;
-        }
-
-        .search-btn {
-            position: absolute;
-            right: 5px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            padding: 8px;
-            cursor: pointer;
-        }
-
-        .nav-actions {
+            flex: 1;
+            max-width: 500px;
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            transition: border-color var(--transition-fast);
         }
 
-        .publish-btn {
-            background: linear-gradient(135deg, #ff6b6b, #ff8787);
-            color: white;
+        .search-box:focus-within {
+            border-color: var(--accent);
+        }
+
+        .search-box input {
+            flex: 1;
             border: none;
-            padding: 8px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: transform 0.2s;
+            background: transparent;
+            font-size: 15px;
+            color: var(--text-primary);
+            outline: none;
         }
 
-        .publish-btn:hover {
-            transform: scale(1.05);
+        .search-box input::-moz-placeholder {
+            color: var(--text-tertiary);
         }
 
-        /* 主内容区 */
-        .main-container {
-            max-width: 1200px;
-            margin: 80px auto 20px;
-            padding: 0 20px;
+        .search-box input::placeholder {
+            color: var(--text-tertiary);
         }
 
-        /* 分类标签 */
-        .category-tabs {
-            background: white;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 20px;
+        .search-icon {
+            width: 16px;
+            height: 16px;
+            stroke: var(--text-tertiary);
+        }
+
+        .actions-group {
             display: flex;
-            gap: 15px;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Category Tabs */
+        .category-section {
+            padding: 24px 0 16px;
+            background: var(--bg-primary);
+        }
+
+        .category-tabs {
+            display: flex;
+            gap: 8px;
             overflow-x: auto;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            padding-bottom: 8px;
+        }
+
+        .category-tabs::-webkit-scrollbar {
+            display: none;
         }
 
         .category-tab {
             padding: 8px 20px;
-            border-radius: 20px;
-            background: #f5f5f5;
-            border: none;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.3s;
+            font-size: 14px;
             font-weight: 500;
+            color: var(--text-secondary);
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
         }
 
         .category-tab:hover {
-            background: #ffe4e4;
+            border-color: var(--accent);
+            color: var(--accent);
         }
 
         .category-tab.active {
-            background: linear-gradient(135deg, #ff6b6b, #ff8787);
-            color: white;
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
         }
 
-        /* 瀑布流布局 */
+        /* Sort Controls */
+        .sort-controls {
+            display: flex;
+            justify-content: flex-end;
+            padding: 0 0 16px;
+        }
+
+        .sort-select {
+            padding: 8px 16px;
+            font-size: 14px;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            outline: none;
+            transition: border-color var(--transition-fast);
+        }
+
+        .sort-select:hover {
+            border-color: var(--accent);
+        }
+
+        /* Waterfall Layout */
+        .notes-section {
+            padding: 24px 0 80px;
+        }
+
         .waterfall-container {
-            -moz-column-count: 5;
-                 column-count: 5;
-            -moz-column-gap: 15px;
-                 column-gap: 15px;
+            -moz-column-count: 4;
+                 column-count: 4;
+            -moz-column-gap: 24px;
+                 column-gap: 24px;
         }
 
         @media (max-width: 1200px) {
-            .waterfall-container { -moz-column-count: 4; column-count: 4; }
-        }
-
-        @media (max-width: 900px) {
             .waterfall-container { -moz-column-count: 3; column-count: 3; }
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
             .waterfall-container { -moz-column-count: 2; column-count: 2; }
         }
 
-        /* 笔记卡片 */
+        @media (max-width: 480px) {
+            .waterfall-container { -moz-column-count: 1; column-count: 1; }
+        }
+
+        /* Note Card */
         .note-card {
             -moz-column-break-inside: avoid;
                  break-inside: avoid;
-            margin-bottom: 15px;
-            background: white;
-            border-radius: 12px;
+            margin-bottom: 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            transition: all 0.3s;
             cursor: pointer;
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
         }
 
         .note-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-card);
         }
 
         .note-cover {
             position: relative;
             width: 100%;
+            aspect-ratio: 4/3;
             overflow: hidden;
+            background: var(--bg-secondary);
         }
 
         .note-cover img {
             width: 100%;
-            height: auto;
-            display: block;
+            height: 100%;
+            -o-object-fit: cover;
+               object-fit: cover;
         }
 
-        .note-type-badge {
+        .note-badge {
             position: absolute;
             top: 10px;
             left: 10px;
-            background: rgba(0,0,0,0.5);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 15px;
+            padding: 4px 12px;
             font-size: 12px;
+            font-weight: 500;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            border-radius: var(--radius-full);
+            backdrop-filter: blur(10px);
+        }
+
+        [data-theme="dark"] .note-badge {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .hot-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            background: rgba(255, 59, 48, 0.9);
+            color: #fff;
+            border-radius: var(--radius-full);
         }
 
         .note-content {
-            padding: 12px;
+            padding: 16px;
         }
 
         .note-title {
+            font-size: 17px;
             font-weight: 600;
+            color: var(--text-primary);
             margin-bottom: 8px;
-            line-height: 1.4;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            line-height: 1.4;
         }
 
         .note-desc {
-            color: #666;
-            font-size: 13px;
-            line-height: 1.4;
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
-        .note-author {
+        .note-footer {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding-top: 10px;
-            border-top: 1px solid #f0f0f0;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
         }
 
         .author-info {
@@ -249,85 +285,111 @@
             height: 24px;
             border-radius: 50%;
             background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 12px;
-            font-weight: bold;
         }
 
         .author-name {
             font-size: 13px;
-            color: #333;
+            color: var(--text-secondary);
         }
 
-        .note-likes {
+        .note-stats {
             display: flex;
             align-items: center;
             gap: 4px;
-            color: #999;
             font-size: 13px;
+            color: var(--text-tertiary);
         }
 
-        .like-icon {
-            transition: color 0.3s;
+        .heart-icon {
+            width: 16px;
+            height: 16px;
+            fill: var(--text-tertiary);
+            transition: fill var(--transition-fast);
         }
 
-        .note-likes:hover .like-icon {
-            color: #ff6b6b;
+        .note-card:hover .heart-icon {
+            fill: #ff3b30;
         }
 
-        /* 发布弹窗 */
-        .publish-modal {
+        /* Modal */
+        .modal-overlay {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             z-index: 2000;
             align-items: center;
             justify-content: center;
+            backdrop-filter: blur(10px);
         }
 
-        .publish-modal.show {
+        .modal-overlay.show {
             display: flex;
         }
 
         .modal-content {
-            background: white;
-            border-radius: 16px;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
             width: 90%;
             max-width: 600px;
             max-height: 90vh;
-            overflow-y: auto;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
         }
 
         .modal-header {
-            padding: 20px;
-            border-bottom: 1px solid #f0f0f0;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .modal-title {
-            font-size: 18px;
+            font-size: 21px;
             font-weight: 600;
+            color: var(--text-primary);
         }
 
         .close-btn {
-            background: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
             border: none;
-            font-size: 24px;
+            background: var(--bg-hover);
+            color: var(--text-secondary);
             cursor: pointer;
-            color: #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background var(--transition-fast);
+        }
+
+        .close-btn:hover {
+            background: var(--bg-secondary);
         }
 
         .modal-body {
-            padding: 20px;
+            padding: 24px;
+            max-height: calc(90vh - 160px);
+            overflow-y: auto;
+        }
+
+        .modal-footer {
+            padding: 20px 24px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
         }
 
         .form-group {
@@ -336,25 +398,32 @@
 
         .form-label {
             display: block;
-            margin-bottom: 8px;
+            font-size: 15px;
             font-weight: 500;
-            color: #333;
+            color: var(--text-primary);
+            margin-bottom: 8px;
         }
 
         .form-input,
-        .form-textarea {
+        .form-textarea,
+        .form-select {
             width: 100%;
-            padding: 10px 15px;
-            border: 1px solid #e8e8e8;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s;
+            padding: 12px 16px;
+            font-family: var(--font-sans);
+            font-size: 15px;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
         }
 
         .form-input:focus,
-        .form-textarea:focus {
+        .form-textarea:focus,
+        .form-select:focus {
             outline: none;
-            border-color: #ff6b6b;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
         }
 
         .form-textarea {
@@ -363,224 +432,266 @@
         }
 
         .image-upload {
-            border: 2px dashed #e8e8e8;
-            border-radius: 8px;
-            padding: 20px;
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 40px 20px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all var(--transition-fast);
         }
 
         .image-upload:hover {
-            border-color: #ff6b6b;
-            background: #fff5f5;
+            border-color: var(--accent);
+            background: var(--bg-hover);
         }
 
         .upload-icon {
-            font-size: 48px;
-            color: #ccc;
-            margin-bottom: 10px;
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 12px;
+            stroke: var(--text-tertiary);
         }
 
         .upload-text {
-            color: #999;
             font-size: 14px;
+            color: var(--text-secondary);
         }
 
-        .tag-input-container {
+        .tag-container {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            padding: 10px;
-            border: 1px solid #e8e8e8;
-            border-radius: 8px;
-            min-height: 44px;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            min-height: 48px;
         }
 
         .tag-item {
-            background: #f5f5f5;
-            padding: 4px 12px;
-            border-radius: 15px;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
+            padding: 4px 12px;
+            font-size: 13px;
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border-radius: var(--radius-full);
         }
 
         .tag-remove {
             cursor: pointer;
-            color: #999;
+            color: var(--text-tertiary);
+            font-size: 16px;
+            line-height: 1;
+            transition: color var(--transition-fast);
         }
 
-        .modal-footer {
-            padding: 20px;
-            border-top: 1px solid #f0f0f0;
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
+        .tag-remove:hover {
+            color: var(--text-primary);
         }
 
-        .btn {
-            padding: 10px 20px;
-            border-radius: 8px;
+        .tag-input {
+            flex: 1;
+            min-width: 100px;
             border: none;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
+            background: transparent;
+            font-size: 13px;
+            color: var(--text-primary);
+            outline: none;
         }
 
-        .btn-default {
-            background: #f5f5f5;
-            color: #666;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #ff6b6b, #ff8787);
-            color: white;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-        /* 加载动画 */
-        .loading-spinner {
+        /* Loading and Empty States */
+        .loading-state {
             text-align: center;
-            padding: 40px;
+            padding: 80px 20px;
         }
 
-        .spinner {
-            display: inline-block;
+        .spinner-large {
             width: 40px;
             height: 40px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #ff6b6b;
+            margin: 0 auto 16px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            animation: spin 0.8s linear infinite;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* 空状态 */
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
-            color: #999;
+            padding: 80px 20px;
         }
 
         .empty-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 16px;
+            stroke: var(--text-tertiary);
             opacity: 0.5;
         }
 
         .empty-title {
-            font-size: 18px;
-            margin-bottom: 10px;
-            color: #666;
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
         }
 
         .empty-desc {
-            color: #999;
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
-  <link rel="stylesheet" href="/assets/theme-b29253a3.css">
+  <link rel="stylesheet" href="/assets/apple-design-3a23e109.css">
 </head>
 <body>
-    <!-- 导航栏 -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">社区广场</div>
-            
-            <div class="nav-search">
-                <div class="search-box">
-                    <input type="text" class="search-input" placeholder="搜索笔记、用户、标签...">
-                    <button class="search-btn">🔍</button>
-                </div>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="nav-logo">AI 信息未来</div>
+            <div class="nav-menu">
+                <a href="home.html" class="nav-link">首页</a>
+                <a href="courses.html" class="nav-link">课程</a>
+                <a href="community-square.html" class="nav-link active">社区</a>
+                <a href="pk-arena.html" class="nav-link">PK竞技</a>
             </div>
-            
             <div class="nav-actions">
-                <button class="publish-btn" onclick="showPublishModal()">
-                    ✨ 发布笔记
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                    </svg>
                 </button>
-                <a href="courses.html" style="text-decoration: none; color: #666;">返回课程</a>
+                <div class="user-menu" id="userMenu">
+                    <div class="user-avatar" onclick="toggleUserMenu()">
+                        <span id="userInitial">U</span>
+                    </div>
+                    <div class="dropdown" id="userDropdown">
+                        <a href="profile.html" class="dropdown-item">个人中心</a>
+                        <a href="my-courses.html" class="dropdown-item">我的课程</a>
+                        <a href="notes.html" class="dropdown-item">我的笔记</a>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item" onclick="handleLogout()">退出登录</div>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
 
-    <!-- 主内容 -->
-    <div class="main-container">
-        <!-- 分类标签和排序 -->
-        <div class="category-tabs">
-            <button class="category-tab active" data-category="all">推荐</button>
-            <button class="category-tab" data-category="interview">面试经验</button>
-            <button class="category-tab" data-category="offer">Offer薪资</button>
-            <button class="category-tab" data-category="tech">技术文章</button>
-            <button class="category-tab" data-category="qa">热门讨论</button>
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="container">
+            <h1 class="page-title">社区广场</h1>
+            <p class="page-desc">分享学习心得，探索AI世界</p>
         </div>
-        
-        <!-- 排序选项 -->
-        <div style="margin: 15px 0; text-align: right;">
-            <select class="sort-select" style="padding: 8px 16px; border: 1px solid #e8e8e8; border-radius: 20px; background: white; cursor: pointer;" onchange="handleSortChange()">
-                <option value="hot">🔥 最热门</option>
-                <option value="latest">🕐 最新发布</option>
-                <option value="likes">❤️ 最多点赞</option>
-                <option value="views">👁 最多浏览</option>
-            </select>
-        </div>
+    </header>
 
-        <!-- 瀑布流内容 -->
-        <div class="waterfall-container" id="notesContainer">
-            <!-- 笔记卡片将通过JavaScript动态加载 -->
-        </div>
-
-        <!-- 加载更多 -->
-        <div class="loading-spinner" id="loadingSpinner" style="display: none;">
-            <div class="spinner"></div>
-            <p>加载中...</p>
+    <!-- Search and Actions -->
+    <div class="search-actions-bar">
+        <div class="container-wide">
+            <div class="search-actions-inner">
+                <div class="search-box">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <input type="text" placeholder="搜索笔记、用户、标签..." id="searchInput">
+                </div>
+                <div class="actions-group">
+                    <button class="btn btn-primary" onclick="showPublishModal()">发布笔记</button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- 发布弹窗 -->
-    <div class="publish-modal" id="publishModal">
+    <!-- Category Tabs -->
+    <div class="category-section">
+        <div class="container-wide">
+            <div class="category-tabs">
+                <button class="category-tab active" data-category="all">推荐</button>
+                <button class="category-tab" data-category="interview">面试经验</button>
+                <button class="category-tab" data-category="offer">Offer薪资</button>
+                <button class="category-tab" data-category="tech">技术文章</button>
+                <button class="category-tab" data-category="qa">热门讨论</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sort Controls -->
+    <div class="notes-section">
+        <div class="container-wide">
+            <div class="sort-controls">
+                <select class="sort-select" onchange="handleSortChange()">
+                    <option value="hot">最热门</option>
+                    <option value="latest">最新发布</option>
+                    <option value="likes">最多点赞</option>
+                    <option value="views">最多浏览</option>
+                </select>
+            </div>
+
+            <!-- Notes Waterfall -->
+            <div class="waterfall-container" id="notesContainer">
+                <!-- Notes will be loaded here -->
+            </div>
+
+            <!-- Loading State -->
+            <div class="loading-state" id="loadingSpinner" style="display: none;">
+                <div class="spinner-large"></div>
+                <p>加载中...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Publish Modal -->
+    <div class="modal-overlay" id="publishModal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title">发布笔记</h3>
-                <button class="close-btn" onclick="hidePublishModal()">×</button>
+                <button class="close-btn" onclick="hidePublishModal()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
             </div>
-            
+
             <div class="modal-body">
                 <div class="form-group">
                     <label class="form-label">标题</label>
                     <input type="text" class="form-input" id="noteTitle" placeholder="输入笔记标题...">
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">内容</label>
                     <textarea class="form-textarea" id="noteContent" placeholder="分享你的学习心得..."></textarea>
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">封面图片</label>
                     <div class="image-upload" onclick="selectImage()">
-                        <div class="upload-icon">📷</div>
+                        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <path d="m21 15-5-5L5 21"/>
+                        </svg>
                         <div class="upload-text">点击上传图片</div>
                     </div>
                     <input type="file" id="imageInput" accept="image/*" style="display: none;">
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">标签</label>
-                    <div class="tag-input-container" id="tagContainer">
-                        <input type="text" placeholder="添加标签..." style="border: none; outline: none; flex: 1; min-width: 100px;">
+                    <div class="tag-container" id="tagContainer">
+                        <input type="text" class="tag-input" placeholder="添加标签..." onkeypress="handleTagInput(event)">
                     </div>
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">分类</label>
-                    <select class="form-input" id="noteCategory">
+                    <select class="form-select" id="noteCategory">
                         <option value="ai">人工智能</option>
                         <option value="ml">机器学习</option>
                         <option value="dl">深度学习</option>
@@ -592,34 +703,81 @@
                     </select>
                 </div>
             </div>
-            
+
             <div class="modal-footer">
-                <button class="btn btn-default" onclick="hidePublishModal()">取消</button>
+                <button class="btn btn-secondary" onclick="hidePublishModal()">取消</button>
                 <button class="btn btn-primary" onclick="publishNote()">发布</button>
             </div>
         </div>
     </div>
 
     <script>
-        // 全局变量
+        // Configuration
+        const API_BASE = '/api';
+
+        // Global State
         let currentCategory = 'all';
         let currentSort = 'hot';
         let isLoading = false;
         let page = 1;
+        let tags = [];
 
-        // 初始化
+        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
+            initAuth();
             loadNotesFromAPI();
             bindEvents();
         });
 
-        // 从API加载笔记
+        // Theme Management
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Auth Management
+        function initAuth() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const userInitial = document.getElementById('userInitial');
+            if (user.username) {
+                userInitial.textContent = user.username.charAt(0).toUpperCase();
+            }
+        }
+
+        function toggleUserMenu() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const userMenu = document.getElementById('userMenu');
+            const dropdown = document.getElementById('userDropdown');
+            if (!userMenu.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // API Functions
         async function loadNotesFromAPI() {
             const container = document.getElementById('notesContainer');
 
-            // 显示加载状态
             if (page === 1) {
-                container.innerHTML = '<div class="loading-spinner" style="grid-column: 1 / -1;"><div class="spinner"></div><p>加载中...</p></div>';
+                container.innerHTML = '<div class="loading-state"><div class="spinner-large"></div><p>加载中...</p></div>';
             }
 
             try {
@@ -629,7 +787,7 @@
                     headers['Authorization'] = `Bearer ${token}`;
                 }
 
-                const response = await fetch(`/api/community/notes?category=${currentCategory}&sort=${currentSort}&page=${page}&size=20`, {
+                const response = await fetch(`${API_BASE}/community/notes?category=${currentCategory}&sort=${currentSort}&page=${page}&size=20`, {
                     headers: headers
                 });
 
@@ -640,33 +798,62 @@
                 const data = await response.json();
 
                 if (data.code === 200 && data.data) {
-                    // 如果是第一页，清空容器
                     if (page === 1) {
                         container.innerHTML = '';
                     }
 
-                    // 渲染笔记
                     if (data.data.items && data.data.items.length > 0) {
                         data.data.items.forEach(note => {
-                            container.innerHTML += createNoteCardFromAPI(note);
+                            container.innerHTML += createNoteCard(note);
                         });
                     } else if (page === 1) {
-                        container.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;"><div class="empty-icon">📝</div><div class="empty-title">暂无笔记</div><div class="empty-desc">还没有人发布笔记，快来成为第一个吧！</div></div>';
+                        container.innerHTML = `
+                            <div class="empty-state" style="grid-column: 1 / -1;">
+                                <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                    <line x1="16" y1="13" x2="8" y2="13"/>
+                                    <line x1="16" y1="17" x2="8" y2="17"/>
+                                    <polyline points="10 9 9 9 8 9"/>
+                                </svg>
+                                <div class="empty-title">暂无笔记</div>
+                                <div class="empty-desc">还没有人发布笔记，快来成为第一个吧</div>
+                            </div>
+                        `;
                     }
 
-                    // 更新分页状态
                     if (!data.data.hasNext) {
-                        page = -1; // 没有更多数据
+                        page = -1;
                     }
                 } else {
                     if (page === 1) {
-                        container.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;"><div class="empty-icon">⚠️</div><div class="empty-title">加载失败</div><div class="empty-desc">无法加载笔记，请稍后重试</div></div>';
+                        container.innerHTML = `
+                            <div class="empty-state" style="grid-column: 1 / -1;">
+                                <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="12" y1="8" x2="12" y2="12"/>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                                </svg>
+                                <div class="empty-title">加载失败</div>
+                                <div class="empty-desc">无法加载笔记，请稍后重试</div>
+                            </div>
+                        `;
                     }
                 }
             } catch (error) {
                 console.error('加载笔记失败:', error);
                 if (page === 1) {
-                    container.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;"><div class="empty-icon">⚠️</div><div class="empty-title">网络错误</div><div class="empty-desc">请检查网络连接后重试</div></div>';
+                    container.innerHTML = `
+                        <div class="empty-state" style="grid-column: 1 / -1;">
+                            <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                <line x1="12" y1="9" x2="12" y2="13"/>
+                                <line x1="12" y1="17" x2="12.01" y2="17"/>
+                            </svg>
+                            <div class="empty-title">网络错误</div>
+                            <div class="empty-desc">请检查网络连接后重试</div>
+                        </div>
+                    `;
                 }
             } finally {
                 isLoading = false;
@@ -674,7 +861,7 @@
             }
         }
 
-        // HTML escaping function to prevent XSS
+        // HTML Escaping
         function escapeHtml(unsafe) {
             if (unsafe == null) return '';
             return String(unsafe)
@@ -685,66 +872,58 @@
                 .replace(/'/g, "&#039;");
         }
 
-        // Sanitize URL to prevent XSS
+        // URL Sanitization
         function sanitizeUrl(url) {
             if (!url) return '';
-            // Only allow http, https, and data URLs
             if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
                 return url;
             }
             return '';
         }
 
-        // 创建笔记卡片（API数据）
-        function createNoteCardFromAPI(note) {
+        // Create Note Card
+        function createNoteCard(note) {
             const typeLabels = {
-                'article': '📝 文章',
-                'experience': '💼 面经',
-                'salary': '💰 薪资',
-                'discussion': '💬 讨论',
-                'video': '📹 视频',
-                'project': '💻 项目',
-                'tutorial': '📚 教程'
+                'article': '文章',
+                'experience': '面经',
+                'salary': '薪资',
+                'discussion': '讨论',
+                'video': '视频',
+                'project': '项目',
+                'tutorial': '教程'
             };
 
-            const categoryLabels = {
-                'interview': '面试',
-                'offer': 'Offer',
-                'tech': '技术',
-                'qa': '问答'
-            };
-
-            // 处理封面图片
             let coverImage = '';
             if (note.coverImages && note.coverImages.length > 0) {
                 coverImage = sanitizeUrl(note.coverImages[0]);
+            } else {
+                coverImage = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y1ZjVmNSIvPjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjIwMCIgeT0iMTUwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM5OTkiPkFJPC90ZXh0Pjwvc3ZnPg==';
             }
 
-            // 处理作者信息
             const author = note.author || {};
-            const authorName = escapeHtml(author.nickname || author.username || '用户' + (note.userId || note.user_id));
+            const authorName = escapeHtml(author.nickname || author.username || '用户' + (note.userId || note.user_id || ''));
             const authorAvatar = escapeHtml(author.avatar || authorName.charAt(0).toUpperCase());
-            
-            // Safely encode values
             const noteId = parseInt(note.id, 10) || 0;
 
             return `
                 <div class="note-card" onclick="viewNoteDetail(${noteId})">
                     <div class="note-cover">
-                        <img src="${coverImage}" alt="${escapeHtml(note.title)}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y1ZjVmNSIvPjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjIwMCIgeT0iMTUwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM5OTkiPkFJPC90ZXh0Pjwvc3ZnPg=='">
-                        <div class="note-type-badge">${typeLabels[escapeHtml(note.type)] || '📝 笔记'}</div>
-                        ${note.isHot || note.is_hot ? '<div class="hot-badge" style="position: absolute; top: 10px; right: 10px; background: #ff4444; color: white; padding: 4px 10px; border-radius: 15px; font-size: 12px;">🔥 热门</div>' : ''}
+                        <img src="${coverImage}" alt="${escapeHtml(note.title)}">
+                        <div class="note-badge">${typeLabels[escapeHtml(note.type)] || '笔记'}</div>
+                        ${note.isHot || note.is_hot ? '<div class="hot-badge">热门</div>' : ''}
                     </div>
                     <div class="note-content">
                         <h3 class="note-title">${escapeHtml(note.title)}</h3>
                         <p class="note-desc">${escapeHtml(note.summary || note.description || '')}</p>
-                        <div class="note-author">
+                        <div class="note-footer">
                             <div class="author-info">
                                 <div class="author-avatar">${authorAvatar}</div>
                                 <span class="author-name">${authorName}</span>
                             </div>
-                            <div class="note-likes">
-                                <span class="like-icon">❤️</span>
+                            <div class="note-stats">
+                                <svg class="heart-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                                </svg>
                                 <span>${formatNumber(note.likeCount || note.like_count || 0)}</span>
                             </div>
                         </div>
@@ -753,7 +932,7 @@
             `;
         }
 
-        // 格式化数字
+        // Format Number
         function formatNumber(num) {
             if (num >= 10000) {
                 return (num / 10000).toFixed(1) + 'w';
@@ -764,14 +943,14 @@
             return num.toString();
         }
 
-        // 查看笔记详情
+        // View Note Detail
         function viewNoteDetail(id) {
             window.location.href = `note-detail.html?id=${id}`;
         }
 
-        // 绑定事件
+        // Event Bindings
         function bindEvents() {
-            // 分类切换
+            // Category tabs
             document.querySelectorAll('.category-tab').forEach(tab => {
                 tab.addEventListener('click', function() {
                     document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
@@ -782,16 +961,16 @@
                 });
             });
 
-            // 滚动加载更多
+            // Infinite scroll
             window.addEventListener('scroll', () => {
                 if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
-                    if (!isLoading && page < 3) {  // 限制最多加载3页
+                    if (!isLoading && page > 0 && page < 3) {
                         loadMoreNotes();
                     }
                 }
             });
 
-            // 图片上传
+            // Image upload
             document.getElementById('imageInput').addEventListener('change', function(e) {
                 if (e.target.files && e.target.files[0]) {
                     const fileName = e.target.files[0].name;
@@ -800,138 +979,126 @@
             });
         }
 
-        // 加载笔记
-        function loadNotes() {
-            const container = document.getElementById('notesContainer');
-            
-            // 根据分类筛选
-            let filteredNotes = currentCategory === 'all' 
-                ? mockNotes 
-                : mockNotes.filter(note => note.category === currentCategory);
-            
-            // 只生成一次数据，避免重复
-            const extendedNotes = [];
-            filteredNotes.forEach(note => {
-                extendedNotes.push({
-                    ...note,
-                    id: note.id,
-                    cover: note.cover || '',
-                    likes: Math.floor(Math.random() * 5000)
-                });
-            });
-            
-            // 渲染笔记
-            extendedNotes.forEach(note => {
-                container.innerHTML += createNoteCard(note);
-            });
-        }
-
-        // 创建笔记卡片
-        function createNoteCard(note) {
-            const typeLabels = {
-                'article': '📝 文章',
-                'video': '📹 视频',
-                'project': '💻 项目',
-                'tutorial': '📚 教程'
-            };
-            
-            return `
-                <div class="note-card" onclick="viewNote(${note.id})">
-                    <div class="note-cover">
-                        <img src="${note.cover}" alt="${note.title}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y1ZjVmNSIvPjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjIwMCIgeT0iMTUwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM5OTkiPkFJPC90ZXh0Pjwvc3ZnPg=='">
-                        <div class="note-type-badge">${typeLabels[note.type] || '📝 笔记'}</div>
-                    </div>
-                    <div class="note-content">
-                        <h3 class="note-title">${note.title}</h3>
-                        <p class="note-desc">${note.description}</p>
-                        <div class="note-author">
-                            <div class="author-info">
-                                <div class="author-avatar">${note.avatar}</div>
-                                <span class="author-name">${note.author}</span>
-                            </div>
-                            <div class="note-likes">
-                                <span class="like-icon">❤️</span>
-                                <span>${note.likes}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        // 加载更多
+        // Load More Notes
         function loadMoreNotes() {
             if (isLoading || page === -1) return;
-            
+
             isLoading = true;
             document.getElementById('loadingSpinner').style.display = 'block';
-            
-            // 增加页码并加载
             page++;
-            
-            // 调用API加载更多
+
             loadNotesFromAPI().finally(() => {
                 isLoading = false;
                 document.getElementById('loadingSpinner').style.display = 'none';
             });
         }
 
-        // 查看笔记
-        function viewNote(id) {
-            // Validate ID to prevent injection
-            const noteId = parseInt(id, 10);
-            if (!noteId || noteId < 1) {
-                console.error('Invalid note ID');
-                return;
-            }
-            console.log('查看笔记:', noteId);
-            window.location.href = `note-detail.html?id=${noteId}`;
-        }
-
-        // 处理排序变化
+        // Sort Change Handler
         function handleSortChange() {
             currentSort = document.querySelector('.sort-select').value;
             page = 1;
             loadNotesFromAPI();
         }
 
-        // 显示发布弹窗
+        // Modal Functions
         function showPublishModal() {
             document.getElementById('publishModal').classList.add('show');
         }
 
-        // 隐藏发布弹窗
         function hidePublishModal() {
             document.getElementById('publishModal').classList.remove('show');
+            // Clear form
+            document.getElementById('noteTitle').value = '';
+            document.getElementById('noteContent').value = '';
+            document.getElementById('noteCategory').value = 'ai';
+            document.querySelector('.upload-text').textContent = '点击上传图片';
+            tags = [];
+            renderTags();
         }
 
-        // 选择图片
         function selectImage() {
             document.getElementById('imageInput').click();
         }
 
-        // 发布笔记
-        function publishNote() {
-            const title = document.getElementById('noteTitle').value;
-            const content = document.getElementById('noteContent').value;
+        // Tag Management
+        function handleTagInput(event) {
+            if (event.key === 'Enter' && event.target.value.trim()) {
+                const tag = event.target.value.trim();
+                if (!tags.includes(tag)) {
+                    tags.push(tag);
+                    renderTags();
+                }
+                event.target.value = '';
+                event.preventDefault();
+            }
+        }
+
+        function removeTag(tag) {
+            tags = tags.filter(t => t !== tag);
+            renderTags();
+        }
+
+        function renderTags() {
+            const container = document.getElementById('tagContainer');
+            const input = container.querySelector('.tag-input');
+            const tagsHtml = tags.map(tag => `
+                <div class="tag-item">
+                    <span>${escapeHtml(tag)}</span>
+                    <span class="tag-remove" onclick="removeTag('${escapeHtml(tag)}')">×</span>
+                </div>
+            `).join('');
+
+            container.innerHTML = tagsHtml;
+            container.appendChild(input);
+        }
+
+        // Publish Note
+        async function publishNote() {
+            const title = document.getElementById('noteTitle').value.trim();
+            const content = document.getElementById('noteContent').value.trim();
             const category = document.getElementById('noteCategory').value;
-            
+
             if (!title || !content) {
                 alert('请填写标题和内容');
                 return;
             }
-            
-            // 这里调用API发布笔记
-            console.log('发布笔记:', { title, content, category });
-            
-            // 模拟发布成功
-            alert('发布成功！');
-            hidePublishModal();
-            
-            // 清空表单
-            document.getElementById('noteTitle').value = '';
-            document.getElementById('noteContent').value = '';
-            document.getElementById('noteCategory').value = 'ai';
+
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    alert('请先登录');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const response = await fetch(`${API_BASE}/community/notes`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title,
+                        content,
+                        category,
+                        tags
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.code === 200) {
+                    alert('发布成功');
+                    hidePublishModal();
+                    page = 1;
+                    loadNotesFromAPI();
+                } else {
+                    alert(data.message || '发布失败');
+                }
+            } catch (error) {
+                console.error('发布失败:', error);
+                alert('发布失败，请稍后重试');
+            }
         }
     </script>
 </body>

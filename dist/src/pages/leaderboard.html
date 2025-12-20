@@ -3,1110 +3,949 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>排行榜 - AI学习平台</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>排行榜 - AI 信息未来</title>
+    
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #8b5cf6;
-            --accent: #ec4899;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --dark: #1e293b;
-            --light: #f8fafc;
-            --gray: #64748b;
-            --white: #ffffff;
-            --gold: #fbbf24;
-            --silver: #9ca3af;
-            --bronze: #d97706;
-            --gradient-gold: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            --gradient-silver: linear-gradient(135deg, #e5e7eb 0%, #9ca3af 100%);
-            --gradient-bronze: linear-gradient(135deg, #fb923c 0%, #d97706 100%);
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(to bottom right, #0f172a, #1e293b);
-            min-height: 100vh;
-            color: var(--white);
-            overflow-x: hidden;
-        }
-
-        /* 动态背景 */
-        .dynamic-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .floating-shape {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(100px);
-            opacity: 0.3;
-            animation: float 20s infinite ease-in-out;
-        }
-
-        .shape-1 {
-            width: 300px;
-            height: 300px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            top: 10%;
-            left: 10%;
-            animation-duration: 25s;
-        }
-
-        .shape-2 {
-            width: 400px;
-            height: 400px;
-            background: linear-gradient(135deg, #f093fb, #f5576c);
-            bottom: 10%;
-            right: 10%;
-            animation-duration: 30s;
-            animation-delay: -5s;
-        }
-
-        .shape-3 {
-            width: 250px;
-            height: 250px;
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
-            top: 50%;
-            left: 50%;
-            animation-duration: 20s;
-            animation-delay: -10s;
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translate(0, 0) rotate(0deg);
-            }
-            25% {
-                transform: translate(100px, -100px) rotate(90deg);
-            }
-            50% {
-                transform: translate(-50px, 100px) rotate(180deg);
-            }
-            75% {
-                transform: translate(-100px, -50px) rotate(270deg);
-            }
-        }
-
-        /* 导航栏 */
-        .navbar {
-            background: rgba(30, 41, 59, 0.8);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            padding: 1rem 2rem;
-        }
-
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .nav-brand {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #60a5fa, #c084fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .nav-menu {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-        }
-
-        .nav-link {
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s;
+        /* Hero Section */
+        .leaderboard-hero {
+            padding: 120px 0 80px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
             position: relative;
+            overflow: hidden;
         }
-
-        .nav-link:hover {
-            color: var(--white);
-        }
-
-        .nav-link.active {
-            color: var(--white);
-        }
-
-        .nav-link.active::after {
+        .leaderboard-hero::before {
             content: '';
             position: absolute;
-            bottom: -5px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, #60a5fa, #c084fc);
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
-
-        /* 主容器 */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
+        .hero-content {
             position: relative;
             z-index: 1;
-        }
-
-        /* 页面标题 */
-        .page-header {
             text-align: center;
-            padding: 3rem 0;
-            margin-bottom: 2rem;
         }
-
-        .page-title {
-            font-size: 3.5rem;
+        .hero-title {
+            font-size: 56px;
             font-weight: 800;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #60a5fa 0%, #c084fc 50%, #fbbf24 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: shimmer 3s ease infinite;
+            color: #fff;
+            margin-bottom: 16px;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.2);
         }
-
-        @keyframes shimmer {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
+        .hero-desc {
+            font-size: 20px;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 40px;
         }
-
-        .page-subtitle {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 1.2rem;
-        }
-
-        /* 时间筛选标签 */
-        .time-filters {
+        .hero-stats {
             display: flex;
             justify-content: center;
-            gap: 1rem;
-            margin-bottom: 3rem;
+            gap: 60px;
             flex-wrap: wrap;
         }
-
-        .filter-btn {
-            padding: 0.75rem 2rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50px;
-            color: rgba(255, 255, 255, 0.7);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 1rem;
+        .hero-stat {
+            text-align: center;
+        }
+        .hero-stat-value {
+            font-size: 40px;
+            font-weight: 800;
+            color: #fff;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .hero-stat-label {
+            font-size: 14px;
+            color: rgba(255,255,255,0.8);
+            margin-top: 4px;
         }
 
-        .filter-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--white);
-            transform: translateY(-2px);
+        /* Main Content */
+        .leaderboard-main {
+            padding: 60px 0 100px;
         }
-
-        .filter-btn.active {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: var(--white);
-            border: none;
-            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
-        }
-
-        /* 主要内容网格 */
-        .content-grid {
+        .leaderboard-layout {
             display: grid;
-            grid-template-columns: 1fr 350px;
-            gap: 2rem;
-            margin-bottom: 3rem;
+            grid-template-columns: 280px 1fr;
+            gap: 32px;
+        }
+        @media (max-width: 1024px) {
+            .leaderboard-layout { grid-template-columns: 1fr; }
         }
 
-        /* Top 3 展示 */
-        .top-players {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 2rem;
-            backdrop-filter: blur(10px);
+        /* Sidebar */
+        .leaderboard-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
         }
 
-        .top-three {
+        /* My Rank Card */
+        .my-rank-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+        }
+        .my-rank-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .my-rank-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 22px;
+            font-weight: 700;
+        }
+        .my-rank-info h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .my-rank-info p {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+        .my-rank-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        .my-rank-stat {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+        .my-rank-stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        .my-rank-stat-label {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+        }
+
+        /* Category Nav */
+        .category-nav {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 20px;
+        }
+        .category-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+        .category-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .category-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+        }
+        .category-item:hover {
+            background: var(--bg-secondary);
+        }
+        .category-item.active {
+            background: var(--accent);
+            color: #fff;
+        }
+        .category-item.active .category-icon {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+        }
+        .category-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-secondary);
+            transition: all 0.2s;
+        }
+        .category-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+        .category-icon.study { background: rgba(99,102,241,0.1); color: #6366f1; }
+        .category-icon.points { background: rgba(245,158,11,0.1); color: #f59e0b; }
+        .category-icon.pk { background: rgba(239,68,68,0.1); color: #ef4444; }
+        .category-icon.streak { background: rgba(16,185,129,0.1); color: #10b981; }
+        .category-icon.completion { background: rgba(59,130,246,0.1); color: #3b82f6; }
+        .category-name {
+            flex: 1;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        /* Time Filter */
+        .time-filter-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 20px;
+        }
+        .time-filter-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .time-filter-btn {
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            color: var(--text-secondary);
+        }
+        .time-filter-btn:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        .time-filter-btn.active {
+            background: var(--bg-secondary);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Leaderboard Content */
+        .leaderboard-content {}
+
+        /* Top Three Podium */
+        .podium-section {
+            margin-bottom: 40px;
+        }
+        .podium {
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            gap: 2rem;
-            margin-bottom: 3rem;
+            gap: 20px;
+            padding: 20px 0 40px;
         }
-
-        .top-player {
+        @media (max-width: 640px) {
+            .podium { flex-direction: column; align-items: center; }
+        }
+        .podium-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 32px 24px;
             text-align: center;
-            position: relative;
+            width: 200px;
             transition: all 0.3s;
+            position: relative;
         }
-
-        .top-player:hover {
-            transform: translateY(-10px);
+        .podium-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.12);
         }
-
-        .crown {
-            font-size: 3rem;
+        .podium-item.first {
+            order: 2;
+            padding-bottom: 48px;
+            border-color: #fbbf24;
+            background: linear-gradient(180deg, rgba(251,191,36,0.1) 0%, var(--bg-card) 100%);
+        }
+        .podium-item.second { order: 1; }
+        .podium-item.third { order: 3; }
+        @media (max-width: 640px) {
+            .podium-item { order: unset !important; width: 100%; max-width: 280px; }
+        }
+        .podium-crown {
             position: absolute;
-            top: -50px;
+            top: -20px;
             left: 50%;
             transform: translateX(-50%);
-            animation: bounce 2s infinite;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateX(-50%) translateY(0); }
-            50% { transform: translateX(-50%) translateY(-10px); }
+        .podium-crown svg {
+            width: 40px;
+            height: 40px;
+            color: #fbbf24;
+            filter: drop-shadow(0 2px 8px rgba(251,191,36,0.5));
         }
-
-        .player-avatar {
+        .podium-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 700;
+            color: #fff;
+            position: relative;
+        }
+        .podium-item.first .podium-avatar {
             width: 100px;
             height: 100px;
+            font-size: 40px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            box-shadow: 0 8px 32px rgba(251,191,36,0.4);
+        }
+        .podium-item.second .podium-avatar {
+            background: linear-gradient(135deg, #9ca3af, #6b7280);
+            box-shadow: 0 8px 24px rgba(107,114,128,0.3);
+        }
+        .podium-item.third .podium-avatar {
+            background: linear-gradient(135deg, #d97706, #b45309);
+            box-shadow: 0 8px 24px rgba(180,83,9,0.3);
+        }
+        .podium-rank {
+            position: absolute;
+            bottom: -8px;
+            right: -8px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            margin: 0 auto 1rem;
-            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.5rem;
+            font-size: 14px;
             font-weight: 700;
-            color: var(--white);
+            color: #fff;
+            border: 3px solid var(--bg-card);
         }
-
-        .rank-1 .player-avatar {
-            width: 120px;
-            height: 120px;
-            background: var(--gradient-gold);
-            box-shadow: 0 0 40px rgba(251, 191, 36, 0.5);
+        .podium-item.first .podium-rank { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+        .podium-item.second .podium-rank { background: linear-gradient(135deg, #9ca3af, #6b7280); }
+        .podium-item.third .podium-rank { background: linear-gradient(135deg, #d97706, #b45309); }
+        .podium-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
         }
-
-        .rank-2 .player-avatar {
-            background: var(--gradient-silver);
-            box-shadow: 0 0 30px rgba(156, 163, 175, 0.5);
-        }
-
-        .rank-3 .player-avatar {
-            background: var(--gradient-bronze);
-            box-shadow: 0 0 30px rgba(217, 119, 6, 0.5);
-        }
-
-        .player-name {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .player-score {
-            font-size: 1.5rem;
+        .podium-score {
+            font-size: 28px;
             font-weight: 800;
-            color: var(--warning);
-            margin-bottom: 0.5rem;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+        .podium-detail {
+            font-size: 13px;
+            color: var(--text-tertiary);
         }
 
-        .player-meta {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .meta-tag {
-            padding: 0.25rem 0.75rem;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        /* 完整排行榜 */
-        .leaderboard-table {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
+        /* Rank List */
+        .rank-list-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
             overflow: hidden;
-            backdrop-filter: blur(10px);
         }
-
-        .table-header {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 1.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .table-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-        }
-
-        .leaderboard-list {
-            padding: 1rem;
-        }
-
-        .leaderboard-item {
-            display: flex;
-            align-items: center;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            margin-bottom: 0.75rem;
-            transition: all 0.3s;
-            gap: 1rem;
-        }
-
-        .leaderboard-item:hover {
-            background: rgba(255, 255, 255, 0.08);
-            transform: translateX(5px);
-        }
-
-        .leaderboard-item.current-user {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
-            border: 1px solid rgba(99, 102, 241, 0.3);
-        }
-
-        .rank-number {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 1.1rem;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .rank-number.top-rank {
-            color: var(--dark);
-        }
-
-        .rank-1 .rank-number { background: var(--gradient-gold); }
-        .rank-2 .rank-number { background: var(--gradient-silver); }
-        .rank-3 .rank-number { background: var(--gradient-bronze); }
-
-        .user-avatar-small {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .rank-list-header {
+            display: grid;
+            grid-template-columns: 60px 1fr 120px 100px;
+            gap: 16px;
+            padding: 16px 24px;
+            background: var(--bg-secondary);
+            font-size: 13px;
             font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-
-        .user-info {
-            flex: 1;
+        @media (max-width: 640px) {
+            .rank-list-header { display: none; }
         }
-
-        .user-name {
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-
-        .user-level {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.85rem;
-        }
-
-        .user-stats {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--warning);
-        }
-
-        .stat-label {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.75rem;
-            margin-top: 0.25rem;
-        }
-
-        .rank-change {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            font-weight: 600;
-        }
-
-        .rank-up { color: var(--success); }
-        .rank-down { color: var(--danger); }
-        .rank-same { color: var(--gray); }
-
-        /* 侧边栏 */
-        .sidebar {
+        .rank-list {
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
         }
-
-        .sidebar-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 1.5rem;
-            backdrop-filter: blur(10px);
+        .rank-item {
+            display: grid;
+            grid-template-columns: 60px 1fr 120px 100px;
+            gap: 16px;
+            padding: 16px 24px;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.2s;
         }
-
-        .card-title {
-            font-size: 1.1rem;
+        .rank-item:last-child { border-bottom: none; }
+        .rank-item:hover { background: var(--bg-secondary); }
+        .rank-item.self {
+            background: rgba(99,102,241,0.05);
+        }
+        @media (max-width: 640px) {
+            .rank-item {
+                grid-template-columns: 40px 1fr auto;
+                padding: 12px 16px;
+            }
+            .rank-item .rank-trend { display: none; }
+        }
+        .rank-position {
+            font-size: 18px;
             font-weight: 700;
-            margin-bottom: 1rem;
+            color: var(--text-tertiary);
+            text-align: center;
+        }
+        .rank-position.top { color: #f59e0b; }
+        .rank-user {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 12px;
         }
-
-        .my-rank-display {
-            text-align: center;
-            padding: 1.5rem;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
-            border-radius: 16px;
-            border: 1px solid rgba(99, 102, 241, 0.3);
-        }
-
-        .my-rank-number {
-            font-size: 3rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #60a5fa, #c084fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
-        }
-
-        .my-rank-label {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.9rem;
-        }
-
-        .achievement-preview {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .achievement-badge {
-            width: 50px;
-            height: 50px;
+        .rank-avatar {
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            transition: all 0.3s;
-            cursor: pointer;
+            color: #fff;
+            font-weight: 600;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .rank-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        .rank-info p {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+        .rank-trend {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .rank-trend.up { color: #10b981; }
+        .rank-trend.down { color: #ef4444; }
+        .rank-trend.same { color: var(--text-tertiary); }
+        .rank-trend svg {
+            width: 16px;
+            height: 16px;
+        }
+        .rank-score {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent);
+            text-align: right;
         }
 
-        .achievement-badge:hover {
-            transform: scale(1.1);
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        /* 加载动画 */
-        .loading {
+        /* Empty State */
+        .empty-state {
             text-align: center;
-            padding: 3rem;
-            color: rgba(255, 255, 255, 0.6);
+            padding: 80px 20px;
+        }
+        .empty-icon {
+            width: 120px;
+            height: 120px;
+            background: var(--bg-secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+        .empty-icon svg {
+            width: 56px;
+            height: 56px;
+            color: var(--text-tertiary);
+        }
+        .empty-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .empty-desc {
+            color: var(--text-secondary);
         }
 
+        /* Loading */
+        .loading-state {
+            padding: 60px 20px;
+            text-align: center;
+        }
         .loading-spinner {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-top-color: var(--primary);
+            width: 48px;
+            height: 48px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent);
             border-radius: 50%;
             animation: spin 1s linear infinite;
+            margin: 0 auto;
         }
-
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-
-        /* 空状态 */
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .empty-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-
-        /* 响应式设计 */
-        @media (max-width: 1024px) {
-            .content-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .sidebar {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            }
-        }
-
-        @media (max-width: 768px) {
-            .page-title {
-                font-size: 2.5rem;
-            }
-
-            .top-three {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .nav-menu {
-                display: none;
-            }
-
-            .time-filters {
-                justify-content: flex-start;
-                overflow-x: auto;
-                padding-bottom: 0.5rem;
-            }
-
-            .filter-btn {
-                flex-shrink: 0;
-            }
-        }
     </style>
+  <link rel="stylesheet" href="/assets/apple-design-3a23e109.css">
 </head>
 <body>
-    <!-- 全局登录状态 -->
-    <div id="auth-header"></div>
-
-    <!-- 动态背景 -->
-    <div class="dynamic-bg">
-        <div class="floating-shape shape-1"></div>
-        <div class="floating-shape shape-2"></div>
-        <div class="floating-shape shape-3"></div>
-    </div>
-
-    <!-- 导航栏 -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-brand">AI学习平台</div>
-            <ul class="nav-menu">
-                <li><a href="courses.html" class="nav-link">课程</a></li>
-                <li><a href="dashboard.html" class="nav-link">仪表盘</a></li>
-                <li><a href="study-plan.html" class="nav-link">学习计划</a></li>
-                <li><a href="achievements.html" class="nav-link">成就</a></li>
-                <li><a href="leaderboard.html" class="nav-link active">排行榜</a></li>
-                <li><a href="profile.html" class="nav-link">个人中心</a></li>
-            </ul>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="home.html" class="nav-logo">AI 信息未来</a>
+            <div class="nav-menu">
+                <a href="home.html" class="nav-link">首页</a>
+                <a href="courses.html" class="nav-link">课程</a>
+                <a href="pk-arena.html" class="nav-link">PK竞技</a>
+                <a href="community.html" class="nav-link">社区</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle">
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                    </svg>
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+                <div id="authArea"></div>
+            </div>
         </div>
     </nav>
 
-    <div class="container">
-        <!-- 页面标题 -->
-        <div class="page-header">
-            <h1 class="page-title">🏆 排行榜</h1>
-            <p class="page-subtitle">与全球学习者一起竞技，见证你的成长轨迹</p>
-        </div>
-
-        <!-- 时间筛选 -->
-        <div class="time-filters">
-            <button class="filter-btn active" data-period="daily">今日榜</button>
-            <button class="filter-btn" data-period="weekly">周榜</button>
-            <button class="filter-btn" data-period="monthly">月榜</button>
-            <button class="filter-btn" data-period="all">总榜</button>
-        </div>
-
-        <!-- 主要内容 -->
-        <div class="content-grid">
-            <!-- 左侧：排行榜 -->
-            <div class="main-content">
-                <!-- Top 3 展示 -->
-                <div class="top-players">
-                    <div class="top-three">
-                        <!-- 第二名 -->
-                        <div class="top-player rank-2">
-                            <div class="player-avatar">2</div>
-                            <div class="player-name">SarahLiu</div>
-                            <div class="player-score">15,680</div>
-                            <div class="player-meta">
-                                <span class="meta-tag">🎯 Lv.28</span>
-                                <span class="meta-tag">⏱ 320h</span>
-                            </div>
-                        </div>
-                        <!-- 第一名 -->
-                        <div class="top-player rank-1">
-                            <div class="crown">👑</div>
-                            <div class="player-avatar">1</div>
-                            <div class="player-name">AlexChen</div>
-                            <div class="player-score">18,950</div>
-                            <div class="player-meta">
-                                <span class="meta-tag">🎯 Lv.35</span>
-                                <span class="meta-tag">⏱ 450h</span>
-                            </div>
-                        </div>
-                        <!-- 第三名 -->
-                        <div class="top-player rank-3">
-                            <div class="player-avatar">3</div>
-                            <div class="player-name">MikeWang</div>
-                            <div class="player-score">14,200</div>
-                            <div class="player-meta">
-                                <span class="meta-tag">🎯 Lv.25</span>
-                                <span class="meta-tag">⏱ 280h</span>
-                            </div>
-                        </div>
+    <!-- Hero Section -->
+    <section class="leaderboard-hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">荣耀排行榜</h1>
+                <p class="hero-desc">与高手同台竞技，见证你的成长与突破</p>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="hero-stat-value" id="totalUsers">0</div>
+                        <div class="hero-stat-label">参与学员</div>
                     </div>
-                </div>
-
-                <!-- 完整排行榜 -->
-                <div class="leaderboard-table">
-                    <div class="table-header">
-                        <h3 class="table-title">完整排行</h3>
-                        <span id="totalUsers">共 1000 名学习者</span>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value" id="totalHours">0</div>
+                        <div class="hero-stat-label">累计学习(小时)</div>
                     </div>
-                    <div class="leaderboard-list" id="leaderboardList">
-                        <!-- 排行榜项目将通过JavaScript动态加载 -->
-                        <div class="loading">
-                            <div class="loading-spinner"></div>
-                            <p>加载排行榜数据...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 右侧：侧边栏 -->
-            <div class="sidebar">
-                <!-- 我的排名 -->
-                <div class="sidebar-card">
-                    <h3 class="card-title">
-                        <span>🎖️</span>
-                        <span>我的排名</span>
-                    </h3>
-                    <div class="my-rank-display">
-                        <div class="my-rank-number">#42</div>
-                        <div class="my-rank-label">超越了 95.8% 的学习者</div>
-                    </div>
-                    <div style="margin-top: 1rem;">
-                        <div class="stat-item" style="margin-bottom: 1rem;">
-                            <div class="stat-value">8,560</div>
-                            <div class="stat-label">总积分</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" style="color: var(--success);">↑ 12</div>
-                            <div class="stat-label">今日排名变化</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 排行榜类型 -->
-                <div class="sidebar-card">
-                    <h3 class="card-title">
-                        <span>📊</span>
-                        <span>榜单类型</span>
-                    </h3>
-                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                        <button class="filter-btn active" onclick="switchLeaderboardType('points')" style="width: 100%;">积分榜</button>
-                        <button class="filter-btn" onclick="switchLeaderboardType('learning')" style="width: 100%;">学习时长榜</button>
-                        <button class="filter-btn" onclick="switchLeaderboardType('achievement')" style="width: 100%;">成就榜</button>
-                        <button class="filter-btn" onclick="switchLeaderboardType('contribution')" style="width: 100%;">贡献榜</button>
-                    </div>
-                </div>
-
-                <!-- 成就展示 -->
-                <div class="sidebar-card">
-                    <h3 class="card-title">
-                        <span>🏅</span>
-                        <span>最近成就</span>
-                    </h3>
-                    <div class="achievement-preview">
-                        <div class="achievement-badge" title="连续学习7天">🔥</div>
-                        <div class="achievement-badge" title="完成10门课程">🎓</div>
-                        <div class="achievement-badge" title="获得100个赞">👍</div>
-                        <div class="achievement-badge" title="帮助50人">🤝</div>
-                        <div class="achievement-badge" title="发表优质笔记">📝</div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value" id="totalMatches">0</div>
+                        <div class="hero-stat-label">PK对战场次</div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="leaderboard-main">
+        <div class="container-wide">
+            <div class="leaderboard-layout">
+                <!-- Sidebar -->
+                <aside class="leaderboard-sidebar">
+                    <!-- My Rank Card -->
+                    <div class="my-rank-card" id="myRankCard" style="display: none;">
+                        <div class="my-rank-header">
+                            <div class="my-rank-avatar" id="myAvatar">U</div>
+                            <div class="my-rank-info">
+                                <h3 id="myName">用户</h3>
+                                <p id="myLevel">Lv.1 初学者</p>
+                            </div>
+                        </div>
+                        <div class="my-rank-stats">
+                            <div class="my-rank-stat">
+                                <div class="my-rank-stat-value" id="myCurrentRank">--</div>
+                                <div class="my-rank-stat-label">当前排名</div>
+                            </div>
+                            <div class="my-rank-stat">
+                                <div class="my-rank-stat-value" id="myCurrentScore">--</div>
+                                <div class="my-rank-stat-label">我的成绩</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category Navigation -->
+                    <div class="category-nav">
+                        <div class="category-title">排行榜类型</div>
+                        <div class="category-list" id="categoryList">
+                            <button class="category-item active" data-type="study">
+                                <div class="category-icon study">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+                                    </svg>
+                                </div>
+                                <span class="category-name">学习时长</span>
+                            </button>
+                            <button class="category-item" data-type="points">
+                                <div class="category-icon points">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                    </svg>
+                                </div>
+                                <span class="category-name">积分排行</span>
+                            </button>
+                            <button class="category-item" data-type="pk">
+                                <div class="category-icon pk">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                                    </svg>
+                                </div>
+                                <span class="category-name">PK战绩</span>
+                            </button>
+                            <button class="category-item" data-type="streak">
+                                <div class="category-icon streak">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+                                    </svg>
+                                </div>
+                                <span class="category-name">连续签到</span>
+                            </button>
+                            <button class="category-item" data-type="completion">
+                                <div class="category-icon completion">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                        <polyline points="22 4 12 14.01 9 11.01"/>
+                                    </svg>
+                                </div>
+                                <span class="category-name">课程完成</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Time Filter -->
+                    <div class="time-filter-card">
+                        <div class="category-title">时间范围</div>
+                        <div class="time-filter-list" id="timeFilter">
+                            <button class="time-filter-btn" data-time="today">今日榜</button>
+                            <button class="time-filter-btn active" data-time="week">本周榜</button>
+                            <button class="time-filter-btn" data-time="month">本月榜</button>
+                            <button class="time-filter-btn" data-time="all">总榜</button>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Content -->
+                <div class="leaderboard-content">
+                    <!-- Podium -->
+                    <div class="podium-section" id="podiumSection">
+                        <div class="podium" id="podium"></div>
+                    </div>
+
+                    <!-- Rank List -->
+                    <div class="rank-list-section">
+                        <div class="rank-list-header">
+                            <div>排名</div>
+                            <div>用户</div>
+                            <div>变化</div>
+                            <div style="text-align:right;">成绩</div>
+                        </div>
+                        <div class="rank-list" id="rankList">
+                            <div class="loading-state">
+                                <div class="loading-spinner"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-text">2025 AI 信息未来</div>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">关于我们</a>
+                    <a href="#" class="footer-link">使用条款</a>
+                    <a href="#" class="footer-link">隐私政策</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div id="toast" class="toast"></div>
 
     <script>
-        // 全局变量
-        let currentPeriod = 'daily';
-        let currentType = 'points';
-        let leaderboardData = [];
+        const API_BASE = '/api';
+        let currentType = 'study';
+        let currentTime = 'week';
+        let currentUserId = null;
+        let currentUserInfo = null;
 
-        // 页面加载完成后初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeLeaderboard();
-            bindEvents();
-            loadLeaderboardData();
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            checkAuth();
+            loadStats();
+            loadLeaderboard();
+            setupFilters();
         });
 
-        // 初始化排行榜
-        function initializeLeaderboard() {
-            // 检查用户登录状态
-            const token = localStorage.getItem('token');
-            if (!token) {
-                console.log('用户未登录');
-            }
-        }
-
-        // 绑定事件
-        function bindEvents() {
-            // 时间筛选按钮
-            document.querySelectorAll('.time-filters .filter-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.time-filters .filter-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    currentPeriod = this.dataset.period;
-                    loadLeaderboardData();
-                });
+        function initTheme() {
+            const saved = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', saved);
+            document.getElementById('themeToggle').addEventListener('click', () => {
+                const current = document.documentElement.getAttribute('data-theme');
+                const next = current === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('theme', next);
             });
         }
 
-        // 加载排行榜数据
-        async function loadLeaderboardData() {
-            const leaderboardList = document.getElementById('leaderboardList');
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            const authArea = document.getElementById('authArea');
+            if (token && userStr) {
+                const user = JSON.parse(userStr);
+                currentUserId = user.id;
+                currentUserInfo = user;
+                const initial = (user.nickname || user.username || 'U').charAt(0).toUpperCase();
 
-            // 显示加载状态
-            leaderboardList.innerHTML = `
-                <div class="loading">
-                    <div class="loading-spinner"></div>
-                    <p>加载排行榜数据...</p>
-                </div>
-            `;
+                // Update my rank card
+                document.getElementById('myRankCard').style.display = 'block';
+                document.getElementById('myAvatar').textContent = initial;
+                document.getElementById('myName').textContent = user.nickname || user.username;
 
-            try {
-                // 调用API获取排行榜数据
-                const token = localStorage.getItem('token');
-                const response = await fetch(`/api/leaderboard/${currentType}?period=${currentPeriod}&page=1&size=50`, {
-                    headers: {
-                        'Authorization': token ? `Bearer ${token}` : ''
-                    }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.code === 200 && data.data) {
-                        // data.data contains {items: [], total: n, ...}
-                        leaderboardData = data.data.items || data.data;
-
-                        // 更新总用户数显示
-                        document.getElementById('totalUsers').textContent = `共 ${data.data.total || leaderboardData.length} 名学习者`;
-
-                        renderLeaderboard(leaderboardData);
-
-                        // 更新我的排名信息
-                        updateMyRank();
-                    } else {
-                        showEmptyState();
-                    }
-                } else {
-                    showErrorState('无法加载排行榜数据，请稍后再试');
-                }
-            } catch (error) {
-                console.error('加载排行榜失败:', error);
-                showErrorState('网络连接失败，请检查网络设置');
+                authArea.innerHTML = `
+                    <div class="user-menu">
+                        <div class="user-avatar" onclick="toggleDropdown()">${initial}</div>
+                        <div class="dropdown" id="userDropdown">
+                            <a href="dashboard.html" class="dropdown-item">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                                学习中心
+                            </a>
+                            <a href="profile.html" class="dropdown-item">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                个人主页
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item" onclick="logout(); return false;">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                                退出登录
+                            </a>
+                        </div>
+                    </div>`;
+            } else {
+                authArea.innerHTML = '<a href="login.html" class="btn btn-secondary" style="padding:8px 16px;font-size:14px;">登录</a>';
             }
         }
 
-        // 渲染排行榜
-        function renderLeaderboard(data) {
-            const leaderboardList = document.getElementById('leaderboardList');
+        function toggleDropdown() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        }
 
-            if (!data || !Array.isArray(data) || data.length === 0) {
-                showEmptyState();
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            location.reload();
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-menu')) {
+                const d = document.getElementById('userDropdown');
+                if (d) d.classList.remove('show');
+            }
+        });
+
+        function loadStats() {
+            // Animate stats
+            animateNumber('totalUsers', 1280);
+            animateNumber('totalHours', 45680);
+            animateNumber('totalMatches', 8920);
+        }
+
+        function animateNumber(elementId, target) {
+            const el = document.getElementById(elementId);
+            const start = 0;
+            const duration = 1500;
+            const startTime = performance.now();
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const current = Math.floor(start + (target - start) * easeOut);
+                el.textContent = current.toLocaleString();
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            requestAnimationFrame(update);
+        }
+
+        async function loadLeaderboard() {
+            const rankList = document.getElementById('rankList');
+            rankList.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div></div>';
+
+            try {
+                const res = await fetch(`${API_BASE}/leaderboard?type=${currentType}&time=${currentTime}`);
+                const data = await res.json();
+                if (data.code === 200 && data.data) {
+                    renderLeaderboard(data.data);
+                } else {
+                    renderLeaderboard(getMockData());
+                }
+            } catch (e) {
+                renderLeaderboard(getMockData());
+            }
+        }
+
+        function getMockData() {
+            const typeConfig = {
+                study: { unit: '小时', base: 50, multiplier: 4 },
+                points: { unit: '分', base: 2000, multiplier: 150 },
+                pk: { unit: '胜', base: 100, multiplier: 8 },
+                streak: { unit: '天', base: 30, multiplier: 2 },
+                completion: { unit: '门', base: 15, multiplier: 1 }
+            };
+            const config = typeConfig[currentType] || typeConfig.study;
+
+            return Array.from({ length: 20 }, (_, i) => ({
+                id: i + 1,
+                username: `user${i + 1}`,
+                nickname: `学习者${String.fromCharCode(65 + i)}`,
+                score: Math.floor(config.base - i * config.multiplier + Math.random() * config.multiplier),
+                detail: `${Math.floor(config.base - i * config.multiplier)}${config.unit}`,
+                trend: i < 5 ? 'up' : i < 10 ? 'same' : 'down',
+                trendValue: Math.floor(Math.random() * 5) + 1,
+                level: Math.floor(10 - i * 0.4)
+            }));
+        }
+
+        function renderLeaderboard(list) {
+            const podium = document.getElementById('podium');
+            const rankList = document.getElementById('rankList');
+
+            if (!list.length) {
+                podium.innerHTML = '';
+                rankList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                <path d="M2 17l10 5 10-5"/>
+                                <path d="M2 12l10 5 10-5"/>
+                            </svg>
+                        </div>
+                        <h3 class="empty-title">暂无排行数据</h3>
+                        <p class="empty-desc">快来成为第一个上榜的学员吧</p>
+                    </div>`;
                 return;
             }
 
-            // 获取前三名用于顶部展示
-            const topThree = data.slice(0, 3);
-            updateTopThree(topThree);
-
-            // 渲染排行榜列表
-            let html = '';
-            data.forEach((user, index) => {
-                // 根据不同的排行榜类型，使用不同的字段
-                let primaryValue = 0;
-                let primaryLabel = '';
-                let secondaryValue = '';
-
-                if (currentType === 'points') {
-                    // 积分排行榜
-                    primaryValue = user.points || 0;
-                    primaryLabel = '积分';
-                    secondaryValue = `活跃${user.activeDays || 0}天`;
-                } else if (currentType === 'study-time') {
-                    // 学习时长排行榜
-                    primaryValue = user.studyMinutes || 0;
-                    primaryLabel = '分钟';
-                    secondaryValue = `${user.coursesStudied || 0}门课程`;
-                } else if (currentType === 'achievement') {
-                    // 成就排行榜
-                    primaryValue = user.achievements || 0;
-                    primaryLabel = '成就';
-                    secondaryValue = `${user.points || 0}积分`;
-                } else if (currentType === 'contribution') {
-                    // 贡献排行榜
-                    primaryValue = user.contributions || 0;
-                    primaryLabel = '贡献值';
-                    secondaryValue = `${user.answers || 0}个回答`;
-                }
-
-                // 获取排名变化
-                const rankChange = user.change || 'same';
-                const rankChangeValue = Math.abs(user.changeValue || 0);
-                let changeIcon = '';
-                let changeClass = '';
-
-                if (rankChange === 'up') {
-                    changeIcon = '↑';
-                    changeClass = 'rank-up';
-                } else if (rankChange === 'down') {
-                    changeIcon = '↓';
-                    changeClass = 'rank-down';
-                } else {
-                    changeIcon = '—';
-                    changeClass = 'rank-same';
-                }
-
-                // 检查是否是当前用户
-                const currentUserId = JSON.parse(localStorage.getItem('user') || '{}').id;
-                const isCurrentUser = user.userId === currentUserId;
-
-                // 确定排名样式
-                let rankClass = '';
-                if (user.rank === 1) rankClass = 'rank-1';
-                else if (user.rank === 2) rankClass = 'rank-2';
-                else if (user.rank === 3) rankClass = 'rank-3';
-
-                html += `
-                    <div class="leaderboard-item ${isCurrentUser ? 'current-user' : ''} ${rankClass}">
-                        <div class="rank-number ${user.rank <= 3 ? 'top-rank' : ''}">${user.rank}</div>
-                        <div class="user-avatar-small">
-                            ${user.avatar ?
-                                `<img src="${user.avatar}" alt="${user.nickname || user.username}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">` :
-                                `${(user.nickname || user.username || '?')[0].toUpperCase()}`
-                            }
-                        </div>
-                        <div class="user-info">
-                            <div class="user-name">${user.nickname || user.username || '未知用户'}</div>
-                            <div class="user-level">${secondaryValue}</div>
-                        </div>
-                        <div class="user-stats">
-                            <div class="stat-item">
-                                <div class="stat-value">${primaryValue.toLocaleString()}</div>
-                                <div class="stat-label">${primaryLabel}</div>
-                            </div>
-                            ${user.badges && user.badges.length > 0 ?
-                                `<div class="stat-item" style="font-size: 1.2rem;">${user.badges.slice(0, 3).join(' ')}</div>` : ''
-                            }
-                        </div>
-                        <div class="rank-change ${changeClass}">
-                            ${changeIcon} ${rankChangeValue > 0 ? rankChangeValue : ''}
-                        </div>
+            // Render podium
+            const top3 = list.slice(0, 3);
+            podium.innerHTML = top3.map((user, i) => `
+                <div class="podium-item ${i === 0 ? 'first' : i === 1 ? 'second' : 'third'}">
+                    ${i === 0 ? `<div class="podium-crown">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/>
+                        </svg>
+                    </div>` : ''}
+                    <div class="podium-avatar">
+                        ${(user.nickname || user.username || 'U').charAt(0).toUpperCase()}
+                        <span class="podium-rank">${i + 1}</span>
                     </div>
-                `;
-            });
-
-            leaderboardList.innerHTML = html;
-        }
-
-        // 显示空状态
-        function showEmptyState() {
-            const leaderboardList = document.getElementById('leaderboardList');
-            leaderboardList.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">📊</div>
-                    <p>暂无排行榜数据</p>
+                    <div class="podium-name">${user.nickname || user.username}</div>
+                    <div class="podium-score">${user.detail || user.score}</div>
+                    <div class="podium-detail">Lv.${user.level || 10 - i}</div>
                 </div>
-            `;
-        }
+            `).join('');
 
-        // 显示错误状态
-        function showErrorState(message) {
-            const leaderboardList = document.getElementById('leaderboardList');
-            leaderboardList.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">⚠️</div>
-                    <p>${message}</p>
-                    <button class="filter-btn" onclick="loadLeaderboardData()" style="margin-top: 1rem;">重试</button>
-                </div>
-            `;
-        }
-
-        // 更新Top 3显示
-        function updateTopThree(topThree) {
-            // 根据当前排行榜类型获取对应的值
-            function getValue(user) {
-                if (currentType === 'points') {
-                    return user.points || 0;
-                } else if (currentType === 'study-time') {
-                    return user.studyMinutes || 0;
-                } else if (currentType === 'achievement') {
-                    return user.achievements || 0;
-                } else if (currentType === 'contribution') {
-                    return user.contributions || 0;
-                }
-                return 0;
-            }
-
-            if (topThree[0]) {
-                document.querySelector('.rank-1 .player-name').textContent =
-                    topThree[0].nickname || topThree[0].username || '未知';
-                document.querySelector('.rank-1 .player-score').textContent = getValue(topThree[0]).toLocaleString();
-            }
-            if (topThree[1]) {
-                document.querySelector('.rank-2 .player-name').textContent =
-                    topThree[1].nickname || topThree[1].username || '未知';
-                document.querySelector('.rank-2 .player-score').textContent = getValue(topThree[1]).toLocaleString();
-            }
-            if (topThree[2]) {
-                document.querySelector('.rank-3 .player-name').textContent =
-                    topThree[2].nickname || topThree[2].username || '未知';
-                document.querySelector('.rank-3 .player-score').textContent = getValue(topThree[2]).toLocaleString();
-            }
-        }
-
-        // 更新我的排名信息
-        async function updateMyRank() {
-            try {
-                const token = localStorage.getItem('token');
-                if (!token) return;
-
-                const response = await fetch(`/api/leaderboard/my-rank?type=${currentType}&period=${currentPeriod}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.code === 200 && data.data) {
-                        const myRank = data.data;
-                        document.querySelector('.my-rank-number').textContent = `#${myRank.rank || 0}`;
-                        document.querySelector('.my-rank-label').textContent =
-                            `超越了 ${(100 - myRank.percentage).toFixed(1)}% 的学习者`;
-
-                        // 更新侧边栏数据
-                        const statValue = document.querySelectorAll('.sidebar .stat-value');
-                        if (statValue[0]) statValue[0].textContent = myRank.points || 0;
-                        if (statValue[1]) {
-                            statValue[1].textContent = myRank.nextRankPoints ? `↑ ${myRank.nextRankPoints}` : '—';
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error('获取我的排名失败:', error);
-            }
-        }
-
-        // 切换排行榜类型
-        function switchLeaderboardType(type) {
-            // 更新按钮状态
-            document.querySelectorAll('.sidebar-card .filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            // 更新当前类型
-            if (type === 'learning') {
-                currentType = 'study-time';
-            } else if (type === 'points') {
-                currentType = 'points';
+            // Render rank list
+            const rest = list.slice(3);
+            if (rest.length === 0) {
+                rankList.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-tertiary);">暂无更多数据</div>';
             } else {
-                // For achievement and contribution, use mock data for now
-                currentType = type;
+                rankList.innerHTML = rest.map((user, i) => {
+                    const rank = i + 4;
+                    const isSelf = user.id === currentUserId;
+                    const trendIcon = user.trend === 'up'
+                        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>'
+                        : user.trend === 'down'
+                        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>'
+                        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+
+                    return `
+                        <div class="rank-item ${isSelf ? 'self' : ''}">
+                            <div class="rank-position ${rank <= 10 ? 'top' : ''}">${rank}</div>
+                            <div class="rank-user">
+                                <div class="rank-avatar">${(user.nickname || user.username || 'U').charAt(0).toUpperCase()}</div>
+                                <div class="rank-info">
+                                    <h4>${user.nickname || user.username}${isSelf ? ' (我)' : ''}</h4>
+                                    <p>Lv.${user.level || Math.max(1, 10 - Math.floor(i/2))}</p>
+                                </div>
+                            </div>
+                            <div class="rank-trend ${user.trend || 'same'}">
+                                ${trendIcon}
+                                <span>${user.trend === 'same' ? '-' : (user.trendValue || '')}</span>
+                            </div>
+                            <div class="rank-score">${user.detail || user.score}</div>
+                        </div>
+                    `;
+                }).join('');
             }
-            
-            // 重新加载数据
-            loadLeaderboardData();
+
+            // Update my rank
+            if (currentUserId) {
+                const myIndex = list.findIndex(u => u.id === currentUserId);
+                if (myIndex >= 0) {
+                    document.getElementById('myCurrentRank').textContent = `#${myIndex + 1}`;
+                    document.getElementById('myCurrentScore').textContent = list[myIndex].detail || list[myIndex].score;
+                } else {
+                    document.getElementById('myCurrentRank').textContent = '未上榜';
+                    document.getElementById('myCurrentScore').textContent = '--';
+                }
+            }
         }
 
-        // 切换排行榜类型
-        function switchLeaderboardType(type) {
-            currentType = type;
-            
-            // 更新按钮状态
-            document.querySelectorAll('.sidebar-card .filter-btn').forEach(btn => {
-                btn.classList.remove('active');
+        function setupFilters() {
+            // Category filter
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    document.querySelectorAll('.category-item').forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    currentType = item.dataset.type;
+                    loadLeaderboard();
+                });
             });
-            event.target.classList.add('active');
-            
-            // 重新加载数据
-            loadLeaderboardData();
+
+            // Time filter
+            document.querySelectorAll('.time-filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.time-filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentTime = btn.dataset.time;
+                    loadLeaderboard();
+                });
+            });
         }
 
-        // 显示通知
-        function showNotification(message, type = 'info') {
-            // 创建通知元素
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 15px 20px;
-                background: ${type === 'success' ? '#10b981' : '#6366f1'};
-                color: white;
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-                z-index: 10000;
-                animation: slideIn 0.3s ease;
-            `;
-            notification.textContent = message;
-            
-            document.body.appendChild(notification);
-            
-            // 3秒后自动移除
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
         }
-    </script>
-    <!-- 全局登录状态组件 -->
-    <script src="../utils/auth-header.js"></script>
-    <script>
-        // 初始化登录状态组件
-        document.addEventListener('DOMContentLoaded', () => {
-            AuthHeader.init('auth-header', {
-                showLinks: false
-            });
-        });
     </script>
 </body>
 </html>

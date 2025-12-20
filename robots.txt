@@ -1,0 +1,24 @@
+# Robots.txt for AI信息未来
+# https://infofuture.online
+
+User-agent: *
+Allow: /
+
+# Allow all pages
+Allow: /home.html
+Allow: /src/pages/
+
+# Block admin/manager areas
+Disallow: /manager/
+Disallow: /api/
+
+# Block temporary and build files
+Disallow: /node_modules/
+Disallow: /dist/
+Disallow: /*.json$
+
+# Sitemap location
+Sitemap: http://infofuture.online/sitemap.xml
+
+# Crawl delay
+Crawl-delay: 1

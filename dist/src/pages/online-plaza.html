@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线广场 - AI 信息未来</title>
+    <meta name="description" content="查看在线学习者，添加好友，发起PK挑战">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .plaza-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 20px 40px;
+        }
+
+        .plaza-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .plaza-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #22c55e 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+
+        .plaza-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Stats Bar */
+        .online-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 32px;
+            padding: 20px;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-value.online {
+            color: #22c55e;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Search and Filter */
+        .search-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .filter-btn {
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Status Tabs */
+        .status-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .status-tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .status-tab:hover, .status-tab.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .status-tab .count {
+            margin-left: 6px;
+            opacity: 0.7;
+        }
+
+        /* Users Grid */
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* User Card */
+        .user-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+            border-color: var(--accent);
+        }
+
+        .user-card.online::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #22c55e, #3b82f6);
+        }
+
+        .user-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            -o-object-fit: cover;
+               object-fit: cover;
+            border: 3px solid var(--border-color);
+        }
+
+        .user-card.online .user-avatar {
+            border-color: #22c55e;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .user-level {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            color: white;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .user-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .status-emoji {
+            font-size: 1rem;
+        }
+
+        .user-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+            padding: 12px 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .user-stat {
+            text-align: center;
+        }
+
+        .user-stat-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .user-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-add-friend {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-add-friend:hover {
+            background: #4f46e5;
+        }
+
+        .btn-add-friend.added {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+        }
+
+        .btn-pk {
+            background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+            color: white;
+        }
+
+        .btn-pk:hover {
+            transform: scale(1.02);
+        }
+
+        .btn-pk:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* User Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--bg-primary);
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 450px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            border: 4px solid var(--accent);
+        }
+
+        .modal-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .modal-bio {
+            color: var(--text-secondary);
+            margin-top: 8px;
+            font-size: 0.9rem;
+        }
+
+        .modal-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin: 24px 0;
+            padding: 20px;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+        }
+
+        .modal-stat {
+            text-align: center;
+        }
+
+        .modal-stat-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .modal-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-actions .action-btn {
+            padding: 14px;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .online-stats {
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+
+            .search-bar {
+                flex-direction: column;
+            }
+
+            .users-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+  <link rel="stylesheet" href="/assets/apple-design-3a23e109.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="home.html" class="nav-logo">AI 信息未来</a>
+            <div class="nav-menu">
+                <a href="home.html" class="nav-link">首页</a>
+                <a href="courses.html" class="nav-link">课程</a>
+                <a href="online-plaza.html" class="nav-link active">广场</a>
+                <a href="pk-arena.html" class="nav-link">PK竞技</a>
+                <a href="community.html" class="nav-link">社区</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" title="切换主题">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="user-menu" id="userMenu" style="display: none;">
+                    <button class="user-avatar-btn" onclick="toggleDropdown()">
+                        <img id="userAvatar" src="" alt="avatar" style="width:36px;height:36px;border-radius:50%;">
+                    </button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <a href="dashboard.html"><i class="fas fa-chart-line"></i> 学习中心</a>
+                        <a href="profile.html"><i class="fas fa-user"></i> 个人中心</a>
+                        <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出登录</a>
+                    </div>
+                </div>
+                <a href="login.html" class="btn btn-primary" id="loginBtn">登录</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="plaza-container">
+        <div class="plaza-header">
+            <h1><i class="fas fa-users"></i> 在线广场</h1>
+            <p>发现志同道合的学习伙伴，一起成长</p>
+        </div>
+
+        <!-- Online Stats -->
+        <div class="online-stats">
+            <div class="stat-item">
+                <div class="stat-value online" id="onlineCount">0</div>
+                <div class="stat-label">当前在线</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="learningCount">0</div>
+                <div class="stat-label">正在学习</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="pkCount">0</div>
+                <div class="stat-label">PK对战中</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="friendCount">0</div>
+                <div class="stat-label">我的好友</div>
+            </div>
+        </div>
+
+        <!-- Search -->
+        <div class="search-bar">
+            <input type="text" class="search-input" id="searchInput" placeholder="搜索用户名或昵称...">
+            <button class="filter-btn" onclick="searchUsers()">
+                <i class="fas fa-search"></i> 搜索
+            </button>
+        </div>
+
+        <!-- Status Tabs -->
+        <div class="status-tabs">
+            <div class="status-tab active" data-status="" onclick="filterByStatus(this, '')">
+                全部 <span class="count" id="allCount">0</span>
+            </div>
+            <div class="status-tab" data-status="learning" onclick="filterByStatus(this, 'learning')">
+                📚 学习中
+            </div>
+            <div class="status-tab" data-status="pk" onclick="filterByStatus(this, 'pk')">
+                ⚔️ PK中
+            </div>
+            <div class="status-tab" data-status="idle" onclick="filterByStatus(this, 'idle')">
+                😊 空闲
+            </div>
+            <div class="status-tab" data-status="chatting" onclick="filterByStatus(this, 'chatting')">
+                💬 聊天中
+            </div>
+        </div>
+
+        <!-- Users Grid -->
+        <div class="users-grid" id="usersGrid">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>加载中...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Modal -->
+    <div class="modal-overlay" id="userModal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-modal" onclick="closeUserModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-header">
+                <img class="modal-avatar" id="modalAvatar" src="" alt="">
+                <div class="modal-name" id="modalName"></div>
+                <div class="user-level" id="modalLevel">Lv.1</div>
+                <div class="modal-bio" id="modalBio"></div>
+            </div>
+            <div class="modal-stats">
+                <div class="modal-stat">
+                    <div class="modal-stat-value" id="modalStudyHours">0</div>
+                    <div class="modal-stat-label">学习时长</div>
+                </div>
+                <div class="modal-stat">
+                    <div class="modal-stat-value" id="modalCourses">0</div>
+                    <div class="modal-stat-label">完成课程</div>
+                </div>
+                <div class="modal-stat">
+                    <div class="modal-stat-value" id="modalPkWins">0</div>
+                    <div class="modal-stat-label">PK胜场</div>
+                </div>
+                <div class="modal-stat">
+                    <div class="modal-stat-value" id="modalPoints">0</div>
+                    <div class="modal-stat-label">积分</div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="action-btn btn-add-friend" id="modalFriendBtn" onclick="addFriend()">
+                    <i class="fas fa-user-plus"></i> 添加好友
+                </button>
+                <button class="action-btn btn-pk" id="modalPkBtn" onclick="challengePk()">
+                    <i class="fas fa-bolt"></i> 发起PK
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let currentUser = null;
+        let currentStatus = '';
+        let selectedUserId = null;
+        let heartbeatInterval = null;
+
+        // Theme
+        const themeToggle = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateThemeIcon();
+
+        themeToggle.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            updateThemeIcon();
+        });
+
+        function updateThemeIcon() {
+            const theme = document.documentElement.getAttribute('data-theme');
+            themeToggle.innerHTML = theme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        }
+
+        // Auth
+        async function checkAuth() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+
+            if (token && user) {
+                currentUser = user;
+                document.getElementById('loginBtn').style.display = 'none';
+                document.getElementById('userMenu').style.display = 'block';
+                document.getElementById('userAvatar').src = user.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + user.username;
+
+                // Start heartbeat
+                sendHeartbeat();
+                heartbeatInterval = setInterval(sendHeartbeat, 30000);
+
+                // Load friend count
+                loadFriendCount();
+            }
+        }
+
+        function toggleDropdown() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        }
+
+        function logout() {
+            if (heartbeatInterval) clearInterval(heartbeatInterval);
+            goOffline();
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            location.reload();
+        }
+
+        // Heartbeat
+        async function sendHeartbeat() {
+            if (!currentUser) return;
+            try {
+                const token = localStorage.getItem('token');
+                await fetch(`${API_BASE}/plaza/heartbeat?status=idle`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+            } catch (e) {
+                console.error('Heartbeat failed:', e);
+            }
+        }
+
+        async function goOffline() {
+            if (!currentUser) return;
+            try {
+                const token = localStorage.getItem('token');
+                await fetch(`${API_BASE}/plaza/offline`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+            } catch (e) {}
+        }
+
+        // Load online users
+        async function loadOnlineUsers() {
+            try {
+                let url = `${API_BASE}/plaza/online-users?page=1&size=50`;
+                if (currentStatus) url += `&status=${currentStatus}`;
+
+                const res = await fetch(url);
+                const data = await res.json();
+
+                if (data.code === 200 && data.data) {
+                    renderUsers(data.data.users || []);
+                    document.getElementById('onlineCount').textContent = data.data.onlineCount || 0;
+                    document.getElementById('allCount').textContent = data.data.onlineCount || 0;
+
+                    // Count by status
+                    const users = data.data.users || [];
+                    document.getElementById('learningCount').textContent = users.filter(u => u.status === 'learning').length;
+                    document.getElementById('pkCount').textContent = users.filter(u => u.status === 'pk').length;
+                }
+            } catch (e) {
+                console.error('Load users failed:', e);
+                document.getElementById('usersGrid').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="fas fa-wifi"></i></div>
+                        <h3>加载失败</h3>
+                        <p>请检查网络连接后刷新页面</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Render users
+        function renderUsers(users) {
+            const grid = document.getElementById('usersGrid');
+
+            if (users.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <div class="empty-icon"><i class="fas fa-user-slash"></i></div>
+                        <h3>暂无在线用户</h3>
+                        <p>成为第一个在线的学习者吧！</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = users.map(user => `
+                <div class="user-card ${user.lastHeartbeat ? 'online' : ''}" onclick="showUserModal(${user.userId})">
+                    <div class="user-header">
+                        <img class="user-avatar" src="${user.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + user.username}" alt="">
+                        <div class="user-info">
+                            <div class="user-name">
+                                ${user.nickname || user.username}
+                                ${user.lastHeartbeat ? '<span class="online-dot"></span>' : ''}
+                            </div>
+                            <span class="user-level">Lv.${user.level || 1}</span>
+                            <div class="user-status">
+                                <span class="status-emoji">${user.statusEmoji || '😊'}</span>
+                                <span>${user.statusDescription || getStatusText(user.status)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-stats">
+                        <div class="user-stat">
+                            <div class="user-stat-value">${user.level || 1}</div>
+                            <div class="user-stat-label">等级</div>
+                        </div>
+                        <div class="user-stat">
+                            <div class="user-stat-value">${Math.floor((user.onlineDuration || 0) / 60)}</div>
+                            <div class="user-stat-label">在线(分)</div>
+                        </div>
+                        <div class="user-stat">
+                            <div class="user-stat-value">${user.status === 'pk' ? '⚔️' : user.status === 'learning' ? '📚' : '✓'}</div>
+                            <div class="user-stat-label">状态</div>
+                        </div>
+                    </div>
+                    <div class="user-actions" onclick="event.stopPropagation()">
+                        <button class="action-btn btn-add-friend" onclick="quickAddFriend(${user.userId}, this)">
+                            <i class="fas fa-user-plus"></i> 加好友
+                        </button>
+                        <button class="action-btn btn-pk" onclick="quickChallenge(${user.userId})" ${user.status === 'pk' ? 'disabled' : ''}>
+                            <i class="fas fa-bolt"></i> PK
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getStatusText(status) {
+            const texts = {
+                'learning': '正在学习',
+                'pk': 'PK对战中',
+                'chatting': '聊天中',
+                'idle': '空闲中',
+                'completed': '刚完成课程',
+                'streak': '连续学习中'
+            };
+            return texts[status] || '在线';
+        }
+
+        // Filter by status
+        function filterByStatus(el, status) {
+            document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            currentStatus = status;
+            loadOnlineUsers();
+        }
+
+        // Search users
+        async function searchUsers() {
+            const keyword = document.getElementById('searchInput').value.trim();
+            if (!keyword) {
+                loadOnlineUsers();
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/plaza/search?keyword=${encodeURIComponent(keyword)}`);
+                const data = await res.json();
+
+                if (data.code === 200 && data.data) {
+                    renderSearchResults(data.data);
+                }
+            } catch (e) {
+                console.error('Search failed:', e);
+            }
+        }
+
+        function renderSearchResults(users) {
+            const grid = document.getElementById('usersGrid');
+
+            if (users.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <div class="empty-icon"><i class="fas fa-search"></i></div>
+                        <h3>未找到用户</h3>
+                        <p>试试其他关键词</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = users.map(user => `
+                <div class="user-card ${user.isOnline ? 'online' : ''}" onclick="showUserModal(${user.id})">
+                    <div class="user-header">
+                        <img class="user-avatar" src="${user.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + user.username}" alt="">
+                        <div class="user-info">
+                            <div class="user-name">
+                                ${user.nickname || user.username}
+                                ${user.isOnline ? '<span class="online-dot"></span>' : ''}
+                            </div>
+                            <span class="user-level">Lv.${user.level || 1}</span>
+                            <div class="user-status">
+                                <span class="status-emoji">${user.status_emoji || '😊'}</span>
+                                <span>${user.isOnline ? '在线' : '离线'}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-actions" onclick="event.stopPropagation()">
+                        <button class="action-btn btn-add-friend" onclick="quickAddFriend(${user.id}, this)">
+                            <i class="fas fa-user-plus"></i> 加好友
+                        </button>
+                        <button class="action-btn btn-pk" onclick="quickChallenge(${user.id})" ${!user.isOnline ? 'disabled' : ''}>
+                            <i class="fas fa-bolt"></i> PK
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Show user modal
+        async function showUserModal(userId) {
+            if (!currentUser) {
+                alert('请先登录');
+                return;
+            }
+
+            selectedUserId = userId;
+
+            try {
+                const token = localStorage.getItem('token');
+                const res = await fetch(`${API_BASE}/plaza/user/${userId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.code === 200 && data.data) {
+                    const user = data.data;
+
+                    document.getElementById('modalAvatar').src = user.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + user.username;
+                    document.getElementById('modalName').textContent = user.nickname || user.username;
+                    document.getElementById('modalLevel').textContent = 'Lv.' + (user.level || 1);
+                    document.getElementById('modalBio').textContent = user.bio || '这个人很懒，什么都没写~';
+                    document.getElementById('modalStudyHours').textContent = Math.floor((user.studyMinutes || 0) / 60) + 'h';
+                    document.getElementById('modalCourses').textContent = user.coursesCompleted || 0;
+                    document.getElementById('modalPkWins').textContent = user.pkWins || 0;
+                    document.getElementById('modalPoints').textContent = user.points || 0;
+
+                    // Update buttons
+                    const friendBtn = document.getElementById('modalFriendBtn');
+                    const pkBtn = document.getElementById('modalPkBtn');
+
+                    if (user.isFriend) {
+                        friendBtn.innerHTML = '<i class="fas fa-check"></i> 已是好友';
+                        friendBtn.classList.add('added');
+                        friendBtn.disabled = true;
+                    } else if (user.hasPendingRequest) {
+                        friendBtn.innerHTML = '<i class="fas fa-clock"></i> 已发送请求';
+                        friendBtn.classList.add('added');
+                        friendBtn.disabled = true;
+                    } else {
+                        friendBtn.innerHTML = '<i class="fas fa-user-plus"></i> 添加好友';
+                        friendBtn.classList.remove('added');
+                        friendBtn.disabled = false;
+                    }
+
+                    pkBtn.disabled = !user.isOnline;
+
+                    document.getElementById('userModal').classList.add('show');
+                }
+            } catch (e) {
+                console.error('Load user profile failed:', e);
+            }
+        }
+
+        function closeUserModal() {
+            document.getElementById('userModal').classList.remove('show');
+        }
+
+        function closeModal(event) {
+            if (event.target === document.getElementById('userModal')) {
+                closeUserModal();
+            }
+        }
+
+        // Add friend
+        async function addFriend() {
+            if (!currentUser || !selectedUserId) return;
+
+            try {
+                const token = localStorage.getItem('token');
+                const res = await fetch(`${API_BASE}/pk/friends/request?senderId=${currentUser.id}&receiverId=${selectedUserId}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.code === 200) {
+                    const btn = document.getElementById('modalFriendBtn');
+                    btn.innerHTML = '<i class="fas fa-check"></i> 已发送请求';
+                    btn.classList.add('added');
+                    btn.disabled = true;
+                    alert('好友请求已发送！');
+                } else {
+                    alert(data.message || '发送失败');
+                }
+            } catch (e) {
+                console.error('Add friend failed:', e);
+                alert('网络错误，请重试');
+            }
+        }
+
+        async function quickAddFriend(userId, btn) {
+            if (!currentUser) {
+                alert('请先登录');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                const res = await fetch(`${API_BASE}/pk/friends/request?senderId=${currentUser.id}&receiverId=${userId}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.code === 200) {
+                    btn.innerHTML = '<i class="fas fa-check"></i> 已发送';
+                    btn.classList.add('added');
+                    btn.disabled = true;
+                } else {
+                    alert(data.message || '发送失败');
+                }
+            } catch (e) {
+                console.error('Add friend failed:', e);
+            }
+        }
+
+        // Challenge PK
+        function challengePk() {
+            if (!currentUser || !selectedUserId) return;
+            window.location.href = `pk-arena.html?challenge=${selectedUserId}`;
+        }
+
+        function quickChallenge(userId) {
+            if (!currentUser) {
+                alert('请先登录');
+                return;
+            }
+            window.location.href = `pk-arena.html?challenge=${userId}`;
+        }
+
+        // Load friend count
+        async function loadFriendCount() {
+            if (!currentUser) return;
+
+            try {
+                const token = localStorage.getItem('token');
+                const res = await fetch(`${API_BASE}/pk/friends/stats?userId=${currentUser.id}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.code === 200 && data.data) {
+                    document.getElementById('friendCount').textContent = data.data.friendCount || 0;
+                }
+            } catch (e) {}
+        }
+
+        // Enter key search
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') searchUsers();
+        });
+
+        // Click outside dropdown
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-menu')) {
+                const d = document.getElementById('userDropdown');
+                if (d) d.classList.remove('show');
+            }
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', goOffline);
+
+        // Init
+        checkAuth();
+        loadOnlineUsers();
+
+        // Refresh every 30 seconds
+        setInterval(loadOnlineUsers, 30000);
+    </script>
+</body>
+</html>

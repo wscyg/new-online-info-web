@@ -1,151 +1,172 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的2025学习报告 - AI未来学院</title>
+    <title>我的2025学习报告 - AI 信息未来</title>
+    <!-- Apple Design CSS -->
+    <link rel="stylesheet" href="../styles/apple-design.css">
     <!-- html2canvas -->
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <!-- API配置 -->
+    <!-- API Config -->
     <script src="../config/api-config.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* Additional styles for annual report */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            overflow-x: hidden;
+            padding-top: 48px;
+            background: var(--bg-secondary);
         }
 
-        .container {
-            max-width: 600px;
+        /* Report Container */
+        .report-container {
+            max-width: 680px;
             margin: 0 auto;
+            padding: 48px 22px 80px;
         }
 
-        /* 年度报告卡片 */
+        /* Report Card */
         .report-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 2rem;
-            padding: 3rem 2rem;
-            position: relative;
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border-color);
             overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: var(--shadow-card);
         }
 
-        /* 装饰性背景 */
-        .card-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            opacity: 0.1;
-            background-image:
-                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
-        }
-
-        .card-content {
-            position: relative;
-            z-index: 1;
-            color: white;
-        }
-
-        /* 标题区域 */
+        /* Report Header */
         .report-header {
             text-align: center;
-            margin-bottom: 3rem;
+            padding: 56px 32px 40px;
+            background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
         }
 
         .report-year {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            margin-bottom: 0.5rem;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-tertiary);
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
         }
 
         .report-title {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            font-size: 40px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            color: var(--text-primary);
+            margin-bottom: 8px;
         }
 
         .report-subtitle {
-            font-size: 1.1rem;
-            opacity: 0.9;
+            font-size: 19px;
+            color: var(--text-secondary);
         }
 
-        /* 统计数据区域 */
+        /* Stats Grid */
+        .stats-section {
+            padding: 40px 32px;
+        }
+
         .stats-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            margin-bottom: 3rem;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
         }
 
         .stat-card {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            border-radius: 1.5rem;
-            padding: 2rem;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 32px 20px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
         }
 
         .stat-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon svg {
+            width: 32px;
+            height: 32px;
+            stroke: var(--accent);
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
         .stat-value {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
+            font-size: 40px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+            margin-bottom: 4px;
         }
 
         .stat-label {
-            font-size: 1rem;
-            opacity: 0.9;
+            font-size: 15px;
+            color: var(--text-secondary);
         }
 
-        /* 高光时刻 */
-        .highlights {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            border-radius: 1.5rem;
-            padding: 2rem;
-            margin-bottom: 3rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        /* Highlights Section */
+        .highlights-section {
+            padding: 40px 32px;
+            border-top: 1px solid var(--border-color);
         }
 
-        .highlights-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 1.5rem;
-            text-align: center;
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 24px;
         }
 
         .highlight-item {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 1rem;
-            margin-bottom: 1rem;
+            gap: 16px;
+            padding: 20px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            margin-bottom: 12px;
+            transition: transform var(--transition-fast);
+        }
+
+        .highlight-item:hover {
+            transform: translateX(4px);
         }
 
         .highlight-icon {
-            font-size: 2rem;
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-card);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .highlight-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--accent);
+            fill: none;
+            stroke-width: 2;
         }
 
         .highlight-text {
@@ -153,43 +174,39 @@
         }
 
         .highlight-label {
-            font-size: 0.9rem;
-            opacity: 0.8;
-            margin-bottom: 0.3rem;
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-bottom: 4px;
         }
 
         .highlight-value {
-            font-size: 1.2rem;
-            font-weight: bold;
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-primary);
         }
 
-        /* 成长轨迹 */
-        .growth-track {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            border-radius: 1.5rem;
-            padding: 2rem;
-            margin-bottom: 3rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        /* Growth Track Section */
+        .growth-section {
+            padding: 40px 32px;
+            border-top: 1px solid var(--border-color);
         }
 
-        .growth-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 1.5rem;
-            text-align: center;
+        .growth-chart-container {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            margin-bottom: 24px;
         }
 
         .growth-chart {
             width: 100%;
             height: 200px;
-            margin-bottom: 1rem;
         }
 
         .growth-timeline {
             display: flex;
             justify-content: space-between;
-            margin-top: 1rem;
         }
 
         .timeline-item {
@@ -198,340 +215,407 @@
         }
 
         .timeline-month {
-            font-size: 0.9rem;
-            opacity: 0.8;
-            margin-bottom: 0.3rem;
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-bottom: 4px;
         }
 
         .timeline-status {
-            font-size: 1rem;
-            font-weight: bold;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
         }
 
-        /* 年度关键词 */
-        .keywords {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            border-radius: 1.5rem;
-            padding: 2rem;
-            margin-bottom: 3rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        /* Keywords Section */
+        .keywords-section {
+            padding: 40px 32px;
+            border-top: 1px solid var(--border-color);
             text-align: center;
-        }
-
-        .keywords-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 1.5rem;
         }
 
         .keywords-list {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 1rem;
+            gap: 12px;
         }
 
         .keyword-tag {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 0.8rem 1.5rem;
-            border-radius: 2rem;
-            font-size: 1.1rem;
-            font-weight: bold;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
         }
 
-        /* 排名超越 */
-        .ranking {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            border-radius: 1.5rem;
-            padding: 2rem;
-            margin-bottom: 3rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        /* Ranking Section */
+        .ranking-section {
+            padding: 40px 32px;
+            border-top: 1px solid var(--border-color);
             text-align: center;
         }
 
         .ranking-text {
-            font-size: 1.3rem;
-            margin-bottom: 1rem;
+            font-size: 17px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
         }
 
         .ranking-percent {
-            font-size: 3rem;
-            font-weight: bold;
-            color: #ffd700;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            font-size: 64px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #0071e3 0%, #00c7be 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
         }
 
-        /* 底部品牌 */
+        /* Footer Section */
         .report-footer {
+            padding: 40px 32px;
+            border-top: 1px solid var(--border-color);
             text-align: center;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .footer-logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
         }
 
         .footer-text {
-            font-size: 0.9rem;
-            opacity: 0.8;
+            font-size: 15px;
+            color: var(--text-secondary);
         }
 
-        /* 按钮组 */
-        .button-container {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(20px);
-            border-radius: 1.5rem;
-            padding: 2rem;
-            margin-top: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        /* Actions */
+        .report-actions {
+            max-width: 680px;
+            margin: 24px auto 0;
+            padding: 0 22px;
         }
 
         .button-group {
             display: flex;
-            gap: 1rem;
+            gap: 12px;
         }
 
-        .btn {
+        .report-actions .btn {
             flex: 1;
-            padding: 1rem;
-            border: none;
-            border-radius: 1rem;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
+        .action-hint {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-top: 16px;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.6);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-3px);
-        }
-
-        /* 加载动画 */
-        .loading {
+        /* Loading State */
+        .loading-state {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 400px;
-            color: white;
+            text-align: center;
         }
 
-        .loading-spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid white;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin-bottom: 1rem;
+        .loading-state .spinner {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 16px;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .loading-text {
+            font-size: 17px;
+            color: var(--text-secondary);
         }
 
-        /* Toast提示 */
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(16, 185, 129, 0.95);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-            z-index: 10000;
-            opacity: 0;
-            transform: translateY(-20px);
-            transition: all 0.3s ease;
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* 隐藏按钮容器（截图时） */
-        .screenshot .button-container {
+        /* Hide actions in screenshot mode */
+        .screenshot .report-actions {
             display: none;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s var(--ease-out) both;
+        }
+
+        .fade-in-up-delay-1 { animation-delay: 0.1s; }
+        .fade-in-up-delay-2 { animation-delay: 0.2s; }
+        .fade-in-up-delay-3 { animation-delay: 0.3s; }
+        .fade-in-up-delay-4 { animation-delay: 0.4s; }
+        .fade-in-up-delay-5 { animation-delay: 0.5s; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .report-container {
+                padding: 32px 16px 64px;
+            }
+
+            .report-header {
+                padding: 40px 24px 32px;
+            }
+
+            .report-title {
+                font-size: 32px;
+            }
+
+            .stats-section,
+            .highlights-section,
+            .growth-section,
+            .keywords-section,
+            .ranking-section,
+            .report-footer {
+                padding: 32px 24px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .ranking-percent {
+                font-size: 48px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container" id="container">
-        <!-- 加载状态 -->
-        <div class="loading" id="loading">
-            <div class="loading-spinner"></div>
-            <p>正在生成您的年度学习报告...</p>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="dashboard.html" class="nav-logo">AI 信息未来</a>
+            <div class="nav-menu">
+                <a href="dashboard.html" class="nav-link">首页</a>
+                <a href="courses.html" class="nav-link">课程</a>
+                <a href="community.html" class="nav-link">社区</a>
+                <a href="pk-arena.html" class="nav-link">PK竞技</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="report-container" id="container">
+        <!-- Loading State -->
+        <div class="loading-state" id="loading">
+            <div class="spinner"></div>
+            <p class="loading-text">正在生成您的年度学习报告...</p>
         </div>
 
-        <!-- 年度报告 -->
+        <!-- Report Card -->
         <div class="report-card" id="reportCard" style="display: none;">
-            <div class="card-bg"></div>
-            <div class="card-content">
-                <!-- 标题 -->
-                <div class="report-header">
-                    <div class="report-year" id="reportYear">2025</div>
-                    <div class="report-title">📊 我的年度学习报告</div>
-                    <div class="report-subtitle" id="userName">学习者</div>
-                </div>
+            <!-- Header -->
+            <div class="report-header">
+                <div class="report-year" id="reportYear">2025</div>
+                <h1 class="report-title">年度学习报告</h1>
+                <p class="report-subtitle" id="userName">学习者</p>
+            </div>
 
-                <!-- 核心数据 -->
+            <!-- Core Stats -->
+            <div class="stats-section">
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-icon">⏱️</div>
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
                         <div class="stat-value" id="totalHours">128</div>
                         <div class="stat-label">学习时长（小时）</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon">📚</div>
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                        </div>
                         <div class="stat-value" id="completedCourses">12</div>
                         <div class="stat-label">完成课程</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon">🎓</div>
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                        </div>
                         <div class="stat-value" id="certificates">8</div>
                         <div class="stat-label">获得证书</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon">💎</div>
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        </div>
                         <div class="stat-value" id="totalPoints">5280</div>
                         <div class="stat-label">累计积分</div>
                     </div>
                 </div>
+            </div>
 
-                <!-- 高光时刻 -->
-                <div class="highlights">
-                    <div class="highlights-title">🏆 高光时刻</div>
-                    <div class="highlight-item">
-                        <div class="highlight-icon">🎯</div>
-                        <div class="highlight-text">
-                            <div class="highlight-label">PK最高连胜</div>
-                            <div class="highlight-value" id="pkStreak">15场</div>
-                        </div>
+            <!-- Highlights -->
+            <div class="highlights-section">
+                <h2 class="section-title">高光时刻</h2>
+                <div class="highlight-item">
+                    <div class="highlight-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
                     </div>
-                    <div class="highlight-item">
-                        <div class="highlight-icon">👑</div>
-                        <div class="highlight-text">
-                            <div class="highlight-label">最高段位</div>
-                            <div class="highlight-value" id="pkRank">钻石3</div>
-                        </div>
-                    </div>
-                    <div class="highlight-item">
-                        <div class="highlight-icon">🔥</div>
-                        <div class="highlight-text">
-                            <div class="highlight-label">连续签到</div>
-                            <div class="highlight-value" id="checkinStreak">100天</div>
-                        </div>
-                    </div>
-                    <div class="highlight-item">
-                        <div class="highlight-icon">⭐</div>
-                        <div class="highlight-text">
-                            <div class="highlight-label">稀有成就</div>
-                            <div class="highlight-value" id="rareAchievement">学习狂魔</div>
-                        </div>
+                    <div class="highlight-text">
+                        <div class="highlight-label">PK最高连胜</div>
+                        <div class="highlight-value" id="pkStreak">15场</div>
                     </div>
                 </div>
+                <div class="highlight-item">
+                    <div class="highlight-icon">
+                        <svg viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>
+                    </div>
+                    <div class="highlight-text">
+                        <div class="highlight-label">最高段位</div>
+                        <div class="highlight-value" id="pkRank">钻石3</div>
+                    </div>
+                </div>
+                <div class="highlight-item">
+                    <div class="highlight-icon">
+                        <svg viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                    </div>
+                    <div class="highlight-text">
+                        <div class="highlight-label">连续签到</div>
+                        <div class="highlight-value" id="checkinStreak">100天</div>
+                    </div>
+                </div>
+                <div class="highlight-item">
+                    <div class="highlight-icon">
+                        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    </div>
+                    <div class="highlight-text">
+                        <div class="highlight-label">稀有成就</div>
+                        <div class="highlight-value" id="rareAchievement">学习狂魔</div>
+                    </div>
+                </div>
+            </div>
 
-                <!-- 成长轨迹 -->
-                <div class="growth-track">
-                    <div class="growth-title">📈 成长轨迹</div>
+            <!-- Growth Track -->
+            <div class="growth-section">
+                <h2 class="section-title">成长轨迹</h2>
+                <div class="growth-chart-container">
                     <canvas id="growthChart" class="growth-chart"></canvas>
-                    <div class="growth-timeline">
-                        <div class="timeline-item">
-                            <div class="timeline-month">1月</div>
-                            <div class="timeline-status" id="status1">入门</div>
-                        </div>
-                        <div class="timeline-item">
-                            <div class="timeline-month">6月</div>
-                            <div class="timeline-status" id="status6">进阶</div>
-                        </div>
-                        <div class="timeline-item">
-                            <div class="timeline-month">12月</div>
-                            <div class="timeline-status" id="status12">精通</div>
-                        </div>
+                </div>
+                <div class="growth-timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-month">1月</div>
+                        <div class="timeline-status" id="status1">入门</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-month">6月</div>
+                        <div class="timeline-status" id="status6">进阶</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-month">12月</div>
+                        <div class="timeline-status" id="status12">精通</div>
                     </div>
                 </div>
+            </div>
 
-                <!-- 年度关键词 -->
-                <div class="keywords">
-                    <div class="keywords-title">🎁 年度关键词</div>
-                    <div class="keywords-list">
-                        <div class="keyword-tag" id="keyword1">#坚持学习</div>
-                        <div class="keyword-tag" id="keyword2">#技术成长</div>
-                        <div class="keyword-tag" id="keyword3">#追求卓越</div>
-                    </div>
-                </div>
-
-                <!-- 排名 -->
-                <div class="ranking">
-                    <div class="ranking-text">您的学习表现超越了</div>
-                    <div class="ranking-percent" id="rankingPercent">89%</div>
-                    <div class="ranking-text">的学员</div>
-                </div>
-
-                <!-- 底部 -->
-                <div class="report-footer">
-                    <div class="footer-logo">🎓 AI未来学院</div>
-                    <div class="footer-text">感谢您的陪伴，期待2026更加精彩！</div>
+            <!-- Keywords -->
+            <div class="keywords-section">
+                <h2 class="section-title">年度关键词</h2>
+                <div class="keywords-list">
+                    <div class="keyword-tag" id="keyword1">#坚持学习</div>
+                    <div class="keyword-tag" id="keyword2">#技术成长</div>
+                    <div class="keyword-tag" id="keyword3">#追求卓越</div>
                 </div>
             </div>
-        </div>
 
-        <!-- 按钮组 -->
-        <div class="button-container" style="display: none;" id="buttonContainer">
-            <div class="button-group">
-                <button class="btn btn-primary" onclick="generateShareImage()">
-                    📸 生成分享图片
-                </button>
-                <button class="btn btn-secondary" onclick="goBack()">
-                    ← 返回首页
-                </button>
+            <!-- Ranking -->
+            <div class="ranking-section">
+                <p class="ranking-text">您的学习表现超越了</p>
+                <div class="ranking-percent" id="rankingPercent">89%</div>
+                <p class="ranking-text">的学员</p>
             </div>
-            <p style="text-align: center; color: rgba(255,255,255,0.8); margin-top: 1rem; font-size: 0.9rem;">
-                💡 点击生成按钮，下载精美年度报告分享给好友
-            </p>
+
+            <!-- Footer -->
+            <div class="report-footer">
+                <div class="footer-logo">AI 信息未来</div>
+                <div class="footer-text">感谢您的陪伴，期待2026更加精彩</div>
+            </div>
         </div>
     </div>
 
-    <!-- Toast提示 -->
+    <!-- Actions -->
+    <div class="report-actions" id="buttonContainer" style="display: none;">
+        <div class="button-group">
+            <button class="btn btn-primary" onclick="generateShareImage()">生成分享图片</button>
+            <button class="btn btn-secondary" onclick="goBack()">返回首页</button>
+        </div>
+        <p class="action-hint">点击生成按钮，下载精美年度报告分享给好友</p>
+    </div>
+
+    <!-- Toast -->
     <div class="toast" id="toast"></div>
 
     <script>
+        // Theme Management
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Toast
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Report Data
         let reportData = null;
         let growthChartInstance = null;
 
-        // 页面加载
+        // Initialize on load
         document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
             loadAnnualReport();
         });
 
-        // 加载年度报告数据
+        // Load Annual Report
         async function loadAnnualReport() {
             try {
                 const token = apiClient.getToken();
@@ -540,16 +624,16 @@
                     return;
                 }
 
-                // 并发请求多个API获取数据
+                // Fetch data from multiple APIs
                 const [userProfile, learningStats, pkStats, checkinStats, achievements] = await Promise.all([
                     apiClient.get(API_ENDPOINTS.USER.PROFILE),
-                    apiClient.get('/learning/annual-stats'), // 需要后端实现
+                    apiClient.get('/learning/annual-stats'),
                     apiClient.get('/pk/my-stats'),
                     apiClient.get(API_ENDPOINTS.CHECKIN.STATS),
                     apiClient.get(API_ENDPOINTS.ACHIEVEMENT.LIST)
                 ]);
 
-                // 整合数据
+                // Consolidate data
                 reportData = {
                     year: new Date().getFullYear(),
                     userName: userProfile.data.username || '学习者',
@@ -567,23 +651,21 @@
                 };
 
                 renderReport();
-
             } catch (error) {
                 console.error('加载年度报告失败:', error);
-
-                // 使用模拟数据
+                // Use mock data as fallback
                 reportData = generateMockData();
                 renderReport();
             }
         }
 
-        // 渲染报告
+        // Render Report
         function renderReport() {
             document.getElementById('loading').style.display = 'none';
             document.getElementById('reportCard').style.display = 'block';
             document.getElementById('buttonContainer').style.display = 'block';
 
-            // 填充数据
+            // Fill data
             document.getElementById('reportYear').textContent = reportData.year;
             document.getElementById('userName').textContent = reportData.userName;
             document.getElementById('totalHours').textContent = reportData.totalHours;
@@ -596,30 +678,35 @@
             document.getElementById('rareAchievement').textContent = reportData.rareAchievement;
             document.getElementById('rankingPercent').textContent = reportData.rankingPercent + '%';
 
-            // 关键词
+            // Keywords
             reportData.keywords.forEach((keyword, index) => {
                 const elem = document.getElementById(`keyword${index + 1}`);
                 if (elem) elem.textContent = keyword;
             });
 
-            // 成长轨迹图表
+            // Render chart
             renderGrowthChart();
 
-            // 添加动画效果
+            // Add animations
             setTimeout(() => {
-                document.querySelectorAll('.stat-card, .highlights, .growth-track, .keywords, .ranking').forEach((elem, index) => {
-                    elem.style.animation = `fadeInUp 0.6s ease-out ${index * 0.1}s both`;
+                const sections = document.querySelectorAll('.stats-section, .highlights-section, .growth-section, .keywords-section, .ranking-section');
+                sections.forEach((section, index) => {
+                    section.classList.add('fade-in-up', `fade-in-up-delay-${index + 1}`);
                 });
             }, 100);
         }
 
-        // 渲染成长图表
+        // Render Growth Chart
         function renderGrowthChart() {
             const ctx = document.getElementById('growthChart').getContext('2d');
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
 
             if (growthChartInstance) {
                 growthChartInstance.destroy();
             }
+
+            const textColor = isDark ? 'rgba(245, 245, 247, 0.8)' : 'rgba(29, 29, 31, 0.8)';
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)';
 
             growthChartInstance = new Chart(ctx, {
                 type: 'line',
@@ -628,55 +715,57 @@
                     datasets: [{
                         label: '学习时长（小时）',
                         data: reportData.growthData,
-                        borderColor: 'rgba(255, 255, 255, 0.8)',
-                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                        borderWidth: 3,
+                        borderColor: '#0071e3',
+                        backgroundColor: 'rgba(0, 113, 227, 0.1)',
+                        borderWidth: 2,
                         tension: 0.4,
-                        fill: true
+                        fill: true,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#0071e3',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            display: false
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: isDark ? '#1d1d1f' : '#ffffff',
+                            titleColor: textColor,
+                            bodyColor: textColor,
+                            borderColor: gridColor,
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false
                         }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: {
-                                color: 'rgba(255, 255, 255, 0.8)'
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            }
+                            ticks: { color: textColor, font: { size: 12 } },
+                            grid: { color: gridColor, drawBorder: false }
                         },
                         x: {
-                            ticks: {
-                                color: 'rgba(255, 255, 255, 0.8)'
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            }
+                            ticks: { color: textColor, font: { size: 12 } },
+                            grid: { color: gridColor, drawBorder: false }
                         }
                     }
                 }
             });
         }
 
-        // 生成分享图片
+        // Generate Share Image
         async function generateShareImage() {
             const loading = document.getElementById('loading');
             loading.style.display = 'flex';
-            loading.querySelector('p').textContent = '正在生成分享图片...';
+            loading.querySelector('.loading-text').textContent = '正在生成分享图片...';
 
-            // 隐藏按钮
             document.getElementById('container').classList.add('screenshot');
 
             try {
-                await new Promise(resolve => setTimeout(resolve, 500)); // 等待DOM更新
+                await new Promise(resolve => setTimeout(resolve, 500));
 
                 const reportCard = document.getElementById('reportCard');
                 const canvas = await html2canvas(reportCard, {
@@ -687,49 +776,29 @@
                 });
 
                 const dataUrl = canvas.toDataURL('image/png');
-                downloadImage(dataUrl, `年度学习报告-${reportData.year}.png`);
+                const link = document.createElement('a');
+                link.href = dataUrl;
+                link.download = `年度学习报告-${reportData.year}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
 
-                showToast('✅ 图片已生成！请查看下载文件夹');
-
+                showToast('图片已生成，请查看下载文件夹');
             } catch (error) {
                 console.error('生成图片失败:', error);
-                showToast('❌ 生成失败，请重试', 'error');
+                showToast('生成失败，请重试');
             } finally {
                 document.getElementById('container').classList.remove('screenshot');
                 loading.style.display = 'none';
             }
         }
 
-        // 下载图片
-        function downloadImage(dataUrl, filename) {
-            const link = document.createElement('a');
-            link.href = dataUrl;
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        // 显示Toast
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.style.background = type === 'success'
-                ? 'rgba(16, 185, 129, 0.95)'
-                : 'rgba(239, 68, 68, 0.95)';
-            toast.classList.add('show');
-
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        // 返回首页
+        // Go Back
         function goBack() {
             window.location.href = 'dashboard.html';
         }
 
-        // 工具函数
+        // Utility Functions
         function calculateTotalHours(stats) {
             return stats?.totalMinutes ? Math.floor(stats.totalMinutes / 60) : 128;
         }
@@ -769,22 +838,6 @@
                 rankingPercent: 89
             };
         }
-
-        // 添加动画
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes fadeInUp {
-                from {
-                    opacity: 0;
-                    transform: translateY(30px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>

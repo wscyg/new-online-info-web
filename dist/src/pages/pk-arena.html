@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PK竞技场 - AI 信息未来</title>
+    
+    <style>
+        /* Hero */
+        .arena-hero {
+            min-height: 500px;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            padding: 120px 0 80px;
+        }
+        .arena-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 50%, rgba(99, 102, 241, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 50%, rgba(236, 72, 153, 0.3) 0%, transparent 50%);
+            animation: pulse 8s ease-in-out infinite alternate;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+        .arena-hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            color: white;
+        }
+        .arena-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 30px;
+            font-size: 13px;
+            margin-bottom: 24px;
+            backdrop-filter: blur(10px);
+        }
+        .arena-badge svg {
+            width: 16px;
+            height: 16px;
+            color: #fbbf24;
+        }
+        .arena-title {
+            font-size: 56px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            background: linear-gradient(to right, #fff, #c7d2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+        .arena-subtitle {
+            font-size: 20px;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .arena-stats {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            margin-bottom: 40px;
+        }
+        .arena-stat {
+            text-align: center;
+        }
+        .arena-stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: white;
+        }
+        .arena-stat-label {
+            font-size: 14px;
+            color: rgba(255,255,255,0.6);
+            margin-top: 4px;
+        }
+        .match-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 40px;
+            background: linear-gradient(135deg, #f59e0b 0%, #ec4899 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 32px rgba(245, 158, 11, 0.4);
+        }
+        .match-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(245, 158, 11, 0.5);
+        }
+        .match-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* My Stats Card */
+        .my-stats-card {
+            background: var(--bg-primary);
+            border-radius: 24px;
+            padding: 32px;
+            margin-top: -60px;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        .my-stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .my-stats-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .my-rank-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            border-radius: 16px;
+            background: var(--bg-secondary);
+        }
+        .rank-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+        .rank-icon.bronze { background: linear-gradient(135deg, #cd7f32, #8b4513); }
+        .rank-icon.silver { background: linear-gradient(135deg, #c0c0c0, #808080); }
+        .rank-icon.gold { background: linear-gradient(135deg, #ffd700, #ff8c00); }
+        .rank-icon.platinum { background: linear-gradient(135deg, #00cec9, #0984e3); }
+        .rank-icon.diamond { background: linear-gradient(135deg, #74b9ff, #a29bfe); }
+        .rank-icon.master { background: linear-gradient(135deg, #e84393, #6c5ce7); }
+        .rank-icon.challenger { background: linear-gradient(135deg, #ff6b6b, #ffd93d); }
+        .rank-info h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .rank-info p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .my-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+        }
+        @media (max-width: 768px) {
+            .my-stats-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        .stat-box {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-box-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .stat-box-value.elo { color: var(--accent); }
+        .stat-box-value.wins { color: #10b981; }
+        .stat-box-value.losses { color: #ef4444; }
+        .stat-box-label {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+        }
+
+        /* Tabs */
+        .arena-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 32px;
+            background: var(--bg-secondary);
+            padding: 6px;
+            border-radius: 16px;
+            width: -moz-fit-content;
+            width: fit-content;
+        }
+        .arena-tab {
+            padding: 12px 24px;
+            border-radius: 12px;
+            background: transparent;
+            border: none;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .arena-tab.active {
+            background: var(--accent);
+            color: white;
+        }
+        .arena-tab:hover:not(.active) {
+            background: var(--bg-tertiary);
+        }
+        .tab-panel {
+            display: none;
+        }
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* Match Form */
+        .match-form {
+            background: var(--bg-primary);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .match-form h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .form-row {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        .form-select, .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 15px;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+        .form-select:focus, .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--accent), #6366f1);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+            margin-top: 24px;
+        }
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+        }
+        .submit-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Leaderboard */
+        .leaderboard {
+            background: var(--bg-primary);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        }
+        .leaderboard-header {
+            padding: 20px 24px;
+            background: linear-gradient(135deg, #1e3a5f 0%, #0f2744 100%);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .leaderboard-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .leaderboard-season {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        .leaderboard-list {
+            padding: 0;
+        }
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+        .leaderboard-item:hover {
+            background: var(--bg-secondary);
+        }
+        .leaderboard-item:last-child {
+            border-bottom: none;
+        }
+        .leaderboard-rank {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .leaderboard-rank.gold {
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            color: white;
+        }
+        .leaderboard-rank.silver {
+            background: linear-gradient(135deg, #c0c0c0, #808080);
+            color: white;
+        }
+        .leaderboard-rank.bronze {
+            background: linear-gradient(135deg, #cd7f32, #8b4513);
+            color: white;
+        }
+        .leaderboard-rank.normal {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+        }
+        .leaderboard-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .leaderboard-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .leaderboard-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .leaderboard-tier {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+        .leaderboard-stats {
+            display: flex;
+            gap: 20px;
+            flex-shrink: 0;
+        }
+        .lb-stat {
+            text-align: right;
+        }
+        .lb-stat-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .lb-stat-label {
+            font-size: 11px;
+            color: var(--text-tertiary);
+        }
+
+        /* Battle History */
+        .battle-history {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .battle-card {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            transition: all 0.2s;
+        }
+        .battle-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+        .battle-result {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .battle-result.win {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+        .battle-result.loss {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+        .battle-result.draw {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+        }
+        .battle-players {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .battle-player {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .battle-player-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .battle-player-name {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        .battle-vs {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            font-weight: 600;
+        }
+        .battle-info {
+            text-align: right;
+            flex-shrink: 0;
+        }
+        .battle-elo {
+            font-weight: 600;
+        }
+        .battle-elo.positive { color: #10b981; }
+        .battle-elo.negative { color: #ef4444; }
+        .battle-time {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        /* Season Card */
+        .season-card {
+            background: linear-gradient(135deg, #1e3a5f 0%, #0f2744 50%, #0a1929 100%);
+            border-radius: 20px;
+            padding: 32px;
+            color: white;
+            margin-bottom: 32px;
+        }
+        .season-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .season-name {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .season-countdown {
+            text-align: right;
+        }
+        .season-countdown-label {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        .season-countdown-time {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        .season-rewards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        @media (max-width: 768px) {
+            .season-rewards { grid-template-columns: 1fr; }
+        }
+        .reward-tier {
+            background: rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+        .reward-tier-name {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 8px;
+        }
+        .reward-tier-reward {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-tertiary);
+        }
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            opacity: 0.4;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+  <link rel="stylesheet" href="/assets/apple-design-3a23e109.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="home.html" class="nav-logo">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                    <path d="M2 17l10 5 10-5"/>
+                    <path d="M2 12l10 5 10-5"/>
+                </svg>
+                AI信息未来
+            </a>
+            <div class="nav-menu">
+                <a href="home.html" class="nav-link">首页</a>
+                <a href="courses.html" class="nav-link">课程</a>
+                <a href="online-plaza.html" class="nav-link">在线广场</a>
+                <a href="pk-arena.html" class="nav-link active">PK竞技</a>
+                <a href="community.html" class="nav-link">社区</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                    <svg class="sun-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10 2a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 2z"/>
+                    </svg>
+                    <svg class="moon-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor" style="display:none;">
+                        <path d="M17.293 13.293A8 8 0 116.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+                    </svg>
+                </button>
+                <a href="profile.html" class="user-avatar" id="userAvatar">U</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="arena-hero">
+        <div class="container arena-hero-content">
+            <div class="arena-badge">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+                赛季进行中
+            </div>
+            <h1 class="arena-title">PK 竞技场</h1>
+            <p class="arena-subtitle">与其他学员进行算法对决，检验你的学习成果，赢取丰厚奖励</p>
+            <div class="arena-stats">
+                <div class="arena-stat">
+                    <div class="arena-stat-value" id="onlinePlayers">--</div>
+                    <div class="arena-stat-label">在线玩家</div>
+                </div>
+                <div class="arena-stat">
+                    <div class="arena-stat-value" id="todayBattles">--</div>
+                    <div class="arena-stat-label">今日对战</div>
+                </div>
+                <div class="arena-stat">
+                    <div class="arena-stat-value" id="seasonDays">--</div>
+                    <div class="arena-stat-label">赛季剩余</div>
+                </div>
+            </div>
+            <button class="match-btn" onclick="quickMatch()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                </svg>
+                快速匹配
+            </button>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container-wide">
+            <!-- My Stats -->
+            <div class="my-stats-card">
+                <div class="my-stats-header">
+                    <h2 class="my-stats-title">我的战绩</h2>
+                    <div class="my-rank-badge">
+                        <div class="rank-icon bronze" id="myRankIcon">B</div>
+                        <div class="rank-info">
+                            <h3 id="myRankName">青铜</h3>
+                            <p id="myRankDesc">继续努力，冲击白银!</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="my-stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-box-value elo" id="myElo">1000</div>
+                        <div class="stat-box-label">ELO 积分</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-value" id="myBattles">0</div>
+                        <div class="stat-box-label">总场次</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-value wins" id="myWins">0</div>
+                        <div class="stat-box-label">胜场</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-value losses" id="myLosses">0</div>
+                        <div class="stat-box-label">负场</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-value" id="myWinRate">0%</div>
+                        <div class="stat-box-label">胜率</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="arena-tabs" style="margin-top: 40px;">
+                <button class="arena-tab active" data-tab="match">发起对战</button>
+                <button class="arena-tab" data-tab="leaderboard">排行榜</button>
+                <button class="arena-tab" data-tab="history">战斗记录</button>
+                <button class="arena-tab" data-tab="season">赛季奖励</button>
+            </div>
+
+            <!-- Match Panel -->
+            <div class="tab-panel active" id="matchPanel">
+                <div class="match-form">
+                    <h3>创建 PK 对战</h3>
+                    <div class="form-row">
+                        <label class="form-label">选择对手</label>
+                        <select class="form-select" id="opponentSelect">
+                            <option value="">随机匹配</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">选择课程</label>
+                        <select class="form-select" id="courseSelect">
+                            <option value="">请选择课程</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">对战时长</label>
+                        <select class="form-select" id="durationSelect">
+                            <option value="30">30 分钟</option>
+                            <option value="45" selected>45 分钟</option>
+                            <option value="60">60 分钟</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">赌注积分 (0-500)</label>
+                        <input type="number" class="form-input" id="betInput" value="0" min="0" max="500">
+                    </div>
+                    <button class="submit-btn" onclick="createBattle()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                        </svg>
+                        发起挑战
+                    </button>
+                </div>
+            </div>
+
+            <!-- Leaderboard Panel -->
+            <div class="tab-panel" id="leaderboardPanel">
+                <div class="leaderboard">
+                    <div class="leaderboard-header">
+                        <span class="leaderboard-title">赛季排行榜</span>
+                        <span class="leaderboard-season" id="currentSeason">第1赛季</span>
+                    </div>
+                    <div class="leaderboard-list" id="leaderboardList">
+                        <div class="loading"><div class="spinner"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Panel -->
+            <div class="tab-panel" id="historyPanel">
+                <div class="battle-history" id="battleHistory">
+                    <div class="loading"><div class="spinner"></div></div>
+                </div>
+            </div>
+
+            <!-- Season Panel -->
+            <div class="tab-panel" id="seasonPanel">
+                <div class="season-card">
+                    <div class="season-header">
+                        <div class="season-name" id="seasonName">第1赛季</div>
+                        <div class="season-countdown">
+                            <div class="season-countdown-label">赛季结束倒计时</div>
+                            <div class="season-countdown-time" id="seasonTimer">30天 12:34:56</div>
+                        </div>
+                    </div>
+                    <div class="season-rewards">
+                        <div class="reward-tier">
+                            <div class="reward-tier-name">王者</div>
+                            <div class="reward-tier-reward">5000 积分 + 专属皮肤</div>
+                        </div>
+                        <div class="reward-tier">
+                            <div class="reward-tier-name">大师</div>
+                            <div class="reward-tier-reward">3000 积分 + 限定头像框</div>
+                        </div>
+                        <div class="reward-tier">
+                            <div class="reward-tier-name">钻石</div>
+                            <div class="reward-tier-reward">2000 积分 + 称号</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const API_BASE = '/api';
+        let currentUser = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            checkAuth();
+            setupTabs();
+            loadPkStats();
+            loadArenaData();
+            loadCourses();
+            loadOnlineUsers();
+            loadLeaderboard();
+            loadBattleHistory();
+        });
+
+        function initTheme() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+            updateThemeIcon();
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+        }
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            const theme = document.documentElement.getAttribute('data-theme');
+            document.querySelector('.sun-icon').style.display = theme === 'dark' ? 'block' : 'none';
+            document.querySelector('.moon-icon').style.display = theme === 'dark' ? 'none' : 'block';
+        }
+
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+
+            if (!token) {
+                window.location.href = 'login.html?returnUrl=' + encodeURIComponent(window.location.pathname);
+                return;
+            }
+
+            if (userStr) {
+                currentUser = JSON.parse(userStr);
+                const initial = (currentUser.nickname || currentUser.username || 'U').charAt(0).toUpperCase();
+                document.getElementById('userAvatar').textContent = initial;
+            }
+        }
+
+        function setupTabs() {
+            document.querySelectorAll('.arena-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.arena-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab + 'Panel').classList.add('active');
+                });
+            });
+        }
+
+        async function loadPkStats() {
+            try {
+                const res = await fetch(`${API_BASE}/pk/stats`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.code === 200 && data.data) {
+                        const stats = data.data;
+                        document.getElementById('myElo').textContent = stats.eloRating || 1000;
+                        const totalBattles = (stats.totalWins || 0) + (stats.totalLosses || 0) + (stats.totalDraws || 0);
+                        document.getElementById('myBattles').textContent = totalBattles;
+                        document.getElementById('myWins').textContent = stats.totalWins || 0;
+                        document.getElementById('myLosses').textContent = stats.totalLosses || 0;
+                        const winRate = totalBattles > 0 ? Math.round((stats.totalWins / totalBattles) * 100) : 0;
+                        document.getElementById('myWinRate').textContent = `${winRate}%`;
+                        updateRankDisplay(stats.rankTier || 'BRONZE', stats.eloRating || 1000);
+                    }
+                }
+            } catch (e) {
+                console.error('Load PK stats error:', e);
+            }
+        }
+
+        function updateRankDisplay(tier, elo) {
+            const tierMap = {
+                'BRONZE': { name: '青铜', icon: 'B', class: 'bronze', desc: '继续努力，冲击白银!' },
+                'SILVER': { name: '白银', icon: 'S', class: 'silver', desc: '表现不错，向黄金进发!' },
+                'GOLD': { name: '黄金', icon: 'G', class: 'gold', desc: '实力强劲，铂金近在咫尺!' },
+                'PLATINUM': { name: '铂金', icon: 'P', class: 'platinum', desc: '高手之路，冲击钻石!' },
+                'DIAMOND': { name: '钻石', icon: 'D', class: 'diamond', desc: '顶尖选手，向大师迈进!' },
+                'MASTER': { name: '大师', icon: 'M', class: 'master', desc: '大师风范，王者在望!' },
+                'CHALLENGER': { name: '王者', icon: 'C', class: 'challenger', desc: '巅峰之上，无人能敌!' }
+            };
+            const info = tierMap[tier] || tierMap['BRONZE'];
+            const iconEl = document.getElementById('myRankIcon');
+            iconEl.textContent = info.icon;
+            iconEl.className = 'rank-icon ' + info.class;
+            document.getElementById('myRankName').textContent = info.name;
+            document.getElementById('myRankDesc').textContent = info.desc;
+        }
+
+        async function loadArenaData() {
+            document.getElementById('onlinePlayers').textContent = Math.floor(Math.random() * 50) + 20;
+            document.getElementById('todayBattles').textContent = Math.floor(Math.random() * 100) + 50;
+            document.getElementById('seasonDays').textContent = Math.floor(Math.random() * 20) + 10 + '天';
+        }
+
+        async function loadCourses() {
+            try {
+                const res = await fetch(`${API_BASE}/courses`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    const courses = data.data?.items || data.data || [];
+                    const select = document.getElementById('courseSelect');
+                    courses.forEach(course => {
+                        const opt = document.createElement('option');
+                        opt.value = course.id;
+                        opt.textContent = course.title;
+                        select.appendChild(opt);
+                    });
+                }
+            } catch (e) {}
+        }
+
+        async function loadOnlineUsers() {
+            try {
+                const res = await fetch(`${API_BASE}/plaza/online-users?limit=20`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    const users = data.data?.users || data.data || [];
+                    const select = document.getElementById('opponentSelect');
+                    users.forEach(user => {
+                        const opt = document.createElement('option');
+                        opt.value = user.userId;
+                        opt.textContent = `${user.username} (Lv.${user.level || 1})`;
+                        select.appendChild(opt);
+                    });
+                }
+            } catch (e) {}
+        }
+
+        async function loadLeaderboard() {
+            const container = document.getElementById('leaderboardList');
+            try {
+                const res = await fetch(`${API_BASE}/pk/leaderboard`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    const list = data.data?.rankings || data.data || [];
+                    if (list.length > 0) {
+                        container.innerHTML = list.slice(0, 20).map((user, idx) => {
+                            const rankClass = idx === 0 ? 'gold' : idx === 1 ? 'silver' : idx === 2 ? 'bronze' : 'normal';
+                            const initial = (user.nickname || user.username || 'U').charAt(0).toUpperCase();
+                            const totalBattles = (user.total_wins || 0) + (user.total_losses || 0) + (user.total_draws || 0);
+                            const winRate = totalBattles > 0 ? Math.round((user.total_wins / totalBattles) * 100) : 0;
+                            return `
+                                <div class="leaderboard-item">
+                                    <div class="leaderboard-rank ${rankClass}">${idx + 1}</div>
+                                    <div class="leaderboard-avatar">${initial}</div>
+                                    <div class="leaderboard-info">
+                                        <div class="leaderboard-name">${user.nickname || user.username || '玩家'}</div>
+                                        <div class="leaderboard-tier">${getTierName(user.rank_tier || user.rankTier)}</div>
+                                    </div>
+                                    <div class="leaderboard-stats">
+                                        <div class="lb-stat">
+                                            <div class="lb-stat-value">${user.elo_rating || user.eloRating || 1000}</div>
+                                            <div class="lb-stat-label">ELO</div>
+                                        </div>
+                                        <div class="lb-stat">
+                                            <div class="lb-stat-value">${winRate}%</div>
+                                            <div class="lb-stat-label">胜率</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                        return;
+                    }
+                }
+                showEmptyLeaderboard(container);
+            } catch (e) {
+                showEmptyLeaderboard(container);
+            }
+        }
+
+        function showEmptyLeaderboard(container) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    <p>暂无排行数据</p>
+                </div>
+            `;
+        }
+
+        function getTierName(tier) {
+            const map = {
+                'BRONZE': '青铜', 'SILVER': '白银', 'GOLD': '黄金',
+                'PLATINUM': '铂金', 'DIAMOND': '钻石', 'MASTER': '大师', 'CHALLENGER': '王者'
+            };
+            return map[tier] || '青铜';
+        }
+
+        async function loadBattleHistory() {
+            const container = document.getElementById('battleHistory');
+            try {
+                const res = await fetch(`${API_BASE}/pk/history?page=1&size=10`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    const battles = data.data?.items || data.data || [];
+                    if (battles.length > 0) {
+                        container.innerHTML = battles.map(b => {
+                            const isWin = b.winnerId === currentUser?.id;
+                            const isDraw = !b.winnerId;
+                            const resultClass = isDraw ? 'draw' : isWin ? 'win' : 'loss';
+                            const resultText = isDraw ? '平' : isWin ? '胜' : '负';
+                            const eloChange = b.eloChange || 0;
+                            return `
+                                <div class="battle-card">
+                                    <div class="battle-result ${resultClass}">${resultText}</div>
+                                    <div class="battle-players">
+                                        <div class="battle-player">
+                                            <div class="battle-player-avatar">${(b.player1Name || 'P').charAt(0)}</div>
+                                            <span class="battle-player-name">${b.player1Name || '玩家1'}</span>
+                                        </div>
+                                        <span class="battle-vs">VS</span>
+                                        <div class="battle-player">
+                                            <div class="battle-player-avatar">${(b.player2Name || 'P').charAt(0)}</div>
+                                            <span class="battle-player-name">${b.player2Name || '玩家2'}</span>
+                                        </div>
+                                    </div>
+                                    <div class="battle-info">
+                                        <div class="battle-elo ${eloChange >= 0 ? 'positive' : 'negative'}">${eloChange >= 0 ? '+' : ''}${eloChange}</div>
+                                        <div class="battle-time">${formatTime(b.createdAt)}</div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                        return;
+                    }
+                }
+                showEmptyHistory(container);
+            } catch (e) {
+                showEmptyHistory(container);
+            }
+        }
+
+        function showEmptyHistory(container) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                    </svg>
+                    <p>暂无对战记录，快去挑战吧!</p>
+                </div>
+            `;
+        }
+
+        function formatTime(time) {
+            if (!time) return '';
+            const date = new Date(time);
+            const now = new Date();
+            const diff = now - date;
+            if (diff < 3600000) return `${Math.floor(diff / 60000)} 分钟前`;
+            if (diff < 86400000) return `${Math.floor(diff / 3600000)} 小时前`;
+            return date.toLocaleDateString('zh-CN');
+        }
+
+        async function quickMatch() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showToast('请先登录');
+                setTimeout(() => location.href = 'login.html', 1000);
+                return;
+            }
+
+            showToast('正在匹配对手...');
+
+            try {
+                const res = await fetch(`${API_BASE}/pk/match`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ courseId: 1 })
+                });
+
+                const data = await res.json();
+
+                if (data.code === 200 && data.data) {
+                    if (data.data.matched) {
+                        showToast('匹配成功，正在进入对战!');
+                        // 存储对战信息并跳转
+                        sessionStorage.setItem('pkBattle', JSON.stringify(data.data));
+                        setTimeout(() => {
+                            window.location.href = `pk-battle.html?id=${data.data.battleId}`;
+                        }, 1000);
+                    } else {
+                        showToast(data.data.message || '等待匹配中...');
+                        // 开始轮询检查匹配状态
+                        startMatchPolling();
+                    }
+                } else {
+                    showToast(data.message || '匹配失败');
+                }
+            } catch (e) {
+                console.error('匹配失败:', e);
+                showToast('网络错误，请稍后重试');
+            }
+        }
+
+        let matchPollingInterval = null;
+
+        function startMatchPolling() {
+            if (matchPollingInterval) return;
+
+            matchPollingInterval = setInterval(async () => {
+                try {
+                    const res = await fetch(`${API_BASE}/pk/match/status`, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    });
+                    const data = await res.json();
+
+                    if (data.code === 200 && data.data) {
+                        if (!data.data.inQueue) {
+                            // 已匹配或已取消
+                            clearInterval(matchPollingInterval);
+                            matchPollingInterval = null;
+                        }
+                    }
+                } catch (e) {
+                    clearInterval(matchPollingInterval);
+                    matchPollingInterval = null;
+                }
+            }, 3000);
+        }
+
+        async function cancelMatch() {
+            try {
+                await fetch(`${API_BASE}/pk/match/cancel`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                showToast('已取消匹配');
+                if (matchPollingInterval) {
+                    clearInterval(matchPollingInterval);
+                    matchPollingInterval = null;
+                }
+            } catch (e) {
+                console.error('取消匹配失败:', e);
+            }
+        }
+
+        async function createBattle() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showToast('请先登录');
+                setTimeout(() => location.href = 'login.html', 1000);
+                return;
+            }
+
+            const courseId = document.getElementById('courseSelect').value;
+            const opponentId = document.getElementById('opponentSelect')?.value;
+            const duration = document.getElementById('durationSelect')?.value || 10;
+            const bet = document.getElementById('betInput')?.value || 0;
+
+            if (!courseId) {
+                showToast('请选择课程');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/pk/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        player2Id: opponentId ? parseInt(opponentId) : null,
+                        courseId: parseInt(courseId),
+                        questionCount: parseInt(duration) || 10
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.code === 200 && data.data) {
+                    showToast('对战创建成功!');
+                    // 存储对战信息并跳转
+                    sessionStorage.setItem('pkBattle', JSON.stringify(data.data));
+                    setTimeout(() => {
+                        window.location.href = `pk-battle.html?id=${data.data.battleId}`;
+                    }, 1000);
+                } else {
+                    showToast(data.message || '创建失败');
+                }
+            } catch (e) {
+                console.error('创建对战失败:', e);
+                showToast('网络错误');
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+    </script>
+</body>
+</html>

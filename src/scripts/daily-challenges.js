@@ -14,8 +14,16 @@ class DailyChallengeManager {
     async init() {
         this.addStyles();
         this.createRefreshIndicator();
+        this.attachRefreshListener();
         await this.loadData();
         this.startAutoRefresh();
+    }
+
+    attachRefreshListener() {
+        const indicator = document.getElementById('refreshIndicator');
+        if (indicator) {
+            indicator.addEventListener('click', () => this.manualRefresh());
+        }
     }
 
     addStyles() {
@@ -107,15 +115,7 @@ class DailyChallengeManager {
     }
 
     createRefreshIndicator() {
-        const indicator = document.createElement('div');
-        indicator.className = 'refresh-indicator';
-        indicator.id = 'refreshIndicator';
-        indicator.innerHTML = `
-            <i class="fas fa-sync-alt"></i>
-            <span id="refreshCountdown">30秒后刷新</span>
-        `;
-        indicator.addEventListener('click', () => this.manualRefresh());
-        document.body.appendChild(indicator);
+        // Refresh indicator is now in HTML
     }
 
     startAutoRefresh() {
@@ -259,11 +259,15 @@ class DailyChallengeManager {
         } catch (error) {
             console.error('Error loading challenges:', error);
             document.getElementById('todayChallenges').innerHTML = `
-                <div style="text-align: center; color: #6b7280; padding: 40px;">
-                    <i class="fas fa-exclamation-triangle" style="font-size: 3em; margin-bottom: 20px; color: #f59e0b;"></i>
-                    <p>加载挑战失败，请稍后重试</p>
-                    <button onclick="window.dailyChallengeManager.manualRefresh()"
-                            style="margin-top: 20px; padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                <div class="empty-state">
+                    <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <div class="empty-state-title">加载挑战失败</div>
+                    <div class="empty-state-text">请稍后重试</div>
+                    <button class="btn btn-primary" onclick="window.dailyChallengeManager.manualRefresh()" style="margin-top: 24px;">
                         重新加载
                     </button>
                 </div>
@@ -274,10 +278,16 @@ class DailyChallengeManager {
     renderChallenges(challenges) {
         if (!challenges || challenges.length === 0) {
             document.getElementById('todayChallenges').innerHTML = `
-                <div style="text-align: center; color: #6b7280; padding: 60px;">
-                    <i class="fas fa-calendar-check" style="font-size: 4em; margin-bottom: 20px; color: #d1d5db;"></i>
-                    <p style="font-size: 18px; font-weight: 600;">今日暂无挑战</p>
-                    <p style="font-size: 14px; margin-top: 10px;">请稍后再来查看新的挑战任务</p>
+                <div class="empty-state">
+                    <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                        <polyline points="16 14 12 18 8 14"></polyline>
+                    </svg>
+                    <div class="empty-state-title">今日暂无挑战</div>
+                    <div class="empty-state-text">请稍后再来查看新的挑战任务</div>
                 </div>
             `;
             return;
@@ -315,17 +325,17 @@ class DailyChallengeManager {
             : 0;
 
         const typeColors = {
-            'PK_WIN': '#f59e0b',
-            'ANSWER_CORRECT': '#10b981',
-            'STUDY_TIME': '#3b82f6',
-            'COMPLETE_CHAPTER': '#8b5cf6'
+            'PK_WIN': '#ff9500',
+            'ANSWER_CORRECT': '#34c759',
+            'STUDY_TIME': '#0071e3',
+            'COMPLETE_CHAPTER': '#af52de'
         };
 
         const typeIcons = {
-            'PK_WIN': 'fa-trophy',
-            'ANSWER_CORRECT': 'fa-check-circle',
-            'STUDY_TIME': 'fa-clock',
-            'COMPLETE_CHAPTER': 'fa-book-open'
+            'PK_WIN': '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>',
+            'ANSWER_CORRECT': '<polyline points="20 6 9 17 4 12"></polyline>',
+            'STUDY_TIME': '<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>',
+            'COMPLETE_CHAPTER': '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>'
         };
 
         const typeLabels = {
@@ -335,53 +345,63 @@ class DailyChallengeManager {
             'COMPLETE_CHAPTER': '章节完成'
         };
 
-        const iconColor = typeColors[challenge.challengeType] || '#667eea';
-        const icon = typeIcons[challenge.challengeType] || 'fa-tasks';
+        const iconColor = typeColors[challenge.challengeType] || '#0071e3';
+        const iconSvg = typeIcons[challenge.challengeType] || '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="15" x2="15" y2="15"></line>';
         const typeLabel = typeLabels[challenge.challengeType] || '任务';
 
         return `
             <div class="challenge-card ${isCompleted ? 'completed' : ''} ${justCompleted ? 'just-completed' : ''}"
                  style="animation-delay: ${index * 0.1}s" data-id="${challenge.id}">
                 <div class="challenge-header">
-                    <div class="challenge-title">
-                        <div class="challenge-icon" style="background: ${iconColor}">
-                            <i class="fas ${icon}"></i>
-                        </div>
-                        <div>
-                            <span style="display: block; font-weight: 600;">${challenge.title}</span>
-                            <span style="font-size: 12px; color: #9ca3af;">${typeLabel}</span>
+                    <div class="challenge-info">
+                        <div class="challenge-title-row">
+                            <div class="challenge-icon" style="background: ${iconColor}; color: white;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    ${iconSvg}
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="challenge-title">${challenge.title}</div>
+                                <div class="challenge-type">${typeLabel}</div>
+                            </div>
                         </div>
                     </div>
-                    <div class="challenge-reward" style="background: linear-gradient(135deg, #fbbf24, #f59e0b); padding: 6px 12px; border-radius: 20px; color: white; font-weight: 600;">
-                        <i class="fas fa-coins"></i>
+                    <div class="challenge-reward">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M12 6v6l4 2"></path>
+                        </svg>
                         +${challenge.rewardPoints}
                     </div>
                 </div>
 
-                <div class="challenge-description" style="margin: 12px 0; color: #6b7280; font-size: 14px;">
+                <div class="challenge-description">
                     ${challenge.description}
                 </div>
 
                 ${isCompleted ? `
-                    <div class="complete-badge" style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; background: linear-gradient(135deg, #10b981, #059669); color: white; border-radius: 8px; font-weight: 600;">
-                        <i class="fas fa-check-circle"></i>
+                    <div class="complete-badge">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
                         挑战完成！
                     </div>
                 ` : `
                     <div class="challenge-progress">
-                        <div class="progress-header" style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px;">
-                            <span style="color: #6b7280;">进度</span>
-                            <span style="font-weight: 600; color: ${progress >= 100 ? '#10b981' : '#667eea'};">
+                        <div class="progress-header">
+                            <span class="progress-label">进度</span>
+                            <span class="progress-value" style="color: ${progress >= 100 ? '#34c759' : iconColor};">
                                 ${challenge.currentValue || 0} / ${challenge.targetValue}
                             </span>
                         </div>
-                        <div class="progress-bar" style="height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden;">
-                            <div class="progress-fill ${progress > 0 ? 'animating' : ''}"
-                                 style="height: 100%; width: ${progress}%; background: linear-gradient(90deg, ${iconColor}, ${iconColor}dd); border-radius: 4px; transition: width 0.5s ease;">
+                        <div class="progress-bar">
+                            <div class="progress-fill ${progress > 0 ? 'animating' : ''} ${progress >= 100 ? 'completed' : ''}"
+                                 style="width: ${progress}%; background: ${iconColor};">
                             </div>
                         </div>
                         ${progress > 0 && progress < 100 ? `
-                            <div style="text-align: center; margin-top: 8px; font-size: 12px; color: #9ca3af;">
+                            <div class="progress-remaining">
                                 还差 ${challenge.targetValue - (challenge.currentValue || 0)} 即可完成
                             </div>
                         ` : ''}
@@ -393,31 +413,46 @@ class DailyChallengeManager {
 
     showNotification(message, type = 'info') {
         const colors = {
-            success: 'linear-gradient(135deg, #10b981, #059669)',
-            error: 'linear-gradient(135deg, #ef4444, #dc2626)',
-            info: 'linear-gradient(135deg, #667eea, #764ba2)'
+            success: { bg: 'rgba(52, 199, 89, 0.1)', color: '#34c759', border: 'rgba(52, 199, 89, 0.2)' },
+            error: { bg: 'rgba(255, 59, 48, 0.1)', color: '#ff3b30', border: 'rgba(255, 59, 48, 0.2)' },
+            info: { bg: 'rgba(0, 113, 227, 0.1)', color: '#0071e3', border: 'rgba(0, 113, 227, 0.2)' }
         };
+
+        const icons = {
+            success: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>',
+            error: '<circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line>',
+            info: '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line>'
+        };
+
+        const theme = document.documentElement.getAttribute('data-theme');
+        const style = colors[type];
 
         const notification = document.createElement('div');
         notification.style.cssText = `
             position: fixed;
-            top: 20px;
-            right: 20px;
-            background: ${colors[type]};
-            color: white;
-            padding: 16px 24px;
+            top: 68px;
+            right: 22px;
+            padding: 14px 20px;
+            background: ${theme === 'dark' ? style.bg : style.bg};
+            color: ${style.color};
+            border: 1px solid ${style.border};
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             z-index: 10001;
             animation: slideInUp 0.3s ease;
             font-weight: 500;
             display: flex;
             align-items: center;
             gap: 10px;
+            font-size: 15px;
         `;
 
-        const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
-        notification.innerHTML = `<i class="fas ${icon}"></i> ${message}`;
+        notification.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                ${icons[type]}
+            </svg>
+            ${message}
+        `;
         document.body.appendChild(notification);
 
         setTimeout(() => {

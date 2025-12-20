@@ -3,193 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>问题详情 - AI学习平台</title>
+    <title>问题详情 - AI 信息未来</title>
     <meta name="description" content="查看问题详情，参与回答和讨论">
-    <link rel="stylesheet" href="../styles/theme.css">
-    <script src="../utils/theme-switcher.js"></script>
+    <link rel="stylesheet" href="../styles/apple-design.css">
     <style>
-        /* 基本样式继承qa.html */
-        :root {
-            --primary: #3B82F6;
-            --secondary: #8B5CF6;
-            --accent: #10B981;
-            --warning: #F59E0B;
-            --danger: #EF4444;
-            --dark: #1E293B;
-            --darker: #0F172A;
-            --light: #FFFFFF;
-            --gray-100: #F1F5F9;
-            --gray-200: #E2E8F0;
-            --gray-300: #CBD5E1;
-            --gray-400: #94A3B8;
-            --gray-500: #64748B;
-            --gray-600: #475569;
-            --success: #22C55E;
+        /* 主布局 */
+        .main-content {
+            margin-top: 48px;
+            min-height: calc(100vh - 48px);
+            background: var(--bg-secondary);
         }
 
-        [data-theme="dark"] {
-            --primary: #60A5FA;
-            --secondary: #A78BFA;
-            --accent: #34D399;
-            --warning: #FBBF24;
-            --danger: #F87171;
-            --dark: #F1F5F9;
-            --darker: #E2E8F0;
-            --light: #0F172A;
-            --gray-100: #1E293B;
-            --gray-200: #334155;
-            --gray-300: #475569;
-            --gray-400: #64748B;
-            --gray-500: #94A3B8;
-            --gray-600: #CBD5E1;
+        .content-wrapper {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 40px 22px;
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--light);
-            color: var(--dark);
-            margin: 0;
-            padding: 0;
-            transition: all 0.3s ease;
+        /* 返回按钮 */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            margin-bottom: 24px;
         }
 
-        [data-theme="dark"] body {
-            background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
+        .back-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
         }
 
-        .main-layout {
-            margin-top: 80px;
-            min-height: calc(100vh - 80px);
-            max-width: 1000px;
-            margin-left: auto;
-            margin-right: auto;
-            padding: 2rem;
-        }
-
-        .question-detail {
-            background: var(--light);
-            border: 1px solid var(--gray-200);
-            border-radius: 16px;
+        /* 问题卡片 */
+        .question-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            margin-bottom: 2rem;
-        }
-
-        [data-theme="dark"] .question-detail {
-            background: var(--gray-100);
-            border-color: var(--gray-200);
+            margin-bottom: 24px;
         }
 
         .question-header {
-            padding: 2rem;
-            border-bottom: 1px solid var(--gray-200);
+            padding: 32px;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .question-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 1rem;
-            line-height: 1.3;
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+            line-height: 1.2;
         }
 
         .question-meta {
             display: flex;
-            gap: 2rem;
-            color: var(--gray-500);
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--text-tertiary);
+        }
+
+        .meta-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        .question-author {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .author-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .author-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .author-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .author-time {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        .question-body {
+            padding: 32px;
         }
 
         .question-content {
-            background: var(--gray-100);
-            padding: 2rem;
-            border-radius: 12px;
+            font-size: 17px;
             line-height: 1.6;
-            color: var(--dark);
+            color: var(--text-secondary);
             white-space: pre-wrap;
+            word-wrap: break-word;
         }
 
-        .answers-section {
-            background: var(--light);
-            border: 1px solid var(--gray-200);
-            border-radius: 16px;
+        /* 回答区域 */
+        .answers-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        }
-
-        [data-theme="dark"] .answers-section {
-            background: var(--gray-100);
-            border-color: var(--gray-200);
         }
 
         .answers-header {
-            background: var(--gray-100);
-            padding: 1.5rem 2rem;
-            border-bottom: 1px solid var(--gray-200);
-            font-weight: 600;
-            color: var(--dark);
+            padding: 20px 32px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-secondary);
         }
 
+        .answers-title {
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* 回答表单 */
         .answer-form {
-            padding: 2rem;
-            border-bottom: 1px solid var(--gray-200);
+            padding: 32px;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
+        .form-title {
+            font-size: 17px;
             font-weight: 600;
-            color: var(--dark);
+            color: var(--text-primary);
+            margin-bottom: 16px;
         }
 
-        .form-group textarea {
+        .form-textarea {
             width: 100%;
             min-height: 120px;
-            padding: 1rem;
-            border: 2px solid var(--gray-300);
-            border-radius: 12px;
-            background: var(--light);
-            color: var(--dark);
+            padding: 14px 16px;
+            font-family: var(--font-sans);
+            font-size: 15px;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
             resize: vertical;
-            font-family: inherit;
-            line-height: 1.6;
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+            line-height: 1.5;
         }
 
-        .form-group textarea:focus {
+        .form-textarea:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
         }
 
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
+        .form-textarea::placeholder {
+            color: var(--text-tertiary);
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
-            color: white;
+        .submit-btn {
+            margin-top: 16px;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
-        }
-
+        /* 回答列表 */
         .answer-item {
-            padding: 2rem;
-            border-bottom: 1px solid var(--gray-200);
+            padding: 32px;
+            border-bottom: 1px solid var(--border-color);
             position: relative;
         }
 
@@ -197,135 +206,281 @@
             border-bottom: none;
         }
 
+        .answer-item.accepted {
+            background: rgba(52, 199, 89, 0.03);
+            border-left: 3px solid #34c759;
+        }
+
         .answer-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
+            align-items: flex-start;
+            margin-bottom: 16px;
         }
 
-        .answer-user {
+        .answer-author {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 12px;
         }
 
-        .user-avatar {
+        .answer-avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-weight: bold;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
         }
 
-        .answer-time {
-            color: var(--gray-500);
-            font-size: 0.9rem;
+        .accepted-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background: rgba(52, 199, 89, 0.1);
+            color: #34c759;
+            border-radius: var(--radius-full);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .check-icon {
+            width: 14px;
+            height: 14px;
         }
 
         .answer-content {
-            color: var(--dark);
+            font-size: 17px;
             line-height: 1.6;
-            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
             white-space: pre-wrap;
+            word-wrap: break-word;
         }
 
         .answer-actions {
             display: flex;
-            gap: 1rem;
+            gap: 16px;
         }
 
         .action-btn {
-            background: none;
-            border: none;
-            color: var(--gray-500);
-            cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            gap: 0.25rem;
-            padding: 0.5rem;
-            border-radius: 8px;
-            transition: all 0.3s ease;
+            gap: 6px;
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            color: var(--text-tertiary);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
         }
 
         .action-btn:hover {
-            background: var(--gray-100);
-            color: var(--primary);
+            background: var(--bg-hover);
+            border-color: var(--border-strong);
+            color: var(--text-primary);
         }
 
-        .accepted-answer {
-            border-left: 4px solid var(--success);
-            background: rgba(34, 197, 94, 0.05);
+        .action-btn.active {
+            background: rgba(0, 113, 227, 0.1);
+            border-color: var(--accent);
+            color: var(--accent);
         }
 
-        .loading {
-            text-align: center;
-            padding: 3rem;
-            color: var(--gray-500);
+        .action-icon {
+            width: 14px;
+            height: 14px;
         }
 
+        /* 空状态 */
         .empty-state {
             text-align: center;
-            padding: 3rem;
-            color: var(--gray-500);
+            padding: 80px 32px;
+        }
+
+        .empty-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            opacity: 0.3;
+        }
+
+        .empty-title {
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .empty-text {
+            font-size: 15px;
+            color: var(--text-tertiary);
+        }
+
+        /* 加载状态 */
+        .loading-state {
+            text-align: center;
+            padding: 80px 32px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .content-wrapper {
+                padding: 24px 16px;
+            }
+
+            .question-header,
+            .question-body,
+            .answer-form,
+            .answer-item {
+                padding: 24px;
+            }
+
+            .question-title {
+                font-size: 24px;
+            }
+
+            .question-meta {
+                gap: 16px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="main-layout">
-        <!-- 返回按钮 -->
-        <div style="margin-bottom: 2rem;">
-            <button class="btn btn-secondary" onclick="history.back()">← 返回问题列表</button>
+    <!-- 导航栏 -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="home.html" class="nav-logo">AI 信息未来</a>
+            <div class="nav-menu">
+                <a href="home.html" class="nav-link">首页</a>
+                <a href="courses.html" class="nav-link">课程</a>
+                <a href="community.html" class="nav-link active">社区</a>
+                <a href="pk-arena.html" class="nav-link">PK竞技</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" title="切换主题">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+                <div id="authArea"></div>
+            </div>
         </div>
+    </nav>
 
-        <!-- 问题详情 -->
-        <div class="question-detail" id="questionDetail">
-            <div class="loading">正在加载问题详情...</div>
-        </div>
+    <!-- 主内容 -->
+    <div class="main-content">
+        <div class="content-wrapper">
+            <!-- 返回按钮 -->
+            <button class="back-btn" onclick="history.back()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                返回问题列表
+            </button>
 
-        <!-- 回答区域 -->
-        <div class="answers-section" id="answersSection" style="display: none;">
-            <div class="answers-header">
-                <span id="answersCount">0 个回答</span>
+            <!-- 问题详情 -->
+            <div class="question-card" id="questionDetail">
+                <div class="loading-state">
+                    <div class="loading"><div class="spinner"></div></div>
+                </div>
             </div>
 
-            <!-- 回答表单 -->
-            <div class="answer-form" id="answerForm">
-                <form onsubmit="submitAnswer(event)">
-                    <div class="form-group">
-                        <label for="answerContent">你的回答</label>
-                        <textarea id="answerContent" placeholder="请详��回答这个问题..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">发布回答</button>
-                </form>
-            </div>
+            <!-- 回答区域 -->
+            <div class="answers-card" id="answersSection" style="display: none;">
+                <div class="answers-header">
+                    <div class="answers-title" id="answersCount">0 个回答</div>
+                </div>
 
-            <!-- 回答列表 -->
-            <div id="answersList">
-                <!-- 回答将在这里动态加载 -->
+                <!-- 回答表单 -->
+                <div class="answer-form" id="answerForm">
+                    <div class="form-title">写下你的回答</div>
+                    <form onsubmit="submitAnswer(event)">
+                        <textarea
+                            id="answerContent"
+                            class="form-textarea"
+                            placeholder="请详细回答这个问题..."
+                            required
+                        ></textarea>
+                        <button type="submit" class="btn btn-primary submit-btn">发布回答</button>
+                    </form>
+                </div>
+
+                <!-- 回答列表 -->
+                <div id="answersList"></div>
             </div>
         </div>
     </div>
 
     <script>
-        const API_BASE_URL = 'http://42.194.245.66/api';
+        const API_BASE = '/api';
         let questionId = null;
         let questionData = null;
 
+        // 初始化
         document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
+            initAuth();
+
             questionId = new URLSearchParams(window.location.search).get('id');
             if (questionId) {
                 loadQuestionDetail();
             } else {
-                document.getElementById('questionDetail').innerHTML = 
-                    '<div class="empty-state"><h3>问题不存在</h3><p>请检查URL是否正确</p></div>';
+                showError('问题不存在', '请检查 URL 是否正确');
             }
         });
 
+        // 主题切换
+        function initTheme() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+            updateThemeIcon(theme);
+
+            document.getElementById('themeToggle').addEventListener('click', function() {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeIcon(newTheme);
+            });
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = theme === 'dark'
+                ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>'
+                : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+            document.getElementById('themeToggle').innerHTML = icon;
+        }
+
+        // 认证
+        function initAuth() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const authArea = document.getElementById('authArea');
+
+            if (token && user.username) {
+                authArea.innerHTML = `
+                    <div class="user-menu">
+                        <div class="user-avatar" onclick="window.location.href='profile.html'">
+                            ${user.username.charAt(0).toUpperCase()}
+                        </div>
+                    </div>
+                `;
+            } else {
+                authArea.innerHTML = `
+                    <a href="login.html" class="btn btn-sm btn-secondary">登录</a>
+                `;
+            }
+        }
+
+        // 加载问题详情
         async function loadQuestionDetail() {
             try {
                 const token = localStorage.getItem('token');
@@ -334,7 +489,7 @@
                     headers['Authorization'] = `Bearer ${token}`;
                 }
 
-                const response = await fetch(`${API_BASE_URL}/qa/questions/${questionId}`, {
+                const response = await fetch(`${API_BASE}/qa/questions/${questionId}`, {
                     headers
                 });
 
@@ -353,29 +508,51 @@
                 }
             } catch (error) {
                 console.error('加载问题详情失败:', error);
-                document.getElementById('questionDetail').innerHTML = 
-                    '<div class="empty-state"><h3>加载失败</h3><p>请刷新页面重试</p></div>';
+                showError('加载失败', '请刷新页面重试');
             }
         }
 
+        // 渲染问题详情
         function renderQuestionDetail(question) {
-            const questionDetail = document.getElementById('questionDetail');
-            questionDetail.innerHTML = `
+            const username = question.user?.username || question.username || '匿名用户';
+            const viewCount = question.view_count || question.viewCount || 0;
+            const answerCount = question.answer_count || question.answerCount || 0;
+
+            document.getElementById('questionDetail').innerHTML = `
                 <div class="question-header">
-                    <h1 class="question-title">${question.title}</h1>
+                    <h1 class="question-title">${escapeHtml(question.title)}</h1>
+                    <div class="question-author">
+                        <div class="author-avatar">
+                            ${username.charAt(0).toUpperCase()}
+                        </div>
+                        <div class="author-info">
+                            <div class="author-name">${escapeHtml(username)}</div>
+                            <div class="author-time">${formatTime(question.created_at || question.createdAt)}</div>
+                        </div>
+                    </div>
                     <div class="question-meta">
-                        <span>👤 ${question.user?.username || question.username || '匿名用户'}</span>
-                        <span>⏰ ${formatTime(question.created_at || question.createdAt)}</span>
-                        <span>👀 ${question.view_count || question.viewCount || 0} 浏览</span>
-                        <span>💬 ${question.answer_count || question.answerCount || 0} 回答</span>
+                        <div class="meta-item">
+                            <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            <span>${viewCount} 浏览</span>
+                        </div>
+                        <div class="meta-item">
+                            <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                            <span>${answerCount} 回答</span>
+                        </div>
                     </div>
                 </div>
-                <div style="padding: 2rem;">
-                    <div class="question-content">${question.content}</div>
+                <div class="question-body">
+                    <div class="question-content">${escapeHtml(question.content)}</div>
                 </div>
             `;
         }
 
+        // 加载回答列表
         async function loadAnswers() {
             try {
                 const token = localStorage.getItem('token');
@@ -384,7 +561,7 @@
                     headers['Authorization'] = `Bearer ${token}`;
                 }
 
-                const response = await fetch(`${API_BASE_URL}/qa/questions/${questionId}/answers`, {
+                const response = await fetch(`${API_BASE}/qa/questions/${questionId}/answers`, {
                     headers
                 });
 
@@ -398,65 +575,98 @@
                 }
             } catch (error) {
                 console.error('加载回答失败:', error);
-                document.getElementById('answersList').innerHTML = 
-                    '<div class="empty-state"><p>回答加载失败，请刷新页面重试</p></div>';
+                document.getElementById('answersList').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-text">回答加载失败，请刷新页面重试</div>
+                    </div>
+                `;
             }
         }
 
+        // 渲染回答列表
         function renderAnswers(answers) {
             const answersList = document.getElementById('answersList');
-            
+
             if (answers.length === 0) {
-                answersList.innerHTML = '<div class="empty-state"><p>还没有回答，快来抢沙发吧！</p></div>';
+                answersList.innerHTML = `
+                    <div class="empty-state">
+                        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <div class="empty-title">还没有回答</div>
+                        <div class="empty-text">快来抢沙发吧</div>
+                    </div>
+                `;
                 return;
             }
 
-            const answersHTML = answers.map(answer => `
-                <div class="answer-item ${answer.is_accepted ? 'accepted-answer' : ''}">
-                    <div class="answer-header">
-                        <div class="answer-user">
-                            <div class="user-avatar">
-                                ${(answer.user?.username || answer.username || 'U').charAt(0).toUpperCase()}
+            const answersHTML = answers.map(answer => {
+                const username = answer.user?.username || answer.username || '匿名用户';
+                const likeCount = answer.like_count || 0;
+                const isAccepted = answer.is_accepted;
+
+                return `
+                    <div class="answer-item ${isAccepted ? 'accepted' : ''}">
+                        <div class="answer-header">
+                            <div class="answer-author">
+                                <div class="answer-avatar">
+                                    ${username.charAt(0).toUpperCase()}
+                                </div>
+                                <div class="author-info">
+                                    <div class="author-name">${escapeHtml(username)}</div>
+                                    <div class="author-time">${formatTime(answer.created_at || answer.createdAt)}</div>
+                                </div>
                             </div>
-                            <div>
-                                <div style="font-weight: 600;">${answer.user?.username || answer.username || '匿名用户'}</div>
-                                <div class="answer-time">${formatTime(answer.created_at || answer.createdAt)}</div>
-                            </div>
+                            ${isAccepted ? `
+                                <div class="accepted-badge">
+                                    <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    已采纳
+                                </div>
+                            ` : ''}
                         </div>
-                        ${answer.is_accepted ? '<span style="color: var(--success); font-weight: 600;">✓ 已采纳</span>' : ''}
+                        <div class="answer-content">${escapeHtml(answer.content)}</div>
+                        <div class="answer-actions">
+                            <button class="action-btn" onclick="likeAnswer(${answer.id})">
+                                <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                                </svg>
+                                ${likeCount}
+                            </button>
+                            <button class="action-btn" onclick="replyToAnswer(${answer.id})">
+                                <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                                回复
+                            </button>
+                        </div>
                     </div>
-                    <div class="answer-content">${answer.content}</div>
-                    <div class="answer-actions">
-                        <button class="action-btn" onclick="likeAnswer(${answer.id})">
-                            👍 ${answer.like_count || 0}
-                        </button>
-                        <button class="action-btn" onclick="replyToAnswer(${answer.id})">
-                            💬 回复
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
 
             answersList.innerHTML = answersHTML;
         }
 
+        // 提交回答
         async function submitAnswer(event) {
             event.preventDefault();
-            
+
             const token = localStorage.getItem('token');
             if (!token) {
-                alert('请先登录');
+                showToast('请先登录', 'error');
+                setTimeout(() => window.location.href = 'login.html', 1500);
                 return;
             }
 
             const content = document.getElementById('answerContent').value.trim();
             if (!content) {
-                alert('请输入回答内容');
+                showToast('请输入回答内容', 'error');
                 return;
             }
 
             try {
-                const response = await fetch(`${API_BASE_URL}/qa/questions/${questionId}/answers`, {
+                const response = await fetch(`${API_BASE}/qa/questions/${questionId}/answers`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -468,26 +678,28 @@
                 const data = await response.json();
                 if (response.ok && data.success) {
                     document.getElementById('answerContent').value = '';
-                    await loadAnswers(); // 重新加载回答列表
-                    showNotification('回答发布成功！', 'success');
+                    await loadAnswers();
+                    showToast('回答发布成功', 'success');
                 } else {
                     throw new Error(data.message || '发布失败');
                 }
             } catch (error) {
                 console.error('发布回答失败:', error);
-                showNotification('发布失败，请稍后重试', 'error');
+                showToast('发布失败，请稍后重试', 'error');
             }
         }
 
+        // 点赞回答
         async function likeAnswer(answerId) {
             const token = localStorage.getItem('token');
             if (!token) {
-                alert('请先登录');
+                showToast('请先登录', 'error');
+                setTimeout(() => window.location.href = 'login.html', 1500);
                 return;
             }
 
             try {
-                const response = await fetch(`${API_BASE_URL}/qa/answers/${answerId}/like`, {
+                const response = await fetch(`${API_BASE}/qa/answers/${answerId}/like`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -495,67 +707,80 @@
                 });
 
                 if (response.ok) {
-                    await loadAnswers(); // 重新加载以更新点赞数
-                    showNotification('点赞成功！', 'success');
+                    await loadAnswers();
+                    showToast('点赞成功', 'success');
                 }
             } catch (error) {
                 console.error('点赞失败:', error);
-                showNotification('点赞失败，请稍后重试', 'error');
+                showToast('点赞失败，请稍后重试', 'error');
             }
         }
 
+        // 回复回答
         function replyToAnswer(answerId) {
-            // 这里可以实现回复功能
-            alert('回复功能正在开发中');
+            showToast('回复功能正在开发中', 'info');
         }
 
+        // 显示错误
+        function showError(title, message) {
+            document.getElementById('questionDetail').innerHTML = `
+                <div class="empty-state">
+                    <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <div class="empty-title">${title}</div>
+                    <div class="empty-text">${message}</div>
+                </div>
+            `;
+        }
+
+        // 显示提示
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = 'toast show';
+            toast.textContent = message;
+
+            if (type === 'success') {
+                toast.style.borderLeft = '3px solid #34c759';
+            } else if (type === 'error') {
+                toast.style.borderLeft = '3px solid #ff3b30';
+            } else {
+                toast.style.borderLeft = '3px solid #007aff';
+            }
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // 格式化时间
         function formatTime(timeString) {
             if (!timeString) return '未知时间';
+
             const now = new Date();
             const time = new Date(timeString);
             const diff = now - time;
-            
+
             const minutes = Math.floor(diff / 60000);
             const hours = Math.floor(minutes / 60);
             const days = Math.floor(hours / 24);
-            
-            if (days > 0) return `${days}天前`;
-            if (hours > 0) return `${hours}小时前`;
-            if (minutes > 0) return `${minutes}分钟前`;
+
+            if (days > 0) return `${days} 天前`;
+            if (hours > 0) return `${hours} 小时前`;
+            if (minutes > 0) return `${minutes} 分钟前`;
             return '刚刚';
         }
 
-        function showNotification(message, type = 'info') {
-            const existing = document.querySelector('.notification');
-            if (existing) {
-                existing.remove();
-            }
-
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-            notification.style.cssText = `
-                position: fixed;
-                top: 100px;
-                right: 20px;
-                background: var(--light);
-                border: 1px solid var(--gray-200);
-                border-radius: 12px;
-                padding: 1rem 1.5rem;
-                color: var(--dark);
-                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-                z-index: 1001;
-                border-left: 4px solid ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
-                max-width: 350px;
-            `;
-            notification.textContent = message;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 3000);
+        // HTML 转义
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
     </script>
 </body>

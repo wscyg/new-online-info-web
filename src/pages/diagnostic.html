@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>入学诊断 - AI 信息未来</title>
+    <link rel="stylesheet" href="../styles/apple-design.css">
+    <!-- KaTeX 数学公式 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <!-- Highlight.js 代码高亮 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/languages/python.min.js"></script>
+    <!-- ECharts 热力图 -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        /* 顿悟解析样式 */
+        .aha-section {
+            padding: 24px;
+            margin: 16px 0;
+            border-radius: var(--radius-lg);
+            animation: fadeInUp 0.5s ease-out;
+        }
+        .aha-misconception {
+            background: linear-gradient(135deg, #fff9e6 0%, #fff3cc 100%);
+            border-left: 3px solid #ff9500;
+        }
+        [data-theme="dark"] .aha-misconception {
+            background: linear-gradient(135deg, #332700 0%, #4d3900 100%);
+        }
+        .aha-truth {
+            background: linear-gradient(135deg, #e6f4ff 0%, #cce7ff 100%);
+            border-left: 3px solid var(--accent);
+        }
+        [data-theme="dark"] .aha-truth {
+            background: linear-gradient(135deg, #001a33 0%, #002d4d 100%);
+        }
+        .aha-mnemonic {
+            background: linear-gradient(135deg, #e6f7ed 0%, #ccf0d9 100%);
+            border-left: 3px solid #34c759;
+        }
+        [data-theme="dark"] .aha-mnemonic {
+            background: linear-gradient(135deg, #002611 0%, #003d1a 100%);
+        }
+        .aha-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        .aha-title {
+            font-weight: 600;
+            font-size: 19px;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        .aha-content {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        .aha-mnemonic-text {
+            font-size: 21px;
+            font-weight: 600;
+            color: #34c759;
+            padding: 16px;
+            background: rgba(255,255,255,0.5);
+            border-radius: var(--radius-md);
+            text-align: center;
+        }
+        [data-theme="dark"] .aha-mnemonic-text {
+            background: rgba(0,0,0,0.3);
+        }
+
+        /* 题目卡片样式 */
+        .question-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: transform var(--transition-fast);
+        }
+
+        /* 选项样式 */
+        .option-item {
+            padding: 16px 20px;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: var(--bg-secondary);
+        }
+        .option-item:hover {
+            border-color: var(--accent);
+            background: var(--bg-hover);
+        }
+        .option-item.selected {
+            border-color: var(--accent);
+            background: rgba(0, 113, 227, 0.08);
+        }
+        .option-item.correct {
+            border-color: #34c759;
+            background: rgba(52, 199, 89, 0.08);
+        }
+        .option-item.wrong {
+            border-color: #ff3b30;
+            background: rgba(255, 59, 48, 0.08);
+        }
+        .option-key {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--bg-hover);
+            font-weight: 600;
+            flex-shrink: 0;
+            font-size: 15px;
+        }
+        .option-item.selected .option-key {
+            background: var(--accent);
+            color: white;
+        }
+        .option-content {
+            font-size: 17px;
+            color: var(--text-primary);
+        }
+
+        /* 进度条 */
+        .progress-bar {
+            height: 4px;
+            background: var(--border-color);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            transition: width 0.5s var(--ease-out);
+        }
+
+        /* 动画 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 禁止复制（防作弊） */
+        .no-select {
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* 主内容区域 */
+        main {
+            padding-top: 48px;
+            min-height: 100vh;
+            background: var(--bg-secondary);
+        }
+
+        .content-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 48px 22px;
+        }
+
+        /* 分类标签 */
+        .category-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: var(--radius-full);
+            background: rgba(0, 113, 227, 0.1);
+            color: var(--accent);
+        }
+
+        /* 定时器 */
+        .timer {
+            font-family: var(--font-mono);
+            font-size: 17px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        /* 模态框 */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 22px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-normal);
+        }
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.95);
+            transition: transform var(--transition-normal);
+        }
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            font-size: 21px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .modal-body {
+            padding: 24px;
+        }
+        .modal-footer {
+            padding: 24px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* 图标按钮 */
+        .icon-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+        .icon-btn:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        /* SVG 图标样式 */
+        .icon {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* 欢迎页面 */
+        .welcome-section {
+            text-align: center;
+            padding: 80px 0;
+        }
+        .welcome-icon {
+            font-size: 80px;
+            margin-bottom: 24px;
+        }
+        .welcome-title {
+            font-size: 40px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+        .welcome-subtitle {
+            font-size: 19px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        .welcome-description {
+            font-size: 17px;
+            color: var(--text-tertiary);
+            margin-bottom: 48px;
+        }
+
+        /* 范围列表 */
+        .scope-list {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            padding: 32px;
+            margin-bottom: 48px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: left;
+        }
+        .scope-list h3 {
+            font-size: 19px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+        .scope-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            font-size: 17px;
+            color: var(--text-secondary);
+        }
+        .scope-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* 结果页面 */
+        .result-section {
+            text-align: center;
+            padding: 48px 0;
+        }
+        .grade-display {
+            font-size: 120px;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 16px;
+        }
+        .result-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+        .mastery-score {
+            font-size: 19px;
+            color: var(--text-secondary);
+            margin-bottom: 48px;
+        }
+        .mastery-value {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* 热力图容器 */
+        .chart-container {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+        .chart-title {
+            font-size: 21px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        /* 弱点列表 */
+        .weak-point {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: rgba(255, 59, 48, 0.05);
+            border-radius: var(--radius-md);
+            margin-bottom: 12px;
+        }
+        .weak-point-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff3b30;
+            flex-shrink: 0;
+        }
+        .weak-point-name {
+            font-weight: 500;
+            color: var(--text-primary);
+            flex: 1;
+        }
+        .weak-point-level {
+            color: #ff3b30;
+            font-size: 14px;
+        }
+
+        /* 建议列表 */
+        .recommendation {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px;
+            background: rgba(0, 113, 227, 0.05);
+            border-radius: var(--radius-md);
+            margin-bottom: 12px;
+        }
+        .recommendation-icon {
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+        .recommendation-content {
+            flex: 1;
+        }
+        .recommendation-title {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        .recommendation-desc {
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        /* 操作按钮组 */
+        .action-group {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .welcome-icon { font-size: 60px; }
+            .welcome-title { font-size: 32px; }
+            .grade-display { font-size: 80px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <div style="display: flex; align-items: center; gap: 48px;">
+                <a href="/" class="nav-logo">AI信息未来</a>
+                <div class="nav-menu">
+                    <a href="/" class="nav-link">首页</a>
+                    <a href="/src/pages/courses.html" class="nav-link">课程</a>
+                    <a href="/src/pages/community.html" class="nav-link">社区</a>
+                    <a href="/src/pages/arena.html" class="nav-link">PK竞技</a>
+                </div>
+            </div>
+            <div class="nav-actions">
+                <span id="timer" class="timer">15:00</span>
+                <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+                <button class="icon-btn" onclick="exitTest()" title="退出测试">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <main>
+        <div class="content-wrapper">
+            <!-- 欢迎页面（诊断前） -->
+            <div id="welcomeView" class="welcome-section">
+                <div class="welcome-icon">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0-6 0"></path>
+                        <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 0 1-2.827 0l-4.244-4.243a8 8 0 1 1 11.314 0z"></path>
+                    </svg>
+                </div>
+                <h1 class="welcome-title">入学诊断测试</h1>
+                <p class="welcome-subtitle">15分钟，20道题</p>
+                <p class="welcome-description">精准定位你的知识盲区，为你定制专属学习计划</p>
+
+                <div class="scope-list">
+                    <h3>测试覆盖范围</h3>
+                    <div class="scope-item">
+                        <span class="scope-dot" style="background: #ff3b30;"></span>
+                        <span>Python 陷阱（5题）</span>
+                    </div>
+                    <div class="scope-item">
+                        <span class="scope-dot" style="background: #ff9500;"></span>
+                        <span>数学直觉（4题）</span>
+                    </div>
+                    <div class="scope-item">
+                        <span class="scope-dot" style="background: #34c759;"></span>
+                        <span>深度学习原理（5题）</span>
+                    </div>
+                    <div class="scope-item">
+                        <span class="scope-dot" style="background: #af52de;"></span>
+                        <span>调试技能（3题）</span>
+                    </div>
+                    <div class="scope-item">
+                        <span class="scope-dot" style="background: #0071e3;"></span>
+                        <span>框架细节（3题）</span>
+                    </div>
+                </div>
+
+                <button onclick="startDiagnosis()" class="btn btn-primary btn-lg">
+                    开始诊断
+                    <svg class="icon" style="width: 16px; height: 16px;" viewBox="0 0 24 24">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- 答题页面 -->
+            <div id="testView" class="hidden">
+                <!-- 进度 -->
+                <div style="margin-bottom: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <span style="font-size: 15px; color: var(--text-secondary);">
+                            进度：<span id="currentIndex">1</span> / <span id="totalCount">20</span>
+                        </span>
+                        <span id="categoryTag" class="category-badge">Python陷阱</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill" style="width: 5%"></div>
+                    </div>
+                </div>
+
+                <!-- 题目卡片 -->
+                <div class="question-card">
+                    <div style="padding: 32px; border-bottom: 1px solid var(--border-color);">
+                        <div id="questionContent" class="no-select" style="color: var(--text-primary); line-height: 1.6;">
+                            <!-- 题目内容 -->
+                        </div>
+                    </div>
+
+                    <!-- 选项 -->
+                    <div id="optionsContainer" class="no-select" style="padding: 24px;">
+                        <!-- 选项动态填充 -->
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div style="display: flex; justify-content: space-between; margin-top: 24px;">
+                    <button id="prevBtn" onclick="prevQuestion()" class="btn btn-secondary" disabled>
+                        <svg class="icon" style="width: 16px; height: 16px;" viewBox="0 0 24 24">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        上一题
+                    </button>
+                    <button id="nextBtn" onclick="nextQuestion()" class="btn btn-primary">
+                        下一题
+                        <svg class="icon" style="width: 16px; height: 16px;" viewBox="0 0 24 24">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 结果页面 -->
+            <div id="resultView" class="hidden">
+                <div class="result-section">
+                    <div id="gradeDisplay" class="grade-display">S</div>
+                    <h2 class="result-title">诊断完成</h2>
+                    <p class="mastery-score">你的知识掌握度：<span id="masteryScore" class="mastery-value">85</span>%</p>
+                </div>
+
+                <!-- 热力图 -->
+                <div class="chart-container">
+                    <h3 class="chart-title">知识缺陷热力图</h3>
+                    <div id="heatmapChart" style="height: 400px;"></div>
+                </div>
+
+                <!-- 薄弱点 -->
+                <div class="chart-container">
+                    <h3 class="chart-title">需要加强的知识点</h3>
+                    <div id="weakPointsList">
+                        <!-- 动态填充 -->
+                    </div>
+                </div>
+
+                <!-- 学习建议 -->
+                <div class="chart-container">
+                    <h3 class="chart-title">学习建议</h3>
+                    <div id="recommendationsList">
+                        <!-- 动态填充 -->
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="action-group">
+                    <button onclick="startLearning()" class="btn btn-primary btn-lg">
+                        开始消灭红点
+                        <svg class="icon" style="width: 16px; height: 16px;" viewBox="0 0 24 24">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                    <button onclick="shareResult()" class="btn btn-outline btn-lg">
+                        分享成绩
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 解析弹窗 -->
+    <div id="explanationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">顿悟时刻</h3>
+                <button onclick="closeExplanation()" class="icon-btn">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div id="explanationContent" class="modal-body">
+                <!-- 解析内容 -->
+            </div>
+            <div class="modal-footer">
+                <button onclick="markHelpful()" class="btn btn-secondary">
+                    <svg class="icon" style="width: 16px; height: 16px;" viewBox="0 0 24 24">
+                        <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                    </svg>
+                    有帮助
+                </button>
+                <button onclick="closeExplanation()" class="btn btn-primary">
+                    继续答题
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let testId = null;
+        let questions = [];
+        let currentIndex = 0;
+        let answers = [];
+        let timerInterval = null;
+        let timeRemaining = 900; // 15分钟
+
+        // 初始化主题
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+
+        // 切换主题
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // 获取token
+        function getToken() {
+            return localStorage.getItem('token');
+        }
+
+        // API请求封装
+        async function apiRequest(endpoint, method = 'GET', body = null) {
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getToken()}`
+            };
+
+            const options = { method, headers };
+            if (body) {
+                options.body = JSON.stringify(body);
+            }
+
+            const response = await fetch(`${API_BASE}${endpoint}`, options);
+            return response.json();
+        }
+
+        // 开始诊断
+        async function startDiagnosis() {
+            try {
+                const result = await apiRequest('/diagnostic/entrance/start', 'POST');
+
+                if (result.code === 200) {
+                    testId = result.data.testId;
+                    questions = result.data.questions;
+
+                    document.getElementById('welcomeView').classList.add('hidden');
+                    document.getElementById('testView').classList.remove('hidden');
+                    document.getElementById('totalCount').textContent = questions.length;
+
+                    renderQuestion(0);
+                    startTimer();
+                } else {
+                    alert(result.message || '开始诊断失败');
+                }
+            } catch (error) {
+                console.error('开始诊断失败:', error);
+                // 使用模拟数据进行演示
+                useDemoData();
+            }
+        }
+
+        // 使用演示数据
+        function useDemoData() {
+            testId = 'demo';
+            questions = generateDemoQuestions();
+
+            document.getElementById('welcomeView').classList.add('hidden');
+            document.getElementById('testView').classList.remove('hidden');
+            document.getElementById('totalCount').textContent = questions.length;
+
+            renderQuestion(0);
+            startTimer();
+        }
+
+        // 生成演示题目
+        function generateDemoQuestions() {
+            return [
+                {
+                    index: 0,
+                    knowledgePointId: 1,
+                    knowledgePointName: '广播机制',
+                    category: 'python_trap',
+                    categoryDisplay: 'Python陷阱',
+                    questionHtml: `
+                        <h3 style="font-size: 21px; font-weight: 600; margin-bottom: 16px;">以下代码的输出是什么？</h3>
+                        <pre><code class="language-python">import numpy as np
+a = np.array([[1, 2, 3]])  # shape: (1, 3)
+b = np.array([[1], [2], [3]])  # shape: (3, 1)
+c = a + b
+print(c.shape)</code></pre>
+                    `,
+                    options: [
+                        { key: 'A', content: '(1, 3)' },
+                        { key: 'B', content: '(3, 3)' },
+                        { key: 'C', content: '(3, 1)' },
+                        { key: 'D', content: '报错：形状不兼容' }
+                    ],
+                    correctAnswer: 'B',
+                    explanation: {
+                        misconception: '你可能以为两个不同形状的数组相加会报错，或者结果会是其中一个的形状...',
+                        truth: '实际上，NumPy 的广播机制会自动扩展维度！(1,3) 和 (3,1) 会被广播成 (3,3)，然后逐元素相加。',
+                        mnemonic: '从右往左对齐，1可扩展，不等就报错'
+                    }
+                },
+                {
+                    index: 1,
+                    knowledgePointId: 10,
+                    knowledgePointName: 'CrossEntropyLoss内置Softmax',
+                    category: 'dl_principle',
+                    categoryDisplay: '深度学习原理',
+                    questionHtml: `
+                        <h3 style="font-size: 21px; font-weight: 600; margin-bottom: 16px;">以下代码有什么问题？</h3>
+                        <pre><code class="language-python">import torch.nn.functional as F
+
+logits = model(x)  # 模型输出
+probs = F.softmax(logits, dim=-1)  # ← 这行
+loss = F.cross_entropy(probs, labels)</code></pre>
+                    `,
+                    options: [
+                        { key: 'A', content: '没有问题，代码正确' },
+                        { key: 'B', content: 'cross_entropy 内部已包含 softmax，这里重复了' },
+                        { key: 'C', content: 'dim 参数应该是 0' },
+                        { key: 'D', content: '应该用 log_softmax' }
+                    ],
+                    correctAnswer: 'B',
+                    explanation: {
+                        misconception: '你可能以为 cross_entropy 只是单纯计算交叉熵公式 -y*log(p)，需要先手动转成概率...',
+                        truth: 'PyTorch 的 F.cross_entropy = F.log_softmax + F.nll_loss！它内部已经做了 softmax。如果你传入概率而不是 logits，会被"再 softmax 一次"，导致梯度变小，训练变慢！',
+                        mnemonic: 'Logits 进 CE，不要先 Softmax'
+                    }
+                },
+                {
+                    index: 2,
+                    knowledgePointId: 6,
+                    knowledgePointName: 'Attention Scaling',
+                    category: 'math_intuition',
+                    categoryDisplay: '数学直觉',
+                    questionHtml: `
+                        <h3 style="font-size: 21px; font-weight: 600; margin-bottom: 16px;">Attention 机制中为什么要除以 $\\sqrt{d_k}$？</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 16px;">计算公式：$\\text{Attention}(Q,K,V) = \\text{softmax}(\\frac{QK^T}{\\sqrt{d_k}})V$</p>
+                    `,
+                    options: [
+                        { key: 'A', content: '只是为了归一化，没有特殊意义' },
+                        { key: 'B', content: '防止点积结果过大，导致 softmax 梯度消失' },
+                        { key: 'C', content: '让注意力权重更均匀' },
+                        { key: 'D', content: '加速计算' }
+                    ],
+                    correctAnswer: 'B',
+                    explanation: {
+                        misconception: '你可能以为这只是简单的归一化操作，或者为了让数值更好看...',
+                        truth: '当 d_k 很大时，Q·K 的点积方差也会变大（约为 d_k），导致 softmax 输出接近 one-hot，梯度几乎为 0！除以 √d_k 可以让方差恢复到 1，保持梯度健康。',
+                        mnemonic: 'QK 点积方差是 d_k，除根号让梯度活'
+                    }
+                }
+            ];
+        }
+
+        // 渲染题目
+        function renderQuestion(index) {
+            const q = questions[index];
+            currentIndex = index;
+
+            // 更新进度
+            document.getElementById('currentIndex').textContent = index + 1;
+            document.getElementById('progressFill').style.width = `${((index + 1) / questions.length) * 100}%`;
+            document.getElementById('categoryTag').textContent = q.categoryDisplay;
+
+            // 渲染题目内容
+            document.getElementById('questionContent').innerHTML = q.questionHtml;
+
+            // 渲染选项
+            const optionsHtml = q.options.map(opt => `
+                <div class="option-item ${answers[index] === opt.key ? 'selected' : ''}"
+                     onclick="selectOption('${opt.key}')">
+                    <span class="option-key">${opt.key}</span>
+                    <span class="option-content">${opt.content}</span>
+                </div>
+            `).join('');
+            document.getElementById('optionsContainer').innerHTML = optionsHtml;
+
+            // 更新按钮状态
+            document.getElementById('prevBtn').disabled = index === 0;
+            const nextBtn = document.getElementById('nextBtn');
+            if (index === questions.length - 1) {
+                nextBtn.innerHTML = `提交 <svg class="icon" style="width: 16px; height: 16px;" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>`;
+            } else {
+                nextBtn.innerHTML = `下一题 <svg class="icon" style="width: 16px; height: 16px;" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`;
+            }
+
+            // 渲染数学公式和代码高亮
+            renderMathAndCode();
+        }
+
+        // 渲染数学公式和代码
+        function renderMathAndCode() {
+            // KaTeX 渲染
+            if (typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ],
+                    throwOnError: false
+                });
+            }
+
+            // Highlight.js 代码高亮
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+        }
+
+        // 选择选项
+        function selectOption(key) {
+            answers[currentIndex] = key;
+
+            // 更新UI
+            document.querySelectorAll('.option-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+
+            // 判断正误并显示解析
+            const q = questions[currentIndex];
+            const isCorrect = key === q.correctAnswer;
+
+            setTimeout(() => {
+                showExplanation(q, isCorrect);
+            }, 300);
+        }
+
+        // 显示解析
+        function showExplanation(q, isCorrect) {
+            const resultIcon = isCorrect ?
+                '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#34c759" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>' :
+                '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ff3b30" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
+            const resultText = isCorrect ? '回答正确' : '回答错误';
+            const resultColor = isCorrect ? '#34c759' : '#ff3b30';
+
+            const explanationHtml = `
+                <div style="text-align: center; margin-bottom: 32px;">
+                    ${resultIcon}
+                    <p style="color: ${resultColor}; font-weight: 600; font-size: 21px; margin-top: 12px;">${resultText}</p>
+                </div>
+
+                <div class="aha-section aha-misconception">
+                    <div class="aha-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                    </div>
+                    <div class="aha-title">你的直觉误区</div>
+                    <div class="aha-content">${q.explanation.misconception}</div>
+                </div>
+
+                <div class="aha-section aha-truth">
+                    <div class="aha-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M12 16v-4"></path>
+                            <path d="M12 8h.01"></path>
+                        </svg>
+                    </div>
+                    <div class="aha-title">真相揭秘</div>
+                    <div class="aha-content">${q.explanation.truth}</div>
+                </div>
+
+                <div class="aha-section aha-mnemonic">
+                    <div class="aha-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </div>
+                    <div class="aha-title">一句话口诀</div>
+                    <div class="aha-mnemonic-text">${q.explanation.mnemonic}</div>
+                </div>
+            `;
+
+            document.getElementById('explanationContent').innerHTML = explanationHtml;
+            document.getElementById('explanationModal').classList.add('show');
+
+            // 渲染解析中的公式和代码
+            renderMathAndCode();
+        }
+
+        // 关闭解析
+        function closeExplanation() {
+            document.getElementById('explanationModal').classList.remove('show');
+        }
+
+        // 上一题
+        function prevQuestion() {
+            if (currentIndex > 0) {
+                renderQuestion(currentIndex - 1);
+            }
+        }
+
+        // 下一题
+        function nextQuestion() {
+            if (currentIndex < questions.length - 1) {
+                renderQuestion(currentIndex + 1);
+            } else {
+                submitTest();
+            }
+        }
+
+        // 提交测试
+        async function submitTest() {
+            stopTimer();
+
+            // 构建答案数据
+            const answerData = questions.map((q, i) => ({
+                knowledgePointId: q.knowledgePointId,
+                userAnswer: answers[i] || null,
+                correctAnswer: q.correctAnswer,
+                isCorrect: answers[i] === q.correctAnswer
+            }));
+
+            try {
+                const result = await apiRequest('/diagnostic/test/complete', 'POST', {
+                    testId: testId,
+                    answers: answerData
+                });
+
+                if (result.code === 200) {
+                    showResult(result.data);
+                } else {
+                    // 使用模拟结果
+                    showDemoResult(answerData);
+                }
+            } catch (error) {
+                console.error('提交失败:', error);
+                showDemoResult(answerData);
+            }
+        }
+
+        // 显示演示结果
+        function showDemoResult(answerData) {
+            const correctCount = answerData.filter(a => a.isCorrect).length;
+            const score = Math.round((correctCount / answerData.length) * 100);
+
+            showResult({
+                score: score,
+                grade: score >= 90 ? 'S' : score >= 80 ? 'A' : score >= 70 ? 'B' : score >= 60 ? 'C' : 'D',
+                correctCount: correctCount,
+                totalCount: answerData.length,
+                overallMastery: score,
+                weakPoints: answerData.filter(a => !a.isCorrect).map(a => ({
+                    knowledgePointId: a.knowledgePointId,
+                    masteryLevel: '薄弱'
+                })),
+                recommendations: [
+                    { type: 'priority', icon: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>', title: '首要攻克', content: '建议优先学习广播机制相关知识' },
+                    { type: 'daily', icon: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>', title: '每日目标', content: '每天完成3道针对薄弱点的练习题' }
+                ]
+            });
+        }
+
+        // 显示结果
+        function showResult(data) {
+            document.getElementById('testView').classList.add('hidden');
+            document.getElementById('resultView').classList.remove('hidden');
+
+            // 显示评分
+            document.getElementById('gradeDisplay').textContent = data.grade;
+            document.getElementById('masteryScore').textContent = Math.round(data.score || data.overallMastery);
+
+            // 渲染热力图
+            renderHeatmap(data);
+
+            // 渲染薄弱点
+            const weakPointsHtml = (data.weakPoints || []).map(wp => `
+                <div class="weak-point">
+                    <span class="weak-point-dot"></span>
+                    <span class="weak-point-name">${wp.knowledgePointName || '知识点'}</span>
+                    <span class="weak-point-level">${wp.masteryLevel || '需加强'}</span>
+                </div>
+            `).join('') || '<p style="color: var(--text-secondary); text-align: center; padding: 24px;">暂无薄弱点，继续保持</p>';
+            document.getElementById('weakPointsList').innerHTML = weakPointsHtml;
+
+            // 渲染学习建议
+            const recommendationsHtml = (data.recommendations || []).map(rec => `
+                <div class="recommendation">
+                    <div class="recommendation-icon">${rec.icon}</div>
+                    <div class="recommendation-content">
+                        <div class="recommendation-title">${rec.title}</div>
+                        <div class="recommendation-desc">${rec.content}</div>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('recommendationsList').innerHTML = recommendationsHtml;
+        }
+
+        // 渲染热力图
+        function renderHeatmap(data) {
+            const chart = echarts.init(document.getElementById('heatmapChart'));
+
+            const categories = ['Python陷阱', '数学直觉', '深度学习', '调试技能', '框架细节'];
+            const knowledgePoints = ['广播机制', 'Softmax稳定性', 'BatchNorm', 'Loss调试', 'Attention'];
+
+            // 生成模拟热力图数据
+            const heatmapData = [];
+            for (let i = 0; i < categories.length; i++) {
+                for (let j = 0; j < knowledgePoints.length; j++) {
+                    const score = Math.floor(Math.random() * 60) + 40;
+                    heatmapData.push([i, j, score]);
+                }
+            }
+
+            const option = {
+                tooltip: {
+                    position: 'top',
+                    formatter: function(params) {
+                        return `${categories[params.data[0]]} - ${knowledgePoints[params.data[1]]}<br/>掌握度: ${params.data[2]}%`;
+                    }
+                },
+                grid: {
+                    left: '15%',
+                    right: '10%',
+                    top: '10%',
+                    bottom: '15%'
+                },
+                xAxis: {
+                    type: 'category',
+                    data: categories,
+                    splitArea: { show: true },
+                    axisLabel: { rotate: 30 }
+                },
+                yAxis: {
+                    type: 'category',
+                    data: knowledgePoints,
+                    splitArea: { show: true }
+                },
+                visualMap: {
+                    min: 0,
+                    max: 100,
+                    calculable: true,
+                    orient: 'horizontal',
+                    left: 'center',
+                    bottom: '0%',
+                    inRange: {
+                        color: ['#ff3b30', '#ff9500', '#ffcc00', '#34c759', '#30d158']
+                    }
+                },
+                series: [{
+                    name: '掌握度',
+                    type: 'heatmap',
+                    data: heatmapData,
+                    label: {
+                        show: true,
+                        formatter: '{@[2]}%'
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }]
+            };
+
+            chart.setOption(option);
+        }
+
+        // 计时器
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
+                document.getElementById('timer').textContent =
+                    `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+                if (timeRemaining <= 0) {
+                    submitTest();
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+        }
+
+        // 退出测试
+        function exitTest() {
+            if (confirm('确定要退出测试吗？当前进度将不会保存。')) {
+                window.location.href = '/';
+            }
+        }
+
+        // 开始学习
+        function startLearning() {
+            window.location.href = '/src/pages/study.html';
+        }
+
+        // 分享结果
+        function shareResult() {
+            alert('分享功能开发中...');
+        }
+
+        // 标记有帮助
+        function markHelpful() {
+            alert('感谢反馈');
+        }
+
+        // 页面加载完成后检查登录状态
+        document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
+
+            const token = getToken();
+            if (!token) {
+                // 未登录，使用演示模式
+                console.log('未登录，使用演示模式');
+            }
+
+            // 初始化KaTeX
+            if (typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ],
+                    throwOnError: false
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -25,158 +25,9 @@ class MentorshipManager {
     addStyles() {
         const style = document.createElement('style');
         style.textContent = `
-            @keyframes fadeInUp {
-                from {
-                    opacity: 0;
-                    transform: translateY(20px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-            @keyframes pulse {
-                0%, 100% { transform: scale(1); }
-                50% { transform: scale(1.05); }
-            }
-            @keyframes shimmer {
-                0% { background-position: -200% 0; }
-                100% { background-position: 200% 0; }
-            }
-            @keyframes glow {
-                0%, 100% { box-shadow: 0 0 5px rgba(139, 92, 246, 0.3); }
-                50% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.6); }
-            }
-            .mentorship-card {
-                animation: fadeInUp 0.4s ease forwards;
-                transition: all 0.3s ease;
-            }
-            .mentorship-card:hover {
-                transform: translateY(-4px);
-                box-shadow: 0 12px 24px rgba(0,0,0,0.1);
-            }
-            .exp-share-indicator {
-                background: linear-gradient(90deg, #8b5cf6, #a855f7, #8b5cf6);
-                background-size: 200% 100%;
-                animation: shimmer 2s infinite;
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                font-weight: bold;
-            }
-            .graduation-glow {
-                animation: glow 2s infinite;
-            }
-            .modal-overlay {
-                opacity: 0;
-                transition: opacity 0.3s ease;
-            }
-            .modal-overlay.active {
-                opacity: 1;
-            }
-            .modal-content {
-                transform: scale(0.9) translateY(20px);
-                transition: transform 0.3s ease;
-            }
-            .modal-overlay.active .modal-content {
-                transform: scale(1) translateY(0);
-            }
-            .btn-primary {
-                background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-                transition: all 0.3s ease;
-            }
-            .btn-primary:hover:not(:disabled) {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
-            }
-            .btn-primary:disabled {
+            .btn:disabled {
                 opacity: 0.5;
                 cursor: not-allowed;
-            }
-            .btn-secondary {
-                background: #f3f4f6;
-                color: #374151;
-                transition: all 0.3s ease;
-            }
-            .btn-secondary:hover {
-                background: #e5e7eb;
-            }
-            .pending-invitation {
-                animation: pulse 2s infinite;
-            }
-            .toast {
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 16px 24px;
-                border-radius: 12px;
-                color: white;
-                font-weight: 500;
-                z-index: 10000;
-                animation: fadeInUp 0.3s ease;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-            .toast.success {
-                background: linear-gradient(135deg, #10b981, #059669);
-            }
-            .toast.error {
-                background: linear-gradient(135deg, #ef4444, #dc2626);
-            }
-            .toast.info {
-                background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-            }
-            .loading-skeleton {
-                background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-                background-size: 200% 100%;
-                animation: shimmer 1.5s infinite;
-                border-radius: 8px;
-            }
-            .avatar-wrapper {
-                position: relative;
-            }
-            .avatar-wrapper::after {
-                content: '';
-                position: absolute;
-                inset: -2px;
-                border-radius: 50%;
-                background: linear-gradient(135deg, #8b5cf6, #ec4899, #f59e0b);
-                z-index: -1;
-                opacity: 0;
-                transition: opacity 0.3s ease;
-            }
-            .avatar-wrapper:hover::after {
-                opacity: 1;
-            }
-            .search-container {
-                position: relative;
-            }
-            .search-results {
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: white;
-                border-radius: 8px;
-                box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-                max-height: 200px;
-                overflow-y: auto;
-                z-index: 100;
-                display: none;
-            }
-            .search-results.active {
-                display: block;
-            }
-            .search-result-item {
-                padding: 12px 16px;
-                cursor: pointer;
-                transition: background 0.2s ease;
-                display: flex;
-                align-items: center;
-                gap: 12px;
-            }
-            .search-result-item:hover {
-                background: #f3f4f6;
             }
         `;
         document.head.appendChild(style);
@@ -255,8 +106,8 @@ class MentorshipManager {
         const apprenticeList = document.getElementById('apprenticeList');
 
         const skeletonHTML = `
-            <div class="loading-skeleton" style="height: 80px; margin-bottom: 12px;"></div>
-            <div class="loading-skeleton" style="height: 80px; margin-bottom: 12px;"></div>
+            <div class="relationship-card" style="height: 96px; background: var(--bg-secondary); animation: pulse 1.5s ease-in-out infinite;">
+            </div>
         `;
 
         if (mentorList) mentorList.innerHTML = skeletonHTML;
@@ -297,16 +148,19 @@ class MentorshipManager {
         }
 
         if (!users || users.length === 0) {
-            container.innerHTML = '<div class="search-result-item" style="color: #6b7280;">未找到用户</div>';
+            container.innerHTML = '<div class="search-result-item" style="color: var(--text-tertiary);">未找到用户</div>';
         } else {
             container.innerHTML = users.map(user => `
                 <div class="search-result-item" onclick="mentorshipManager.selectUser(${user.id}, '${user.nickname || user.username}')">
-                    <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
-                        <i class="fas fa-user text-purple-600"></i>
+                    <div class="avatar" style="width: 40px; height: 40px; font-size: 14px;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
                     </div>
                     <div>
-                        <div class="font-semibold">${user.nickname || user.username}</div>
-                        <div class="text-sm text-gray-500">ID: ${user.id}</div>
+                        <div style="font-weight: 600; color: var(--text-primary);">${user.nickname || user.username}</div>
+                        <div style="font-size: 13px; color: var(--text-tertiary);">ID: ${user.id}</div>
                     </div>
                 </div>
             `).join('');
@@ -378,24 +232,24 @@ class MentorshipManager {
                 const activeMentor = asApprentice.find(m => m.status === 'ACTIVE');
                 if (activeMentor) {
                     currentMentorInfo.innerHTML = `
-                        <div class="flex items-center gap-3">
-                            <div class="avatar-wrapper">
-                                <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                                    <i class="fas fa-user-tie text-purple-600"></i>
-                                </div>
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <div class="avatar" style="width: 48px; height: 48px;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
                             </div>
                             <div>
-                                <p class="font-semibold text-gray-800">${activeMentor.mentor?.nickname || activeMentor.mentor?.username || '师父'}</p>
-                                <p class="text-sm">
-                                    <span class="exp-share-indicator">+${activeMentor.totalSharedExp || 0} 经验</span>
-                                </p>
+                                <div class="relationship-name" style="font-size: 17px; margin-bottom: 4px;">${activeMentor.mentor?.nickname || activeMentor.mentor?.username || '师父'}</div>
+                                <div class="exp-indicator" style="font-size: 14px;">+${activeMentor.totalSharedExp || 0} 经验</div>
                             </div>
                         </div>
                     `;
                 }
             } else {
                 currentMentorInfo.innerHTML = `
-                    <p class="text-gray-500 text-sm">暂无师父，快去拜师吧！</p>
+                    <p class="stat-description">暂无师父，快去拜师吧</p>
                 `;
             }
         }
@@ -435,57 +289,66 @@ class MentorshipManager {
 
         if (!mentors || mentors.length === 0) {
             container.innerHTML = `
-                <div class="empty-state text-center py-8">
-                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-purple-50 flex items-center justify-center">
-                        <i class="fas fa-user-graduate text-purple-400 text-2xl"></i>
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                            <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                        </svg>
                     </div>
-                    <p class="text-lg font-semibold text-gray-700">暂无师父</p>
-                    <p class="text-sm text-gray-500 mt-1">找一位导师，开启学习之旅吧！</p>
+                    <p class="empty-title">暂无师父</p>
+                    <p class="empty-description">找一位导师，开启学习之旅吧</p>
                 </div>
             `;
             return;
         }
 
         container.innerHTML = mentors.map((m, index) => `
-            <div class="mentorship-card border border-gray-200 rounded-xl p-4 mb-3 bg-white"
-                 style="animation-delay: ${index * 0.1}s">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <div class="avatar-wrapper">
-                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white">
-                                <i class="fas fa-user-tie text-xl"></i>
-                            </div>
+            <div class="relationship-card">
+                <div class="relationship-header">
+                    <div class="relationship-info">
+                        <div class="avatar">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
                         </div>
-                        <div>
-                            <div class="flex items-center space-x-2">
-                                <span class="font-semibold text-gray-800">
-                                    ${m.mentor?.nickname || m.mentor?.username || '师父'}
-                                </span>
-                                <span class="status-badge status-${m.status.toLowerCase()} px-2 py-0.5 rounded-full text-xs font-medium
-                                    ${m.status === 'ACTIVE' ? 'bg-green-100 text-green-700' :
-                                      m.status === 'GRADUATED' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-700'}">
+                        <div class="relationship-details">
+                            <div class="relationship-name">
+                                ${m.mentor?.nickname || m.mentor?.username || '师父'}
+                                <span class="badge ${m.status === 'ACTIVE' ? 'badge-success' : m.status === 'GRADUATED' ? 'badge-primary' : ''}" style="margin-left: 8px; font-size: 12px;">
                                     ${this.getStatusText(m.status)}
                                 </span>
                             </div>
-                            <p class="text-sm text-gray-500 mt-1">
-                                <span class="exp-share-indicator">+${m.totalSharedExp || 0} 经验</span>
-                                <span class="mx-2">•</span>
+                            <div class="relationship-meta">
+                                <span class="exp-indicator">+${m.totalSharedExp || 0} 经验</span>
+                                <span>•</span>
                                 <span>${this.calculateDays(m.createdAt)}天</span>
-                            </p>
+                            </div>
                         </div>
                     </div>
-                    <div class="flex items-center space-x-2">
+                    <div class="relationship-actions">
                         ${m.status === 'ACTIVE' ? `
                             <button
                                 onclick="mentorshipManager.dissolveRelationship(${m.id}, '徒弟主动解除')"
-                                class="px-3 py-1.5 text-red-500 hover:bg-red-50 rounded-lg text-sm transition-colors">
-                                <i class="fas fa-unlink"></i>
+                                class="icon-btn"
+                                title="解除关系">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M16 8A5 5 0 1 0 6 8h10M9 12v8m6-8v8"></path>
+                                </svg>
                             </button>
                         ` : ''}
                         <button
                             onclick="mentorshipManager.showDetail(${m.id})"
-                            class="px-3 py-1.5 text-purple-500 hover:bg-purple-50 rounded-lg text-sm transition-colors">
-                            <i class="fas fa-info-circle"></i>
+                            class="icon-btn"
+                            title="查看详情">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
                         </button>
                     </div>
                 </div>
@@ -499,12 +362,17 @@ class MentorshipManager {
 
         if (!apprentices || apprentices.length === 0) {
             container.innerHTML = `
-                <div class="empty-state text-center py-8">
-                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-pink-50 flex items-center justify-center">
-                        <i class="fas fa-users text-pink-400 text-2xl"></i>
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
                     </div>
-                    <p class="text-lg font-semibold text-gray-700">暂无徒弟</p>
-                    <p class="text-sm text-gray-500 mt-1">点击"发起邀请"收一位徒弟吧！</p>
+                    <p class="empty-title">暂无徒弟</p>
+                    <p class="empty-description">点击"发起邀请"收一位徒弟吧</p>
                 </div>
             `;
             return;
@@ -514,62 +382,64 @@ class MentorshipManager {
             const progress = this.calculateGraduationProgress(a);
             const canGraduate = progress >= 100;
             return `
-                <div class="mentorship-card border border-gray-200 rounded-xl p-4 mb-3 bg-white ${canGraduate && a.status === 'ACTIVE' ? 'graduation-glow' : ''}"
-                     style="animation-delay: ${index * 0.1}s">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="flex items-center space-x-3">
-                            <div class="avatar-wrapper">
-                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center text-white">
-                                    <i class="fas fa-user text-xl"></i>
-                                </div>
+                <div class="relationship-card ${canGraduate && a.status === 'ACTIVE' ? 'graduation-ready' : ''}">
+                    <div class="relationship-header">
+                        <div class="relationship-info">
+                            <div class="avatar">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
                             </div>
-                            <div>
-                                <div class="flex items-center space-x-2">
-                                    <span class="font-semibold text-gray-800">
-                                        ${a.apprentice?.nickname || a.apprentice?.username || '徒弟'}
-                                    </span>
-                                    <span class="status-badge px-2 py-0.5 rounded-full text-xs font-medium
-                                        ${a.status === 'ACTIVE' ? 'bg-green-100 text-green-700' :
-                                          a.status === 'GRADUATED' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-700'}">
+                            <div class="relationship-details">
+                                <div class="relationship-name">
+                                    ${a.apprentice?.nickname || a.apprentice?.username || '徒弟'}
+                                    <span class="badge ${a.status === 'ACTIVE' ? 'badge-success' : a.status === 'GRADUATED' ? 'badge-primary' : ''}" style="margin-left: 8px; font-size: 12px;">
                                         ${this.getStatusText(a.status)}
                                     </span>
                                 </div>
-                                <p class="text-sm text-gray-500 mt-1">
-                                    Lv.${a.apprenticeLevel || 1}
-                                    <span class="mx-2">•</span>
-                                    <span class="exp-share-indicator">+${a.totalSharedExp || 0}</span>
-                                </p>
+                                <div class="relationship-meta">
+                                    <span>Lv.${a.apprenticeLevel || 1}</span>
+                                    <span>•</span>
+                                    <span class="exp-indicator">+${a.totalSharedExp || 0}</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="flex items-center space-x-2">
+                        <div class="relationship-actions">
                             ${a.status === 'ACTIVE' ? `
                                 <button
                                     onclick="mentorshipManager.graduateApprentice(${a.id})"
-                                    class="btn-primary px-3 py-1.5 rounded-lg text-sm text-white flex items-center gap-1"
-                                    ${!canGraduate ? 'disabled' : ''}>
-                                    <i class="fas fa-graduation-cap"></i>
-                                    <span>出师</span>
+                                    class="btn btn-primary btn-sm"
+                                    ${!canGraduate ? 'disabled' : ''}
+                                    title="出师">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                                        <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                                    </svg>
+                                    出师
                                 </button>
                                 <button
                                     onclick="mentorshipManager.dissolveRelationship(${a.id}, '师父主动解除')"
-                                    class="px-3 py-1.5 text-red-500 hover:bg-red-50 rounded-lg text-sm transition-colors">
-                                    <i class="fas fa-unlink"></i>
+                                    class="icon-btn"
+                                    title="解除关系">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M16 8A5 5 0 1 0 6 8h10M9 12v8m6-8v8"></path>
+                                    </svg>
                                 </button>
                             ` : ''}
                         </div>
                     </div>
                     ${a.status === 'ACTIVE' ? `
-                        <div class="mt-3">
-                            <div class="flex items-center justify-between text-sm mb-2">
-                                <span class="text-gray-600">出师进度</span>
-                                <span class="font-semibold ${canGraduate ? 'text-green-600' : 'text-purple-600'}">${progress.toFixed(0)}%</span>
+                        <div class="progress-section">
+                            <div class="progress-header">
+                                <span style="color: var(--text-secondary);">出师进度</span>
+                                <span style="font-weight: 600; color: ${canGraduate ? '#34c759' : 'var(--accent)'};">${progress.toFixed(0)}%</span>
                             </div>
-                            <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
-                                <div class="h-full rounded-full transition-all duration-500 ${canGraduate ? 'bg-gradient-to-r from-green-400 to-green-500' : 'bg-gradient-to-r from-purple-400 to-purple-500'}"
-                                     style="width: ${progress}%"></div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${progress}%; background: ${canGraduate ? 'linear-gradient(90deg, #34c759, #30d158)' : 'linear-gradient(90deg, var(--accent), var(--accent-light))'}"></div>
                             </div>
-                            <p class="text-xs text-gray-500 mt-2">
-                                ${canGraduate ? '已满足出师条件！' : `目标: Lv.20 (当前 Lv.${a.apprenticeLevel || 1})`}
+                            <p class="progress-description">
+                                ${canGraduate ? '已满足出师条件' : `目标: Lv.20 (当前 Lv.${a.apprenticeLevel || 1})`}
                             </p>
                         </div>
                     ` : ''}
@@ -596,34 +466,43 @@ class MentorshipManager {
         const container = document.getElementById('pendingList');
         if (container) {
             container.innerHTML = invitations.map((inv, index) => `
-                <div class="pending-invitation flex items-center justify-between p-4 bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl mb-3"
-                     style="animation-delay: ${index * 0.1}s">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-white">
-                            <i class="fas fa-envelope text-xl"></i>
+                <div class="pending-card">
+                    <div class="relationship-header">
+                        <div class="relationship-info">
+                            <div class="avatar" style="background: linear-gradient(135deg, #ff9500 0%, #ff6500 100%);">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                            </div>
+                            <div class="relationship-details">
+                                <div class="relationship-name">
+                                    ${inv.mentor?.nickname || inv.mentor?.username || '用户'} 邀请你成为徒弟
+                                </div>
+                                <div class="relationship-meta">
+                                    ${new Date(inv.createdAt).toLocaleString('zh-CN')}
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <p class="font-semibold text-gray-800">
-                                ${inv.mentor?.nickname || inv.mentor?.username || '用户'} 邀请你成为徒弟
-                            </p>
-                            <p class="text-sm text-gray-500">
-                                ${new Date(inv.createdAt).toLocaleString('zh-CN')}
-                            </p>
+                        <div class="relationship-actions">
+                            <button
+                                onclick="mentorshipManager.acceptInvitation(${inv.id})"
+                                class="btn btn-primary btn-sm">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                接受
+                            </button>
+                            <button
+                                onclick="mentorshipManager.rejectInvitation(${inv.id})"
+                                class="btn btn-secondary btn-sm">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                                拒绝
+                            </button>
                         </div>
-                    </div>
-                    <div class="flex space-x-2">
-                        <button
-                            onclick="mentorshipManager.acceptInvitation(${inv.id})"
-                            class="btn-primary px-4 py-2 rounded-lg text-sm text-white flex items-center gap-1">
-                            <i class="fas fa-check"></i>
-                            <span>接受</span>
-                        </button>
-                        <button
-                            onclick="mentorshipManager.rejectInvitation(${inv.id})"
-                            class="btn-secondary px-4 py-2 rounded-lg text-sm flex items-center gap-1">
-                            <i class="fas fa-times"></i>
-                            <span>拒绝</span>
-                        </button>
                     </div>
                 </div>
             `).join('');
@@ -664,7 +543,7 @@ class MentorshipManager {
 
         const sendBtn = document.getElementById('sendInviteBtn');
         sendBtn.disabled = true;
-        sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 发送中...';
+        sendBtn.innerHTML = '<div class="spinner" style="width: 16px; height: 16px; border-width: 2px;"></div> 发送中...';
 
         try {
             const response = await fetch(`${API_BASE_URL}/mentorship/invite`, {
@@ -678,7 +557,7 @@ class MentorshipManager {
 
             const data = await response.json();
             if (data.code === 200) {
-                this.showToast('邀请已发送！', 'success');
+                this.showToast('邀请已发送', 'success');
                 this.hideInviteModal();
                 this.loadData();
             } else {
@@ -689,7 +568,7 @@ class MentorshipManager {
             this.showToast('发送失败: ' + error.message, 'error');
         } finally {
             sendBtn.disabled = false;
-            sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 发送邀请';
+            sendBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"></path></svg> 发送邀请';
         }
     }
 
@@ -821,65 +700,66 @@ class MentorshipManager {
         if (!content) return;
 
         content.innerHTML = `
-            <div class="space-y-4">
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="p-4 bg-purple-50 rounded-xl">
-                        <p class="text-sm text-purple-600 mb-1">经验共享比例</p>
-                        <p class="text-2xl font-bold text-purple-700">${mentorship.expShareRate}%</p>
-                    </div>
-                    <div class="p-4 bg-pink-50 rounded-xl">
-                        <p class="text-sm text-pink-600 mb-1">奖励分成比例</p>
-                        <p class="text-2xl font-bold text-pink-700">${mentorship.rewardShareRate}%</p>
-                    </div>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="detail-label">经验共享比例</div>
+                    <div class="detail-value" style="color: var(--accent);">${mentorship.expShareRate}%</div>
                 </div>
-
-                <div class="p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
-                    <p class="text-sm text-gray-600 mb-1">累计共享经验</p>
-                    <p class="text-3xl font-bold exp-share-indicator">${mentorship.totalSharedExp || 0}</p>
+                <div class="detail-item">
+                    <div class="detail-label">奖励分成比例</div>
+                    <div class="detail-value" style="color: var(--accent);">${mentorship.rewardShareRate}%</div>
                 </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="p-3 border border-gray-200 rounded-xl">
-                        <p class="text-xs text-gray-500">关系ID</p>
-                        <p class="font-semibold">#${mentorship.id}</p>
-                    </div>
-                    <div class="p-3 border border-gray-200 rounded-xl">
-                        <p class="text-xs text-gray-500">状态</p>
-                        <span class="px-2 py-0.5 rounded-full text-xs font-medium
-                            ${mentorship.status === 'ACTIVE' ? 'bg-green-100 text-green-700' :
-                              mentorship.status === 'GRADUATED' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-700'}">
-                            ${this.getStatusText(mentorship.status)}
-                        </span>
-                    </div>
-                    <div class="p-3 border border-gray-200 rounded-xl">
-                        <p class="text-xs text-gray-500">徒弟等级</p>
-                        <p class="font-semibold">Lv.${mentorship.apprenticeLevel || 1}</p>
-                    </div>
-                    <div class="p-3 border border-gray-200 rounded-xl">
-                        <p class="text-xs text-gray-500">结契时间</p>
-                        <p class="font-semibold text-sm">${new Date(mentorship.createdAt).toLocaleDateString('zh-CN')}</p>
-                    </div>
-                </div>
-
-                ${mentorship.graduatedAt ? `
-                    <div class="p-4 bg-green-50 border border-green-200 rounded-xl">
-                        <p class="text-sm text-green-600 flex items-center gap-2">
-                            <i class="fas fa-graduation-cap"></i>
-                            出师时间: ${new Date(mentorship.graduatedAt).toLocaleString('zh-CN')}
-                        </p>
-                    </div>
-                ` : ''}
-
-                ${mentorship.dissolvedAt ? `
-                    <div class="p-4 bg-red-50 border border-red-200 rounded-xl">
-                        <p class="text-sm text-red-600 flex items-center gap-2">
-                            <i class="fas fa-unlink"></i>
-                            解除时间: ${new Date(mentorship.dissolvedAt).toLocaleString('zh-CN')}
-                        </p>
-                        ${mentorship.dissolveReason ? `<p class="text-xs text-red-500 mt-1">原因: ${mentorship.dissolveReason}</p>` : ''}
-                    </div>
-                ` : ''}
             </div>
+
+            <div class="detail-item" style="margin-top: 16px; background: linear-gradient(135deg, rgba(0, 113, 227, 0.1), rgba(20, 124, 229, 0.1));">
+                <div class="detail-label">累计共享经验</div>
+                <div class="detail-value exp-indicator">${mentorship.totalSharedExp || 0}</div>
+            </div>
+
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="detail-label">关系ID</div>
+                    <div class="detail-value" style="font-size: 19px;">#${mentorship.id}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">状态</div>
+                    <span class="badge ${mentorship.status === 'ACTIVE' ? 'badge-success' : mentorship.status === 'GRADUATED' ? 'badge-primary' : ''}" style="font-size: 14px; margin-top: 8px; display: inline-block;">
+                        ${this.getStatusText(mentorship.status)}
+                    </span>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">徒弟等级</div>
+                    <div class="detail-value" style="font-size: 19px;">Lv.${mentorship.apprenticeLevel || 1}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">结契时间</div>
+                    <div class="detail-value" style="font-size: 15px; font-weight: 500;">${new Date(mentorship.createdAt).toLocaleDateString('zh-CN')}</div>
+                </div>
+            </div>
+
+            ${mentorship.graduatedAt ? `
+                <div class="detail-item" style="margin-top: 16px; background: rgba(52, 199, 89, 0.1); border: 1px solid rgba(52, 199, 89, 0.3);">
+                    <div style="display: flex; align-items: center; gap: 8px; color: #34c759;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                            <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                        </svg>
+                        <span style="font-weight: 500;">出师时间: ${new Date(mentorship.graduatedAt).toLocaleString('zh-CN')}</span>
+                    </div>
+                </div>
+            ` : ''}
+
+            ${mentorship.dissolvedAt ? `
+                <div class="detail-item" style="margin-top: 16px; background: rgba(255, 59, 48, 0.1); border: 1px solid rgba(255, 59, 48, 0.3);">
+                    <div style="display: flex; align-items: center; gap: 8px; color: #ff3b30;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M16 8A5 5 0 1 0 6 8h10M9 12v8m6-8v8"></path>
+                        </svg>
+                        <span style="font-weight: 500;">解除时间: ${new Date(mentorship.dissolvedAt).toLocaleString('zh-CN')}</span>
+                    </div>
+                    ${mentorship.dissolveReason ? `<p style="font-size: 13px; color: #ff3b30; margin-top: 8px;">原因: ${mentorship.dissolveReason}</p>` : ''}
+                </div>
+            ` : ''}
         `;
     }
 
@@ -913,15 +793,73 @@ class MentorshipManager {
         if (existingToast) existingToast.remove();
 
         const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
+        toast.className = 'toast show';
+        toast.style.cssText = `
+            position: fixed;
+            top: 64px;
+            right: 22px;
+            padding: 14px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            font-size: 15px;
+            color: var(--text-primary);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+        `;
 
-        const icon = type === 'success' ? 'fa-check-circle' :
-                     type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
-        toast.innerHTML = `<i class="fas ${icon}"></i> ${message}`;
+        let iconSVG = '';
+        let iconColor = 'var(--accent)';
+
+        if (type === 'success') {
+            iconColor = '#34c759';
+            iconSVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+        } else if (type === 'error') {
+            iconColor = '#ff3b30';
+            iconSVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
+        } else {
+            iconColor = 'var(--accent)';
+            iconSVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
+        }
+
+        toast.innerHTML = `<span style="color: ${iconColor}; display: flex;">${iconSVG}</span><span>${message}</span>`;
         document.body.appendChild(toast);
 
+        // Add animation style if not exists
+        if (!document.getElementById('toast-animation-style')) {
+            const style = document.createElement('style');
+            style.id = 'toast-animation-style';
+            style.textContent = `
+                @keyframes slideIn {
+                    from {
+                        transform: translateX(120%);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+                @keyframes slideOut {
+                    from {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                    to {
+                        transform: translateX(120%);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
         setTimeout(() => {
-            toast.style.animation = 'fadeInUp 0.3s ease reverse';
+            toast.style.animation = 'slideOut 0.3s ease';
             setTimeout(() => toast.remove(), 300);
         }, 3000);
     }

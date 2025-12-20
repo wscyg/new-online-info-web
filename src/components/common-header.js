@@ -11,6 +11,7 @@
                     <div class="nav-links">
                         <a href="dashboard.html" class="nav-link" data-page="dashboard">学习中心</a>
                         <a href="courses.html" class="nav-link" data-page="courses">课程</a>
+                        <a href="diagnostic.html" class="nav-link" data-page="diagnostic">入学诊断</a>
                         <a href="pk-arena.html" class="nav-link" data-page="pk">PK竞技</a>
                         <a href="talent-radar.html" class="nav-link" data-page="talent">天赋雷达</a>
                         <a href="achievements.html" class="nav-link" data-page="achievements">成就</a>

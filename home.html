@@ -3,8 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>信息革命 - 专业AI学习平台</title>
-    <meta name="description" content="专业的人工智能学习平台，系统掌握机器学习、深度学习与前沿AI技术">
+    <title>AI 信息未来 - 专业人工智能学习平台 | 掌握AI技术，成就未来</title>
+    <meta name="description" content="AI信息未来是专业的人工智能在线学习平台，提供机器学习、深度学习、计算机视觉、自然语言处理等AI课程。系统化学习路径，实战项目驱动，助你快速掌握AI技能。">
+    <meta name="keywords" content="AI学习,人工智能课程,机器学习教程,深度学习,PyTorch,TensorFlow,计算机视觉,NLP,在线教育,编程学习">
+    <meta name="author" content="AI信息未来">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="http://infofuture.online/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="http://infofuture.online/">
+    <meta property="og:title" content="AI 信息未来 - 专业人工智能学习平台">
+    <meta property="og:description" content="系统化AI学习路径，实战项目驱动，助你快速掌握机器学习、深度学习等AI技能。">
+    <meta property="og:image" content="http://infofuture.online/assets/og-image.png">
+    <meta property="og:site_name" content="AI信息未来">
+    <meta property="og:locale" content="zh_CN">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="http://infofuture.online/">
+    <meta name="twitter:title" content="AI 信息未来 - 专业人工智能学习平台">
+    <meta name="twitter:description" content="系统化AI学习路径，实战项目驱动，助你快速掌握机器学习、深度学习等AI技能。">
+    <meta name="twitter:image" content="http://infofuture.online/assets/og-image.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "EducationalOrganization",
+        "name": "AI信息未来",
+        "url": "http://infofuture.online",
+        "logo": "http://infofuture.online/assets/logo.png",
+        "description": "专业的人工智能在线学习平台，提供机器学习、深度学习等AI课程",
+        "sameAs": [],
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "customer service",
+            "availableLanguage": "Chinese"
+        },
+        "offers": {
+            "@type": "Offer",
+            "category": "人工智能课程"
+        }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "AI信息未来",
+        "url": "http://infofuture.online",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "http://infofuture.online/src/pages/courses.html?search={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -78,9 +138,12 @@
     <!-- 导航栏 -->
     <nav class="navbar" id="navbar">
         <div class="nav-container">
-            <div class="logo">信息革命</div>
+            <div class="logo">AI 信息未来</div>
             <ul class="nav-menu">
-                <!-- 移除首页导航文字，保持简洁 -->
+                <li><a href="src/pages/courses.html" class="nav-link">课程</a></li>
+                <li><a href="src/pages/online-plaza.html" class="nav-link">在线广场</a></li>
+                <li><a href="src/pages/pk-arena.html" class="nav-link">PK竞技</a></li>
+                <li><a href="src/pages/community.html" class="nav-link">社区</a></li>
             </ul>
             <div class="nav-actions">
                 <!-- 登录状态 -->
@@ -599,6 +662,32 @@
     <script type="module" src="src/utils/api.js"></script>
     <script type="module" src="src/utils/homepage.js"></script>
     <script>
+        // 登录状态检查 - 确保在模块加载前就检查
+        (function checkLoginStatus() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            const authContainer = document.getElementById('authContainer');
+            const userProfile = document.getElementById('userProfile');
+
+            if (token && user) {
+                // 已登录 - 隐藏登录/注册按钮，显示用户头像
+                if (authContainer) authContainer.style.display = 'none';
+                if (userProfile) userProfile.style.display = 'block';
+
+                try {
+                    const userData = JSON.parse(user);
+                    const userName = document.getElementById('userName');
+                    const userPoints = document.getElementById('userPoints');
+                    if (userName) userName.textContent = userData.username || userData.nickname || '用户';
+                    if (userPoints) userPoints.textContent = userData.points || '0';
+                } catch(e) {}
+            } else {
+                // 未登录 - 显示登录/注册按钮
+                if (authContainer) authContainer.style.display = 'flex';
+                if (userProfile) userProfile.style.display = 'none';
+            }
+        })();
+
         // 诗句打字机效果
         function initPoetryTypewriter() {
             const poems = [

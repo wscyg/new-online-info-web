@@ -3,89 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>对战回放 - 未来信息在线教育</title>
-    <link rel="stylesheet" href="../styles/main.css">
-    <link rel="stylesheet" href="../styles/pk.css">
+    <title>对战回放 - AI 信息未来</title>
+    <link rel="stylesheet" href="../styles/apple-design.css">
     <style>
-        .replay-container {
+        /* 页面布局 */
+        body {
+            padding-top: 48px;
+            min-height: 100vh;
+        }
+
+        .page-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 48px 22px;
         }
 
+        /* 返回按钮 */
+        .back-button {
+            position: fixed;
+            top: 64px;
+            left: 22px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            font-size: 14px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            z-index: 100;
+        }
+
+        .back-button:hover {
+            color: var(--text-primary);
+            background: var(--bg-hover);
+            transform: translateX(-2px);
+        }
+
+        /* 回放头部 */
         .replay-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 12px;
-            padding: 24px;
-            color: white;
-            margin-bottom: 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            margin-bottom: 32px;
         }
 
-        .replay-header h1 {
-            margin: 0 0 12px 0;
-            font-size: 28px;
+        .replay-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
         }
 
         .replay-info {
             display: flex;
-            gap: 24px;
-            font-size: 14px;
+            gap: 32px;
+            flex-wrap: wrap;
         }
 
         .replay-info-item {
             display: flex;
             align-items: center;
             gap: 8px;
+            font-size: 15px;
+            color: var(--text-secondary);
         }
 
+        .info-icon {
+            width: 20px;
+            height: 20px;
+            color: var(--text-tertiary);
+        }
+
+        /* 玩家对比区 */
         .players-section {
             display: grid;
             grid-template-columns: 1fr auto 1fr;
-            gap: 24px;
-            margin-bottom: 24px;
+            gap: 32px;
+            margin-bottom: 32px;
             align-items: center;
         }
 
+        @media (max-width: 768px) {
+            .players-section {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .vs-badge {
+                order: -1;
+                margin: 0 auto;
+            }
+        }
+
         .player-card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            transition: all var(--transition-fast);
         }
 
         .player-card.winner {
-            border: 2px solid #ffd700;
-            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+            border-color: rgba(255, 204, 0, 0.6);
+            box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.1);
+            background: linear-gradient(135deg, rgba(255, 204, 0, 0.05) 0%, transparent 100%);
         }
 
         .player-header {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .player-avatar {
-            width: 48px;
-            height: 48px;
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
             object-fit: cover;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+        }
+
+        .player-info {
+            flex: 1;
         }
 
         .player-name {
-            font-size: 18px;
-            font-weight: bold;
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
         }
 
         .player-rank {
             font-size: 14px;
-            color: #666;
+            color: var(--text-secondary);
         }
 
         .player-stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            gap: 20px;
         }
 
         .stat-item {
@@ -93,59 +159,84 @@
         }
 
         .stat-value {
-            font-size: 24px;
-            font-weight: bold;
-            color: #667eea;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            letter-spacing: -0.02em;
         }
 
         .stat-label {
-            font-size: 12px;
-            color: #999;
-            margin-top: 4px;
+            font-size: 13px;
+            color: var(--text-tertiary);
         }
 
         .vs-badge {
-            background: #667eea;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 24px;
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .questions-timeline {
-            background: white;
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .timeline-header {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        .question-item {
-            display: grid;
-            grid-template-columns: 60px 1fr 1fr;
-            gap: 16px;
-            padding: 20px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            margin-bottom: 16px;
-        }
-
-        .question-index {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 48px;
-            height: 48px;
-            background: #f5f5f5;
+            width: 72px;
+            height: 72px;
+            background: var(--accent);
+            color: white;
             border-radius: 50%;
-            font-weight: bold;
-            font-size: 18px;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+
+        /* 题目时间轴 */
+        .questions-timeline {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+        }
+
+        .timeline-header {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 28px;
+            letter-spacing: -0.02em;
+        }
+
+        .question-item {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin-bottom: 20px;
+            transition: all var(--transition-fast);
+        }
+
+        .question-item:hover {
+            border-color: var(--border-strong);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .question-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .question-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .question-index {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            background: var(--bg-secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-secondary);
         }
 
         .question-content {
@@ -153,148 +244,204 @@
         }
 
         .question-title {
-            font-weight: bold;
-            margin-bottom: 12px;
+            font-size: 17px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            line-height: 1.5;
         }
 
         .question-options {
             display: grid;
-            gap: 8px;
+            gap: 10px;
+            margin-bottom: 16px;
         }
 
         .option {
-            padding: 8px 12px;
-            background: #f9f9f9;
-            border-radius: 6px;
-            font-size: 14px;
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            color: var(--text-secondary);
+            transition: all var(--transition-fast);
         }
 
         .option.correct {
-            background: #d4edda;
-            border: 1px solid #28a745;
+            background: rgba(52, 199, 89, 0.1);
+            border-color: #34c759;
+            color: #34c759;
+            font-weight: 500;
         }
 
+        /* 答题区域 */
         .answer-section {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 16px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        @media (max-width: 768px) {
+            .answer-section {
+                grid-template-columns: 1fr;
+            }
         }
 
         .player-answer {
-            padding: 12px;
-            border-radius: 8px;
-            background: #f9f9f9;
-        }
-
-        .player-answer-header {
-            font-weight: bold;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            transition: all var(--transition-fast);
         }
 
         .player-answer.correct {
-            background: #d4edda;
+            background: rgba(52, 199, 89, 0.08);
+            border-color: rgba(52, 199, 89, 0.3);
         }
 
         .player-answer.wrong {
-            background: #f8d7da;
+            background: rgba(255, 59, 48, 0.08);
+            border-color: rgba(255, 59, 48, 0.3);
         }
 
-        .answer-time {
-            font-size: 12px;
-            color: #666;
-            margin-top: 4px;
-        }
-
-        .result-icon {
-            width: 20px;
-            height: 20px;
-        }
-
-        .explanation-section {
-            margin-top: 12px;
-            padding: 12px;
-            background: #e7f3ff;
-            border-radius: 6px;
-            border-left: 4px solid #2196f3;
-        }
-
-        .explanation-title {
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #2196f3;
-        }
-
-        .back-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: white;
-            padding: 12px 24px;
-            border-radius: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            cursor: pointer;
+        .player-answer-header {
             display: flex;
             align-items: center;
             gap: 8px;
-            transition: all 0.3s;
-            z-index: 100;
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--text-primary);
+            margin-bottom: 8px;
         }
 
-        .back-button:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            transform: translateY(-2px);
+        .result-icon {
+            width: 18px;
+            height: 18px;
         }
 
-        .loading-spinner {
+        .answer-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .answer-time {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        /* 解析区域 */
+        .explanation-section {
+            margin-top: 16px;
+            padding: 16px;
+            background: rgba(0, 113, 227, 0.06);
+            border-left: 3px solid var(--accent);
+            border-radius: var(--radius-sm);
+        }
+
+        .explanation-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .explanation-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* 加载状态 */
+        .loading-container {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
+            justify-content: center;
+            min-height: calc(100vh - 48px);
+            gap: 20px;
         }
 
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            width: 48px;
-            height: 48px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .loading-text {
+            font-size: 15px;
+            color: var(--text-secondary);
         }
     </style>
 </head>
 <body>
-    <div class="back-button" onclick="goBack()">
-        <span>←</span>
+    <!-- 导航栏 -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="../../index.html" class="nav-logo">未来信息</a>
+            <div class="nav-menu">
+                <a href="../../index.html" class="nav-link">首页</a>
+                <a href="./course-list.html" class="nav-link">课程</a>
+                <a href="./community.html" class="nav-link">社区</a>
+                <a href="./pk-arena.html" class="nav-link active">PK竞技</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
+                    <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                </button>
+                <div class="user-menu" id="userMenu"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 返回按钮 -->
+    <button class="back-button" onclick="goBack()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
         <span>返回</span>
-    </div>
+    </button>
 
-    <div id="loadingSpinner" class="loading-spinner">
+    <!-- 加载状态 -->
+    <div id="loadingContainer" class="loading-container">
         <div class="spinner"></div>
+        <div class="loading-text">加载对战回放中...</div>
     </div>
 
-    <div id="replayContent" class="replay-container" style="display: none;">
+    <!-- 回放内容 -->
+    <div id="replayContent" class="page-container" style="display: none;">
         <!-- 回放标题 -->
         <div class="replay-header">
-            <h1>📺 对战回放</h1>
+            <h1 class="replay-title">对战回放</h1>
             <div class="replay-info">
                 <div class="replay-info-item">
-                    <span>🕐</span>
+                    <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
                     <span id="battleTime"></span>
                 </div>
                 <div class="replay-info-item">
-                    <span>🎮</span>
+                    <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <circle cx="9" cy="9" r="2"/>
+                        <path d="M21 15l-3-3-6 6"/>
+                    </svg>
                     <span id="battleMode"></span>
                 </div>
                 <div class="replay-info-item">
-                    <span>⏱️</span>
+                    <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
                     <span id="battleDuration"></span>
                 </div>
             </div>
@@ -305,7 +452,7 @@
             <div class="player-card" id="player1Card">
                 <div class="player-header">
                     <img id="player1Avatar" class="player-avatar" src="" alt="Player 1">
-                    <div>
+                    <div class="player-info">
                         <div class="player-name" id="player1Name"></div>
                         <div class="player-rank" id="player1Rank"></div>
                     </div>
@@ -331,7 +478,7 @@
             <div class="player-card" id="player2Card">
                 <div class="player-header">
                     <img id="player2Avatar" class="player-avatar" src="" alt="Player 2">
-                    <div>
+                    <div class="player-info">
                         <div class="player-name" id="player2Name"></div>
                         <div class="player-rank" id="player2Rank"></div>
                     </div>
@@ -355,13 +502,91 @@
 
         <!-- 题目时间轴 -->
         <div class="questions-timeline">
-            <div class="timeline-header">📊 题目详情</div>
+            <div class="timeline-header">题目详情</div>
             <div id="questionsContainer"></div>
         </div>
     </div>
 
-    <script type="module">
-        import { usePKStore } from '../store/pk-store.js';
+    <script>
+        // API 配置
+        const API_BASE = '/api';
+
+        // 初始化主题
+        function initTheme() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+            updateThemeIcon();
+        }
+
+        // 切换主题
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon();
+        }
+
+        // 更新主题图标
+        function updateThemeIcon() {
+            const theme = document.documentElement.getAttribute('data-theme');
+            const sunIcon = document.querySelector('.sun-icon');
+            if (theme === 'dark') {
+                sunIcon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+            } else {
+                sunIcon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+            }
+        }
+
+        // 初始化用户菜单
+        function initUserMenu() {
+            const userMenu = document.getElementById('userMenu');
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+            if (token && user.username) {
+                userMenu.innerHTML = `
+                    <div class="user-avatar" onclick="toggleDropdown()">
+                        ${user.avatar ? `<img src="${user.avatar}" alt="${user.username}">` : user.username.charAt(0).toUpperCase()}
+                    </div>
+                    <div class="dropdown" id="userDropdown">
+                        <div class="dropdown-item" onclick="location.href='./profile.html'">个人中心</div>
+                        <div class="dropdown-item" onclick="location.href='./my-courses.html'">我的课程</div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item" onclick="logout()">退出登录</div>
+                    </div>
+                `;
+            } else {
+                userMenu.innerHTML = `
+                    <button class="btn btn-sm btn-primary" onclick="location.href='./login.html'">登录</button>
+                `;
+            }
+        }
+
+        // 切换下拉菜单
+        function toggleDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('show');
+            }
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            location.href = './login.html';
+        }
+
+        // 关闭下拉菜单
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-menu')) {
+                const dropdown = document.getElementById('userDropdown');
+                if (dropdown) {
+                    dropdown.classList.remove('show');
+                }
+            }
+        });
 
         // 获取battleId
         const urlParams = new URLSearchParams(window.location.search);
@@ -375,10 +600,6 @@
         // 加载对战回放数据
         async function loadReplay() {
             try {
-                const API_BASE = window.location.hostname === 'localhost'
-                    ? 'http://localhost:8080/api'
-                    : `${window.location.protocol}//${window.location.host}/api`;
-
                 const token = localStorage.getItem('token');
                 const response = await fetch(`${API_BASE}/pk/battle/${battleId}/details`, {
                     headers: {
@@ -405,11 +626,17 @@
 
         // 渲染回放
         function renderReplay(battleData) {
-            document.getElementById('loadingSpinner').style.display = 'none';
+            document.getElementById('loadingContainer').style.display = 'none';
             document.getElementById('replayContent').style.display = 'block';
 
             // 基本信息
-            document.getElementById('battleTime').textContent = new Date(battleData.startTime).toLocaleString();
+            document.getElementById('battleTime').textContent = new Date(battleData.startTime).toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
             document.getElementById('battleMode').textContent = getModeText(battleData.mode);
 
             const duration = Math.floor((new Date(battleData.endTime) - new Date(battleData.startTime)) / 1000);
@@ -452,42 +679,57 @@
                 const player1Answer = battleData.player1Details.find(d => d.questionIndex === index);
                 const player2Answer = battleData.player2Details.find(d => d.questionIndex === index);
 
-                const questionHTML = `
-                    <div class="question-item">
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-item';
+
+                questionDiv.innerHTML = `
+                    <div class="question-header">
                         <div class="question-index">Q${index + 1}</div>
                         <div class="question-content">
                             <div class="question-title">${question.questionHtml}</div>
-                            <div class="question-options">
-                                ${renderOptions(question, question.correctAnswer)}
-                            </div>
-                            ${question.explanationHtml ? `
-                                <div class="explanation-section">
-                                    <div class="explanation-title">💡 题目解析</div>
-                                    <div>${question.explanationHtml}</div>
+                            ${question.options && question.options.length > 0 ? `
+                                <div class="question-options">
+                                    ${renderOptions(question, question.correctAnswer)}
                                 </div>
                             ` : ''}
                         </div>
-                        <div class="answer-section">
-                            <div class="player-answer ${player1Answer?.isCorrect ? 'correct' : 'wrong'}">
-                                <div class="player-answer-header">
-                                    <span>${player1Answer?.isCorrect ? '✓' : '✗'}</span>
-                                    <span>${battleData.player1.username}</span>
-                                </div>
-                                <div>答案: ${player1Answer?.playerAnswer || '未答'}</div>
-                                <div class="answer-time">用时: ${player1Answer?.answerTime || 0}秒</div>
+                    </div>
+                    <div class="answer-section">
+                        <div class="player-answer ${player1Answer?.isCorrect ? 'correct' : 'wrong'}">
+                            <div class="player-answer-header">
+                                <svg class="result-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                    ${player1Answer?.isCorrect ?
+                                        '<polyline points="20 6 9 17 4 12"/>' :
+                                        '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'
+                                    }
+                                </svg>
+                                <span>${battleData.player1.username}</span>
                             </div>
-                            <div class="player-answer ${player2Answer?.isCorrect ? 'correct' : 'wrong'}">
-                                <div class="player-answer-header">
-                                    <span>${player2Answer?.isCorrect ? '✓' : '✗'}</span>
-                                    <span>${battleData.player2.username}</span>
-                                </div>
-                                <div>答案: ${player2Answer?.playerAnswer || '未答'}</div>
-                                <div class="answer-time">用时: ${player2Answer?.answerTime || 0}秒</div>
+                            <div class="answer-text">答案: ${player1Answer?.playerAnswer || '未答'}</div>
+                            <div class="answer-time">用时: ${player1Answer?.answerTime || 0}秒</div>
+                        </div>
+                        <div class="player-answer ${player2Answer?.isCorrect ? 'correct' : 'wrong'}">
+                            <div class="player-answer-header">
+                                <svg class="result-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                    ${player2Answer?.isCorrect ?
+                                        '<polyline points="20 6 9 17 4 12"/>' :
+                                        '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'
+                                    }
+                                </svg>
+                                <span>${battleData.player2.username}</span>
                             </div>
+                            <div class="answer-text">答案: ${player2Answer?.playerAnswer || '未答'}</div>
+                            <div class="answer-time">用时: ${player2Answer?.answerTime || 0}秒</div>
                         </div>
                     </div>
+                    ${question.explanationHtml ? `
+                        <div class="explanation-section">
+                            <div class="explanation-title">题目解析</div>
+                            <div class="explanation-text">${question.explanationHtml}</div>
+                        </div>
+                    ` : ''}
                 `;
-                container.innerHTML += questionHTML;
+                container.appendChild(questionDiv);
             });
         }
 
@@ -521,22 +763,24 @@
         // 段位文本
         function getRankText(tier) {
             const ranks = {
-                'BRONZE': '🥉 青铜',
-                'SILVER': '🥈 白银',
-                'GOLD': '🥇 黄金',
-                'PLATINUM': '💎 铂金',
-                'DIAMOND': '💠 钻石',
-                'KING': '👑 王者'
+                'BRONZE': '青铜',
+                'SILVER': '白银',
+                'GOLD': '黄金',
+                'PLATINUM': '铂金',
+                'DIAMOND': '钻石',
+                'KING': '王者'
             };
             return ranks[tier] || tier;
         }
 
         // 返回按钮
-        window.goBack = function() {
+        function goBack() {
             window.history.back();
-        };
+        }
 
         // 初始化
+        initTheme();
+        initUserMenu();
         loadReplay();
     </script>
 </body>

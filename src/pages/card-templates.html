@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>卡片模板预览系统 - AI 信息未来</title>
+
+    <!-- Apple Design CSS -->
+    <link rel="stylesheet" href="../styles/apple-design.css">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Patrick+Hand&family=Noto+Sans+SC:wght@400;500;700&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+
+    <style>
+        /* === Page Layout === */
+        body {
+            padding-top: 48px;
+        }
+
+        .page-content {
+            min-height: calc(100vh - 48px);
+            padding: 60px 0;
+        }
+
+        /* === Header === */
+        .page-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .page-title {
+            font-size: 48px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 12px;
+            background: linear-gradient(180deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            font-size: 19px;
+            color: var(--text-secondary);
+        }
+
+        /* === Template Selector === */
+        .template-selector {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 48px;
+            flex-wrap: wrap;
+            padding: 0 22px;
+        }
+
+        .template-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-size: 15px;
+            font-weight: 400;
+        }
+
+        .template-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-1px);
+        }
+
+        .template-btn.active {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: white;
+        }
+
+        .template-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        /* === Cards Grid === */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+            gap: 40px;
+            padding: 0 22px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* === Sticky Card Base === */
+        .sticky-card {
+            position: relative;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .sticky-note {
+            position: relative;
+            transition: transform var(--transition-normal);
+        }
+
+        .sticky-note:hover {
+            transform: scale(1.02) rotate(0deg) !important;
+        }
+
+        /* === Pin === */
+        .pin {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            top: -10px;
+            z-index: 10;
+            box-shadow:
+                0 2px 4px rgba(0,0,0,0.2),
+                0 4px 8px rgba(0,0,0,0.15),
+                inset 0 -2px 4px rgba(0,0,0,0.2),
+                inset 0 2px 4px rgba(255,255,255,0.3);
+        }
+
+        .pin::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 8px;
+            height: 8px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 50%;
+        }
+
+        .pin.red {
+            left: 50px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);
+        }
+
+        .pin.blue {
+            right: 50px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
+        }
+
+        /* === Note Paper === */
+        .note-paper {
+            border-radius: 12px;
+            padding: 32px;
+            position: relative;
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--border-color);
+            transition: box-shadow var(--transition-normal);
+        }
+
+        .note-paper:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .note-paper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 28px,
+                var(--border-color) 28px,
+                var(--border-color) 29px
+            );
+            pointer-events: none;
+            border-radius: 12px;
+            opacity: 0.3;
+        }
+
+        /* === Paper Colors === */
+        .note-paper.default {
+            background: linear-gradient(135deg, #fffef9 0%, #fff9e6 25%, #fffef5 50%, #fefcf3 75%, #fffdf7 100%);
+        }
+        .note-paper.yellow {
+            background: linear-gradient(135deg, #fef9c3 0%, #fef08a 30%, #fde047 60%, #fef9c3 100%);
+        }
+        .note-paper.pink {
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 30%, #fbcfe8 60%, #fdf2f8 100%);
+        }
+        .note-paper.blue {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 30%, #bfdbfe 60%, #eff6ff 100%);
+        }
+        .note-paper.green {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 30%, #bbf7d0 60%, #f0fdf4 100%);
+        }
+
+        [data-theme="dark"] .note-paper.default,
+        [data-theme="dark"] .note-paper.yellow,
+        [data-theme="dark"] .note-paper.pink,
+        [data-theme="dark"] .note-paper.blue,
+        [data-theme="dark"] .note-paper.green {
+            filter: brightness(0.85);
+        }
+
+        /* === Content === */
+        .note-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-type-badge {
+            position: absolute;
+            top: -28px;
+            right: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            font-size: 12px;
+            color: var(--text-secondary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card-type-badge svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
+
+        .card-title {
+            font-size: 21px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 16px;
+            line-height: 1.4;
+        }
+
+        .card-body {
+            font-size: 17px;
+            line-height: 1.6;
+            color: #4b5563;
+        }
+
+        .card-body p {
+            margin-bottom: 12px;
+        }
+
+        /* === Handwriting === */
+        .handwriting {
+            font-family: 'Caveat', 'Patrick Hand', cursive;
+            font-size: 24px;
+            font-weight: 500;
+            color: #1a1a2e;
+            line-height: 1.6;
+        }
+
+        .wavy {
+            text-decoration: underline;
+            text-decoration-style: wavy;
+            text-decoration-color: #dc2626;
+            text-underline-offset: 4px;
+        }
+
+        /* === Mnemonic === */
+        .mnemonic-box {
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: rgba(0, 113, 227, 0.08);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mnemonic-box svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--accent);
+            flex-shrink: 0;
+        }
+
+        .mnemonic-text {
+            font-size: 15px;
+            font-weight: 500;
+            color: #1a1a2e;
+        }
+
+        /* === Signature === */
+        .note-signature {
+            font-family: 'Caveat', cursive;
+            font-size: 15px;
+            color: #64748b;
+            text-align: right;
+            margin-top: 16px;
+        }
+
+        /* === Points Badge === */
+        .points-badge {
+            position: absolute;
+            top: -12px;
+            right: -12px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 13px;
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+            transform: rotate(12deg);
+            z-index: 20;
+        }
+
+        /* === Template: Handwritten === */
+        .template-handwritten .card-title {
+            font-family: 'ZCOOL KuaiLe', 'Caveat', cursive;
+            font-size: 24px;
+        }
+
+        .template-handwritten .card-body {
+            font-family: 'Caveat', cursive;
+            font-size: 21px;
+        }
+
+        /* === Template: Minimal === */
+        .template-minimal .note-paper {
+            background: var(--bg-card) !important;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-card);
+        }
+
+        .template-minimal .note-paper::before {
+            display: none;
+        }
+
+        .template-minimal .pin {
+            display: none;
+        }
+
+        .template-minimal .card-title {
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* === Template: Dark === */
+        .template-dark .note-paper {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e293b 100%) !important;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .template-dark .card-title,
+        .template-dark .card-body,
+        .template-dark .mnemonic-text {
+            color: #f1f5f9;
+        }
+
+        .template-dark .note-signature {
+            color: #94a3b8;
+        }
+
+        .template-dark .wavy {
+            text-decoration-color: #00e5ff;
+        }
+
+        .template-dark .card-type-badge {
+            background: rgba(30, 41, 59, 0.95);
+            border-color: rgba(255,255,255,0.1);
+            color: #94a3b8;
+        }
+
+        .template-dark .mnemonic-box {
+            background: rgba(0, 113, 227, 0.15);
+        }
+
+        /* === Template: Gradient === */
+        .template-gradient .note-paper.default {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        }
+        .template-gradient .note-paper.yellow {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+        }
+        .template-gradient .note-paper.pink {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%) !important;
+        }
+        .template-gradient .note-paper.blue {
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%) !important;
+        }
+        .template-gradient .note-paper.green {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%) !important;
+        }
+
+        .template-gradient .note-paper::before {
+            display: none;
+        }
+
+        .template-gradient .card-title,
+        .template-gradient .card-body,
+        .template-gradient .mnemonic-text {
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .template-gradient .note-paper.pink .card-title,
+        .template-gradient .note-paper.pink .card-body,
+        .template-gradient .note-paper.blue .card-title,
+        .template-gradient .note-paper.blue .card-body,
+        .template-gradient .note-paper.green .card-title,
+        .template-gradient .note-paper.green .card-body {
+            color: #1a1a2e;
+            text-shadow: none;
+        }
+
+        .template-gradient .mnemonic-box {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .template-gradient .note-signature {
+            color: rgba(255,255,255,0.8);
+        }
+
+        /* === Template: Tape === */
+        .template-tape .pin {
+            display: none;
+        }
+
+        .template-tape .tape {
+            position: absolute;
+            width: 80px;
+            height: 28px;
+            background: linear-gradient(
+                180deg,
+                rgba(255,255,255,0.7) 0%,
+                rgba(255,255,255,0.4) 50%,
+                rgba(255,255,255,0.6) 100%
+            );
+            z-index: 10;
+        }
+
+        .template-tape .tape-left {
+            top: -8px;
+            left: 30px;
+            transform: rotate(-25deg);
+        }
+
+        .template-tape .tape-right {
+            top: -8px;
+            right: 30px;
+            transform: rotate(25deg);
+        }
+
+        /* === Template Label === */
+        .template-label {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        .template-label strong {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        /* === Code Blocks === */
+        .card-body pre {
+            background: #1e293b;
+            border-radius: var(--radius-md);
+            padding: 16px;
+            overflow-x: auto;
+            margin: 12px 0;
+        }
+
+        .card-body pre code {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            color: #e2e8f0;
+        }
+
+        /* === Responsive === */
+        @media (max-width: 768px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+
+            .page-title {
+                font-size: 32px;
+            }
+
+            .page-subtitle {
+                font-size: 17px;
+            }
+
+            .template-selector {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .template-btn {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="nav-logo">学习平台</div>
+            <div class="nav-menu">
+                <a href="/index.html" class="nav-link">首页</a>
+                <a href="/courses.html" class="nav-link">课程</a>
+                <a href="/community.html" class="nav-link">社区</a>
+                <a href="/pk.html" class="nav-link">PK竞技</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 2V4M10 16V18M4 10H2M18 10H16M15.5 4.5L14 6M6 14L4.5 15.5M15.5 15.5L14 14M6 6L4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="10" cy="10" r="4" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                </button>
+                <div class="user-menu" id="userMenu">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <div class="dropdown" id="userDropdown">
+                        <div class="dropdown-item" onclick="window.location.href='/profile.html'">个人中心</div>
+                        <div class="dropdown-item" onclick="window.location.href='/my-courses.html'">我的课程</div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item" id="logoutBtn">退出登录</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="page-content">
+        <div class="container-wide">
+            <!-- Header -->
+            <header class="page-header">
+                <h1 class="page-title">卡片模板预览系统</h1>
+                <p class="page-subtitle">6种精美模板，让学习卡片更有温度</p>
+            </header>
+
+            <!-- Template Selector -->
+            <div class="template-selector">
+                <button class="template-btn active" data-template="classic">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V5C21 3.89543 20.1046 3 19 3Z" stroke="currentColor" stroke-width="2"/>
+                        <path d="M3 9H21" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    经典便签
+                </button>
+                <button class="template-btn" data-template="handwritten">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 19L19 12L22 15L15 22L12 19Z" stroke="currentColor" stroke-width="2"/>
+                        <path d="M16.5 5.5L18.5 7.5M18 2L20 4L8 16L2 22L8 16L18 2Z" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    手写风格
+                </button>
+                <button class="template-btn" data-template="minimal">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    极简卡片
+                </button>
+                <button class="template-btn" data-template="dark">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    暗黑风格
+                </button>
+                <button class="template-btn" data-template="gradient">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                        <path d="M12 2C6.48 2 2 6.48 2 12" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    渐变卡片
+                </button>
+                <button class="template-btn" data-template="tape">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    胶带风格
+                </button>
+            </div>
+
+            <!-- Cards Grid -->
+            <div class="cards-grid" id="cardsContainer">
+                <!-- Cards will be rendered by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === Configuration ===
+        const API_BASE = '/api';
+
+        // === Sample Cards Data ===
+        const sampleCards = [
+            {
+                id: 1,
+                type: 'insight',
+                typeName: '核心洞察',
+                title: '为什么需要 Q、K、V？',
+                color: 'yellow',
+                content: `
+                    <p class="handwriting">
+                        "点积是对称的 —<br>
+                        <span class="wavy">a·b = b·a</span><br>
+                        但语义关系不对称！"
+                    </p>
+                `,
+                mnemonic: 'Q问K答V给值',
+                signature: 'Transformer 核心洞察',
+                points: 10,
+                rotation: -1.5
+            },
+            {
+                id: 2,
+                type: 'warning',
+                typeName: '误区警示',
+                title: 'Softmax 数值溢出陷阱',
+                color: 'pink',
+                content: `
+                    <p>直接计算 <code>exp(x)</code> 会导致数值溢出！</p>
+                    <p class="handwriting" style="margin-top: 8px;">
+                        当 x > 700 时，<span class="wavy">exp(x) = inf</span>
+                    </p>
+                `,
+                mnemonic: '先减max再exp，数值稳如狗',
+                signature: '数值稳定性要点',
+                points: 8,
+                rotation: 1.2
+            },
+            {
+                id: 3,
+                type: 'formula',
+                typeName: '公式推导',
+                title: 'Attention 计算公式',
+                color: 'blue',
+                content: `
+                    <p>注意力机制的核心公式：</p>
+                    <p class="handwriting" style="text-align: center; font-size: 21px; margin: 16px 0;">
+                        Attention(Q,K,V) = softmax(<span class="wavy">QK<sup>T</sup>/√d<sub>k</sub></span>)V
+                    </p>
+                    <p>除以 √d<sub>k</sub> 是为了控制方差</p>
+                `,
+                mnemonic: 'QK点积除根号，Softmax后乘V',
+                signature: '注意力机制',
+                points: 12,
+                rotation: -0.8
+            },
+            {
+                id: 4,
+                type: 'comparison',
+                typeName: '概念对比',
+                title: 'RNN vs Transformer',
+                color: 'blue',
+                content: `
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px;">
+                        <div style="padding: 12px; background: rgba(239,68,68,0.1); border-radius: 8px; border-left: 3px solid #ef4444;">
+                            <strong style="color: #dc2626;">RNN</strong><br>
+                            <span style="font-size: 14px;">串行处理<br>长程依赖困难</span>
+                        </div>
+                        <div style="padding: 12px; background: rgba(34,197,94,0.1); border-radius: 8px; border-left: 3px solid #22c55e;">
+                            <strong style="color: #16a34a;">Transformer</strong><br>
+                            <span style="font-size: 14px;">并行处理<br>全局注意力</span>
+                        </div>
+                    </div>
+                `,
+                signature: '架构对比',
+                points: 10,
+                rotation: 0.5
+            },
+            {
+                id: 5,
+                type: 'summary',
+                typeName: '要点总结',
+                title: '本章核心要点',
+                color: 'green',
+                content: `
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 8px;">✓ RNN 的串行瓶颈</li>
+                        <li style="margin-bottom: 8px;">✓ 注意力打破序列依赖</li>
+                        <li style="margin-bottom: 8px;">✓ Q/K/V 的分离设计</li>
+                        <li>✓ 并行计算的威力</li>
+                    </ul>
+                `,
+                mnemonic: '串行变并行，注意力是关键',
+                signature: '第一章总结',
+                points: 15,
+                rotation: -1.2
+            },
+            {
+                id: 6,
+                type: 'code',
+                typeName: '代码示例',
+                title: 'Attention 实现',
+                color: 'default',
+                content: `
+                    <pre><code class="language-python">def attention(Q, K, V):
+    d_k = Q.size(-1)
+    scores = Q @ K.transpose(-2,-1)
+    scores = scores / math.sqrt(d_k)
+    weights = F.softmax(scores, dim=-1)
+    return weights @ V</code></pre>
+                `,
+                signature: 'PyTorch 实现',
+                points: 8,
+                rotation: 0.8
+            }
+        ];
+
+        // === SVG Icons ===
+        const icons = {
+            insight: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="2" fill="currentColor"/></svg>',
+            warning: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 9V13M12 17H12.01M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2"/></svg>',
+            formula: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 3L9 9M9 3L3 9M13 5H21M13 19H21M13 12H21" stroke="currentColor" stroke-width="2"/></svg>',
+            comparison: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H9M15 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H15M12 8V16" stroke="currentColor" stroke-width="2"/></svg>',
+            summary: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 5H7C5.89543 5 5 5.89543 5 7V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V7C19 5.89543 18.1046 5 17 5H15M9 5C9 6.10457 9.89543 7 11 7H13C14.1046 7 15 6.10457 15 5M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5M9 12H15M9 16H15" stroke="currentColor" stroke-width="2"/></svg>',
+            code: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 18L22 12L16 6M8 6L2 12L8 18" stroke="currentColor" stroke-width="2"/></svg>',
+            lightbulb: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 18H15M10 22H14M15 11C15 12.6569 13.6569 14 12 14C10.3431 14 9 12.6569 9 11M12 3V2M3 12H2M22 12H21M19.0784 19.0784L19.7856 19.7856M4.92157 4.92157L4.21446 4.21446M19.0784 4.92157L19.7856 4.21446M4.92157 19.0784L4.21446 19.7856" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="11" r="4" stroke="currentColor" stroke-width="2"/></svg>'
+        };
+
+        // === Render Functions ===
+        function renderCard(card, template) {
+            const tapeHtml = template === 'tape' ? `
+                <div class="tape tape-left"></div>
+                <div class="tape tape-right"></div>
+            ` : '';
+
+            const pinsHtml = template !== 'tape' && template !== 'minimal' ? `
+                <div class="pin red"></div>
+                <div class="pin blue"></div>
+            ` : '';
+
+            const mnemonicHtml = card.mnemonic ? `
+                <div class="mnemonic-box">
+                    ${icons.lightbulb}
+                    <span class="mnemonic-text">${card.mnemonic}</span>
+                </div>
+            ` : '';
+
+            const signatureHtml = card.signature ? `
+                <p class="note-signature">— ${card.signature}</p>
+            ` : '';
+
+            return `
+                <div class="sticky-card template-${template}">
+                    <div class="sticky-note" style="transform: rotate(${card.rotation}deg);">
+                        ${pinsHtml}
+                        ${tapeHtml}
+                        <div class="note-paper ${card.color}">
+                            <div class="note-content">
+                                <div class="card-type-badge">
+                                    ${icons[card.type] || icons.insight}
+                                    <span>${card.typeName}</span>
+                                </div>
+                                <h3 class="card-title">${card.title}</h3>
+                                <div class="card-body">
+                                    ${card.content}
+                                </div>
+                                ${mnemonicHtml}
+                                ${signatureHtml}
+                            </div>
+                        </div>
+                        <div class="points-badge">+${card.points}分</div>
+                    </div>
+                    <div class="template-label">模板: <strong>${getTemplateName(template)}</strong> | 颜色: <strong>${getColorName(card.color)}</strong></div>
+                </div>
+            `;
+        }
+
+        function getTemplateName(template) {
+            const names = {
+                'classic': '经典便签',
+                'handwritten': '手写风格',
+                'minimal': '极简卡片',
+                'dark': '暗黑风格',
+                'gradient': '渐变卡片',
+                'tape': '胶带风格'
+            };
+            return names[template] || template;
+        }
+
+        function getColorName(color) {
+            const names = {
+                'default': '米白',
+                'yellow': '黄色',
+                'pink': '粉色',
+                'blue': '蓝色',
+                'green': '绿色'
+            };
+            return names[color] || color;
+        }
+
+        function renderAllCards(template) {
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = sampleCards.map(card => renderCard(card, template)).join('');
+
+            // Apply code highlighting
+            document.querySelectorAll('pre code').forEach(block => {
+                hljs.highlightElement(block);
+            });
+        }
+
+        // === Theme Management ===
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const toggle = document.getElementById('themeToggle');
+            toggle.innerHTML = theme === 'dark'
+                ? '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17 10.5A7 7 0 1 1 9.5 3 5.5 5.5 0 0 0 17 10.5z" stroke="currentColor" stroke-width="2"/></svg>'
+                : '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 2V4M10 16V18M4 10H2M18 10H16M15.5 4.5L14 6M6 14L4.5 15.5M15.5 15.5L14 14M6 6L4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="10" cy="10" r="4" stroke="currentColor" stroke-width="2"/></svg>';
+        }
+
+        // === Auth Management ===
+        function initAuth() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+
+            if (user) {
+                try {
+                    const userData = JSON.parse(user);
+                    const avatar = document.getElementById('userAvatar');
+                    avatar.textContent = userData.username ? userData.username.charAt(0).toUpperCase() : 'U';
+                } catch (e) {
+                    console.error('Failed to parse user data:', e);
+                }
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/login.html';
+        }
+
+        // === Event Listeners ===
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize theme and auth
+            initTheme();
+            initAuth();
+
+            // Theme toggle
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+            // User dropdown
+            const userAvatar = document.getElementById('userAvatar');
+            const userDropdown = document.getElementById('userDropdown');
+            userAvatar.addEventListener('click', () => {
+                userDropdown.classList.toggle('show');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!document.getElementById('userMenu').contains(e.target)) {
+                    userDropdown.classList.remove('show');
+                }
+            });
+
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+
+            // Template selector
+            document.querySelectorAll('.template-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.template-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderAllCards(btn.dataset.template);
+                });
+            });
+
+            // Initial render
+            renderAllCards('classic');
+        });
+    </script>
+</body>
+</html>

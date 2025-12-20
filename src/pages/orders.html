@@ -3,614 +3,522 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的订单 - AI未来学院</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../styles/main.css">
-    <link rel="stylesheet" href="../styles/theme.css">
-    <!-- 预加载主题切换器 -->
-    <script src="../utils/theme-switcher.js"></script>
+    <title>我的订单 - AI 信息未来</title>
+    <link rel="stylesheet" href="../styles/apple-design.css">
     <style>
-        /* 订单页面样式 - 现代化设计 */
-        .orders-page {
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            min-height: 100vh;
-            color: var(--dark);
-            font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
-            transition: all 0.3s ease;
-            position: relative;
+        /* 订单页面专属样式 */
+        body {
+            padding-top: 48px;
+            background: var(--bg-secondary);
         }
-        
-        .orders-page::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: 
-                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(6, 182, 212, 0.06) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: -1;
-        }
-        
-        [data-theme="dark"] .orders-page {
-            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #0f0f23 100%);
-            color: #e2e8f0;
-        }
-        
-        .orders-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 6rem 2rem 4rem;
-        }
-        
-        .orders-header {
+
+        /* Hero 区域 */
+        .orders-hero {
+            padding: 64px 0 40px;
             text-align: center;
-            margin-bottom: 4rem;
-            position: relative;
         }
-        
-        .orders-title {
-            font-size: 4rem;
-            font-weight: 800;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #06b6d4 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -0.02em;
-            line-height: 1.1;
+
+        .orders-hero h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.03em;
         }
-        
-        .orders-header p {
-            font-size: 1.4rem;
-            color: var(--gray-600);
-            font-weight: 400;
-            max-width: 600px;
-            margin: 0 auto;
+
+        .orders-hero p {
+            font-size: 19px;
+            color: var(--text-secondary);
         }
-        
-        [data-theme="dark"] .orders-header p {
-            color: #94a3b8;
-        }
-        
-        /* 订单标签页 */
-        .order-tabs {
+
+        /* 标签页 */
+        .tabs {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            padding: 6px;
             display: flex;
-            gap: 0.5rem;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 0.5rem;
-            border-radius: 16px;
-            margin-bottom: 2rem;
-            border: 1px solid rgba(59, 130, 246, 0.1);
-            backdrop-filter: blur(10px);
+            gap: 6px;
+            margin-bottom: 32px;
         }
-        
-        [data-theme="dark"] .order-tabs {
-            background: rgba(15, 15, 35, 0.9);
-            border: 1px solid rgba(139, 92, 246, 0.2);
-        }
-        
-        .tab-item {
+
+        .tab {
             flex: 1;
-            padding: 1rem;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-secondary);
             background: transparent;
-            border: 2px solid transparent;
-            border-radius: 12px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--gray-600);
+            border: none;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all var(--transition-fast);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-            position: relative;
+            gap: 8px;
         }
-        
-        [data-theme="dark"] .tab-item {
-            color: #94a3b8;
+
+        .tab:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
         }
-        
-        .tab-item:hover {
-            background: rgba(59, 130, 246, 0.05);
-            color: var(--primary);
+
+        .tab.active {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
-        
-        .tab-item.active {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            color: white;
-            border-color: transparent;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
-        }
-        
+
         .tab-count {
+            font-size: 13px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
             background: rgba(255, 255, 255, 0.2);
-            padding: 0.2rem 0.6rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
             min-width: 24px;
             text-align: center;
         }
-        
-        .tab-item.active .tab-count {
-            background: rgba(255, 255, 255, 0.3);
+
+        .tab:not(.active) .tab-count {
+            background: var(--bg-hover);
+            color: var(--text-tertiary);
         }
-        
-        .tab-item:not(.active) .tab-count {
-            background: rgba(59, 130, 246, 0.1);
-            color: var(--primary);
+
+        .tab-refresh {
+            flex: 0 0 auto;
+            padding: 12px 20px;
         }
-        
-        .tab-item:not(.active) .pending-badge {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: white;
-            animation: pulse 2s infinite;
+
+        /* 订单列表容器 */
+        .orders-container {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            padding: 32px;
+            min-height: 400px;
         }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-        
-        /* 隐藏原来的统计卡片 */
-        .orders-stats {
-            display: none;
-        }
-        
-        .orders-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-bottom: 4rem;
-        }
-        
-        .stat-card {
-            background: rgba(255, 255, 255, 0.8);
-            padding: 2.5rem 2rem;
-            border-radius: 24px;
-            text-align: center;
-            border: 1px solid rgba(59, 130, 246, 0.1);
-            backdrop-filter: blur(20px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 30px 60px rgba(59, 130, 246, 0.15);
-        }
-        
-        [data-theme="dark"] .stat-card {
-            background: rgba(15, 15, 35, 0.8);
-            border: 1px solid rgba(139, 92, 246, 0.2);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
-        
-        .stat-number {
-            font-size: 3rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            display: block;
-            margin-bottom: 0.8rem;
-            font-family: 'JetBrains Mono', monospace;
-        }
-        
-        .stat-label {
-            color: var(--gray-600);
-            font-size: 1rem;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        [data-theme="dark"] .stat-label {
-            color: #94a3b8;
-        }
-        
-        .orders-list {
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 28px;
-            padding: 3rem;
-            border: 1px solid rgba(59, 130, 246, 0.1);
-            backdrop-filter: blur(20px);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .orders-list::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 6px;
-            background: linear-gradient(90deg, #06b6d4, #3b82f6, #8b5cf6);
-        }
-        
-        [data-theme="dark"] .orders-list {
-            background: rgba(15, 15, 35, 0.8);
-            border: 1px solid rgba(139, 92, 246, 0.2);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-        }
-        
+
+        /* 订单项 */
         .order-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 2.5rem;
-            margin-bottom: 1.5rem;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 20px;
-            border: 1px solid rgba(59, 130, 246, 0.1);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
+            justify-content: space-between;
+            padding: 24px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            margin-bottom: 16px;
+            transition: all var(--transition-fast);
         }
-        
-        .order-item::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 6px;
-            height: 100%;
-            background: linear-gradient(180deg, #3b82f6, #8b5cf6);
-            transform: scaleY(0);
-            transition: transform 0.3s ease;
-        }
-        
+
         .order-item:hover {
-            transform: translateX(12px) translateY(-2px);
-            box-shadow: 0 25px 50px rgba(59, 130, 246, 0.15);
-            border-color: rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-card);
         }
-        
-        .order-item:hover::before {
-            transform: scaleY(1);
+
+        .order-info {
+            flex: 1;
         }
-        
-        [data-theme="dark"] .order-item {
-            background: rgba(15, 15, 35, 0.9);
-            border: 1px solid rgba(139, 92, 246, 0.2);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        }
-        
-        [data-theme="dark"] .order-item:hover {
-            box-shadow: 0 25px 50px rgba(139, 92, 246, 0.2);
-            border-color: rgba(139, 92, 246, 0.4);
-        }
-        
-        .order-info h3 {
-            margin: 0 0 1rem 0;
-            color: var(--dark);
-            font-size: 1.4rem;
-            font-weight: 700;
-            font-family: 'Space Grotesk', sans-serif;
-        }
-        
-        [data-theme="dark"] .order-info h3 {
-            color: #e2e8f0;
-        }
-        
-        .order-meta {
-            color: var(--gray-600);
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
-            font-family: 'JetBrains Mono', monospace;
-        }
-        
-        [data-theme="dark"] .order-meta {
-            color: #94a3b8;
-        }
-        
-        .order-status {
-            padding: 0.8rem 1.5rem;
-            border-radius: 25px;
-            font-size: 0.9rem;
+
+        .order-title {
+            font-size: 19px;
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        
-        .order-status:hover {
-            transform: scale(1.05);
+
+        .order-meta {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            font-family: var(--font-mono);
         }
-        
-        .status-active {
-            background: linear-gradient(135deg, #22c55e, #16a34a);
-            color: white;
-        }
-        
-        .status-pending {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: white;
-        }
-        
-        .status-expired {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-        }
-        
+
         .order-actions {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 12px;
         }
-        
+
+        .order-status {
+            padding: 6px 14px;
+            border-radius: var(--radius-full);
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .status-active {
+            background: rgba(52, 199, 89, 0.1);
+            color: #34c759;
+        }
+
+        .status-pending {
+            background: rgba(255, 159, 10, 0.1);
+            color: #ff9f0a;
+        }
+
+        .status-expired,
+        .status-cancelled {
+            background: rgba(142, 142, 147, 0.1);
+            color: var(--text-tertiary);
+        }
+
+        /* 操作按钮 */
+        .action-btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-full);
+            font-size: 15px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
         .btn-pay {
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-            color: white;
-            border: none;
-            padding: 0.6rem 1.5rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            background: var(--accent);
+            color: #fff;
         }
-        
+
         .btn-pay:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+            background: var(--accent-hover);
         }
-        
+
         .btn-cancel {
-            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-            color: white;
-            border: none;
-            padding: 0.6rem 1.5rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            background: var(--bg-hover);
+            color: var(--text-secondary);
         }
-        
+
         .btn-cancel:hover {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+            background: rgba(255, 59, 48, 0.1);
+            color: #ff3b30;
         }
-        
-        .timeout-tip {
-            color: #f59e0b;
-            font-size: 0.8rem;
-            font-weight: 500;
+
+        .btn-learn {
+            background: rgba(52, 199, 89, 0.1);
+            color: #34c759;
         }
-        
-        .loading, .error {
-            text-align: center;
-            padding: 4rem;
-            color: var(--gray-600);
-            font-size: 1.2rem;
-            font-weight: 500;
+
+        .btn-learn:hover {
+            background: #34c759;
+            color: #fff;
         }
-        
-        [data-theme="dark"] .loading, [data-theme="dark"] .error {
-            color: #94a3b8;
-        }
-        
+
+        /* 空状态 */
         .empty-state {
             text-align: center;
-            padding: 4rem;
+            padding: 80px 32px;
         }
-        
+
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            opacity: 0.3;
+        }
+
         .empty-state h3 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            color: var(--gray-600);
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: var(--text-primary);
         }
-        
+
         .empty-state p {
-            font-size: 1.2rem;
-            color: var(--gray-500);
-            margin-bottom: 2rem;
+            font-size: 17px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
         }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 16px;
-            text-decoration: none;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
+
+        /* 加载状态 */
+        .loading-state {
+            text-align: center;
+            padding: 80px 32px;
         }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 15px 30px rgba(59, 130, 246, 0.3);
+
+        .error-state {
+            text-align: center;
+            padding: 80px 32px;
         }
-        
-        .badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-left: 0.5rem;
-            vertical-align: middle;
+
+        .error-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            opacity: 0.3;
         }
-        
-        .badge-bundle {
-            background: linear-gradient(135deg, #8b5cf6, #ec4899);
-            color: white;
+
+        /* 提示文本 */
+        .timeout-tip {
+            color: #ff9f0a;
+            font-size: 13px;
+            margin-left: 8px;
         }
-        
-        .badge-course {
-            background: linear-gradient(135deg, #3b82f6, #06b6d4);
-            color: white;
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .orders-hero h1 {
+                font-size: 32px;
+            }
+
+            .order-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .order-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .tabs {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .tab {
+                flex: 0 0 auto;
+                min-width: 100px;
+            }
+        }
+
+        /* SVG 图标样式 */
+        .icon {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .icon-sm {
+            width: 16px;
+            height: 16px;
         }
     </style>
-
-    <!-- UX Enhancement Styles -->
-    <link rel="stylesheet" href="../styles/ux-enhancements.css">
 </head>
-<body class="orders-page">
+<body>
     <!-- 导航栏 -->
     <nav class="nav">
-        <div class="nav-container">
-            <div class="nav-brand">
-                <a href="/home.html" class="logo">AI未来学院</a>
-            </div>
+        <div class="nav-inner">
+            <a href="/home.html" class="nav-logo">AI 信息未来</a>
             <div class="nav-menu">
                 <a href="/home.html" class="nav-link">首页</a>
                 <a href="/src/pages/courses.html" class="nav-link">课程</a>
-                <a href="/src/pages/dashboard.html" class="nav-link">学习中心</a>
-                <a href="/src/pages/profile.html" class="nav-link">个人中心</a>
+                <a href="/src/pages/community.html" class="nav-link">社区</a>
+                <a href="/src/pages/arena.html" class="nav-link">PK竞技</a>
             </div>
-            <div class="nav-auth">
-                <div class="auth-container" id="authContainer">
-                    <a href="/src/pages/login.html" class="btn-login">登录</a>
-                    <a href="/src/pages/register.html" class="btn-register">注册</a>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path class="sun-icon" d="M12 18C8.68629 18 6 15.3137 6 12C6 8.68629 8.68629 6 12 6C15.3137 6 18 8.68629 18 12C18 15.3137 15.3137 18 12 18ZM12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16ZM11 1H13V4H11V1ZM11 20H13V23H11V20ZM3.51472 4.92893L4.92893 3.51472L7.05025 5.63604L5.63604 7.05025L3.51472 4.92893ZM16.9497 18.364L18.364 16.9497L20.4853 19.0711L19.0711 20.4853L16.9497 18.364ZM19.0711 3.51472L20.4853 4.92893L18.364 7.05025L16.9497 5.63604L19.0711 3.51472ZM5.63604 16.9497L7.05025 18.364L4.92893 20.4853L3.51472 19.0711L5.63604 16.9497ZM23 11V13H20V11H23ZM4 11V13H1V11H4Z"/>
+                        <path class="moon-icon" style="display:none;" d="M10 7C10 10.866 13.134 14 17 14C18.9584 14 20.729 13.1957 21.9995 11.8995C22 11.933 22 11.9665 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C12.0335 2 12.067 2 12.1005 2.00049C10.8043 3.27098 10 5.04157 10 7Z"/>
+                    </svg>
+                </button>
+                <div class="user-menu" id="userMenu">
+                    <!-- 用户菜单将通过 JS 动态加载 -->
                 </div>
             </div>
         </div>
     </nav>
 
-    <main class="orders-container">
-        <header class="orders-header">
-            <h1 class="orders-title">我的订单</h1>
+    <!-- 主内容 -->
+    <main class="container">
+        <!-- Hero 区域 -->
+        <div class="orders-hero">
+            <h1>我的订单</h1>
             <p>管理您的课程订阅和购买记录</p>
-        </header>
+        </div>
 
-        <!-- 订单标签页 -->
-        <div class="order-tabs">
-            <button class="tab-item active" data-status="all" onclick="filterOrders('all')">
+        <!-- 标签页 -->
+        <div class="tabs">
+            <button class="tab active" data-status="all" onclick="filterOrders('all')">
                 全部订单
                 <span class="tab-count" id="totalCount">0</span>
             </button>
-            <button class="tab-item" data-status="pending" onclick="filterOrders('pending')">
+            <button class="tab" data-status="pending" onclick="filterOrders('pending')">
                 待支付
-                <span class="tab-count pending-badge" id="pendingCount">0</span>
+                <span class="tab-count" id="pendingCount">0</span>
             </button>
-            <button class="tab-item" data-status="active" onclick="filterOrders('active')">
+            <button class="tab" data-status="active" onclick="filterOrders('active')">
                 已完成
                 <span class="tab-count" id="activeCount">0</span>
             </button>
-            <button class="tab-item" data-status="cancelled" onclick="filterOrders('cancelled')">
+            <button class="tab" data-status="cancelled" onclick="filterOrders('cancelled')">
                 已取消
                 <span class="tab-count" id="cancelledCount">0</span>
             </button>
-            <button class="tab-item" data-status="expired" onclick="filterOrders('expired')">
+            <button class="tab" data-status="expired" onclick="filterOrders('expired')">
                 已过期
                 <span class="tab-count" id="expiredCount">0</span>
             </button>
-            <button class="tab-item refresh-btn" onclick="loadOrders()" style="margin-left: auto; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; border: none;">
-                <i class="fas fa-sync-alt"></i> 刷新列表
+            <button class="tab tab-refresh" onclick="loadOrders()">
+                <svg class="icon icon-sm" viewBox="0 0 24 24">
+                    <path d="M5.46257 4.43262C7.21556 2.91688 9.5007 2 12 2C17.5228 2 22 6.47715 22 12C22 14.1361 21.3302 16.1158 20.1892 17.7406L17 12H20C20 7.58172 16.4183 4 12 4C9.84982 4 7.89777 4.84827 6.46023 6.22842L5.46257 4.43262ZM18.5374 19.5674C16.7844 21.0831 14.4993 22 12 22C6.47715 22 2 17.5228 2 12C2 9.86386 2.66979 7.88416 3.8108 6.25944L7 12H4C4 16.4183 7.58172 20 12 20C14.1502 20 16.1022 19.1517 17.5398 17.7716L18.5374 19.5674Z"/>
+                </svg>
             </button>
         </div>
 
-        <!-- 订单列表 -->
-        <div class="orders-list">
-            <div id="loadingState" class="loading">
-                正在加载订单信息...
+        <!-- 订单列表容器 -->
+        <div class="orders-container">
+            <!-- 加载状态 -->
+            <div id="loadingState" class="loading-state">
+                <div class="spinner"></div>
+                <p style="margin-top: 16px; color: var(--text-secondary);">正在加载订单信息...</p>
             </div>
-            
-            <div id="errorState" class="error" style="display: none;">
+
+            <!-- 错误状态 -->
+            <div id="errorState" class="error-state" style="display: none;">
+                <svg class="error-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM11 15V17H13V15H11ZM11 7V13H13V7H11Z"/>
+                </svg>
                 <h3>加载失败</h3>
-                <p>无法获取订单信息，请稍后重试</p>
-                <button onclick="loadOrders()" class="btn-secondary">重新加载</button>
+                <p id="errorMessage">无法获取订单信息，请稍后重试</p>
+                <button class="btn btn-primary" onclick="loadOrders()">重新加载</button>
             </div>
-            
+
+            <!-- 订单列表 -->
             <div id="ordersContent" style="display: none;">
-                <!-- 订单列表将在这里动态生成 -->
+                <!-- 订单将通过 JS 动态加载 -->
             </div>
         </div>
     </main>
 
     <!-- Scripts -->
-    <!-- UX Enhancement Scripts -->
-    <script src="../utils/ux-utils.js"></script>
-
-    <script src="../components/auth-init.js"></script>
-    <!-- 移除 user-menu.js 避免冲突 -->
     <script>
-        let allOrders = []; // 存储所有订单
-        let currentFilter = 'all'; // 当前筛选状态
-        
-        // 页面加载完成后初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            initTheme();
-            
-            // 确保认证UI显示
-            if (window.refreshAuthUI) {
-                console.log('Refreshing auth UI for orders page');
-                window.refreshAuthUI();
-            }
-            
-            checkAuth();
-            loadOrders();
-            
-            // 自动刷新订单列表（每30秒刷新一次待支付订单）
-            setInterval(() => {
-                if (currentFilter === 'pending' || currentFilter === 'all') {
-                    console.log('自动刷新订单列表...');
-                    loadOrders();
-                }
-            }, 30000);
-        });
-        
-        // 筛选订单
-        function filterOrders(status) {
-            currentFilter = status;
-            
-            // 更新标签状态
-            document.querySelectorAll('.tab-item').forEach(tab => {
-                tab.classList.remove('active');
-                if (tab.dataset.status === status) {
-                    tab.classList.add('active');
-                }
-            });
-            
-            // 筛选并显示订单
-            let filteredOrders = allOrders;
-            if (status !== 'all') {
-                filteredOrders = allOrders.filter(order => {
-                    // 将已取消和已过期的订单都归类到对应的标签
-                    if (status === 'cancelled' && order.status === 'cancelled') return true;
-                    if (status === 'expired' && order.status === 'expired') return true;
-                    return order.status === status;
-                });
-            }
-            
-            displayOrders(filteredOrders);
+        const API_BASE = '/api';
+        let allOrders = [];
+        let currentFilter = 'all';
+
+        // 主题切换
+        function initTheme() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+            updateThemeIcon(theme);
         }
-        
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const sunIcon = document.querySelector('.sun-icon');
+            const moonIcon = document.querySelector('.moon-icon');
+            if (theme === 'dark') {
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+            } else {
+                sunIcon.style.display = 'block';
+                moonIcon.style.display = 'none';
+            }
+        }
+
+        // 认证检查
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/src/pages/login.html?returnUrl=' + encodeURIComponent(location.pathname);
+                return false;
+            }
+            return true;
+        }
+
+        // 初始化用户菜单
+        function initUserMenu() {
+            const token = localStorage.getItem('token');
+            const userMenuEl = document.getElementById('userMenu');
+
+            if (token) {
+                const username = localStorage.getItem('username') || '用户';
+                userMenuEl.innerHTML = `
+                    <div class="user-avatar" onclick="toggleDropdown()">
+                        ${username.charAt(0).toUpperCase()}
+                    </div>
+                    <div class="dropdown" id="userDropdown">
+                        <div class="dropdown-item" onclick="location.href='/src/pages/dashboard.html'">
+                            <svg class="icon icon-sm" viewBox="0 0 24 24">
+                                <path d="M4 22C4 17.5817 7.58172 14 12 14C16.4183 14 20 17.5817 20 22H18C18 18.6863 15.3137 16 12 16C8.68629 16 6 18.6863 6 22H4ZM12 13C8.685 13 6 10.315 6 7C6 3.685 8.685 1 12 1C15.315 1 18 3.685 18 7C18 10.315 15.315 13 12 13ZM12 11C14.21 11 16 9.21 16 7C16 4.79 14.21 3 12 3C9.79 3 8 4.79 8 7C8 9.21 9.79 11 12 11Z" fill="currentColor"/>
+                            </svg>
+                            学习中心
+                        </div>
+                        <div class="dropdown-item" onclick="location.href='/src/pages/orders.html'">
+                            <svg class="icon icon-sm" viewBox="0 0 24 24">
+                                <path d="M6.5 2H17.5C17.776 2 18 2.224 18 2.5V21.5C18 21.776 17.776 22 17.5 22H6.5C6.224 22 6 21.776 6 21.5V2.5C6 2.224 6.224 2 6.5 2ZM8 4V20H16V4H8ZM10 6H14V8H10V6ZM10 9H14V11H10V9ZM10 12H14V14H10V12Z" fill="currentColor"/>
+                            </svg>
+                            我的订单
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item" onclick="logout()">
+                            <svg class="icon icon-sm" viewBox="0 0 24 24">
+                                <path d="M5 22C4.44772 22 4 21.5523 4 21V3C4 2.44772 4.44772 2 5 2H19C19.5523 2 20 2.44772 20 3V6H18V4H6V20H18V18H20V21C20 21.5523 19.5523 22 19 22H5ZM18 16V13H11V11H18V8L23 12L18 16Z" fill="currentColor"/>
+                            </svg>
+                            退出登录
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function toggleDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // 点击外部关闭下拉菜单
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-menu')) {
+                const dropdown = document.getElementById('userDropdown');
+                if (dropdown) dropdown.classList.remove('show');
+            }
+        });
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            window.location.href = '/src/pages/login.html';
+        }
+
+        // 加载订单
+        async function loadOrders() {
+            try {
+                showLoading();
+
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/subscriptions/my?size=100`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.data) {
+                    allOrders = data.data.subscriptions || data.data.list || [];
+
+                    // 预处理订单数据
+                    allOrders = allOrders.map(order => {
+                        order.formattedAmount = formatAmount(order);
+                        return order;
+                    });
+
+                    updateOrderStats(allOrders);
+                    filterOrders(currentFilter);
+                    showContent();
+                } else {
+                    showError(data.message || '获取订单失败');
+                }
+            } catch (error) {
+                console.error('加载订单失败:', error);
+                showError('网络连接失败，请检查网络后重试');
+            }
+        }
+
         // 更新订单统计
         function updateOrderStats(orders) {
             const stats = {
@@ -620,222 +528,82 @@
                 cancelled: 0,
                 expired: 0
             };
-            
+
             orders.forEach(order => {
                 if (order.status === 'pending') stats.pending++;
                 else if (order.status === 'active') stats.active++;
                 else if (order.status === 'cancelled') stats.cancelled++;
                 else if (order.status === 'expired') stats.expired++;
             });
-            
-            // 更新标签页计数
+
             document.getElementById('totalCount').textContent = stats.total;
             document.getElementById('pendingCount').textContent = stats.pending;
             document.getElementById('activeCount').textContent = stats.active;
             document.getElementById('cancelledCount').textContent = stats.cancelled;
             document.getElementById('expiredCount').textContent = stats.expired;
-            
-            // 如果有待支付订单，添加提醒动画
-            if (stats.pending > 0) {
-                document.getElementById('pendingCount').classList.add('pending-badge');
-            }
         }
-        
-        // 检查登录状态
-        function checkAuth() {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-                const loginPath = isDev ? '/src/pages/login.html' : '/login.html';
-                window.location.href = loginPath + '?returnUrl=' + encodeURIComponent(location.pathname);
-                return;
-            }
-        }
-        
-        // 加载订单统计
-        async function loadOrderStats() {
-            try {
-                const token = localStorage.getItem('token');
-                const response = await fetch('/api/subscriptions/stats', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                
-                const data = await response.json();
-                console.log('统计API响应:', data);
-                
-                if (data.success && data.data) {
-                    const stats = data.data;
-                    document.getElementById('totalOrders').textContent = stats.total || 0;
-                    document.getElementById('activeOrders').textContent = stats.active || 0;
-                    document.getElementById('pendingOrders').textContent = stats.pending || 0;
-                    document.getElementById('expiredOrders').textContent = stats.expired || 0;
-                } else {
-                    console.error('统计API失败:', data);
-                    // 设置默认值
-                    document.getElementById('totalOrders').textContent = '0';
-                    document.getElementById('activeOrders').textContent = '0';
-                    document.getElementById('pendingOrders').textContent = '0';
-                    document.getElementById('expiredOrders').textContent = '0';
+
+        // 筛选订单
+        function filterOrders(status) {
+            currentFilter = status;
+
+            // 更新标签状态
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.status === status) {
+                    tab.classList.add('active');
                 }
-            } catch (error) {
-                console.error('加载统计失败:', error);
-                // 设置默认值
-                document.getElementById('totalOrders').textContent = '0';
-                document.getElementById('activeOrders').textContent = '0';
-                document.getElementById('pendingOrders').textContent = '0';
-                document.getElementById('expiredOrders').textContent = '0';
+            });
+
+            // 筛选订单
+            let filteredOrders = allOrders;
+            if (status !== 'all') {
+                filteredOrders = allOrders.filter(order => order.status === status);
             }
+
+            displayOrders(filteredOrders);
         }
-        
-        // 加载订单列表
-        async function loadOrders() {
-            try {
-                showLoading();
-                
-                const token = localStorage.getItem('token');
-                const response = await fetch('/api/subscriptions/my?size=100', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                
-                const data = await response.json();
-                console.log('订单API响应:', data);
-                console.log('订单数据:', data.data);
-                console.log('订阅列表:', data.data?.subscriptions);
-                
-                // 检查每个订阅的amount字段
-                if (data.data?.subscriptions) {
-                    data.data.subscriptions.forEach((sub, index) => {
-                        console.log(`订阅${index}金额字段:`, {
-                            amount: sub.amount,
-                            price: sub.price,
-                            cost: sub.cost,
-                            totalAmount: sub.totalAmount,
-                            originalPrice: sub.originalPrice,
-                            finalPrice: sub.finalPrice
-                        });
-                    });
-                }
-                
-                if (data.success && data.data) {
-                    // 从API响应中获取订阅列表
-                    let subscriptions = data.data.subscriptions || data.data.list || [];
-                    console.log('准备显示的订单数量:', subscriptions.length);
-                    
-                    // 如果没有订单，使用示例数据
-                    if (!subscriptions || subscriptions.length === 0) {
-                        subscriptions = [
-                            {
-                                id: 1,
-                                orderNo: 'ORD20240101001',
-                                courseId: 1,
-                                courseName: "Python人工智能入门",
-                                type: "course",
-                                status: "active",
-                                amount: 99.00,
-                                paymentMethod: "alipay",
-                                createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-                            },
-                            {
-                                id: 2,
-                                orderNo: 'ORD20240102002',
-                                courseId: 2,
-                                courseName: "深度学习实战项目",
-                                type: "course",
-                                status: "pending",
-                                amount: 199.00,
-                                paymentMethod: "wechat",
-                                createdAt: new Date(Date.now() - 20 * 60 * 1000).toISOString()
-                            },
-                            {
-                                id: 3,
-                                orderNo: 'ORD20240103003',
-                                courseId: 3,
-                                courseName: "机器学习算法精讲",
-                                type: "course",
-                                status: "active",
-                                amount: 299.00,
-                                paymentMethod: "alipay",
-                                createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
-                            }
-                        ];
-                        console.log('使用示例数据展示订单');
-                    }
-                    
-                    // 预处理订单数据以提高渲染性能
-                    allOrders = subscriptions.map(order => {
-                        // 预先格式化金额，避免渲染时重复计算
-                        order.formattedAmount = formatAmount(order);
-                        return order;
-                    });
-                    
-                    // 更新统计
-                    updateOrderStats(allOrders);
-                    
-                    // 根据当前筛选状态显示订单
-                    filterOrders(currentFilter);
-                    
-                    showContent();
-                } else {
-                    console.error('API失败响应:', data);
-                    showError('获取订单失败: ' + (data.message || '未知错误'));
-                }
-            } catch (error) {
-                console.error('加载订单失败:', error);
-                showError('网络连接失败，请检查网络后重试');
-            }
-        }
-        
+
         // 显示订单列表
         function displayOrders(orders) {
-            console.log('displayOrders 被调用，订单数据:', orders);
             const container = document.getElementById('ordersContent');
-            
+
             if (!orders || orders.length === 0) {
-                console.log('订单列表为空，显示空状态');
-                console.log('orders:', orders);
-                console.log('orders.length:', orders?.length);
                 container.innerHTML = `
-                    <div class="empty-state" style="text-align: center; padding: 3rem;">
+                    <div class="empty-state">
+                        <svg class="empty-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M6.5 2H17.5C17.776 2 18 2.224 18 2.5V21.5C18 21.776 17.776 22 17.5 22H6.5C6.224 22 6 21.776 6 21.5V2.5C6 2.224 6.224 2 6.5 2ZM8 4V20H16V4H8Z"/>
+                        </svg>
                         <h3>暂无订单</h3>
                         <p>您还没有购买任何课程</p>
-                        <a href="/src/pages/courses.html" class="btn-primary">去选购课程</a>
+                        <a href="/src/pages/courses.html" class="btn btn-primary">浏览课程</a>
                     </div>
                 `;
                 return;
             }
-            
+
             const ordersHTML = orders.map(order => {
                 const statusClass = getStatusClass(order.status);
                 const statusText = getStatusText(order.status);
-                
-                // 检查是否是待支付订单且在30分钟内
                 const isPayable = order.status === 'pending' && isOrderPayable(order.createdAt);
                 const actionButtons = getActionButtons(order, isPayable);
-                
-                // 根据订单类型显示不同的图标和标签
-                const orderTypeLabel = order.type === 'bundle' ? 
-                    '<span class="badge badge-bundle">课程包</span>' : 
-                    '<span class="badge badge-course">单课程</span>';
-                
-                // 显示课程包的额外信息
-                const extraInfo = order.type === 'bundle' && order.courseCount ? 
-                    `<div class="order-meta">包含 ${order.courseCount} 门课程</div>` : '';
-                
+                const orderTypeLabel = order.type === 'bundle' ?
+                    '<span class="badge badge-primary">课程包</span>' :
+                    '<span class="badge">单课程</span>';
+
                 return `
                     <div class="order-item">
                         <div class="order-info">
-                            <h3>${order.courseName || '未知课程'} ${orderTypeLabel}</h3>
-                            ${extraInfo}
-                            <div class="order-meta">
-                                订单号: ${order.orderNo} | 创建时间: ${formatDate(order.createdAt)}
+                            <div class="order-title">
+                                ${order.courseName || '未知课程'}
+                                ${orderTypeLabel}
                             </div>
+                            <div class="order-meta">订单号: ${order.orderNo}</div>
+                            <div class="order-meta">创建时间: ${formatDate(order.createdAt)}</div>
                             <div class="order-meta">
-                                支付方式: ${getPaymentMethodText(order.paymentMethod)} | 金额: ¥${order.formattedAmount || formatAmount(order)}
-                                ${!isPayable && order.status === 'pending' ? '<span class="timeout-tip">（订单已超时）</span>' : ''}
+                                支付方式: ${getPaymentMethodText(order.paymentMethod)} |
+                                金额: ¥${order.formattedAmount}
+                                ${!isPayable && order.status === 'pending' ? '<span class="timeout-tip">(订单已超时)</span>' : ''}
                             </div>
                         </div>
                         <div class="order-actions">
@@ -845,191 +613,72 @@
                     </div>
                 `;
             }).join('');
-            
+
             container.innerHTML = ordersHTML;
         }
-        
-        // 检查订单是否可支付（30分钟内）
-        function isOrderPayable(createdAt) {
-            if (!createdAt) return false;
-            const orderTime = new Date(createdAt);
-            const now = new Date();
-            const diffMinutes = (now - orderTime) / (1000 * 60);
-            return diffMinutes <= 30;
-        }
-        
+
         // 获取操作按钮
         function getActionButtons(order, isPayable) {
             if (order.status === 'pending') {
-                // 待支付订单 - 都显示立即支付按钮（不管是否超时）
                 return `
-                    <button class="btn-pay" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; padding: 8px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; margin-right: 10px;" 
-                            onclick="continuePayment('${order.id}', '${order.orderNo}', '${order.courseName || '课程'}', ${order.amount}, '${order.subscribableType || 'course'}', ${order.subscribableId || order.courseId || 1})">
-                        <i class="fas fa-credit-card"></i> 立即支付
+                    <button class="action-btn btn-pay" onclick="continuePayment('${order.id}', '${order.orderNo}', '${order.courseName || '课程'}', ${order.amount}, '${order.subscribableType || 'course'}', ${order.subscribableId || order.courseId || 1})">
+                        立即支付
                     </button>
-                    <button class="btn-cancel" style="background: #f0f0f0; color: #666; padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer;" 
-                            onclick="cancelOrder('${order.id}', '${order.courseName || '课程'}')">
+                    <button class="action-btn btn-cancel" onclick="cancelOrder('${order.id}', '${order.courseName || '课程'}')">
                         取消订单
                     </button>
                 `;
             } else if (order.status === 'active') {
-                // 已支付订单 - 显示去学习按钮
                 return `
-                    <button class="btn-learn" style="background: linear-gradient(135deg, #10b981, #14b8a6); color: white; padding: 8px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;"
-                            onclick="goToLearn(${order.subscribableId || order.courseId})">
-                        <i class="fas fa-play-circle"></i> 去学习
+                    <button class="action-btn btn-learn" onclick="goToLearn(${order.subscribableId || order.courseId})">
+                        去学习
                     </button>
                 `;
             }
             return '';
         }
-        
-        // 继续支付已存在的订单
+
+        // 继续支付
         async function continuePayment(subscriptionId, orderNo, courseName, amount, subscribableType, subscribableId) {
             try {
-                console.log('继续支付订单:', { orderNo, subscribableType, subscribableId });
-                
-                // 跳转到支付页面，不传递价格，让支付页面获取真实价格
                 const params = new URLSearchParams({
                     orderNo: orderNo,
                     courseId: subscribableId,
                     type: subscribableType === 'bundle' ? 'bundle' : 'course',
                     courseName: courseName,
-                    continuePayment: 'true'  // 标记为继续支付
+                    continuePayment: 'true'
                 });
-                
+
                 if (subscribableType === 'bundle') {
                     params.set('bundleId', subscribableId);
                 }
-                
+
                 window.location.href = `/src/pages/payment.html?${params.toString()}`;
-                
             } catch (error) {
                 console.error('继续支付失败:', error);
                 alert('支付失败，请稍后重试');
             }
         }
-        
-        // 重新购买课程
-        function rebuyOrder(courseId, subscribableType) {
-            if (subscribableType === 'bundle') {
-                // 课程包跳转到课程包购买页面
-                window.location.href = `/src/pages/courses.html?showBundle=true`;
-            } else {
-                // 单个课程跳转到课程详情页
-                window.location.href = `/src/pages/course-detail.html?id=${courseId}`;
-            }
-        }
-        
-        // 去学习
-        function goToLearn(courseId) {
-            // 跳转到我的课程页面
-            window.location.href = '/src/pages/my-courses.html';
-        }
-        
-        // 支付订单（旧函数，保留兼容性）
-        async function payOrder(orderNo, courseName, amount) {
-            try {
-                const token = localStorage.getItem('token');
-                
-                // 创建支付宝支付
-                const response = await fetch('/api/payment/alipay/create', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: new URLSearchParams({
-                        orderNo: orderNo,
-                        amount: amount.toString(),
-                        subject: `课程购买-${courseName}`,
-                        body: `购买课程：${courseName}`
-                    })
-                });
 
-                const data = await response.json();
-                
-                if (data.success && data.data && data.data.form) {
-                    // 在新窗口打开支付页面
-                    const payWindow = window.open('', 'alipay_payment', 'width=800,height=600,scrollbars=yes,resizable=yes');
-                    if (payWindow) {
-                        payWindow.document.write(data.data.form);
-                        payWindow.document.close();
-                        
-                        alert('支付窗口已打开，请在新窗口中完成支付。支付完成后页面会自动更新。');
-                        
-                        // 监听支付结果
-                        const checkPaymentStatus = setInterval(async () => {
-                            try {
-                                if (payWindow.closed) {
-                                    clearInterval(checkPaymentStatus);
-                                    
-                                    // 检查支付状态
-                                    const statusResponse = await fetch(`/api/payment/status/${orderNo}`, {
-                                        headers: {
-                                            'Authorization': `Bearer ${token}`
-                                        }
-                                    });
-                                    
-                                    if (statusResponse.ok) {
-                                        const statusData = await statusResponse.json();
-                                        if (statusData.code === 200 && statusData.data) {
-                                            const paymentStatus = statusData.data.tradeStatus;
-                                            if (paymentStatus === 'TRADE_SUCCESS' || paymentStatus === 'TRADE_FINISHED') {
-                                                alert('支付成功！');
-                                                // 重新加载订单列表
-                                                loadOrders();
-                                                loadOrderStats();
-                                                return;
-                                            }
-                                        }
-                                    }
-                                    
-                                    alert('支付状态确认中，如已完成支付请稍后刷新页面');
-                                }
-                            } catch (error) {
-                                console.error('检查支付状态失败:', error);
-                            }
-                        }, 2000);
-                        
-                        // 5分钟后停止检查
-                        setTimeout(() => {
-                            clearInterval(checkPaymentStatus);
-                        }, 5 * 60 * 1000);
-                        
-                    } else {
-                        alert('无法打开支付窗口，请允许弹窗并重试');
-                    }
-                } else {
-                    alert(`支付失败：${data.message}`);
-                }
-                
-            } catch (error) {
-                console.error('支付失败:', error);
-                alert(`支付失败：${error.message}`);
-            }
-        }
-        
         // 取消订单
         async function cancelOrder(subscriptionId, courseName) {
             if (!confirm(`确定要取消订单吗？\n课程：${courseName}`)) {
                 return;
             }
-            
+
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`/api/subscriptions/${subscriptionId}/cancel`, {
+                const response = await fetch(`${API_BASE}/subscriptions/${subscriptionId}/cancel`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (data.success) {
                     alert('订单已取消');
-                    // 重新加载订单列表
                     loadOrders();
                 } else {
                     alert(`取消失败：${data.message || '未知错误'}`);
@@ -1039,19 +688,31 @@
                 alert('取消订单失败，请稍后重试');
             }
         }
-        
-        // 获取状态样式类
+
+        // 去学习
+        function goToLearn(courseId) {
+            window.location.href = '/src/pages/my-courses.html';
+        }
+
+        // 工具函数
+        function isOrderPayable(createdAt) {
+            if (!createdAt) return false;
+            const orderTime = new Date(createdAt);
+            const now = new Date();
+            const diffMinutes = (now - orderTime) / (1000 * 60);
+            return diffMinutes <= 30;
+        }
+
         function getStatusClass(status) {
             const classes = {
                 'active': 'status-active',
                 'pending': 'status-pending',
                 'expired': 'status-expired',
-                'cancelled': 'status-expired'
+                'cancelled': 'status-cancelled'
             };
             return classes[status] || 'status-pending';
         }
-        
-        // 获取状态文本
+
         function getStatusText(status) {
             const texts = {
                 'active': '已支付',
@@ -1059,10 +720,9 @@
                 'expired': '已过期',
                 'cancelled': '已取消'
             };
-            return texts[status] || '未知状态';
+            return texts[status] || '未知';
         }
-        
-        // 获取支付方式文本
+
         function getPaymentMethodText(method) {
             const methods = {
                 'alipay': '支付宝',
@@ -1073,34 +733,26 @@
             };
             return methods[method] || '未知';
         }
-        
-        // 格式化日期
+
         function formatDate(dateString) {
             if (!dateString) return '未知时间';
-            
-            // 处理Java LocalDateTime数组格式 [2025, 9, 2, 16, 37, 46]
+
             if (Array.isArray(dateString) && dateString.length >= 3) {
                 const [year, month, day, hour = 0, minute = 0, second = 0] = dateString;
                 const date = new Date(year, month - 1, day, hour, minute, second);
                 return date.toLocaleDateString('zh-CN') + ' ' + date.toLocaleTimeString('zh-CN');
             }
-            
-            // 处理标准日期字符串
+
             const date = new Date(dateString);
-            if (isNaN(date.getTime())) {
-                return '时间格式错误';
-            }
+            if (isNaN(date.getTime())) return '时间格式错误';
             return date.toLocaleDateString('zh-CN') + ' ' + date.toLocaleTimeString('zh-CN');
         }
-        
-        // 格式化金额，确保显示两位小数，尝试多个可能的金额字段
+
         function formatAmount(order) {
-            // 如果传入的是数字，直接使用
             if (typeof order === 'number') {
                 return order.toFixed(2);
             }
-            
-            // 如果传入的是订单对象，尝试多个可能的金额字段
+
             if (typeof order === 'object' && order !== null) {
                 const possibleFields = ['amount', 'price', 'totalAmount', 'finalPrice', 'cost'];
                 for (const field of possibleFields) {
@@ -1113,48 +765,52 @@
                     }
                 }
             }
-            
-            // 如果是字符串，尝试解析
+
             if (typeof order === 'string') {
                 const num = parseFloat(order);
                 if (!isNaN(num)) {
                     return num.toFixed(2);
                 }
             }
-            
+
             return '0.00';
         }
-        
-        // 显示加载状态
+
         function showLoading() {
             document.getElementById('loadingState').style.display = 'block';
             document.getElementById('errorState').style.display = 'none';
             document.getElementById('ordersContent').style.display = 'none';
         }
-        
-        // 显示错误状态
+
         function showError(message) {
             document.getElementById('loadingState').style.display = 'none';
             document.getElementById('errorState').style.display = 'block';
             document.getElementById('ordersContent').style.display = 'none';
-            document.querySelector('#errorState p').textContent = message;
+            document.getElementById('errorMessage').textContent = message;
         }
-        
-        // 显示内容
+
         function showContent() {
             document.getElementById('loadingState').style.display = 'none';
             document.getElementById('errorState').style.display = 'none';
             document.getElementById('ordersContent').style.display = 'block';
         }
-    </script>
-    <!-- 全局登录状态组件 -->
-    <script src="../utils/auth-header.js"></script>
-    <script>
-        // 初始化登录状态组件
+
+        // 页面初始化
         document.addEventListener('DOMContentLoaded', () => {
-            AuthHeader.init('auth-header', {
-                showLinks: false
-            });
+            initTheme();
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+            if (checkAuth()) {
+                initUserMenu();
+                loadOrders();
+
+                // 自动刷新待支付订单
+                setInterval(() => {
+                    if (currentFilter === 'pending' || currentFilter === 'all') {
+                        loadOrders();
+                    }
+                }, 30000);
+            }
         });
     </script>
 </body>

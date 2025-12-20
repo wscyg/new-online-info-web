@@ -3,28 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>学习中心</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <title>学习中心 - AI 信息未来</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+    <link rel="stylesheet" href="../styles/apple-design.css">
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #0f172a; }
-        iframe { width: 100%; height: 100%; border: none; display: none; }
-        .status-container { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; color: white; font-family: sans-serif; text-align: center; padding: 1rem; }
-        .status-container h1 { font-size: 1.5rem; }
-        .status-container p { color: #cbd5e1; }
-        .status-container pre { background: #1e293b; padding: 1rem; border-radius: 8px; margin-top: 1rem; text-align: left; max-width: 90%; overflow-x: auto; font-size: 0.8rem; color: #ef4444; }
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg-primary);
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: none;
+        }
+        .status-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            text-align: center;
+            padding: 2rem;
+        }
+        .status-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 24px;
+            color: var(--accent);
+        }
+        .status-container h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .status-container p {
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+        .status-container .error-detail {
+            background: var(--bg-secondary);
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            text-align: left;
+            max-width: 90%;
+            overflow-x: auto;
+            font-size: 13px;
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 24px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 24px;
+            padding: 12px 24px;
+            background: var(--accent);
+            color: #fff;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+        }
     </style>
 </head>
 <body>
-    <div id="status" class="status-container"><h1>🚀 正在初始化学习环境...</h1></div>
+    <div id="status" class="status-container">
+        <div class="loading-spinner"></div>
+        <h1>正在加载学习内容</h1>
+        <p>请稍候...</p>
+    </div>
     <iframe id="contentFrame" sandbox="allow-scripts allow-same-origin"></iframe>
 
     <script>
+        // 初始化主题
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
         const statusContainer = document.getElementById('status');
         const contentFrame = document.getElementById('contentFrame');
+        const API_BASE = '/api';
 
         // 学习会话跟踪变量
         let currentSessionId = null;
@@ -32,50 +118,59 @@
         let currentCourseId = null;
         let currentChapterId = null;
 
-        function showStatus(title, message = '', error = null) {
-            let html = `<h1>${title}</h1>`;
+        function showStatus(title, message = '', error = null, showBack = false) {
+            let html = '';
+            if (error) {
+                html += `<svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M15 9l-6 6M9 9l6 6"/>
+                </svg>`;
+            } else {
+                html += '<div class="loading-spinner"></div>';
+            }
+            html += `<h1>${title}</h1>`;
             if (message) html += `<p>${message}</p>`;
-            if (error) html += `<pre>错误详情: ${error.message || JSON.stringify(error)}</pre>`;
+            if (error) html += `<div class="error-detail">错误详情: ${error.message || JSON.stringify(error)}</div>`;
+            if (showBack || error) {
+                const courseId = new URLSearchParams(window.location.search).get('courseId');
+                if (courseId) {
+                    html += `<a href="course-detail.html?id=${courseId}" class="back-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                        返回课程
+                    </a>`;
+                }
+            }
             statusContainer.innerHTML = html;
-        }
-
-        // 获取API Base URL
-        function getApiBase() {
-            return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-                ? 'http://localhost:8080/api'
-                : 'http://42.194.245.66/api';
         }
 
         // 开始学习会话
         async function startStudySession(courseId, chapterId) {
             try {
                 const token = localStorage.getItem('token');
-                if (!token) {
-                    console.log('用户未登录，跳过会话跟踪');
-                    return;
-                }
+                if (!token) return;
 
-                const response = await fetch(`${getApiBase()}/study-sessions/start`, {
+                // 构建查询参数（后端使用@RequestParam接收）
+                const params = new URLSearchParams({
+                    courseId: courseId,
+                    deviceType: 'web'
+                });
+                if (chapterId) params.append('chapterId', chapterId);
+
+                const response = await fetch(`${API_BASE}/study-sessions/start?${params.toString()}`, {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        courseId: courseId,
-                        chapterId: chapterId,
-                        deviceType: 'web'
-                    })
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
 
                 if (response.ok) {
                     const data = await response.json();
                     if (data.code === 200 && data.data) {
                         currentSessionId = data.data.sessionId;
-                        console.log('✅ 学习会话已开始:', currentSessionId);
-
-                        // 启动心跳定时器（每2分钟）
                         startHeartbeat();
+                        console.log('学习会话已开始，ID:', currentSessionId);
                     }
                 }
             } catch (error) {
@@ -91,16 +186,19 @@
                 const token = localStorage.getItem('token');
                 if (!token) return;
 
-                await fetch(`${getApiBase()}/study-sessions/heartbeat`, {
+                const response = await fetch(`${API_BASE}/study-sessions/heartbeat?sessionId=${currentSessionId}`, {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        sessionId: currentSessionId
-                    })
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.code === 200 && data.data?.durationSeconds) {
+                        console.log('学习时长:', Math.floor(data.data.durationSeconds / 60), '分钟');
+                    }
+                }
             } catch (error) {
                 console.error('心跳发送失败:', error);
             }
@@ -108,14 +206,8 @@
 
         // 启动心跳定时器
         function startHeartbeat() {
-            if (heartbeatInterval) {
-                clearInterval(heartbeatInterval);
-            }
-
-            // 每2分钟发送一次心跳
-            heartbeatInterval = setInterval(() => {
-                sendHeartbeat();
-            }, 120000); // 120秒 = 2分钟
+            if (heartbeatInterval) clearInterval(heartbeatInterval);
+            heartbeatInterval = setInterval(sendHeartbeat, 120000);
         }
 
         // 结束学习会话
@@ -126,22 +218,16 @@
                 const token = localStorage.getItem('token');
                 if (!token) return;
 
-                // 使用 keepalive 确保请求在页面卸载时也能发送
-                await fetch(`${getApiBase()}/study-sessions/end`, {
+                await fetch(`${API_BASE}/study-sessions/end?sessionId=${currentSessionId}`, {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
+                        'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({
-                        sessionId: currentSessionId
-                    }),
                     keepalive: true
                 });
 
-                console.log('✅ 学习会话已结束');
+                console.log('学习会话已结束，ID:', currentSessionId);
 
-                // 清理
                 if (heartbeatInterval) {
                     clearInterval(heartbeatInterval);
                     heartbeatInterval = null;
@@ -152,100 +238,73 @@
             }
         }
 
-        // 页面卸载时结束会话
-        window.addEventListener('beforeunload', () => {
-            endStudySession();
-        });
-
-        // 页面隐藏时也结束会话（用户切换标签页或最小化）
+        window.addEventListener('beforeunload', endStudySession);
         document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                endStudySession();
-            }
+            if (document.hidden) endStudySession();
         });
 
         (async function loadChapter() {
             try {
-                // 1. 获取 chapterId
                 const urlParams = new URLSearchParams(window.location.search);
                 const chapterId = urlParams.get('chapterId');
                 const courseId = urlParams.get('courseId');
 
                 if (!chapterId) throw new Error('URL中缺少 chapterId 参数');
 
-                // 保存当前课程和章节ID
                 currentChapterId = chapterId;
                 currentCourseId = courseId;
 
-                showStatus('🚀 正在获取章节内容...', `章节ID: ${chapterId}`);
+                showStatus('正在获取章节内容', `章节ID: ${chapterId}`);
 
-                // 2. 获取后端的JSON响应
-                const apiBase = getApiBase();
-                const response = await fetch(`${apiBase}/content/chapters/${chapterId}`, {
+                const response = await fetch(`${API_BASE}/content/chapters/${chapterId}`, {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('token') || ''}` }
                 });
+
                 if (!response.ok) throw new Error(`服务器请求失败，状态: ${response.status}`);
 
                 const data = await response.json();
-                console.log('API响应数据:', data);
 
                 if (data.code !== 200 || !data.data?.content?.contentHtml) {
-                    console.error('API响应格式不正确:', data);
                     throw new Error(data.message || 'API响应格式不正确或未包含HTML内容');
                 }
 
-                // 如果返回的数据中包含courseId，使用它
                 if (data.data.courseId) {
                     currentCourseId = data.data.courseId;
                 }
 
                 let htmlText = data.data.content.contentHtml;
-                console.log('获取到HTML内容长度:', htmlText.length);
 
-                // 3. 处理后端返回的HTML内容
-                let processedHtml = htmlText;
-
-                // 添加安全的CSP头部
+                // 添加安全头部和导航修复脚本
                 const cspMeta = `<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:;">`;
-
-                // 注入base标签和导航修复脚本
                 const baseTag = `<base href="${window.location.origin}/">`;
                 const navFixScript = `
                     <script>
-                        // 防止章节内导航跳转
                         document.addEventListener('DOMContentLoaded', function() {
-                            // 移除或禁用导航链接
                             const navLinks = document.querySelectorAll('nav a, .nav a');
                             navLinks.forEach(link => {
                                 link.addEventListener('click', function(e) {
                                     e.preventDefault();
-                                    // 滚动到对应锚点而不是跳转
                                     const href = this.getAttribute('href');
                                     if (href && href.startsWith('#')) {
                                         const target = document.querySelector(href);
-                                        if (target) {
-                                            target.scrollIntoView({ behavior: 'smooth' });
-                                        }
+                                        if (target) target.scrollIntoView({ behavior: 'smooth' });
                                     }
                                 });
                             });
-
-                            // 处理可能导致页面跳转的其他链接
                             const allLinks = document.querySelectorAll('a[href]');
                             allLinks.forEach(link => {
                                 const href = link.getAttribute('href');
-                                // 如果是外部链接或会导致跳转的链接，在新窗口打开
                                 if (href && !href.startsWith('#') && !href.startsWith('javascript:')) {
                                     link.setAttribute('target', '_blank');
                                     link.setAttribute('rel', 'noopener noreferrer');
                                 }
                             });
                         });
-                    </script>
+                    <\/script>
                 `;
-                processedHtml = processedHtml.replace(/<head>/i, `<head>\n    ${cspMeta}\n    ${baseTag}\n    ${navFixScript}`);
 
-                // 5. 创建 Blob 并加载到 iframe
+                let processedHtml = htmlText.replace(/<head>/i, `<head>\n${cspMeta}\n${baseTag}\n${navFixScript}`);
+
                 const blob = new Blob([processedHtml], { type: 'text/html' });
                 const blobUrl = URL.createObjectURL(blob);
                 contentFrame.src = blobUrl;
@@ -253,17 +312,14 @@
                 contentFrame.onload = () => {
                     statusContainer.style.display = 'none';
                     contentFrame.style.display = 'block';
-                    console.log('✅ 章节内容加载完成');
-
-                    // 章节加载完成后，开始学习会话
                     if (currentCourseId && currentChapterId) {
                         startStudySession(currentCourseId, currentChapterId);
                     }
                 };
 
             } catch (error) {
-                console.error('加载章节的完整流程失败:', error);
-                showStatus('❌ 加载章节失败', '无法正确加载学习内容，请检查网络连接或联系管理员。', error);
+                console.error('加载章节失败:', error);
+                showStatus('加载章节失败', '无法加载学习内容，请检查网络连接或联系管理员', error, true);
             }
         })();
     </script>

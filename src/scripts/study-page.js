@@ -1,4 +1,21 @@
 // 学习页面脚本 - 加载和显示章节内容
+// 安全说明：使用 DOMPurify 防止 XSS 攻击
+
+// 动态加载 DOMPurify (CDN)
+const loadDOMPurify = () => {
+    return new Promise((resolve, reject) => {
+        if (window.DOMPurify) {
+            resolve(window.DOMPurify);
+            return;
+        }
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js';
+        script.onload = () => resolve(window.DOMPurify);
+        script.onerror = () => reject(new Error('Failed to load DOMPurify'));
+        document.head.appendChild(script);
+    });
+};
+
 (function() {
     const studyManager = {
         courseId: null,
@@ -6,9 +23,18 @@
         chapters: [],
         currentChapter: null,
         currentContent: null,
+        purify: null, // DOMPurify 实例
         
         // 初始化
         async init() {
+            // 加载 DOMPurify
+            try {
+                this.purify = await loadDOMPurify();
+                console.log('DOMPurify loaded successfully');
+            } catch (error) {
+                console.warn('Failed to load DOMPurify, content will be rendered without sanitization:', error);
+            }
+
             // 从URL获取参数
             const urlParams = new URLSearchParams(window.location.search);
             this.courseId = urlParams.get('courseId') || 1;
@@ -131,21 +157,60 @@
             }
         },
         
-        // 显示内容
+        // 显示内容 (使用 DOMPurify 防 XSS)
         displayContent() {
             const contentFrame = document.getElementById('contentFrame');
             if (!contentFrame) {
                 console.error('Content frame not found');
                 return;
             }
-            
+
             // 如果有HTML内容，使用iframe显示
             if (this.currentContent && this.currentContent.contentHtml) {
-                const iframeDoc = contentFrame.contentDocument || contentFrame.contentWindow.document;
-                iframeDoc.open();
-                iframeDoc.write(this.currentContent.contentHtml);
-                iframeDoc.close();
-                
+                let safeHtml = this.currentContent.contentHtml;
+
+                // 使用 DOMPurify 净化 HTML 内容防止 XSS
+                if (this.purify) {
+                    safeHtml = this.purify.sanitize(this.currentContent.contentHtml, {
+                        ADD_TAGS: ['iframe', 'video', 'audio', 'source', 'canvas'],
+                        ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'controls', 'autoplay', 'loop', 'muted'],
+                        ALLOW_DATA_ATTR: true,
+                        FORBID_TAGS: ['script', 'object', 'embed'],
+                        FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur']
+                    });
+                    console.log('Content sanitized with DOMPurify');
+                } else {
+                    console.warn('DOMPurify not available, using raw content');
+                }
+
+                // 使用 srcdoc 代替 document.write() 更安全
+                const wrappedHtml = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <style>
+                            body {
+                                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                                line-height: 1.6;
+                                color: #333;
+                                padding: 20px;
+                                max-width: 100%;
+                                overflow-x: hidden;
+                            }
+                            img { max-width: 100%; height: auto; }
+                            pre { overflow-x: auto; background: #f5f5f5; padding: 16px; border-radius: 8px; }
+                            code { background: #f0f0f0; padding: 2px 6px; border-radius: 4px; }
+                        </style>
+                    </head>
+                    <body>${safeHtml}</body>
+                    </html>
+                `;
+
+                // 使用 srcdoc 属性而非 document.write()
+                contentFrame.srcdoc = wrappedHtml;
+
                 // 更新页面标题和信息
                 this.updatePageInfo();
             } else {
@@ -176,11 +241,12 @@
         showErrorState() {
             const contentFrame = document.getElementById('contentFrame');
             if (!contentFrame) return;
-            
+
             const errorHTML = `
                 <!DOCTYPE html>
                 <html>
                 <head>
+                    <meta charset="UTF-8">
                     <style>
                         body {
                             display: flex;
@@ -219,27 +285,26 @@
                         <h1>📚</h1>
                         <h1>加载失败</h1>
                         <p>章节内容加载失败，请稍后重试</p>
-                        <button onclick="window.location.reload()">重新加载</button>
+                        <button onclick="window.parent.location.reload()">重新加载</button>
                     </div>
                 </body>
                 </html>
             `;
-            
-            const iframeDoc = contentFrame.contentDocument || contentFrame.contentWindow.document;
-            iframeDoc.open();
-            iframeDoc.write(errorHTML);
-            iframeDoc.close();
+
+            // 使用 srcdoc 代替 document.write()
+            contentFrame.srcdoc = errorHTML;
         },
         
         // 显示需要登录
         showLoginRequired() {
             const contentFrame = document.getElementById('contentFrame');
             if (!contentFrame) return;
-            
+
             const loginHTML = `
                 <!DOCTYPE html>
                 <html>
                 <head>
+                    <meta charset="UTF-8">
                     <style>
                         body {
                             display: flex;
@@ -279,28 +344,28 @@
                         <h1>🔐</h1>
                         <h1>需要登录</h1>
                         <p>请先登录以访问此章节内容</p>
-                        <button onclick="parent.location.href='/src/pages/login.html?returnUrl=' + encodeURIComponent(parent.location.href)">立即登录</button>
-                        <button onclick="parent.location.href='/src/pages/register.html'">注册账户</button>
+                        <button onclick="window.parent.location.href='/src/pages/login.html?returnUrl=' + encodeURIComponent(window.parent.location.href)">立即登录</button>
+                        <button onclick="window.parent.location.href='/src/pages/register.html'">注册账户</button>
                     </div>
                 </body>
                 </html>
             `;
-            
-            const iframeDoc = contentFrame.contentDocument || contentFrame.contentWindow.document;
-            iframeDoc.open();
-            iframeDoc.write(loginHTML);
-            iframeDoc.close();
+
+            // 使用 srcdoc 代替 document.write()
+            contentFrame.srcdoc = loginHTML;
         },
         
         // 显示需要订阅
         showSubscriptionRequired() {
             const contentFrame = document.getElementById('contentFrame');
             if (!contentFrame) return;
-            
+
+            const courseId = this.courseId;
             const subscriptionHTML = `
                 <!DOCTYPE html>
                 <html>
                 <head>
+                    <meta charset="UTF-8">
                     <style>
                         body {
                             display: flex;
@@ -340,17 +405,15 @@
                         <h1>💎</h1>
                         <h1>需要订阅</h1>
                         <p>此章节为付费内容，请购买课程后访问</p>
-                        <button onclick="parent.location.href='/src/pages/payment.html?courseId=${this.courseId}'">立即购买</button>
-                        <button onclick="parent.location.href='/src/pages/course-detail.html?id=${this.courseId}'">查看课程详情</button>
+                        <button onclick="window.parent.location.href='/src/pages/payment.html?courseId=${courseId}'">立即购买</button>
+                        <button onclick="window.parent.location.href='/src/pages/course-detail.html?id=${courseId}'">查看课程详情</button>
                     </div>
                 </body>
                 </html>
             `;
-            
-            const iframeDoc = contentFrame.contentDocument || contentFrame.contentWindow.document;
-            iframeDoc.open();
-            iframeDoc.write(subscriptionHTML);
-            iframeDoc.close();
+
+            // 使用 srcdoc 代替 document.write()
+            contentFrame.srcdoc = subscriptionHTML;
         },
         
         // 切换全屏

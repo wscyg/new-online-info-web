@@ -3,17 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>在线学习平台</title>
+    <title>AI 算法工程师实战信息未来</title>
     <script>
-        // 自动跳转到课程页面
+        // 自动跳转到首页
         window.onload = function() {
-            const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-            const coursesPath = isDev ? '/src/pages/courses.html' : '/courses.html';
-            window.location.href = coursesPath;
+            window.location.href = '/src/pages/home.html';
         };
     </script>
 </head>
 <body>
-    <p>正在跳转到课程页面...</p>
+    <p style="font-family: -apple-system, sans-serif; text-align: center; margin-top: 40vh; color: #6366f1;">正在加载...</p>
 </body>
 </html>

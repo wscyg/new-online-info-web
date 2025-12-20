@@ -3,1646 +3,978 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的课程 - AI未来学院</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../styles/main.css">
-    <link rel="stylesheet" href="../styles/theme.css">
-    <!-- 预加载主题切换器 -->
-    <script src="../utils/theme-switcher.js"></script>
+    <title>我的课程 - AI 信息未来</title>
+    <link rel="stylesheet" href="../styles/apple-design.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #3B82F6;
-            --secondary: #8B5CF6;
-            --accent: #10B981;
-            --warning: #F59E0B;
-            --danger: #EF4444;
-            --dark: #1E293B;
-            --darker: #0F172A;
-            --light: #FFFFFF;
-            --gray-100: #F1F5F9;
-            --gray-200: #E2E8F0;
-            --gray-300: #CBD5E1;
-            --gray-400: #94A3B8;
-            --gray-500: #64748B;
-            --gray-600: #475569;
-            --success: #22C55E;
-        }
-
-        [data-theme="dark"] {
-            --primary: #60A5FA;
-            --secondary: #A78BFA;
-            --accent: #34D399;
-            --warning: #FBBF24;
-            --danger: #F87171;
-            --dark: #F1F5F9;
-            --darker: #E2E8F0;
-            --light: #0F172A;
-            --gray-100: #1E293B;
-            --gray-200: #334155;
-            --gray-300: #475569;
-            --gray-400: #64748B;
-            --gray-500: #94A3B8;
-            --gray-600: #CBD5E1;
-        }
-
-        body {
-            font-family: 'JetBrains Mono', 'Space Grotesk', monospace;
-            background: var(--light);
-            color: var(--dark);
-            overflow-x: hidden;
-            min-height: 100vh;
-            transition: all 0.3s ease;
-        }
-
-        [data-theme="dark"] body {
-            background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
-        }
-
-        [data-theme="light"] body {
-            background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 50%, #F0F9FF 100%);
-        }
-
-        .matrix-bg {
-            position: fixed;
-            inset: 0;
-            z-index: -2;
-            background-image: 
-                linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
-        }
-
-        /* 导航栏样式 */
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            padding: 1rem 0;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .navbar.scrolled {
-            background: rgba(255, 255, 255, 0.98);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .nav-brand h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .nav-menu {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-            flex: 1;
-            justify-content: center;
-        }
-
-        .nav-link {
-            color: var(--gray-600);
-            text-decoration: none;
-            font-weight: 500;
+        /* Hero Section */
+        .my-courses-hero {
+            padding: 120px 0 60px;
+            background: linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%);
             position: relative;
-            padding: 0.5rem 0;
-            transition: all 0.3s ease;
+            overflow: hidden;
         }
-
-        .nav-link::after {
+        .my-courses-hero::before {
             content: '';
             position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(90deg, #3B82F6, #8B5CF6);
-            transition: width 0.3s ease;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
-
-        .nav-link:hover,
-        .nav-link.active {
-            color: var(--dark);
-        }
-
-        .nav-link:hover::after,
-        .nav-link.active::after {
-            width: 100%;
-        }
-
-        .theme-toggle {
-            background: var(--light);
-            border: 2px solid var(--gray-300);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            font-size: 1.2rem;
-            margin-left: 1rem;
-        }
-
-        .theme-toggle:hover {
-            border-color: var(--primary);
-            transform: scale(1.05);
-        }
-
-        .theme-toggle .theme-icon {
-            transition: all 0.3s ease;
-        }
-
-        [data-theme="dark"] .theme-toggle .sun-icon {
-            display: inline;
-        }
-
-        [data-theme="dark"] .theme-toggle .moon-icon {
-            display: none;
-        }
-
-        [data-theme="light"] .theme-toggle .sun-icon {
-            display: none;
-        }
-
-        [data-theme="light"] .theme-toggle .moon-icon {
-            display: inline;
-        }
-
-        /* 用户菜单样式 */
-        .user-menu-container {
-            position: relative;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            cursor: pointer;
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
-            background: var(--gray-100);
-            border: 2px solid var(--gray-200);
-            transition: all 0.3s;
-        }
-
-        .user-info:hover {
-            background: var(--light);
-            border-color: var(--primary);
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
-        }
-
-        .user-info .user-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            overflow: hidden;
-        }
-
-        .user-info .user-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .user-name {
-            color: var(--dark);
-            font-weight: 500;
-        }
-
-        .dropdown-arrow {
-            color: var(--gray-600);
-            font-size: 0.75rem;
-            transition: transform 0.3s;
-        }
-
-        .user-menu-container.active .dropdown-arrow {
-            transform: rotate(180deg);
-        }
-
-        .dropdown-menu {
-            position: absolute;
-            top: calc(100% + 0.5rem);
-            right: 0;
-            background: white;
-            border-radius: 0.5rem;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            min-width: 200px;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s;
-            z-index: 10001;
-        }
-
-        .dropdown-menu.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .dropdown-item {
-            padding: 0.75rem 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            color: #333;
-            text-decoration: none;
-            transition: background 0.2s;
-        }
-
-        .dropdown-item:hover {
-            background: #f7fafc;
-        }
-
-        .dropdown-item:first-child {
-            border-radius: 0.5rem 0.5rem 0 0;
-        }
-
-        .dropdown-item:last-child {
-            border-radius: 0 0 0.5rem 0.5rem;
-        }
-
-        .dropdown-divider {
-            height: 1px;
-            background: #e2e8f0;
-            margin: 0.25rem 0;
-        }
-
-        /* Hero Section */
-        .hero-section {
-            padding: 120px 0 40px;
-            background: linear-gradient(135deg, 
-                rgba(59, 130, 246, 0.1) 0%, 
-                rgba(139, 92, 246, 0.1) 50%,
-                rgba(16, 185, 129, 0.1) 100%);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
         .hero-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
         }
-
-        .hero-title {
-            font-size: 3rem;
+        .hero-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 40px;
+        }
+        @media (max-width: 768px) {
+            .hero-header { flex-direction: column; gap: 24px; }
+        }
+        .hero-text h1 {
+            font-size: 48px;
             font-weight: 800;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #2563eb, #9333ea, #059669);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: titleGlow 3s ease-in-out infinite alternate;
+            color: #fff;
+            margin-bottom: 12px;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.2);
+        }
+        .hero-text p {
+            font-size: 18px;
+            color: rgba(255,255,255,0.9);
+        }
+        .hero-actions {
+            display: flex;
+            gap: 12px;
+        }
+        .hero-btn {
+            padding: 14px 28px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+        }
+        .hero-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+        .hero-btn.primary {
+            background: #fff;
+            color: #6366f1;
+        }
+        .hero-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+        .hero-btn.secondary {
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            backdrop-filter: blur(10px);
+        }
+        .hero-btn.secondary:hover {
+            background: rgba(255,255,255,0.25);
         }
 
-        @keyframes titleGlow {
-            from { filter: brightness(1); }
-            to { filter: brightness(1.1) saturate(1.2); }
-        }
-
-        .hero-subtitle {
-            font-size: 1.3rem;
-            color: var(--gray-600);
-            margin-bottom: 2rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        /* 学习统计卡片 */
-        .stats-section {
-            padding: 2rem 0;
-            background: var(--light);
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
+        /* Stats Cards */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 3rem;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
         }
-
+        @media (max-width: 1024px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 640px) {
+            .stats-grid { grid-template-columns: 1fr; }
+        }
         .stat-card {
-            background: var(--light);
-            border: 2px solid var(--gray-200);
-            border-radius: 16px;
-            padding: 2rem;
-            text-align: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            position: relative;
-            overflow: hidden;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
         }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-        }
-
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.1);
-            border-color: var(--primary);
-        }
-
         .stat-icon {
-            font-size: 1rem;
-            font-family: 'JetBrains Mono', monospace;
-            font-weight: 500;
-            color: var(--primary);
-            margin-bottom: 1rem;
-            display: block;
-            letter-spacing: 1px;
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-
-        .stat-number {
-            font-size: 2rem;
+        .stat-icon svg {
+            width: 28px;
+            height: 28px;
+            color: #fff;
+        }
+        .stat-icon.blue { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .stat-icon.green { background: linear-gradient(135deg, #10b981, #059669); }
+        .stat-icon.purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .stat-icon.orange { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .stat-info h3 {
+            font-size: 28px;
             font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+        .stat-info p {
+            font-size: 14px;
+            color: #666;
         }
 
-        .stat-label {
-            font-size: 1rem;
-            color: var(--gray-600);
-            font-weight: 500;
+        /* Main Content */
+        .my-courses-main {
+            padding: 60px 0 100px;
         }
 
-        /* 我的课程主要内容 */
-        .my-courses-section {
-            padding: 2rem 0 4rem;
-            background: var(--light);
+        /* Continue Learning Section */
+        .continue-section {
+            margin-bottom: 48px;
         }
-
         .section-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .section-title {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: var(--dark);
-        }
-
-        .section-subtitle {
-            font-size: 1.1rem;
-            color: var(--gray-600);
-        }
-
-        .courses-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 2rem;
-        }
-
-        /* 我的课程卡片样式 */
-        .my-course-card {
-            background: var(--light);
-            border: 2px solid var(--gray-200);
-            border-radius: 16px;
-            overflow: hidden;
-            transition: all 0.4s ease;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            position: relative;
-            cursor: pointer;
-        }
-
-        .my-course-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 25px 50px rgba(59, 130, 246, 0.15);
-            border-color: var(--primary);
-        }
-
-        .course-image {
-            height: 200px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .course-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.4s ease;
-        }
-
-        .my-course-card:hover .course-image img {
-            transform: scale(1.1);
-        }
-
-        .progress-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 1rem;
-        }
-
-        .progress-info {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 0.5rem;
+            margin-bottom: 24px;
         }
-
-        .progress-text {
-            font-size: 0.9rem;
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .section-link {
+            font-size: 15px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 6px;
             font-weight: 500;
         }
-
-        .progress-percentage {
-            font-size: 0.9rem;
+        .section-link svg {
+            width: 18px;
+            height: 18px;
+        }
+        .continue-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 32px;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 32px;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        .continue-card:hover {
+            box-shadow: 0 12px 48px rgba(0,0,0,0.1);
+        }
+        @media (max-width: 768px) {
+            .continue-card { grid-template-columns: 1fr; gap: 20px; }
+        }
+        .continue-cover {
+            width: 200px;
+            aspect-ratio: 16/9;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        @media (max-width: 768px) {
+            .continue-cover { width: 100%; }
+        }
+        .continue-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .continue-cover-icon {
+            color: rgba(255,255,255,0.6);
+        }
+        .continue-cover-icon svg {
+            width: 48px;
+            height: 48px;
+        }
+        .continue-info h3 {
+            font-size: 22px;
             font-weight: 600;
-            color: var(--success);
+            margin-bottom: 12px;
+        }
+        .continue-meta {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .continue-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .continue-meta-item svg {
+            width: 16px;
+            height: 16px;
+        }
+        .continue-progress {
+            margin-bottom: 12px;
+        }
+        .continue-progress-bar {
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .continue-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        .continue-progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-top: 8px;
+        }
+        .continue-btn {
+            padding: 16px 32px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+        .continue-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(99,102,241,0.4);
+        }
+        .continue-btn svg {
+            width: 20px;
+            height: 20px;
         }
 
-        .progress-bar {
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+        .filter-tab {
+            padding: 10px 20px;
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 500;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-tab:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .filter-tab.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        /* Courses Grid */
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        @media (max-width: 1024px) {
+            .courses-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 640px) {
+            .courses-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Course Card */
+        .course-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .course-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+        }
+        .course-cover {
+            aspect-ratio: 16/9;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .course-cover img {
             width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .course-cover-icon {
+            color: rgba(255,255,255,0.5);
+        }
+        .course-cover-icon svg {
+            width: 56px;
+            height: 56px;
+        }
+        .course-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .course-badge.completed {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+        }
+        .course-badge.in-progress {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+        }
+        .course-content {
+            padding: 20px;
+        }
+        .course-title {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .course-meta {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+        .course-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .course-meta-item svg {
+            width: 14px;
+            height: 14px;
+        }
+        .course-progress {
+            margin-bottom: 16px;
+        }
+        .course-progress-bar {
             height: 6px;
-            background: rgba(255, 255, 255, 0.3);
+            background: var(--bg-secondary);
             border-radius: 3px;
             overflow: hidden;
         }
-
-        .progress-fill {
+        .course-progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--success), var(--accent));
             border-radius: 3px;
             transition: width 0.5s ease;
         }
-
-        .course-badges {
-            position: absolute;
-            top: 1rem;
-            left: 1rem;
+        .course-progress-fill.completed {
+            background: linear-gradient(90deg, #10b981, #059669);
+        }
+        .course-progress-fill.in-progress {
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+        }
+        .course-progress-text {
             display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 6px;
         }
-
-        .badge {
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            backdrop-filter: blur(10px);
-        }
-
-        .badge-completed {
-            background: rgba(34, 197, 94, 0.9);
-            color: white;
-        }
-
-        .badge-in-progress {
-            background: rgba(59, 130, 246, 0.9);
-            color: white;
-        }
-
-        .completion-badge {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-
-        .completion-badge.completed {
-            background: var(--success);
-        }
-
-        .completion-badge.in-progress {
-            background: var(--primary);
-        }
-
-        .course-content {
-            padding: 1.5rem;
-        }
-
-        .course-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 0.8rem;
-            color: var(--dark);
-            line-height: 1.3;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .course-description {
-            color: var(--gray-600);
-            line-height: 1.4;
-            margin-bottom: 1rem;
-            font-size: 0.95rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .course-meta {
+        .course-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
-            font-size: 0.9rem;
-            color: var(--gray-500);
         }
-
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        .course-time {
+            font-size: 12px;
+            color: var(--text-tertiary);
         }
-
-        .course-actions {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .action-btn {
-            flex: 1;
-            padding: 0.75rem 1.5rem;
-            border: none;
+        .course-action {
+            padding: 8px 16px;
             border-radius: 8px;
+            font-size: 13px;
             font-weight: 600;
+            border: none;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .course-action.continue {
+            background: var(--accent);
+            color: #fff;
+        }
+        .course-action.continue:hover {
+            transform: scale(1.05);
+        }
+        .course-action.review {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        .course-action.review:hover {
+            background: var(--bg-tertiary);
+        }
+
+        /* Empty State */
+        .empty-state {
             text-align: center;
+            padding: 80px 20px;
+            grid-column: 1 / -1;
+        }
+        .empty-icon {
+            width: 120px;
+            height: 120px;
+            background: var(--bg-secondary);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
+            margin: 0 auto 24px;
         }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
+        .empty-icon svg {
+            width: 56px;
+            height: 56px;
+            color: var(--text-tertiary);
         }
-
-        .btn-primary:hover {
-            background: #2563EB;
-            transform: translateY(-2px);
+        .empty-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 12px;
         }
-
-        .btn-outline {
-            background: transparent;
-            color: var(--primary);
-            border: 2px solid var(--primary);
+        .empty-desc {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
         }
-
-        .btn-outline:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        /* 空状态 */
-        .empty-state {
-            text-align: center;
-            padding: 4rem 2rem;
-            color: var(--gray-500);
-        }
-
-        .empty-icon {
-            font-size: 1.5rem;
-            font-family: 'JetBrains Mono', monospace;
-            margin-bottom: 1rem;
-            opacity: 0.7;
-            color: var(--primary);
-            font-weight: 500;
-        }
-
-        .empty-state h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--gray-600);
-        }
-
-        .empty-state p {
-            margin-bottom: 2rem;
-        }
-
-        .empty-action {
-            padding: 1rem 2rem;
-            background: var(--primary);
-            color: white;
+        .empty-btn {
+            padding: 14px 32px;
+            background: var(--accent);
+            color: #fff;
             border: none;
-            border-radius: 50px;
+            border-radius: 12px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
+            transition: all 0.2s;
         }
-
-        .empty-action:hover {
-            background: #2563EB;
+        .empty-btn:hover {
             transform: translateY(-2px);
-        }
-
-        /* 加载状态 */
-        .loading-skeleton {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* 通知系统 */
-        .notification {
-            position: fixed;
-            top: 100px;
-            right: 20px;
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            color: white;
-            z-index: 10000;
-            opacity: 0;
-            transform: translateX(100%);
-            transition: all 0.3s ease;
-        }
-
-        .notification.show {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .notification.success { background: var(--success); }
-        .notification.error { background: var(--danger); }
-        .notification.warning { background: var(--warning); }
-        .notification.info { background: var(--primary); }
-
-        /* 响应式设计 */
-        @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2rem;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            }
-
-            .courses-grid {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-
-            .nav-menu {
-                display: none;
-            }
-
-            .course-meta {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.5rem;
-            }
-
-            .course-actions {
-                flex-direction: column;
-            }
+            box-shadow: 0 8px 24px rgba(0,113,227,0.3);
         }
     </style>
 </head>
 <body>
-    <!-- 全局登录状态 -->
-    <div id="auth-header"></div>
-
-    <!-- 简洁背景 -->
-    <div class="matrix-bg"></div>
-    
-    <!-- 导航栏 -->
-    <nav class="navbar" id="navbar">
-        <div class="nav-container">
-            <div class="nav-brand">
-                <h1>AI学习平台</h1>
-            </div>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="home.html" class="nav-logo">AI 信息未来</a>
             <div class="nav-menu">
+                <a href="home.html" class="nav-link">首页</a>
                 <a href="courses.html" class="nav-link">课程</a>
-                <a href="dashboard.html" class="nav-link">学习中心</a>
-                <a href="my-courses.html" class="nav-link active">我的课程</a>
-                <a href="community-square.html" class="nav-link">社区广场</a>
-                <a href="qa.html" class="nav-link">问答</a>
-                <a href="leaderboard.html" class="nav-link">排行榜</a>
-                <a href="profile.html" class="nav-link">个人中心</a>
-                
-                <!-- 主题切换按钮 -->
-                <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="切换主题">
-                    <span class="theme-icon sun-icon">☀️</span>
-                    <span class="theme-icon moon-icon">🌙</span>
-                </button>
+                <a href="online-plaza.html" class="nav-link">在线广场</a>
+                <a href="pk-arena.html" class="nav-link">PK竞技</a>
+                <a href="community.html" class="nav-link">社区</a>
             </div>
-            
-            <!-- 用户菜单 -->
-            <div class="user-menu-container">
-                <!-- 默认显示登录按钮，如果已登录会被JS替换 -->
-                <a href="login.html" class="login-btn" style="padding: 8px 20px; background: #007bff; color: white; border-radius: 20px; text-decoration: none; margin-left: 10px;">
-                    登录
-                </a>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle">
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                    </svg>
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+                <div id="authArea"></div>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero-section">
-        <div class="hero-content">
-            <h1 class="hero-title">我的课程</h1>
-            <p class="hero-subtitle">跟踪学习进度，管理您的AI学习之旅</p>
-        </div>
-    </section>
-
-    <!-- 学习统计 -->
-    <section class="stats-section">
-        <div class="container">
-            <div class="stats-grid" id="statsGrid">
-                <!-- 统计卡片将通过JavaScript动态加载 -->
-                <div class="stat-card loading-skeleton">
-                    <div style="height: 40px; margin-bottom: 1rem; background: var(--gray-200);"></div>
-                    <div style="height: 30px; margin-bottom: 0.5rem; background: var(--gray-200);"></div>
-                    <div style="height: 20px; background: var(--gray-200);"></div>
+    <section class="my-courses-hero">
+        <div class="container-wide">
+            <div class="hero-content">
+                <div class="hero-header">
+                    <div class="hero-text">
+                        <h1>我的学习</h1>
+                        <p>跟踪进度，管理你的AI学习之旅</p>
+                    </div>
+                    <div class="hero-actions">
+                        <button class="hero-btn primary" onclick="location.href='courses.html'">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2v20M2 12h20"/>
+                            </svg>
+                            探索更多课程
+                        </button>
+                        <button class="hero-btn secondary" onclick="location.href='dashboard.html'">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                                <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                            </svg>
+                            学习中心
+                        </button>
+                    </div>
                 </div>
-                <div class="stat-card loading-skeleton">
-                    <div style="height: 40px; margin-bottom: 1rem; background: var(--gray-200);"></div>
-                    <div style="height: 30px; margin-bottom: 0.5rem; background: var(--gray-200);"></div>
-                    <div style="height: 20px; background: var(--gray-200);"></div>
-                </div>
-                <div class="stat-card loading-skeleton">
-                    <div style="height: 40px; margin-bottom: 1rem; background: var(--gray-200);"></div>
-                    <div style="height: 30px; margin-bottom: 0.5rem; background: var(--gray-200);"></div>
-                    <div style="height: 20px; background: var(--gray-200);"></div>
-                </div>
-                <div class="stat-card loading-skeleton">
-                    <div style="height: 40px; margin-bottom: 1rem; background: var(--gray-200);"></div>
-                    <div style="height: 30px; margin-bottom: 0.5rem; background: var(--gray-200);"></div>
-                    <div style="height: 20px; background: var(--gray-200);"></div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalCourses">0</h3>
+                            <p>已报名课程</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="completedCourses">0</h3>
+                            <p>已完成课程</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon purple">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="20" x2="18" y2="10"/>
+                                <line x1="12" y1="20" x2="12" y2="4"/>
+                                <line x1="6" y1="20" x2="6" y2="14"/>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="avgProgress">0%</h3>
+                            <p>平均进度</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 6v6l4 2"/>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalStudyTime">0</h3>
+                            <p>学习时长(小时)</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 我的课程列表 -->
-    <section class="my-courses-section">
-        <div class="container">
+    <!-- Main Content -->
+    <section class="my-courses-main">
+        <div class="container-wide">
+            <!-- Continue Learning -->
+            <div class="continue-section" id="continueSection" style="display: none;">
+                <div class="section-header">
+                    <h2 class="section-title">继续学习</h2>
+                </div>
+                <div class="continue-card" id="continueCard"></div>
+            </div>
+
+            <!-- All Courses -->
             <div class="section-header">
-                <h2 class="section-title">我的学习课程</h2>
-                <p class="section-subtitle">继续您的AI学习旅程</p>
+                <h2 class="section-title">全部课程</h2>
             </div>
-
-            <!-- 课程网格 -->
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-filter="all">全部</button>
+                <button class="filter-tab" data-filter="in-progress">学习中</button>
+                <button class="filter-tab" data-filter="completed">已完成</button>
+            </div>
             <div class="courses-grid" id="coursesGrid">
-                <!-- 课程卡片将通过JavaScript动态加载 -->
-            </div>
-
-            <!-- 空状态 -->
-            <div class="empty-state" id="emptyState" style="display: none;">
-                <div class="empty-icon">[NULL]</div>
-                <h3>还没有报名任何课程</h3>
-                <p>开始探索我们的AI课程，开启您的学习之旅</p>
-                <a href="courses.html" class="empty-action">浏览课程</a>
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="empty-title">还没有报名任何课程</h3>
+                    <p class="empty-desc">开始探索我们的AI课程，开启你的学习之旅吧</p>
+                    <button class="empty-btn" onclick="location.href='courses.html'">浏览课程</button>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- 通知容器 -->
-    <div id="notification" class="notification"></div>
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-text">2025 AI 信息未来</div>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">关于我们</a>
+                    <a href="#" class="footer-link">使用条款</a>
+                    <a href="#" class="footer-link">隐私政策</a>
+                </div>
+            </div>
+        </div>
+    </footer>
 
-    <!-- JavaScript -->
+    <div id="toast" class="toast"></div>
+
     <script>
-        class MyCourseManager {
-            constructor() {
-                this.myCourses = [];
-                this.allCourses = [];
-                this.isLoading = false;
-                this.stats = {
-                    totalCourses: 0,
-                    completedCourses: 0,
-                    inProgressCourses: 0,
-                    totalStudyTime: 0
-                };
+        const API_BASE = '/api';
+        let currentUser = null;
+        let myCourses = [];
+        let currentFilter = 'all';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            checkAuth();
+            setupFilters();
+        });
+
+        function initTheme() {
+            const saved = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', saved);
+            document.getElementById('themeToggle').addEventListener('click', () => {
+                const current = document.documentElement.getAttribute('data-theme');
+                const next = current === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('theme', next);
+            });
+        }
+
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            const authArea = document.getElementById('authArea');
+
+            if (!token || !userStr) {
+                window.location.href = 'login.html?returnUrl=' + encodeURIComponent(window.location.href);
+                return;
             }
 
-            // 初始化
-            async init() {
-                try {
-                    await this.checkAuthentication();
-                    await this.loadUserInfo();
-                    await this.loadMyCourses();
-                    await this.loadStats();
-                    this.bindEvents();
-                    this.updateUI();
-                } catch (error) {
-                    console.error('初始化失败:', error);
-                    this.showNotification('系统初始化失败', 'error');
-                    this.handleUnauthenticated();
-                }
+            currentUser = JSON.parse(userStr);
+            const initial = (currentUser.nickname || currentUser.username || 'U').charAt(0).toUpperCase();
+
+            authArea.innerHTML = `
+                <div class="user-menu">
+                    <div class="user-avatar" onclick="toggleDropdown()">${initial}</div>
+                    <div class="dropdown" id="userDropdown">
+                        <a href="dashboard.html" class="dropdown-item">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                            学习中心
+                        </a>
+                        <a href="profile.html" class="dropdown-item">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            个人主页
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item" onclick="logout(); return false;">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                            退出登录
+                        </a>
+                    </div>
+                </div>`;
+
+            loadMyCourses();
+        }
+
+        function toggleDropdown() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            location.reload();
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-menu')) {
+                const d = document.getElementById('userDropdown');
+                if (d) d.classList.remove('show');
             }
+        });
 
-            // 检查用户认证状态
-            async checkAuthentication() {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    this.handleUnauthenticated();
-                    return;
-                }
+        async function loadMyCourses() {
+            try {
+                const response = await fetch(`${API_BASE}/user/learning-courses`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
 
-                try {
-                    const response = await fetch('/api/user/profile', {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-
-                    if (!response.ok || response.status === 401) {
-                        this.handleUnauthenticated();
-                        return;
-                    }
-
+                if (response.ok) {
                     const data = await response.json();
-                    if (!data.success || data.data?.authenticated === false) {
-                        this.handleUnauthenticated();
-                        return;
+                    if (data.code === 200 && data.data && data.data.length > 0) {
+                        myCourses = data.data;
+                    } else {
+                        myCourses = getMockCourses();
                     }
-                } catch (error) {
-                    console.warn('认证检查失败，尝试继续:', error);
+                } else {
+                    myCourses = getMockCourses();
+                }
+            } catch (e) {
+                myCourses = getMockCourses();
+            }
+
+            updateStats();
+            renderContinueLearning();
+            renderCourses();
+        }
+
+        function getMockCourses() {
+            return [
+                { id: 1, courseId: 1, title: '深度学习入门与实践', progress: 65, completedChapters: 8, totalChapters: 12, lastStudyTime: new Date(Date.now() - 3600000).toISOString(), coverImage: null },
+                { id: 2, courseId: 2, title: 'PyTorch框架详解', progress: 100, completedChapters: 10, totalChapters: 10, lastStudyTime: new Date(Date.now() - 86400000 * 3).toISOString(), coverImage: null },
+                { id: 3, courseId: 3, title: '计算机视觉实战', progress: 30, completedChapters: 3, totalChapters: 10, lastStudyTime: new Date(Date.now() - 86400000).toISOString(), coverImage: null },
+                { id: 4, courseId: 4, title: '自然语言处理基础', progress: 0, completedChapters: 0, totalChapters: 8, lastStudyTime: null, coverImage: null }
+            ];
+        }
+
+        function updateStats() {
+            const completed = myCourses.filter(c => c.progress === 100).length;
+            const totalProgress = myCourses.reduce((sum, c) => sum + (c.progress || 0), 0);
+            const avgProgress = myCourses.length > 0 ? Math.round(totalProgress / myCourses.length) : 0;
+            const totalTime = Math.round(totalProgress / 100 * 4 * myCourses.length);
+
+            animateNumber('totalCourses', myCourses.length);
+            animateNumber('completedCourses', completed);
+            document.getElementById('avgProgress').textContent = avgProgress + '%';
+            animateNumber('totalStudyTime', totalTime);
+        }
+
+        function animateNumber(elementId, target) {
+            const el = document.getElementById(elementId);
+            const start = 0;
+            const duration = 800;
+            const startTime = performance.now();
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const current = Math.floor(start + (target - start) * easeOut);
+                el.textContent = current;
+                if (progress < 1) {
+                    requestAnimationFrame(update);
                 }
             }
+            requestAnimationFrame(update);
+        }
 
-            // 处理未认证用户
-            handleUnauthenticated() {
-                this.showNotification('请先登录查看您的课程', 'warning');
-                setTimeout(() => {
-                    const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-                    const loginPath = isDev ? '/src/pages/login.html' : '/login.html';
-                    window.location.href = `${loginPath}?returnUrl=${encodeURIComponent(window.location.pathname)}`;
-                }, 2000);
+        function renderContinueLearning() {
+            const section = document.getElementById('continueSection');
+            const card = document.getElementById('continueCard');
+
+            // Find most recent in-progress course
+            const inProgress = myCourses
+                .filter(c => c.progress > 0 && c.progress < 100)
+                .sort((a, b) => new Date(b.lastStudyTime || 0) - new Date(a.lastStudyTime || 0));
+
+            if (inProgress.length === 0) {
+                section.style.display = 'none';
+                return;
             }
 
-            // 加载用户信息
-            async loadUserInfo() {
-                try {
-                    const savedUser = localStorage.getItem('user');
-                    const token = localStorage.getItem('token');
-                    let user = null;
-                    
-                    if (token) {
-                        try {
-                            const response = await fetch('/api/user/profile', {
-                                headers: {
-                                    'Authorization': `Bearer ${token}`
-                                }
-                            });
+            const course = inProgress[0];
+            section.style.display = 'block';
 
-                            if (response.ok) {
-                                const data = await response.json();
-                                if (data.success && data.data) {
-                                    user = data.data.user || data.data;
-                                }
-                            }
-                        } catch (error) {
-                            console.log('使用缓存用户数据');
-                        }
-                    }
-                    
-                    if (!user && savedUser && token) {
-                        user = JSON.parse(savedUser);
-                    }
-                    
-                    if (user && user.id) {
-                        this.updateUserMenu(user);
-                    }
-                } catch (error) {
-                    console.error('加载用户信息失败:', error);
-                }
-            }
-
-            // 更新用户菜单
-            updateUserMenu(user) {
-                const userMenu = document.querySelector('.user-menu-container');
-                if (userMenu) {
-                    userMenu.innerHTML = `
-                        <div class="user-info" onclick="toggleUserMenu(event)">
-                            <div class="user-avatar" id="userAvatar">${(user.nickname || user.username || 'U').charAt(0).toUpperCase()}</div>
-                            <span class="user-name" id="userName">${user.nickname || user.username || '用户'}</span>
-                            <span class="dropdown-arrow">▼</span>
+            card.innerHTML = `
+                <div class="continue-cover">
+                    ${course.coverImage ? `<img src="${course.coverImage}" alt="${course.title}">` : `
+                    <div class="continue-cover-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                        </svg>
+                    </div>`}
+                </div>
+                <div class="continue-info">
+                    <h3>${course.title || course.courseTitle}</h3>
+                    <div class="continue-meta">
+                        <div class="continue-meta-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                            </svg>
+                            ${course.completedChapters || 0}/${course.totalChapters || 0} 章节
                         </div>
-                        <div class="dropdown-menu" id="userDropdown">
-                            <a href="profile.html" class="dropdown-item">
-                                <span>👤</span> 个人资料
-                            </a>
-                            <a href="dashboard.html" class="dropdown-item">
-                                学习中心
-                            </a>
-                            <a href="my-courses.html" class="dropdown-item">
-                                我的课程
-                            </a>
-                            <a href="orders.html" class="dropdown-item">
-                                我的订单
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item" onclick="logout()">
-                                <span>🚪</span> 退出登录
-                            </a>
+                        <div class="continue-meta-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 6v6l4 2"/>
+                            </svg>
+                            ${formatLastStudy(course.lastStudyTime)}
                         </div>
-                    `;
-                    
-                    if (user.avatar) {
-                        const avatar = userMenu.querySelector('#userAvatar');
-                        if (avatar) {
-                            avatar.innerHTML = `<img src="${user.avatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
-                        }
-                    }
-                }
-            }
-
-            // 加载我的课程
-            async loadMyCourses() {
-                if (this.isLoading) return;
-                
-                this.isLoading = true;
-                this.showLoadingSkeleton();
-
-                try {
-                    const token = localStorage.getItem('token');
-                    if (!token) {
-                        this.handleUnauthenticated();
-                        return;
-                    }
-
-                    const response = await fetch('/api/subscriptions/my?size=100', {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-
-                    if (!response.ok) {
-                        if (response.status === 401) {
-                            this.handleUnauthenticated();
-                            return;
-                        }
-                        throw new Error(`HTTP ${response.status}`);
-                    }
-
-                    const data = await response.json();
-                    console.log('我的课程API响应:', data);
-                    
-                    // 处理API响应格式
-                    let subscriptions = [];
-                    if (data.success && data.data) {
-                        // 从/api/subscriptions/my返回的数据在data.subscriptions中
-                        subscriptions = data.data.subscriptions || data.data.list || [];
-                    } else if (data.code === 200 && data.data) {
-                        subscriptions = data.data.subscriptions || data.data.list || [];
-                    }
-                    
-                    console.log('解析后的订阅数据:', subscriptions);
-                    console.log('订阅数量:', subscriptions.length);
-                    
-                    // 如果没有订阅数据，创建模拟数据用于演示
-                    if (!subscriptions || subscriptions.length === 0) {
-                        // 创建示例数据，方便用户理解界面
-                        subscriptions = [
-                            {
-                                id: 1,
-                                courseId: 1,
-                                courseName: "Python人工智能入门",
-                                type: "course",
-                                status: "active",
-                                amount: 99.00,
-                                progress: 65,
-                                createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-                                lastAccessed: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
-                            },
-                            {
-                                id: 2,
-                                courseId: 2,
-                                courseName: "深度学习实战项目",
-                                type: "course",
-                                status: "active",
-                                amount: 199.00,
-                                progress: 30,
-                                createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
-                                lastAccessed: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-                            },
-                            {
-                                id: 3,
-                                courseId: 3,
-                                courseName: "机器学习算法精讲",
-                                type: "course",
-                                status: "active",
-                                amount: 299.00,
-                                progress: 100,
-                                createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-                                lastAccessed: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-                                completedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
-                            }
-                        ];
-                        console.log('使用示例数据展示界面');
-                    }
-
-                    // 过滤掉课程包，只保留课程类型的订阅
-                    const courseSubscriptions = subscriptions.filter(sub => 
-                        sub.type === 'course' && sub.status === 'active'
-                    );
-                    
-                    console.log('过滤后的课程订阅:', courseSubscriptions);
-                    
-                    // 批量获取课程详情 - 优化性能
-                    const courseIds = [...new Set(courseSubscriptions.map(sub => sub.courseId))];
-                    const batchSize = 5; // 限制并发数
-                    const courseDetails = [];
-                    
-                    // 分批处理课程请求，避免同时发起过多请求
-                    for (let i = 0; i < courseIds.length; i += batchSize) {
-                        const batch = courseIds.slice(i, i + batchSize);
-                        const batchPromises = batch.map(courseId => 
-                            this.getCourseDetailsWithCache(courseId)
-                        );
-                        const batchResults = await Promise.allSettled(batchPromises);
-                        courseDetails.push(...batchResults);
-                    }
-                    
-                    // 将课程详情与订阅信息合并
-                    this.myCourses = courseDetails
-                        .filter(result => result.status === 'fulfilled' && result.value)
-                        .map(result => {
-                            const course = result.value;
-                            // 找到对应的订阅信息
-                            const subscription = courseSubscriptions.find(sub => sub.courseId === course.id);
-                            if (subscription) {
-                                course.subscriptionId = subscription.id;
-                                course.progress = subscription.progress || 0;
-                                course.subscriptionDate = subscription.createdAt;
-                                course.lastAccessed = subscription.lastAccessed;
-                                course.completedAt = subscription.completedAt;
-                                course.amount = subscription.amount;
-                            }
-                            return course;
-                        });
-
-                    this.allCourses = [...this.myCourses];
-                    
-                    // 按权重排序：进行中 > 最近访问 > 完成度 > 订阅时间
-                    this.myCourses.sort((a, b) => {
-                        // 权重1: 学习状态（进行中的课程优先）
-                        const aInProgress = a.progress > 0 && a.progress < 100;
-                        const bInProgress = b.progress > 0 && b.progress < 100;
-                        if (aInProgress !== bInProgress) {
-                            return bInProgress - aInProgress; // 进行中的排前面
-                        }
-                        
-                        // 权重2: 最近访问时间
-                        const aLastAccessed = new Date(a.lastAccessed || 0).getTime();
-                        const bLastAccessed = new Date(b.lastAccessed || 0).getTime();
-                        if (Math.abs(aLastAccessed - bLastAccessed) > 24 * 60 * 60 * 1000) { // 超过1天差异
-                            return bLastAccessed - aLastAccessed;
-                        }
-                        
-                        // 权重3: 完成度（未完成的按进度降序，完成的放最后）
-                        if (a.progress === 100 && b.progress !== 100) return 1;
-                        if (b.progress === 100 && a.progress !== 100) return -1;
-                        if (a.progress !== 100 && b.progress !== 100) {
-                            return b.progress - a.progress;
-                        }
-                        
-                        // 权重4: 订阅时间（最新的在前）
-                        const aSubscriptionTime = new Date(a.subscriptionDate || 0);
-                        const bSubscriptionTime = new Date(b.subscriptionDate || 0);
-                        return bSubscriptionTime - aSubscriptionTime;
-                    });
-
-                    this.renderCourses();
-
-                } catch (error) {
-                    console.error('加载我的课程失败:', error);
-                    this.showNotification(`加载课程失败: ${error.message}`, 'error');
-                    this.showEmptyState('加载失败，请刷新页面重试');
-                } finally {
-                    this.isLoading = false;
-                    this.hideLoadingSkeleton();
-                }
-            }
-
-            // 获取课程详情
-            async getCourseDetails(courseId) {
-                try {
-                    const token = localStorage.getItem('token');
-                    const response = await fetch(`/api/courses/${courseId}`, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-                    if (response.ok) {
-                        const data = await response.json();
-                        if (data.success && data.data) {
-                            return data.data;
-                        }
-                    }
-                    return null;
-                } catch (error) {
-                    console.warn(`获取课程${courseId}详情失败:`, error);
-                    return null;
-                }
-            }
-            
-            // 带内存缓存的课程详情获取 - 性能优化
-            async getCourseDetailsWithCache(courseId) {
-                // 使用内存缓存避免重复请求
-                if (!this.courseCache) {
-                    this.courseCache = new Map();
-                }
-                
-                // 检查缓存
-                if (this.courseCache.has(courseId)) {
-                    const cached = this.courseCache.get(courseId);
-                    // 缓存5分钟有效
-                    if (Date.now() - cached.timestamp < 5 * 60 * 1000) {
-                        return cached.data;
-                    }
-                }
-                
-                // 发起请求
-                const course = await this.getCourseDetails(courseId);
-                
-                // 存入缓存
-                if (course) {
-                    this.courseCache.set(courseId, {
-                        data: course,
-                        timestamp: Date.now()
-                    });
-                }
-                
-                return course;
-            }
-
-            // 加载学习统计
-            async loadStats() {
-                try {
-                    const completedCount = this.myCourses.filter(course => course.isCompleted).length;
-                    const inProgressCount = this.myCourses.filter(course => !course.isCompleted && (course.progress || 0) > 0).length;
-                    const totalProgress = this.myCourses.reduce((sum, course) => sum + (course.progress || 0), 0);
-                    const avgProgress = this.myCourses.length > 0 ? Math.round(totalProgress / this.myCourses.length) : 0;
-                    
-                    // 估算学习时间（假设每个课程4小时，根据进度计算）
-                    const totalStudyTime = Math.round(totalProgress / 100 * 4 * this.myCourses.length);
-
-                    this.stats = {
-                        totalCourses: this.myCourses.length,
-                        completedCourses: completedCount,
-                        inProgressCourses: inProgressCount,
-                        totalStudyTime: totalStudyTime,
-                        avgProgress: avgProgress
-                    };
-
-                    this.renderStats();
-                } catch (error) {
-                    console.error('加载统计数据失败:', error);
-                }
-            }
-
-            // 渲染统计卡片
-            renderStats() {
-                const statsGrid = document.getElementById('statsGrid');
-                if (!statsGrid) return;
-
-                const statsHtml = `
-                    <div class="stat-card">
-                        <div class="stat-icon">[TOTAL]</div>
-                        <div class="stat-number">${this.stats.totalCourses}</div>
-                        <div class="stat-label">已报名课程</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">[DONE]</div>
-                        <div class="stat-number">${this.stats.completedCourses}</div>
-                        <div class="stat-label">已完成课程</div>
+                    <div class="continue-progress">
+                        <div class="continue-progress-bar">
+                            <div class="continue-progress-fill" style="width: ${course.progress}%"></div>
+                        </div>
+                        <div class="continue-progress-text">
+                            <span>已完成 ${course.progress}%</span>
+                            <span>剩余 ${course.totalChapters - course.completedChapters} 章</span>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">STATS</div>
-                        <div class="stat-number">${this.stats.avgProgress}%</div>
-                        <div class="stat-label">平均进度</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">[TIME]</div>
-                        <div class="stat-number">${this.stats.totalStudyTime}</div>
-                        <div class="stat-label">学习时长(小时)</div>
-                    </div>
-                `;
+                </div>
+                <button class="continue-btn" onclick="goToCourse(${course.courseId || course.id})">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5 3 19 12 5 21 5 3"/>
+                    </svg>
+                    继续学习
+                </button>
+            `;
+        }
 
-                statsGrid.innerHTML = statsHtml;
+        function setupFilters() {
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    currentFilter = tab.dataset.filter;
+                    renderCourses();
+                });
+            });
+        }
+
+        function renderCourses() {
+            const grid = document.getElementById('coursesGrid');
+
+            let filtered = [...myCourses];
+            if (currentFilter === 'in-progress') {
+                filtered = myCourses.filter(c => c.progress > 0 && c.progress < 100);
+            } else if (currentFilter === 'completed') {
+                filtered = myCourses.filter(c => c.progress === 100);
             }
 
-            // 渲染课程列表
-            renderCourses() {
-                const grid = document.getElementById('coursesGrid');
-                if (!grid) return;
-
-                if (this.myCourses.length === 0) {
-                    this.showEmptyState();
-                    return;
-                }
-
-                this.hideEmptyState();
-
-                const coursesHtml = this.myCourses.map(courseData => this.createCourseCard(courseData)).join('');
-                grid.innerHTML = coursesHtml;
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                            </svg>
+                        </div>
+                        <h3 class="empty-title">${currentFilter === 'all' ? '还没有报名任何课程' : currentFilter === 'in-progress' ? '没有正在学习的课程' : '还没有完成任何课程'}</h3>
+                        <p class="empty-desc">${currentFilter === 'all' ? '开始探索我们的AI课程，开启你的学习之旅吧' : currentFilter === 'in-progress' ? '开始学习或继续未完成的课程' : '继续努力，完成你的第一门课程'}</p>
+                        <button class="empty-btn" onclick="location.href='courses.html'">浏览课程</button>
+                    </div>`;
+                return;
             }
 
-            // 创建课程卡片
-            createCourseCard(courseData) {
-                const course = courseData.course;
-                const progress = courseData.progress || 0;
-                const isCompleted = courseData.isCompleted;
-                const lastAccessed = courseData.lastAccessed ? new Date(courseData.lastAccessed) : null;
-
-                // 生成徽章
-                const badges = [];
-                if (isCompleted) {
-                    badges.push('<span class="badge badge-completed">已完成</span>');
-                } else if (progress > 0) {
-                    badges.push('<span class="badge badge-in-progress">学习中</span>');
-                }
-
+            grid.innerHTML = filtered.map(course => {
+                const isCompleted = course.progress === 100;
                 return `
-                    <div class="my-course-card" data-course-id="${course.id}" onclick="viewCourse(${course.id})">
-                        <div class="course-image">
-                            ${course.coverImage ? 
-                                `<img src="${course.coverImage}" alt="${course.title}" 
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                 <div style="display:none;">${this.getPlaceholderImageHtml(course)}</div>` :
-                                this.getPlaceholderImageHtml(course)
-                            }
-                            
-                            <!-- 进度覆盖层 -->
-                            <div class="progress-overlay">
-                                <div class="progress-info">
-                                    <span class="progress-text">学习进度</span>
-                                    <span class="progress-percentage">${Math.round(progress)}%</span>
-                                </div>
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: ${progress}%"></div>
-                                </div>
-                            </div>
-                            
-                            <!-- 完成度徽章 -->
-                            <div class="completion-badge ${isCompleted ? 'completed' : 'in-progress'}">
-                                ${isCompleted ? '✓' : Math.round(progress) + '%'}
-                            </div>
-                            
-                            <!-- 课程徽章 -->
-                            <div class="course-badges">
-                                ${badges.join('')}
+                    <div class="course-card" onclick="goToCourse(${course.courseId || course.id})">
+                        <div class="course-cover">
+                            ${course.coverImage ? `<img src="${course.coverImage}" alt="${course.title}">` : `
+                            <div class="course-cover-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                                </svg>
+                            </div>`}
+                            <div class="course-badge ${isCompleted ? 'completed' : 'in-progress'}">
+                                ${isCompleted ? '已完成' : '学习中'}
                             </div>
                         </div>
-                        
                         <div class="course-content">
-                            <h3 class="course-title">${course.title || '课程标题加载中...'}</h3>
-                            <p class="course-description">${course.description || '课程描述加载中...'}</p>
-                            
+                            <h3 class="course-title">${course.title || course.courseTitle}</h3>
                             <div class="course-meta">
-                                <div class="meta-item">
-                                    <span>报名时间: ${this.formatDate(course.subscriptionDate)}</span>
+                                <div class="course-meta-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                                    </svg>
+                                    ${course.completedChapters || 0}/${course.totalChapters || 0} 章
                                 </div>
-                                ${lastAccessed ? `
-                                <div class="meta-item">
-                                    <span>最近学习: ${this.formatDate(lastAccessed)}</span>
-                                </div>
-                                ` : ''}
                             </div>
-                            
-                            <div class="course-actions">
-                                <button class="action-btn btn-primary" onclick="event.stopPropagation(); continueLearning(${course.id})">
-                                    ${isCompleted ? '复习课程' : progress > 0 ? '继续学习' : '开始学习'}
+                            <div class="course-progress">
+                                <div class="course-progress-bar">
+                                    <div class="course-progress-fill ${isCompleted ? 'completed' : 'in-progress'}" style="width: ${course.progress}%"></div>
+                                </div>
+                                <div class="course-progress-text">
+                                    <span>${course.progress}% 完成</span>
+                                    <span>${course.totalChapters - course.completedChapters} 章剩余</span>
+                                </div>
+                            </div>
+                            <div class="course-footer">
+                                <span class="course-time">${formatLastStudy(course.lastStudyTime)}</span>
+                                <button class="course-action ${isCompleted ? 'review' : 'continue'}" onclick="event.stopPropagation(); goToCourse(${course.courseId || course.id})">
+                                    ${isCompleted ? '复习' : '继续'}
                                 </button>
                             </div>
                         </div>
                     </div>
                 `;
-            }
-
-            // 格式化日期
-            formatDate(dateStr) {
-                if (!dateStr) return '未知';
-                const date = new Date(dateStr);
-                return date.toLocaleDateString('zh-CN', { 
-                    year: 'numeric', 
-                    month: 'short', 
-                    day: 'numeric' 
-                });
-            }
-
-            // 生成算法风格的课程背景图
-            getPlaceholderImageHtml(course) {
-                const gradients = [
-                    'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', // 蓝紫
-                    'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', // 粉红
-                    'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', // 蓝青
-                    'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', // 绿青
-                    'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', // 粉黄
-                    'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)', // 青粉
-                    'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)', // 红粉
-                    'linear-gradient(135deg, #fad0c4 0%, #ffd1ff 100%)' // 橙紫
-                ];
-                
-                // 根据课程ID或标题生成一致的背景色
-                const courseId = course?.id || Math.random();
-                const gradientIndex = Math.abs(courseId.toString().split('').reduce((a, b) => a + b.charCodeAt(0), 0)) % gradients.length;
-                const selectedGradient = gradients[gradientIndex];
-                
-                // 获取课程标题，如果标题太长则截断
-                const courseTitle = course?.title || 'AI课程';
-                const displayTitle = courseTitle.length > 12 ? courseTitle.substring(0, 12) + '...' : courseTitle;
-                
-                return `<div style="
-                    width: 100%; 
-                    height: 200px; 
-                    background: ${selectedGradient}; 
-                    display: flex; 
-                    flex-direction: column;
-                    align-items: center; 
-                    justify-content: center; 
-                    color: white; 
-                    font-family: 'JetBrains Mono', monospace;
-                    position: relative;
-                    overflow: hidden;
-                ">
-                    <div style="
-                        position: absolute;
-                        top: 10px;
-                        right: 10px;
-                        font-size: 0.8rem;
-                        opacity: 0.8;
-                    ">#${String(courseId).padStart(3, '0')}</div>
-                    <div style="
-                        font-size: 1.2rem; 
-                        font-weight: bold;
-                        text-align: center;
-                        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-                        padding: 0 10px;
-                        line-height: 1.2;
-                    ">${displayTitle}</div>
-                </div>`;
-            }
-            
-            // 生成课程标识符
-            generateCourseLabel(course) {
-                if (!course || !course.title) {
-                    return '[AI_COURSE]';
-                }
-                
-                const title = course.title;
-                const keywords = [
-                    { match: ['python', 'Python'], label: '[PYTHON_AI]' },
-                    { match: ['深度学习', '深度', 'deep'], label: '[DEEP_LEARN]' },
-                    { match: ['机器学习', '机器', 'machine'], label: '[ML_ALGO]' },
-                    { match: ['算法', 'algorithm'], label: '[ALGORITHM]' },
-                    { match: ['神经网络', '网络', 'neural'], label: '[NEURAL_NET]' },
-                    { match: ['数据', 'data'], label: '[DATA_SCI]' },
-                    { match: ['自然语言', 'NLP', 'nlp'], label: '[NLP_PROC]' },
-                    { match: ['计算机视觉', '视觉', 'cv'], label: '[COMP_VIS]' },
-                    { match: ['实战', '项目', 'project'], label: '[PROJECT]' },
-                    { match: ['基础', '入门', 'basic'], label: '[BASIC_AI]' },
-                ];
-                
-                for (const keyword of keywords) {
-                    if (keyword.match.some(match => title.toLowerCase().includes(match.toLowerCase()))) {
-                        return keyword.label;
-                    }
-                }
-                
-                // 如果没有匹配到关键词，生成通用标签
-                return `[${title.substring(0, 6).toUpperCase()}]`;
-            }
-
-            // 显示/隐藏空状态
-            showEmptyState(message = '') {
-                const emptyState = document.getElementById('emptyState');
-                const grid = document.getElementById('coursesGrid');
-                
-                if (emptyState && grid) {
-                    emptyState.style.display = 'block';
-                    grid.style.display = 'none';
-                    
-                    if (message) {
-                        const p = emptyState.querySelector('p');
-                        if (p) p.textContent = message;
-                    }
-                }
-            }
-
-            hideEmptyState() {
-                const emptyState = document.getElementById('emptyState');
-                const grid = document.getElementById('coursesGrid');
-                
-                if (emptyState && grid) {
-                    emptyState.style.display = 'none';
-                    grid.style.display = 'grid';
-                }
-            }
-
-            // 显示/隐藏加载骨架
-            showLoadingSkeleton() {
-                const grid = document.getElementById('coursesGrid');
-                if (grid) {
-                    const skeletonCards = Array(4).fill().map(() => `
-                        <div class="my-course-card loading-skeleton" style="min-height: 400px;">
-                            <div style="height: 200px; background: var(--gray-200); position: relative;">
-                                <div style="position: absolute; bottom: 1rem; left: 1rem; right: 1rem; height: 60px; background: rgba(0,0,0,0.3); border-radius: 8px;"></div>
-                            </div>
-                            <div style="padding: 1.5rem;">
-                                <div style="height: 24px; background: var(--gray-200); margin-bottom: 1rem; border-radius: 4px;"></div>
-                                <div style="height: 40px; background: var(--gray-200); margin-bottom: 1rem; border-radius: 4px;"></div>
-                                <div style="height: 60px; background: var(--gray-200); margin-bottom: 1.5rem; border-radius: 4px;"></div>
-                                <div style="display: flex; gap: 1rem;">
-                                    <div style="flex: 1; height: 40px; background: var(--gray-200); border-radius: 8px;"></div>
-                                    <div style="flex: 1; height: 40px; background: var(--gray-200); border-radius: 8px;"></div>
-                                </div>
-                            </div>
-                        </div>
-                    `).join('');
-                    
-                    grid.innerHTML = skeletonCards;
-                }
-            }
-
-            hideLoadingSkeleton() {
-                // 由renderCourses处理
-            }
-
-            // 绑定事件
-            bindEvents() {
-                // 导航栏滚动效果
-                window.addEventListener('scroll', () => {
-                    const navbar = document.getElementById('navbar');
-                    if (window.scrollY > 50) {
-                        navbar.classList.add('scrolled');
-                    } else {
-                        navbar.classList.remove('scrolled');
-                    }
-                });
-            }
-
-            // 更新UI
-            updateUI() {
-                this.initTheme();
-            }
-
-            // 初始化主题
-            initTheme() {
-                const savedTheme = localStorage.getItem('theme') || 'light';
-                document.documentElement.setAttribute('data-theme', savedTheme);
-            }
-
-            // 显示通知
-            showNotification(message, type = 'info') {
-                const notification = document.getElementById('notification');
-                if (!notification) return;
-
-                notification.textContent = message;
-                notification.className = `notification ${type} show`;
-
-                setTimeout(() => {
-                    notification.classList.remove('show');
-                }, 3000);
-            }
+            }).join('');
         }
 
-        // 全局函数
-        window.viewCourse = (courseId) => {
-            const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-            const detailPath = isDev ? '/src/pages/course-detail.html' : '/src/pages/course-detail.html';
-            window.location.href = `${detailPath}?id=${courseId}`;
-        };
+        function formatLastStudy(dateStr) {
+            if (!dateStr) return '尚未开始';
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
 
-        window.continueLearning = (courseId) => {
-            // 直接跳转到课程详情页
-            const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-            const detailPath = isDev ? '/src/pages/course-detail.html' : '/src/pages/course-detail.html';
-            window.location.href = `${detailPath}?id=${courseId}`;
-        };
-
-        window.viewCourseDetail = (courseId) => {
-            viewCourse(courseId);
-        };
-
-        window.toggleUserMenu = (event) => {
-            if (event) {
-                event.stopPropagation();
-            }
-            const dropdown = document.getElementById('userDropdown');
-            const container = document.querySelector('.user-menu-container');
-            if (dropdown && container) {
-                dropdown.classList.toggle('show');
-                container.classList.toggle('active');
-            }
-        };
-
-        window.logout = () => {
-            if (confirm('确定要退出登录吗？')) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-                localStorage.removeItem('refreshToken');
-                window.location.href = '/src/pages/login.html';
-            }
-        };
-
-        window.toggleTheme = () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-        };
-
-        // 关闭下拉菜单
-        document.addEventListener('click', function(event) {
-            const userMenu = document.querySelector('.user-menu-container');
-            if (userMenu && !userMenu.contains(event.target)) {
-                const dropdown = document.getElementById('userDropdown');
-                if (dropdown) {
-                    dropdown.classList.remove('show');
-                    userMenu.classList.remove('active');
-                }
-            }
-        });
-
-        // 初始化我的课程管理器
-        const myCourseManager = new MyCourseManager();
-        window.myCourseManager = myCourseManager;
-
-        // 当DOM准备就绪时初始化
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => myCourseManager.init());
-        } else {
-            myCourseManager.init();
+            if (minutes < 1) return '刚刚学习';
+            if (minutes < 60) return `${minutes}分钟前`;
+            if (hours < 24) return `${hours}小时前`;
+            if (days < 7) return `${days}天前`;
+            return date.toLocaleDateString('zh-CN');
         }
-    </script>
-    <!-- 全局登录状态组件 -->
-    <script src="../utils/auth-header.js"></script>
-    <script>
-        // 初始化登录状态组件
-        document.addEventListener('DOMContentLoaded', () => {
-            AuthHeader.init('auth-header', {
-                showLinks: false
-            });
-        });
+
+        function goToCourse(courseId) {
+            window.location.href = `course-detail.html?id=${courseId}`;
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
     </script>
 </body>
 </html>

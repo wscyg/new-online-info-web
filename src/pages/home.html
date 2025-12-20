@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 信息未来 - 成为顶尖AI工程师</title>
+    <link rel="stylesheet" href="../styles/apple-design.css">
+    <style>
+        /* Hero Section - 震撼的视觉效果 */
+        .hero-premium {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: var(--bg-primary);
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+
+        .hero-gradient {
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.4;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .hero-gradient-1 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            top: -200px;
+            left: -200px;
+        }
+
+        .hero-gradient-2 {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            bottom: -200px;
+            right: -200px;
+            animation-delay: -10s;
+        }
+
+        .hero-gradient-3 {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(50px, -30px) scale(1.1); }
+            50% { transform: translate(-30px, 50px) scale(0.9); }
+            75% { transform: translate(-50px, -20px) scale(1.05); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 900px;
+            padding: 0 24px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            background: rgba(0,113,227,0.1);
+            border: 1px solid rgba(0,113,227,0.2);
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--accent);
+            margin-bottom: 32px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .hero-badge svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .hero-title-main {
+            font-size: clamp(48px, 8vw, 80px);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 50%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 0.8s ease-out 0.1s backwards;
+        }
+
+        .hero-subtitle-main {
+            font-size: clamp(18px, 2.5vw, 24px);
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 48px;
+            line-height: 1.6;
+            animation: fadeInUp 0.8s ease-out 0.2s backwards;
+        }
+
+        .hero-actions-main {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease-out 0.3s backwards;
+        }
+
+        .btn-hero {
+            padding: 18px 40px;
+            font-size: 17px;
+            font-weight: 600;
+            border-radius: 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-hero-primary {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 4px 20px rgba(0,113,227,0.4);
+        }
+
+        .btn-hero-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,113,227,0.5);
+        }
+
+        .btn-hero-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-hero-secondary:hover {
+            background: var(--bg-tertiary);
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 实时统计区域 */
+        .live-stats {
+            padding: 100px 0;
+            background: var(--bg-secondary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 40px 32px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+        }
+
+        .stat-icon svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .stat-icon-courses { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .stat-icon-users { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+        .stat-icon-chapters { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; }
+        .stat-icon-battles { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .stat-label {
+            font-size: 16px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* 特色功能展示 */
+        .features-showcase {
+            padding: 120px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 80px;
+            padding: 0 24px;
+        }
+
+        .section-eyebrow {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 16px;
+        }
+
+        .section-title-lg {
+            font-size: clamp(36px, 5vw, 56px);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .section-desc {
+            font-size: 18px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 48px 32px;
+            border: 1px solid var(--border-color);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent), #764ba2);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-12px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .feature-icon-lg {
+            width: 72px;
+            height: 72px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            font-size: 32px;
+        }
+
+        .feature-icon-lg svg {
+            width: 36px;
+            height: 36px;
+        }
+
+        .feature-icon-pk { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; }
+        .feature-icon-learn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .feature-icon-achieve { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+        .feature-icon-community { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; }
+        .feature-icon-mentor { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333; }
+        .feature-icon-season { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #333; }
+
+        .feature-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .feature-desc {
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .feature-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--accent);
+            transition: gap 0.3s ease;
+        }
+
+        .feature-link:hover {
+            gap: 12px;
+        }
+
+        .feature-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* 热门课程区域 */
+        .courses-section {
+            padding: 120px 0;
+            background: var(--bg-secondary);
+        }
+
+        .courses-scroll {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .course-card-premium {
+            background: var(--bg-card);
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: block;
+        }
+
+        .course-card-premium:hover {
+            transform: translateY(-12px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .course-cover-premium {
+            height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-cover-premium img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .course-card-premium:hover .course-cover-premium img {
+            transform: scale(1.08);
+        }
+
+        .course-cover-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .course-cover-placeholder svg {
+            width: 64px;
+            height: 64px;
+            color: white;
+            opacity: 0.8;
+        }
+
+        .course-badge {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            padding: 6px 14px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .course-badge-free {
+            background: linear-gradient(135deg, #34c759 0%, #30d158 100%);
+        }
+
+        .course-body-premium {
+            padding: 28px;
+        }
+
+        .course-category {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+
+        .course-title-premium {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .course-desc-premium {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 20px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .course-meta-premium {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .course-stats-premium {
+            display: flex;
+            gap: 16px;
+            font-size: 14px;
+            color: var(--text-tertiary);
+        }
+
+        .course-stats-premium span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .course-stats-premium svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .course-price-premium {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .course-price-premium.free {
+            color: #34c759;
+        }
+
+        .course-price-premium.paid {
+            color: var(--accent);
+        }
+
+        /* 排行榜预览 */
+        .leaderboard-section {
+            padding: 120px 0;
+        }
+
+        .leaderboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .leaderboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .leaderboard-card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 32px;
+            border: 1px solid var(--border-color);
+        }
+
+        .leaderboard-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .leaderboard-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .leaderboard-icon svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .leaderboard-icon-pk { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; }
+        .leaderboard-icon-study { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .leaderboard-icon-points { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+
+        .leaderboard-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px;
+            border-radius: 12px;
+            transition: background 0.2s ease;
+        }
+
+        .leaderboard-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .leaderboard-rank {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .rank-1 { background: linear-gradient(135deg, #ffd700 0%, #ffb700 100%); color: #000; }
+        .rank-2 { background: linear-gradient(135deg, #c0c0c0 0%, #a8a8a8 100%); color: #000; }
+        .rank-3 { background: linear-gradient(135deg, #cd7f32 0%, #b8692a 100%); color: white; }
+        .rank-default { background: var(--bg-tertiary); color: var(--text-secondary); }
+
+        .leaderboard-user {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .leaderboard-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .leaderboard-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .leaderboard-score {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        /* CTA 区域 */
+        .cta-section {
+            padding: 120px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-bg {
+            position: absolute;
+            inset: 0;
+            opacity: 0.1;
+        }
+
+        .cta-bg-pattern {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border: 2px solid white;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .cta-bg-pattern:nth-child(2) { width: 400px; height: 400px; }
+        .cta-bg-pattern:nth-child(3) { width: 800px; height: 800px; }
+
+        .cta-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .cta-title {
+            font-size: clamp(32px, 5vw, 48px);
+            font-weight: 700;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .cta-desc {
+            font-size: 18px;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .btn-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 20px 48px;
+            background: white;
+            color: #764ba2;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cta:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .btn-cta svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* 页脚 */
+        .footer-premium {
+            padding: 80px 0 40px;
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr repeat(3, 1fr);
+            gap: 48px;
+            max-width: 1200px;
+            margin: 0 auto 60px;
+            padding: 0 24px;
+        }
+
+        .footer-brand h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .footer-brand p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            max-width: 300px;
+        }
+
+        .footer-column h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-links a {
+            font-size: 15px;
+            color: var(--text-secondary);
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px 24px 0;
+            border-top: 1px solid var(--border-color);
+            font-size: 14px;
+            color: var(--text-tertiary);
+        }
+
+        /* 响应式 */
+        @media (max-width: 1024px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+            .courses-grid { grid-template-columns: repeat(2, 1fr); }
+            .leaderboard-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .features-grid { grid-template-columns: 1fr; }
+            .courses-grid { grid-template-columns: 1fr; }
+            .hero-actions-main { flex-direction: column; }
+            .footer-grid { grid-template-columns: 1fr; text-align: center; }
+            .footer-brand p { margin: 0 auto; }
+            .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="home.html" class="nav-logo">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                </svg>
+                AI 信息未来
+            </a>
+            <div class="nav-menu">
+                <a href="home.html" class="nav-link active">首页</a>
+                <a href="courses.html" class="nav-link">课程</a>
+                <a href="community.html" class="nav-link">社区</a>
+                <a href="pk-arena.html" class="nav-link">PK竞技</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" title="切换主题">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="themeIcon">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                </button>
+                <div id="authArea"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero 区域 -->
+    <section class="hero-premium">
+        <div class="hero-bg">
+            <div class="hero-gradient hero-gradient-1"></div>
+            <div class="hero-gradient hero-gradient-2"></div>
+            <div class="hero-gradient hero-gradient-3"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+                企业级 AI 学习平台
+            </div>
+            <h1 class="hero-title-main">掌握 AI 算法<br>定义未来</h1>
+            <p class="hero-subtitle-main">
+                与顶尖专家一起，通过系统化课程、实战PK竞技、成就体系，成为真正的 AI 算法工程师
+            </p>
+            <div class="hero-actions-main">
+                <a href="register.html" class="btn-hero btn-hero-primary">免费开始学习</a>
+                <a href="courses.html" class="btn-hero btn-hero-secondary">浏览课程</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 实时统计 -->
+    <section class="live-stats">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon stat-icon-courses">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+                    </svg>
+                </div>
+                <div class="stat-number" id="statCourses">-</div>
+                <div class="stat-label">精品课程</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon stat-icon-users">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 010 7.75"/>
+                    </svg>
+                </div>
+                <div class="stat-number" id="statUsers">-</div>
+                <div class="stat-label">活跃学员</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon stat-icon-chapters">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                    </svg>
+                </div>
+                <div class="stat-number" id="statChapters">-</div>
+                <div class="stat-label">学习章节</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon stat-icon-battles">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                    </svg>
+                </div>
+                <div class="stat-number" id="statBattles">-</div>
+                <div class="stat-label">PK对战</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 特色功能 -->
+    <section class="features-showcase">
+        <div class="section-header">
+            <div class="section-eyebrow">核心功能</div>
+            <h2 class="section-title-lg">打造最好的 AI 学习体验</h2>
+            <p class="section-desc">
+                从基础到进阶，从学习到实战，从个人到社区，全方位助力你的 AI 成长之路
+            </p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon-lg feature-icon-pk">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">PK 竞技场</h3>
+                <p class="feature-desc">
+                    与全球学员实时PK，ELO段位系统，从青铜到王者，检验你的真实水平
+                </p>
+                <a href="pk-arena.html" class="feature-link">
+                    进入竞技场
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                        <polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                </a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon-lg feature-icon-learn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">系统化课程</h3>
+                <p class="feature-desc">
+                    由行业专家精心设计，从入门到精通，构建完整的 AI 知识体系
+                </p>
+                <a href="courses.html" class="feature-link">
+                    浏览课程
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                        <polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                </a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon-lg feature-icon-achieve">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="8" r="7"/>
+                        <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">成就体系</h3>
+                <p class="feature-desc">
+                    解锁成就徽章，收集稀有称号，记录你的每一步成长
+                </p>
+                <a href="achievements.html" class="feature-link">
+                    查看成就
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                        <polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                </a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon-lg feature-icon-community">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 010 7.75"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">学习社区</h3>
+                <p class="feature-desc">
+                    分享笔记心得，参与问答讨论，与志同道合的人一起进步
+                </p>
+                <a href="community.html" class="feature-link">
+                    加入社区
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                        <polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                </a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon-lg feature-icon-mentor">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5"/>
+                        <path d="M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">师徒系统</h3>
+                <p class="feature-desc">
+                    找到你的导师，或成为新人的引路人，共同成长的学习之旅
+                </p>
+                <a href="mentorship-dashboard.html" class="feature-link">
+                    了解更多
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                        <polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                </a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon-lg feature-icon-season">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">赛季排名</h3>
+                <p class="feature-desc">
+                    每赛季全新挑战，冲击排行榜前列，赢取丰厚赛季奖励
+                </p>
+                <a href="season.html" class="feature-link">
+                    查看赛季
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                        <polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 热门课程 -->
+    <section class="courses-section">
+        <div class="section-header">
+            <div class="section-eyebrow">精选课程</div>
+            <h2 class="section-title-lg">从这里开始你的 AI 之旅</h2>
+            <p class="section-desc">
+                精心设计的课程体系，涵盖机器学习、深度学习、计算机视觉、自然语言处理等核心领域
+            </p>
+        </div>
+        <div class="courses-scroll">
+            <div class="courses-grid" id="coursesGrid">
+                <div class="loading"><div class="spinner"></div></div>
+            </div>
+            <div style="text-align: center; margin-top: 48px;">
+                <a href="courses.html" class="btn btn-outline btn-lg">查看全部课程</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 排行榜预览 -->
+    <section class="leaderboard-section">
+        <div class="section-header">
+            <div class="section-eyebrow">实时排行</div>
+            <h2 class="section-title-lg">今日榜单</h2>
+            <p class="section-desc">
+                与优秀的人同行，你也会变得更优秀
+            </p>
+        </div>
+        <div class="leaderboard-container">
+            <div class="leaderboard-grid">
+                <div class="leaderboard-card">
+                    <div class="leaderboard-header">
+                        <div class="leaderboard-icon leaderboard-icon-pk">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                            </svg>
+                        </div>
+                        <h3 class="leaderboard-title">PK 战力榜</h3>
+                    </div>
+                    <div class="leaderboard-list" id="pkLeaderboard">
+                        <div class="loading"><div class="spinner"></div></div>
+                    </div>
+                </div>
+                <div class="leaderboard-card">
+                    <div class="leaderboard-header">
+                        <div class="leaderboard-icon leaderboard-icon-study">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                        </div>
+                        <h3 class="leaderboard-title">学习时长榜</h3>
+                    </div>
+                    <div class="leaderboard-list" id="studyLeaderboard">
+                        <div class="loading"><div class="spinner"></div></div>
+                    </div>
+                </div>
+                <div class="leaderboard-card">
+                    <div class="leaderboard-header">
+                        <div class="leaderboard-icon leaderboard-icon-points">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                        </div>
+                        <h3 class="leaderboard-title">积分榜</h3>
+                    </div>
+                    <div class="leaderboard-list" id="pointsLeaderboard">
+                        <div class="loading"><div class="spinner"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <div class="cta-bg">
+            <div class="cta-bg-pattern"></div>
+            <div class="cta-bg-pattern"></div>
+            <div class="cta-bg-pattern"></div>
+        </div>
+        <div class="cta-content">
+            <h2 class="cta-title">准备好开始了吗？</h2>
+            <p class="cta-desc">
+                加入数千名 AI 学习者的行列，开启你的算法工程师之路。立即注册，免费体验所有基础课程。
+            </p>
+            <a href="register.html" class="btn-cta">
+                立即开始
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                    <polyline points="12 5 19 12 12 19"/>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer-premium">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h3>AI 信息未来</h3>
+                <p>致力于为每一位学习者提供最优质的 AI 教育体验，让技术改变未来。</p>
+            </div>
+            <div class="footer-column">
+                <h4>学习</h4>
+                <div class="footer-links">
+                    <a href="courses.html">全部课程</a>
+                    <a href="study-plan.html">学习计划</a>
+                    <a href="certificates.html">证书认证</a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h4>社区</h4>
+                <div class="footer-links">
+                    <a href="community.html">学习社区</a>
+                    <a href="qa.html">问答专区</a>
+                    <a href="notes.html">笔记分享</a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h4>竞技</h4>
+                <div class="footer-links">
+                    <a href="pk-arena.html">PK竞技场</a>
+                    <a href="leaderboard.html">排行榜</a>
+                    <a href="season.html">赛季系统</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 AI 信息未来. 保留所有权利.</p>
+            <div>
+                <a href="#">关于我们</a> &middot;
+                <a href="#">隐私政策</a> &middot;
+                <a href="#">使用条款</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const API_BASE = '/api';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            checkAuth();
+            loadPlatformStats();
+            loadCourses();
+            loadLeaderboards();
+        });
+
+        // 主题管理
+        function initTheme() {
+            const saved = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', saved);
+            updateThemeIcon(saved);
+            document.getElementById('themeToggle').addEventListener('click', () => {
+                const current = document.documentElement.getAttribute('data-theme');
+                const next = current === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('theme', next);
+                updateThemeIcon(next);
+            });
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById('themeIcon');
+            if (theme === 'dark') {
+                icon.innerHTML = '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>';
+            } else {
+                icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+            }
+        }
+
+        // 用户认证
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            const authArea = document.getElementById('authArea');
+            if (token && userStr) {
+                const user = JSON.parse(userStr);
+                const initial = (user.nickname || user.username || 'U').charAt(0).toUpperCase();
+                authArea.innerHTML = `
+                    <div class="user-menu">
+                        <div class="user-avatar" onclick="toggleDropdown()">${user.avatar ? '<img src="'+user.avatar+'" alt="" style="width:100%;height:100%;border-radius:50%;">' : initial}</div>
+                        <div class="dropdown" id="userDropdown">
+                            <a href="dashboard.html" class="dropdown-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+                                学习中心
+                            </a>
+                            <a href="profile.html" class="dropdown-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                个人主页
+                            </a>
+                            <a href="my-courses.html" class="dropdown-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+                                我的课程
+                            </a>
+                            <a href="achievements.html" class="dropdown-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+                                我的成就
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item" onclick="logout()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                                退出登录
+                            </a>
+                        </div>
+                    </div>`;
+            } else {
+                authArea.innerHTML = `
+                    <a href="login.html" class="btn btn-sm btn-secondary" style="margin-right: 8px;">登录</a>
+                    <a href="register.html" class="btn btn-sm btn-primary">注册</a>`;
+            }
+        }
+
+        function toggleDropdown() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            location.reload();
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-menu')) {
+                const d = document.getElementById('userDropdown');
+                if (d) d.classList.remove('show');
+            }
+        });
+
+        // 加载平台统计
+        async function loadPlatformStats() {
+            try {
+                // 加载课程数量
+                const coursesRes = await fetch(API_BASE + '/courses');
+                const coursesData = await coursesRes.json();
+                if (coursesData.code === 200 && coursesData.data) {
+                    animateNumber('statCourses', coursesData.data.length);
+                    let totalChapters = 0;
+                    coursesData.data.forEach(c => totalChapters += (c.lessonCount || 0));
+                    animateNumber('statChapters', totalChapters || 100);
+                }
+
+                // 模拟用户和对战数据（真实项目应从API获取）
+                animateNumber('statUsers', 1200);
+                animateNumber('statBattles', 8500);
+            } catch (e) {
+                document.getElementById('statCourses').textContent = '10+';
+                document.getElementById('statUsers').textContent = '1000+';
+                document.getElementById('statChapters').textContent = '100+';
+                document.getElementById('statBattles').textContent = '5000+';
+            }
+        }
+
+        function animateNumber(id, target) {
+            const el = document.getElementById(id);
+            const duration = 1500;
+            const start = 0;
+            const startTime = performance.now();
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const current = Math.floor(start + (target - start) * easeOut);
+                el.textContent = current.toLocaleString();
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            requestAnimationFrame(update);
+        }
+
+        // 加载课程
+        async function loadCourses() {
+            const grid = document.getElementById('coursesGrid');
+            try {
+                const res = await fetch(API_BASE + '/courses');
+                const data = await res.json();
+                if (data.code === 200 && data.data && data.data.length > 0) {
+                    const courses = data.data.slice(0, 6);
+                    grid.innerHTML = courses.map(c => `
+                        <a href="course-detail.html?id=${c.id}" class="course-card-premium">
+                            <div class="course-cover-premium">
+                                ${c.coverImage ? `<img src="${c.coverImage}" alt="${c.title}">` : `
+                                <div class="course-cover-placeholder">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                    </svg>
+                                </div>`}
+                                <span class="course-badge ${c.isFree ? 'course-badge-free' : ''}">${c.isFree ? '免费' : '付费'}</span>
+                            </div>
+                            <div class="course-body-premium">
+                                <div class="course-category">${c.category || 'AI 课程'}</div>
+                                <h3 class="course-title-premium">${c.title}</h3>
+                                <p class="course-desc-premium">${c.description || '暂无简介'}</p>
+                                <div class="course-meta-premium">
+                                    <div class="course-stats-premium">
+                                        <span>
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                                            ${c.enrollmentCount || 0}
+                                        </span>
+                                        <span>
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                            ${c.lessonCount || 0}章
+                                        </span>
+                                    </div>
+                                    <span class="course-price-premium ${c.isFree ? 'free' : 'paid'}">${c.isFree ? '免费' : '¥' + c.price}</span>
+                                </div>
+                            </div>
+                        </a>
+                    `).join('');
+                } else {
+                    grid.innerHTML = '<p style="text-align:center;color:var(--text-tertiary);grid-column:1/-1;padding:60px 0;">暂无课程</p>';
+                }
+            } catch (e) {
+                grid.innerHTML = '<p style="text-align:center;color:var(--text-tertiary);grid-column:1/-1;padding:60px 0;">加载失败</p>';
+            }
+        }
+
+        // 加载排行榜
+        async function loadLeaderboards() {
+            const mockData = [
+                { name: 'AI大师', score: 2850, avatar: 'A' },
+                { name: '算法高手', score: 2720, avatar: '算' },
+                { name: '深度学习者', score: 2680, avatar: '深' },
+                { name: 'ML探索者', score: 2550, avatar: 'M' },
+                { name: '代码匠人', score: 2480, avatar: '代' },
+            ];
+
+            renderLeaderboard('pkLeaderboard', mockData, 'ELO');
+            renderLeaderboard('studyLeaderboard', [
+                { name: '勤奋学者', score: 156, avatar: '勤' },
+                { name: '夜猫子', score: 142, avatar: '夜' },
+                { name: '早起鸟', score: 128, avatar: '早' },
+                { name: '坚持者', score: 115, avatar: '坚' },
+                { name: '进步者', score: 98, avatar: '进' },
+            ], '小时');
+            renderLeaderboard('pointsLeaderboard', [
+                { name: '积分王', score: 28500, avatar: '积' },
+                { name: '签到达人', score: 24200, avatar: '签' },
+                { name: '活跃用户', score: 21800, avatar: '活' },
+                { name: '学霸', score: 19500, avatar: '学' },
+                { name: '新星', score: 16200, avatar: '新' },
+            ], '分');
+        }
+
+        function renderLeaderboard(containerId, data, unit) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = data.map((item, index) => `
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank ${index < 3 ? 'rank-' + (index + 1) : 'rank-default'}">${index + 1}</div>
+                    <div class="leaderboard-user">
+                        <div class="leaderboard-avatar">${item.avatar}</div>
+                        <span class="leaderboard-name">${item.name}</span>
+                    </div>
+                    <span class="leaderboard-score">${item.score.toLocaleString()} ${unit}</span>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>

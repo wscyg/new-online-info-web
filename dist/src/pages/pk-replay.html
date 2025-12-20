@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>对战回放 - AI 信息未来</title>
+    
+    <style>
+        /* 页面布局 */
+        body {
+            padding-top: 48px;
+            min-height: 100vh;
+        }
+
+        .page-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 48px 22px;
+        }
+
+        /* 返回按钮 */
+        .back-button {
+            position: fixed;
+            top: 64px;
+            left: 22px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            font-size: 14px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            z-index: 100;
+        }
+
+        .back-button:hover {
+            color: var(--text-primary);
+            background: var(--bg-hover);
+            transform: translateX(-2px);
+        }
+
+        /* 回放头部 */
+        .replay-header {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+
+        .replay-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+        }
+
+        .replay-info {
+            display: flex;
+            gap: 32px;
+            flex-wrap: wrap;
+        }
+
+        .replay-info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        .info-icon {
+            width: 20px;
+            height: 20px;
+            color: var(--text-tertiary);
+        }
+
+        /* 玩家对比区 */
+        .players-section {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 32px;
+            margin-bottom: 32px;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .players-section {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .vs-badge {
+                order: -1;
+                margin: 0 auto;
+            }
+        }
+
+        .player-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            transition: all var(--transition-fast);
+        }
+
+        .player-card.winner {
+            border-color: rgba(255, 204, 0, 0.6);
+            box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.1);
+            background: linear-gradient(135deg, rgba(255, 204, 0, 0.05) 0%, transparent 100%);
+        }
+
+        .player-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .player-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            -o-object-fit: cover;
+               object-fit: cover;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+        }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .player-name {
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .player-rank {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .player-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            letter-spacing: -0.02em;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        .vs-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 72px;
+            height: 72px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+
+        /* 题目时间轴 */
+        .questions-timeline {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+        }
+
+        .timeline-header {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 28px;
+            letter-spacing: -0.02em;
+        }
+
+        .question-item {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin-bottom: 20px;
+            transition: all var(--transition-fast);
+        }
+
+        .question-item:hover {
+            border-color: var(--border-strong);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .question-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .question-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .question-index {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            background: var(--bg-secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .question-content {
+            flex: 1;
+        }
+
+        .question-title {
+            font-size: 17px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .question-options {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .option {
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            color: var(--text-secondary);
+            transition: all var(--transition-fast);
+        }
+
+        .option.correct {
+            background: rgba(52, 199, 89, 0.1);
+            border-color: #34c759;
+            color: #34c759;
+            font-weight: 500;
+        }
+
+        /* 答题区域 */
+        .answer-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        @media (max-width: 768px) {
+            .answer-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .player-answer {
+            padding: 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            transition: all var(--transition-fast);
+        }
+
+        .player-answer.correct {
+            background: rgba(52, 199, 89, 0.08);
+            border-color: rgba(52, 199, 89, 0.3);
+        }
+
+        .player-answer.wrong {
+            background: rgba(255, 59, 48, 0.08);
+            border-color: rgba(255, 59, 48, 0.3);
+        }
+
+        .player-answer-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .result-icon {
+            width: 18px;
+            height: 18px;
+        }
+
+        .answer-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .answer-time {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        /* 解析区域 */
+        .explanation-section {
+            margin-top: 16px;
+            padding: 16px;
+            background: rgba(0, 113, 227, 0.06);
+            border-left: 3px solid var(--accent);
+            border-radius: var(--radius-sm);
+        }
+
+        .explanation-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .explanation-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* 加载状态 */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 48px);
+            gap: 20px;
+        }
+
+        .loading-text {
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+    </style>
+  <link rel="stylesheet" href="/assets/apple-design-3a23e109.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="../../index.html" class="nav-logo">未来信息</a>
+            <div class="nav-menu">
+                <a href="../../index.html" class="nav-link">首页</a>
+                <a href="./course-list.html" class="nav-link">课程</a>
+                <a href="./community.html" class="nav-link">社区</a>
+                <a href="./pk-arena.html" class="nav-link active">PK竞技</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
+                    <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                </button>
+                <div class="user-menu" id="userMenu"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 返回按钮 -->
+    <button class="back-button" onclick="goBack()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        <span>返回</span>
+    </button>
+
+    <!-- 加载状态 -->
+    <div id="loadingContainer" class="loading-container">
+        <div class="spinner"></div>
+        <div class="loading-text">加载对战回放中...</div>
+    </div>
+
+    <!-- 回放内容 -->
+    <div id="replayContent" class="page-container" style="display: none;">
+        <!-- 回放标题 -->
+        <div class="replay-header">
+            <h1 class="replay-title">对战回放</h1>
+            <div class="replay-info">
+                <div class="replay-info-item">
+                    <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    <span id="battleTime"></span>
+                </div>
+                <div class="replay-info-item">
+                    <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <circle cx="9" cy="9" r="2"/>
+                        <path d="M21 15l-3-3-6 6"/>
+                    </svg>
+                    <span id="battleMode"></span>
+                </div>
+                <div class="replay-info-item">
+                    <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    <span id="battleDuration"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 玩家对比 -->
+        <div class="players-section">
+            <div class="player-card" id="player1Card">
+                <div class="player-header">
+                    <img id="player1Avatar" class="player-avatar" src="" alt="Player 1">
+                    <div class="player-info">
+                        <div class="player-name" id="player1Name"></div>
+                        <div class="player-rank" id="player1Rank"></div>
+                    </div>
+                </div>
+                <div class="player-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="player1Score"></div>
+                        <div class="stat-label">得分</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="player1Correct"></div>
+                        <div class="stat-label">正确</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="player1Time"></div>
+                        <div class="stat-label">用时(秒)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="vs-badge">VS</div>
+
+            <div class="player-card" id="player2Card">
+                <div class="player-header">
+                    <img id="player2Avatar" class="player-avatar" src="" alt="Player 2">
+                    <div class="player-info">
+                        <div class="player-name" id="player2Name"></div>
+                        <div class="player-rank" id="player2Rank"></div>
+                    </div>
+                </div>
+                <div class="player-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="player2Score"></div>
+                        <div class="stat-label">得分</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="player2Correct"></div>
+                        <div class="stat-label">正确</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="player2Time"></div>
+                        <div class="stat-label">用时(秒)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 题目时间轴 -->
+        <div class="questions-timeline">
+            <div class="timeline-header">题目详情</div>
+            <div id="questionsContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        // API 配置
+        const API_BASE = '/api';
+
+        // 初始化主题
+        function initTheme() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+            updateThemeIcon();
+        }
+
+        // 切换主题
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon();
+        }
+
+        // 更新主题图标
+        function updateThemeIcon() {
+            const theme = document.documentElement.getAttribute('data-theme');
+            const sunIcon = document.querySelector('.sun-icon');
+            if (theme === 'dark') {
+                sunIcon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+            } else {
+                sunIcon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+            }
+        }
+
+        // 初始化用户菜单
+        function initUserMenu() {
+            const userMenu = document.getElementById('userMenu');
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+            if (token && user.username) {
+                userMenu.innerHTML = `
+                    <div class="user-avatar" onclick="toggleDropdown()">
+                        ${user.avatar ? `<img src="${user.avatar}" alt="${user.username}">` : user.username.charAt(0).toUpperCase()}
+                    </div>
+                    <div class="dropdown" id="userDropdown">
+                        <div class="dropdown-item" onclick="location.href='./profile.html'">个人中心</div>
+                        <div class="dropdown-item" onclick="location.href='./my-courses.html'">我的课程</div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item" onclick="logout()">退出登录</div>
+                    </div>
+                `;
+            } else {
+                userMenu.innerHTML = `
+                    <button class="btn btn-sm btn-primary" onclick="location.href='./login.html'">登录</button>
+                `;
+            }
+        }
+
+        // 切换下拉菜单
+        function toggleDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('show');
+            }
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            location.href = './login.html';
+        }
+
+        // 关闭下拉菜单
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-menu')) {
+                const dropdown = document.getElementById('userDropdown');
+                if (dropdown) {
+                    dropdown.classList.remove('show');
+                }
+            }
+        });
+
+        // 获取battleId
+        const urlParams = new URLSearchParams(window.location.search);
+        const battleId = urlParams.get('battleId');
+
+        if (!battleId) {
+            alert('缺少对战ID');
+            window.history.back();
+        }
+
+        // 加载对战回放数据
+        async function loadReplay() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/pk/battle/${battleId}/details`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load battle details');
+                }
+
+                const result = await response.json();
+                if (result.success && result.data) {
+                    renderReplay(result.data);
+                } else {
+                    throw new Error(result.message || '加载失败');
+                }
+            } catch (error) {
+                console.error('加载回放失败:', error);
+                alert('加载对战回放失败，请稍后重试');
+                window.history.back();
+            }
+        }
+
+        // 渲染回放
+        function renderReplay(battleData) {
+            document.getElementById('loadingContainer').style.display = 'none';
+            document.getElementById('replayContent').style.display = 'block';
+
+            // 基本信息
+            document.getElementById('battleTime').textContent = new Date(battleData.startTime).toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('battleMode').textContent = getModeText(battleData.mode);
+
+            const duration = Math.floor((new Date(battleData.endTime) - new Date(battleData.startTime)) / 1000);
+            document.getElementById('battleDuration').textContent = `${Math.floor(duration / 60)}分${duration % 60}秒`;
+
+            // 玩家1信息
+            const player1 = battleData.player1;
+            document.getElementById('player1Avatar').src = player1.avatar || '/images/default-avatar.png';
+            document.getElementById('player1Name').textContent = player1.username;
+            document.getElementById('player1Rank').textContent = getRankText(player1.rankTier);
+            document.getElementById('player1Score').textContent = battleData.player1Score;
+            document.getElementById('player1Correct').textContent = battleData.player1Correct;
+            document.getElementById('player1Time').textContent = calculateTotalTime(battleData.player1Details);
+
+            // 玩家2信息
+            const player2 = battleData.player2;
+            document.getElementById('player2Avatar').src = player2.avatar || '/images/default-avatar.png';
+            document.getElementById('player2Name').textContent = player2.username;
+            document.getElementById('player2Rank').textContent = getRankText(player2.rankTier);
+            document.getElementById('player2Score').textContent = battleData.player2Score;
+            document.getElementById('player2Correct').textContent = battleData.player2Correct;
+            document.getElementById('player2Time').textContent = calculateTotalTime(battleData.player2Details);
+
+            // 标记获胜者
+            if (battleData.winnerId) {
+                const winnerCard = battleData.winnerId === player1.id ? 'player1Card' : 'player2Card';
+                document.getElementById(winnerCard).classList.add('winner');
+            }
+
+            // 渲染题目详情
+            renderQuestions(battleData);
+        }
+
+        // 渲染题目列表
+        function renderQuestions(battleData) {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+
+            battleData.questions.forEach((question, index) => {
+                const player1Answer = battleData.player1Details.find(d => d.questionIndex === index);
+                const player2Answer = battleData.player2Details.find(d => d.questionIndex === index);
+
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-item';
+
+                questionDiv.innerHTML = `
+                    <div class="question-header">
+                        <div class="question-index">Q${index + 1}</div>
+                        <div class="question-content">
+                            <div class="question-title">${question.questionHtml}</div>
+                            ${question.options && question.options.length > 0 ? `
+                                <div class="question-options">
+                                    ${renderOptions(question, question.correctAnswer)}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                    <div class="answer-section">
+                        <div class="player-answer ${player1Answer?.isCorrect ? 'correct' : 'wrong'}">
+                            <div class="player-answer-header">
+                                <svg class="result-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                    ${player1Answer?.isCorrect ?
+                                        '<polyline points="20 6 9 17 4 12"/>' :
+                                        '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'
+                                    }
+                                </svg>
+                                <span>${battleData.player1.username}</span>
+                            </div>
+                            <div class="answer-text">答案: ${player1Answer?.playerAnswer || '未答'}</div>
+                            <div class="answer-time">用时: ${player1Answer?.answerTime || 0}秒</div>
+                        </div>
+                        <div class="player-answer ${player2Answer?.isCorrect ? 'correct' : 'wrong'}">
+                            <div class="player-answer-header">
+                                <svg class="result-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                    ${player2Answer?.isCorrect ?
+                                        '<polyline points="20 6 9 17 4 12"/>' :
+                                        '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'
+                                    }
+                                </svg>
+                                <span>${battleData.player2.username}</span>
+                            </div>
+                            <div class="answer-text">答案: ${player2Answer?.playerAnswer || '未答'}</div>
+                            <div class="answer-time">用时: ${player2Answer?.answerTime || 0}秒</div>
+                        </div>
+                    </div>
+                    ${question.explanationHtml ? `
+                        <div class="explanation-section">
+                            <div class="explanation-title">题目解析</div>
+                            <div class="explanation-text">${question.explanationHtml}</div>
+                        </div>
+                    ` : ''}
+                `;
+                container.appendChild(questionDiv);
+            });
+        }
+
+        // 渲染选项
+        function renderOptions(question, correctAnswer) {
+            if (!question.options || question.options.length === 0) {
+                return '';
+            }
+
+            return question.options.map(opt => {
+                const isCorrect = opt.optionKey === correctAnswer;
+                return `<div class="option ${isCorrect ? 'correct' : ''}">${opt.optionKey}. ${opt.optionHtml}</div>`;
+            }).join('');
+        }
+
+        // 计算总用时
+        function calculateTotalTime(details) {
+            return details.reduce((sum, d) => sum + (d.answerTime || 0), 0);
+        }
+
+        // 模式文本
+        function getModeText(mode) {
+            const modes = {
+                'QUICK': '快速模式 (5题)',
+                'STANDARD': '标准模式 (10题)',
+                'LONG': '长篇模式 (20题)'
+            };
+            return modes[mode] || mode;
+        }
+
+        // 段位文本
+        function getRankText(tier) {
+            const ranks = {
+                'BRONZE': '青铜',
+                'SILVER': '白银',
+                'GOLD': '黄金',
+                'PLATINUM': '铂金',
+                'DIAMOND': '钻石',
+                'KING': '王者'
+            };
+            return ranks[tier] || tier;
+        }
+
+        // 返回按钮
+        function goBack() {
+            window.history.back();
+        }
+
+        // 初始化
+        initTheme();
+        initUserMenu();
+        loadReplay();
+    </script>
+</body>
+</html>

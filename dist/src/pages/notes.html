@@ -3,86 +3,1115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>学习笔记 - AI未来学院</title>
+    <title>学习笔记 - AI 信息未来</title>
     
-    <link rel="stylesheet" href="../styles/notes.css">
-  <link rel="stylesheet" href="/assets/main-ff827300.css">
+    <style>
+        /* 页面布局 */
+        body {
+            padding-top: 48px;
+            min-height: 100vh;
+        }
+
+        .page-container {
+            display: flex;
+            height: calc(100vh - 48px);
+            overflow: hidden;
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            width: 320px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .new-note-btn {
+            width: 100%;
+        }
+
+        .search-section {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box svg {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+            width: 18px;
+            height: 18px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 12px 10px 40px;
+            font-family: var(--font-sans);
+            font-size: 15px;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            transition: border-color var(--transition-fast);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .search-input::-moz-placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .filter-section {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .filter-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 10px 12px;
+            font-family: var(--font-sans);
+            font-size: 15px;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: border-color var(--transition-fast);
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .notes-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .note-item {
+            padding: 16px;
+            margin-bottom: 4px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: background var(--transition-fast);
+        }
+
+        .note-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .note-item.active {
+            background: var(--bg-primary);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+        }
+
+        .note-item-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .note-item-preview {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .note-item-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .note-item-course {
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 48px;
+            text-align: center;
+        }
+
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            color: var(--text-tertiary);
+            margin-bottom: 24px;
+        }
+
+        .empty-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .empty-description {
+            font-size: 17px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            max-width: 400px;
+        }
+
+        /* 笔记查看器 */
+        .note-viewer {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .note-header {
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .note-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .note-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--text-primary);
+            flex: 1;
+            margin-right: 16px;
+        }
+
+        .note-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-md);
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+
+        .icon-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .icon-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .note-meta-info {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .note-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .note-meta-item svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .note-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .tag {
+            padding: 4px 12px;
+            font-size: 13px;
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+            border-radius: var(--radius-full);
+        }
+
+        .note-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px;
+        }
+
+        .note-content {
+            max-width: 720px;
+            margin: 0 auto;
+            font-size: 17px;
+            line-height: 1.7;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+        }
+
+        /* 笔记编辑器 */
+        .note-editor {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .editor-header {
+            padding: 20px 32px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .editor-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .editor-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .editor-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px;
+        }
+
+        .editor-container {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        .form-field {
+            margin-bottom: 24px;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .field-input {
+            width: 100%;
+            padding: 12px 16px;
+            font-family: var(--font-sans);
+            font-size: 17px;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            transition: border-color var(--transition-fast);
+        }
+
+        .field-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .field-input::-moz-placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .field-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .field-textarea {
+            width: 100%;
+            min-height: 400px;
+            padding: 16px;
+            font-family: var(--font-sans);
+            font-size: 17px;
+            line-height: 1.7;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            resize: vertical;
+            transition: border-color var(--transition-fast);
+        }
+
+        .field-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .field-textarea::-moz-placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .field-textarea::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .btn-danger {
+            background: #ff3b30;
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background: #ff2d20;
+        }
+
+        /* 加载状态 */
+        .loading-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -320px;
+                top: 48px;
+                height: calc(100vh - 48px);
+                z-index: 100;
+                transition: left var(--transition-normal);
+            }
+
+            .sidebar.show {
+                left: 0;
+            }
+
+            .page-container {
+                padding-left: 0;
+            }
+        }
+    </style>
+  <link rel="stylesheet" href="/assets/apple-design-3a23e109.css">
 </head>
 <body>
-    <!-- 全局登录状态 -->
-    <div id="auth-header"></div>
-
-    <header class="page-header">
-        <div class="container">
-            <h1>学习笔记</h1>
-            <button class="btn btn-primary" onclick="createNote()">新建笔记</button>
+    <!-- 导航栏 -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="home.html" class="nav-logo">AI 信息未来</a>
+            <div class="nav-menu">
+                <a href="home.html" class="nav-link">首页</a>
+                <a href="courses.html" class="nav-link">课程</a>
+                <a href="community.html" class="nav-link">社区</a>
+                <a href="pk-arena.html" class="nav-link">PK竞技</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" title="切换主题">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+                <div id="authArea"></div>
+            </div>
         </div>
-    </header>
+    </nav>
 
-    <div class="container">
-        <div class="notes-container">
-            <!-- Sidebar -->
-            <aside class="notes-sidebar">
+    <!-- 页面容器 -->
+    <div class="page-container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="sidebar-title">学习笔记</h1>
+                <button class="btn btn-primary new-note-btn" id="newNoteBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    新建笔记
+                </button>
+            </div>
+
+            <div class="search-section">
                 <div class="search-box">
-                    <input type="text" placeholder="搜索笔记..." id="searchInput">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <input type="text" class="search-input" id="searchInput" placeholder="搜索笔记...">
                 </div>
-                
-                <div class="filter-section">
-                    <h3>筛选</h3>
-                    <select id="courseFilter">
-                        <option value="">所有课程</option>
-                    </select>
-                    <select id="tagFilter">
-                        <option value="">所有标签</option>
-                    </select>
-                </div>
+            </div>
 
-                <div class="notes-list" id="notesList">
-                    <!-- Notes list will be loaded here -->
-                </div>
-            </aside>
+            <div class="filter-section">
+                <div class="filter-title">筛选条件</div>
+                <select class="filter-select" id="courseFilter">
+                    <option value="">所有课程</option>
+                </select>
+                <select class="filter-select" id="tagFilter">
+                    <option value="">所有标签</option>
+                </select>
+            </div>
 
-            <!-- Main Content -->
-            <main class="notes-main">
-                <div id="noteEditor" class="note-editor" style="display: none;">
-                    <input type="text" id="noteTitle" placeholder="笔记标题" class="note-title-input">
-                    <div class="note-meta">
-                        <select id="noteCourse">
-                            <option value="">选择课程</option>
-                        </select>
-                        <input type="text" id="noteTags" placeholder="标签（用逗号分隔）">
-                    </div>
-                    <textarea id="noteContent" placeholder="开始记录..." class="note-content-editor"></textarea>
-                    <div class="editor-toolbar">
-                        <button class="btn btn-primary" onclick="saveNote()">保存</button>
-                        <button class="btn btn-secondary" onclick="cancelEdit()">取消</button>
-                        <button class="btn btn-danger" onclick="deleteNote()" id="deleteBtn" style="display: none;">删除</button>
-                    </div>
+            <div class="notes-list" id="notesList">
+                <div class="loading-container">
+                    <div class="spinner"></div>
                 </div>
+            </div>
+        </aside>
 
-                <div id="noteViewer" class="note-viewer">
-                    <div class="empty-state">
-                        <h2>选择或创建笔记</h2>
-                        <p>从左侧选择笔记查看，或创建新笔记开始记录</p>
-                        <button class="btn btn-primary" onclick="createNote()">创建第一个笔记</button>
-                    </div>
-                </div>
-            </main>
-        </div>
+        <!-- 主内容区 -->
+        <main class="main-content" id="mainContent">
+            <!-- 空状态 -->
+            <div class="empty-state" id="emptyState">
+                <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="12" y1="18" x2="12" y2="12"/>
+                    <line x1="9" y1="15" x2="15" y2="15"/>
+                </svg>
+                <h2 class="empty-title">开始记录你的学习</h2>
+                <p class="empty-description">创建笔记来记录学习心得、重要知识点和思考</p>
+                <button class="btn btn-primary btn-lg" onclick="createNewNote()">创建第一个笔记</button>
+            </div>
+        </main>
     </div>
 
-    <script src="../js/config.js"></script>
-    <script src="../js/api.js"></script>
-    <script src="../js/notes.js"></script>
-    <!-- 全局登录状态组件 -->
-    <script src="../utils/auth-header.js"></script>
     <script>
-        // 初始化登录状态组件
+        // API 配置
+        const API_BASE = '/api';
+
+        // 全局状态
+        let currentNoteId = null;
+        let allNotes = [];
+        let allCourses = [];
+        let currentUser = null;
+
+        // 初始化
         document.addEventListener('DOMContentLoaded', () => {
-            AuthHeader.init('auth-header', {
-                showLinks: false
-            });
+            checkAuth();
+            initTheme();
+            initEventListeners();
+            loadCourses();
+            loadNotes();
         });
+
+        // 认证检查
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // 获取用户信息
+            fetch(`${API_BASE}/user/profile`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    currentUser = data.data;
+                    renderAuthArea();
+                } else {
+                    localStorage.removeItem('token');
+                    window.location.href = 'login.html';
+                }
+            })
+            .catch(err => {
+                console.error('Auth error:', err);
+                localStorage.removeItem('token');
+                window.location.href = 'login.html';
+            });
+        }
+
+        // 渲染认证区域
+        function renderAuthArea() {
+            const authArea = document.getElementById('authArea');
+            if (currentUser) {
+                const initial = currentUser.username?.charAt(0).toUpperCase() || 'U';
+                authArea.innerHTML = `
+                    <div class="user-menu">
+                        <div class="user-avatar" onclick="toggleUserMenu()">
+                            ${currentUser.avatar ? `<img src="${currentUser.avatar}" alt="${currentUser.username}">` : initial}
+                        </div>
+                        <div class="dropdown" id="userDropdown">
+                            <a href="profile.html" class="dropdown-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                                个人中心
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-item" onclick="logout()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                                    <polyline points="16 17 21 12 16 7"/>
+                                    <line x1="21" y1="12" x2="9" y2="12"/>
+                                </svg>
+                                退出登录
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // 切换用户菜单
+        function toggleUserMenu() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // 登出
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        }
+
+        // 关闭下拉菜单
+        document.addEventListener('click', (e) => {
+            const userMenu = document.querySelector('.user-menu');
+            if (userMenu && !userMenu.contains(e.target)) {
+                document.getElementById('userDropdown')?.classList.remove('show');
+            }
+        });
+
+        // 主题切换
+        function initTheme() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+            updateThemeIcon(theme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const themeToggle = document.getElementById('themeToggle');
+            if (theme === 'dark') {
+                themeToggle.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                `;
+            } else {
+                themeToggle.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                `;
+            }
+        }
+
+        // 事件监听
+        function initEventListeners() {
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+            document.getElementById('newNoteBtn').addEventListener('click', createNewNote);
+            document.getElementById('searchInput').addEventListener('input', handleSearch);
+            document.getElementById('courseFilter').addEventListener('change', filterNotes);
+            document.getElementById('tagFilter').addEventListener('change', filterNotes);
+        }
+
+        // 加载课程
+        function loadCourses() {
+            const token = localStorage.getItem('token');
+            fetch(`${API_BASE}/courses`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.data) {
+                    allCourses = data.data;
+                    renderCourseFilter();
+                }
+            })
+            .catch(err => console.error('Load courses error:', err));
+        }
+
+        // 渲染课程筛选器
+        function renderCourseFilter() {
+            const courseFilter = document.getElementById('courseFilter');
+            courseFilter.innerHTML = '<option value="">所有课程</option>';
+            allCourses.forEach(course => {
+                const option = document.createElement('option');
+                option.value = course.id;
+                option.textContent = course.title;
+                courseFilter.appendChild(option);
+            });
+        }
+
+        // 加载笔记
+        function loadNotes() {
+            const token = localStorage.getItem('token');
+            fetch(`${API_BASE}/notes/my`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.data) {
+                    allNotes = data.data;
+                    renderNotesList(allNotes);
+                    renderTags(allNotes);
+
+                    if (allNotes.length === 0) {
+                        showEmptyState();
+                    }
+                } else {
+                    allNotes = [];
+                    renderNotesList([]);
+                    showEmptyState();
+                }
+            })
+            .catch(err => {
+                console.error('Load notes error:', err);
+                allNotes = [];
+                renderNotesList([]);
+                showEmptyState();
+            });
+        }
+
+        // 渲染笔记列表
+        function renderNotesList(notes) {
+            const notesList = document.getElementById('notesList');
+
+            if (notes.length === 0) {
+                notesList.innerHTML = `
+                    <div style="padding: 20px; text-align: center; color: var(--text-tertiary);">
+                        <p>暂无笔记</p>
+                    </div>
+                `;
+                return;
+            }
+
+            notesList.innerHTML = notes.map(note => `
+                <div class="note-item ${note.id === currentNoteId ? 'active' : ''}" onclick="selectNote(${note.id})">
+                    <div class="note-item-title">${escapeHtml(note.title || '无标题')}</div>
+                    <div class="note-item-preview">${escapeHtml(note.content?.substring(0, 100) || '无内容')}</div>
+                    <div class="note-item-meta">
+                        <span class="note-item-course">${getCourseName(note.courseId)}</span>
+                        <span>${formatDate(note.createdAt)}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 渲染标签筛选器
+        function renderTags(notes) {
+            const allTags = new Set();
+            notes.forEach(note => {
+                if (note.tags) {
+                    note.tags.split(',').forEach(tag => {
+                        const trimmedTag = tag.trim();
+                        if (trimmedTag) allTags.add(trimmedTag);
+                    });
+                }
+            });
+
+            const tagFilter = document.getElementById('tagFilter');
+            tagFilter.innerHTML = '<option value="">所有标签</option>';
+            Array.from(allTags).sort().forEach(tag => {
+                const option = document.createElement('option');
+                option.value = tag;
+                option.textContent = tag;
+                tagFilter.appendChild(option);
+            });
+        }
+
+        // 选择笔记
+        function selectNote(noteId) {
+            currentNoteId = noteId;
+            const note = allNotes.find(n => n.id === noteId);
+            if (note) {
+                renderNoteViewer(note);
+                renderNotesList(allNotes);
+            }
+        }
+
+        // 渲染笔记查看器
+        function renderNoteViewer(note) {
+            const mainContent = document.getElementById('mainContent');
+            const tags = note.tags ? note.tags.split(',').map(t => t.trim()).filter(t => t) : [];
+
+            mainContent.innerHTML = `
+                <div class="note-viewer">
+                    <div class="note-header">
+                        <div class="note-header-top">
+                            <h1 class="note-title">${escapeHtml(note.title)}</h1>
+                            <div class="note-actions">
+                                <button class="icon-btn" onclick="editNote(${note.id})" title="编辑">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                    </svg>
+                                </button>
+                                <button class="icon-btn" onclick="deleteNote(${note.id})" title="删除">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"/>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="note-meta-info">
+                            <div class="note-meta-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                                </svg>
+                                ${getCourseName(note.courseId)}
+                            </div>
+                            <div class="note-meta-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                    <line x1="16" y1="2" x2="16" y2="6"/>
+                                    <line x1="8" y1="2" x2="8" y2="6"/>
+                                    <line x1="3" y1="10" x2="21" y2="10"/>
+                                </svg>
+                                ${formatDate(note.createdAt)}
+                            </div>
+                        </div>
+                        ${tags.length > 0 ? `
+                            <div class="note-tags">
+                                ${tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="note-body">
+                        <div class="note-content">${escapeHtml(note.content)}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 创建新笔记
+        function createNewNote() {
+            currentNoteId = null;
+            renderNoteEditor();
+        }
+
+        // 编辑笔记
+        function editNote(noteId) {
+            const note = allNotes.find(n => n.id === noteId);
+            if (note) {
+                currentNoteId = noteId;
+                renderNoteEditor(note);
+            }
+        }
+
+        // 渲染笔记编辑器
+        function renderNoteEditor(note = null) {
+            const mainContent = document.getElementById('mainContent');
+            const isEdit = note !== null;
+
+            mainContent.innerHTML = `
+                <div class="note-editor">
+                    <div class="editor-header">
+                        <div class="editor-title">${isEdit ? '编辑笔记' : '新建笔记'}</div>
+                        <div class="editor-actions">
+                            <button class="btn btn-secondary" onclick="cancelEdit()">取消</button>
+                            <button class="btn btn-primary" onclick="saveNote()">保存</button>
+                        </div>
+                    </div>
+                    <div class="editor-body">
+                        <div class="editor-container">
+                            <div class="form-field">
+                                <label class="field-label">标题</label>
+                                <input type="text" class="field-input" id="noteTitle" placeholder="输入笔记标题" value="${escapeHtml(note?.title || '')}">
+                            </div>
+                            <div class="form-field">
+                                <label class="field-label">关联课程</label>
+                                <select class="field-input" id="noteCourse">
+                                    <option value="">选择课程（可选）</option>
+                                    ${allCourses.map(course => `
+                                        <option value="${course.id}" ${note?.courseId === course.id ? 'selected' : ''}>
+                                            ${escapeHtml(course.title)}
+                                        </option>
+                                    `).join('')}
+                                </select>
+                            </div>
+                            <div class="form-field">
+                                <label class="field-label">标签</label>
+                                <input type="text" class="field-input" id="noteTags" placeholder="输入标签，用逗号分隔" value="${escapeHtml(note?.tags || '')}">
+                            </div>
+                            <div class="form-field">
+                                <label class="field-label">内容</label>
+                                <textarea class="field-textarea" id="noteContent" placeholder="开始记录你的学习笔记...">${escapeHtml(note?.content || '')}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 保存笔记
+        function saveNote() {
+            const title = document.getElementById('noteTitle').value.trim();
+            const courseId = document.getElementById('noteCourse').value;
+            const tags = document.getElementById('noteTags').value.trim();
+            const content = document.getElementById('noteContent').value.trim();
+
+            if (!title) {
+                showToast('请输入笔记标题');
+                return;
+            }
+
+            if (!content) {
+                showToast('请输入笔记内容');
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            const url = currentNoteId ? `${API_BASE}/notes/${currentNoteId}` : `${API_BASE}/notes`;
+            const method = currentNoteId ? 'PUT' : 'POST';
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    title,
+                    courseId: courseId || null,
+                    tags,
+                    content
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('保存成功');
+                    loadNotes();
+                    if (data.data) {
+                        selectNote(data.data.id || data.data);
+                    }
+                } else {
+                    showToast(data.message || '保存失败');
+                }
+            })
+            .catch(err => {
+                console.error('Save note error:', err);
+                showToast('保存失败');
+            });
+        }
+
+        // 删除笔记
+        function deleteNote(noteId) {
+            if (!confirm('确定要删除这个笔记吗？')) {
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            fetch(`${API_BASE}/notes/${noteId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('删除成功');
+                    currentNoteId = null;
+                    loadNotes();
+                    showEmptyState();
+                } else {
+                    showToast(data.message || '删除失败');
+                }
+            })
+            .catch(err => {
+                console.error('Delete note error:', err);
+                showToast('删除失败');
+            });
+        }
+
+        // 取消编辑
+        function cancelEdit() {
+            if (currentNoteId) {
+                selectNote(currentNoteId);
+            } else {
+                showEmptyState();
+            }
+        }
+
+        // 搜索笔记
+        function handleSearch(e) {
+            const keyword = e.target.value.toLowerCase();
+            const filtered = allNotes.filter(note =>
+                note.title?.toLowerCase().includes(keyword) ||
+                note.content?.toLowerCase().includes(keyword)
+            );
+            renderNotesList(filtered);
+        }
+
+        // 筛选笔记
+        function filterNotes() {
+            const courseId = document.getElementById('courseFilter').value;
+            const tag = document.getElementById('tagFilter').value;
+
+            let filtered = allNotes;
+
+            if (courseId) {
+                filtered = filtered.filter(note => note.courseId == courseId);
+            }
+
+            if (tag) {
+                filtered = filtered.filter(note =>
+                    note.tags && note.tags.split(',').map(t => t.trim()).includes(tag)
+                );
+            }
+
+            renderNotesList(filtered);
+        }
+
+        // 显示空状态
+        function showEmptyState() {
+            const mainContent = document.getElementById('mainContent');
+            mainContent.innerHTML = `
+                <div class="empty-state">
+                    <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="12" y1="18" x2="12" y2="12"/>
+                        <line x1="9" y1="15" x2="15" y2="15"/>
+                    </svg>
+                    <h2 class="empty-title">开始记录你的学习</h2>
+                    <p class="empty-description">创建笔记来记录学习心得、重要知识点和思考</p>
+                    <button class="btn btn-primary btn-lg" onclick="createNewNote()">创建第一个笔记</button>
+                </div>
+            `;
+        }
+
+        // 工具函数
+        function getCourseName(courseId) {
+            if (!courseId) return '未分类';
+            const course = allCourses.find(c => c.id === courseId);
+            return course ? course.title : '未知课程';
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diff = now - date;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+            if (days === 0) return '今天';
+            if (days === 1) return '昨天';
+            if (days < 7) return `${days}天前`;
+
+            return date.toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric' });
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.classList.add('show'), 100);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
     </script>
 </body>
 </html>

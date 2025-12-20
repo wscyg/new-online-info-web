@@ -3,177 +3,445 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avatar 换装系统 - CodeArena</title>
+    <title>Avatar 换装系统 - AI 信息未来</title>
 
-    <!-- TailwindCSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Apple Design CSS -->
+    <link rel="stylesheet" href="../styles/apple-design.css">
 
     <style>
+        /* Page-specific styles */
         body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: #e2e8f0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding-top: 48px;
             min-height: 100vh;
         }
 
-        .avatar-container {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        .page-header {
+            padding: 40px 0 32px;
+            text-align: center;
+        }
+
+        .page-title {
+            font-size: 40px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            font-size: 17px;
+            color: var(--text-secondary);
+        }
+
+        .avatar-preview {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+        }
+
+        .avatar-canvas-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: 20px;
+        }
+
+        #avatar-canvas {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+        }
+
+        .avatar-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .avatar-stats {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .avatar-stats h3 {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 15px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+        }
+
+        .stat-value {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .collection-panel {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+        }
+
+        .tab-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: 1px solid transparent;
+            border-radius: var(--radius-full);
+            font-size: 15px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .tab-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 6px 14px;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .filter-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .filter-btn.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        .skin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 16px;
         }
 
         .skin-card {
-            background: rgba(30, 41, 59, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            transition: all 0.3s ease;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 12px;
             cursor: pointer;
+            transition: all var(--transition-fast);
+            position: relative;
         }
 
         .skin-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(79, 70, 229, 0.5);
-            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3);
+            transform: translateY(-2px);
+            border-color: var(--accent);
+            box-shadow: var(--shadow-card);
         }
 
         .skin-card.equipped {
-            border-color: #4f46e5;
-            background: rgba(79, 70, 229, 0.2);
+            border-color: var(--accent);
+            background: rgba(0, 113, 227, 0.05);
         }
 
-        .rarity-common { border-left: 4px solid #94a3b8; }
-        .rarity-rare { border-left: 4px solid #3b82f6; }
-        .rarity-epic { border-left: 4px solid #a855f7; }
-        .rarity-legendary { border-left: 4px solid #f59e0b; }
-        .rarity-mythic { border-left: 4px solid #ef4444; }
+        .skin-card.rarity-common { border-left-width: 3px; border-left-color: #86868b; }
+        .skin-card.rarity-rare { border-left-width: 3px; border-left-color: #0071e3; }
+        .skin-card.rarity-epic { border-left-width: 3px; border-left-color: #a855f7; }
+        .skin-card.rarity-legendary { border-left-width: 3px; border-left-color: #f59e0b; }
+        .skin-card.rarity-mythic { border-left-width: 3px; border-left-color: #ef4444; }
 
-        #avatar-canvas {
-            border: 2px solid rgba(79, 70, 229, 0.5);
-            border-radius: 16px;
-            background: rgba(15, 23, 42, 0.8);
+        .skin-image-wrapper {
+            aspect-ratio: 1;
+            background: var(--bg-primary);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            overflow: hidden;
         }
 
-        .tab-button {
-            padding: 0.75rem 1.5rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid transparent;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        .skin-image-wrapper img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
         }
 
-        .tab-button:hover {
-            background: rgba(79, 70, 229, 0.2);
+        .skin-info {
+            text-align: center;
         }
 
-        .tab-button.active {
-            background: rgba(79, 70, 229, 0.3);
-            border-color: #4f46e5;
+        .skin-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .skin-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+        }
+
+        .skin-part {
+            color: var(--text-secondary);
+        }
+
+        .skin-rarity {
+            font-weight: 500;
+        }
+
+        .equipped-badge {
+            margin-top: 8px;
+            padding: 4px 8px;
+            background: rgba(52, 199, 89, 0.1);
+            color: #34c759;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            opacity: 0.3;
+        }
+
+        /* SVG Icons */
+        .icon {
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .icon-refresh { fill: none; stroke: currentColor; stroke-width: 2; }
+        .icon-download { fill: none; stroke: currentColor; stroke-width: 2; }
+        .icon-magic { fill: currentColor; }
+        .icon-check { fill: currentColor; }
+
+        /* Layout */
+        .layout {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 22px 40px;
+        }
+
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 968px) {
+            .layout-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .skin-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container mx-auto px-4 py-8">
-        <!-- 页头 -->
-        <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold mb-4">
-                <span style="background: linear-gradient(135deg, #00e5ff, #d946ef);
-                             -webkit-background-clip: text;
-                             -webkit-text-fill-color: transparent;">
-                    Avatar 换装系统
-                </span>
-            </h1>
-            <p class="text-gray-400">DNF风格纸娃娃系统 - 打造你的专属形象</p>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="nav-logo">AI 信息未来</div>
+            <div class="nav-menu">
+                <a href="../index.html" class="nav-link">首页</a>
+                <a href="courses.html" class="nav-link">课程</a>
+                <a href="community.html" class="nav-link">社区</a>
+                <a href="pk-arena.html" class="nav-link">PK竞技</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+                <div class="user-menu" id="userMenu">
+                    <!-- User avatar will be inserted here -->
+                </div>
+            </div>
         </div>
+    </nav>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- 左侧：Avatar预览 -->
-            <div class="lg:col-span-1">
-                <div class="avatar-container p-6">
-                    <h2 class="text-xl font-bold mb-4 text-center">当前装扮</h2>
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="layout">
+            <h1 class="page-title">Avatar 换装系统</h1>
+            <p class="page-subtitle">打造你的专属形象</p>
+        </div>
+    </div>
 
-                    <!-- Canvas画布 -->
-                    <div class="flex justify-center mb-4">
+    <!-- Main Content -->
+    <div class="layout">
+        <div class="layout-grid">
+            <!-- Left: Avatar Preview -->
+            <div>
+                <div class="avatar-preview">
+                    <h2 style="font-size: 19px; font-weight: 600; margin-bottom: 16px; text-align: center;">当前装扮</h2>
+
+                    <!-- Canvas -->
+                    <div class="avatar-canvas-wrapper">
                         <canvas id="avatar-canvas" width="300" height="400"></canvas>
                     </div>
 
-                    <!-- 操作按钮 -->
-                    <div class="flex gap-2 justify-center flex-wrap">
-                        <button onclick="refreshAvatar()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm">
-                            <i class="fas fa-sync-alt mr-2"></i>刷新
+                    <!-- Actions -->
+                    <div class="avatar-actions">
+                        <button class="btn btn-sm btn-secondary" onclick="refreshAvatar()">
+                            <svg class="icon icon-refresh" viewBox="0 0 24 24">
+                                <polyline points="23 4 23 10 17 10"></polyline>
+                                <polyline points="1 20 1 14 7 14"></polyline>
+                                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                            </svg>
+                            刷新
                         </button>
-                        <button onclick="downloadAvatar()" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-sm">
-                            <i class="fas fa-download mr-2"></i>下载
+                        <button class="btn btn-sm btn-secondary" onclick="downloadAvatar()">
+                            <svg class="icon icon-download" viewBox="0 0 24 24">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            下载
                         </button>
-                        <button onclick="toggleAnimation()" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-sm">
-                            <i class="fas fa-magic mr-2"></i>动画
+                        <button class="btn btn-sm btn-secondary" onclick="toggleAnimation()">
+                            <svg class="icon icon-magic" viewBox="0 0 24 24">
+                                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
+                            </svg>
+                            动画
                         </button>
                     </div>
 
-                    <!-- 统计信息 -->
-                    <div class="mt-6 pt-6 border-t border-gray-700">
-                        <h3 class="font-semibold mb-3">穿戴统计</h3>
-                        <div class="space-y-2 text-sm">
-                            <div class="flex justify-between">
-                                <span class="text-gray-400">光环：</span>
-                                <span id="stat-aura">未装备</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-400">素体：</span>
-                                <span id="stat-body">未装备</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-400">武器：</span>
-                                <span id="stat-weapon">未装备</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-400">发型：</span>
-                                <span id="stat-hair">未装备</span>
-                            </div>
+                    <!-- Stats -->
+                    <div class="avatar-stats">
+                        <h3>穿戴统计</h3>
+                        <div class="stat-item">
+                            <span class="stat-label">光环</span>
+                            <span class="stat-value" id="stat-aura">未装备</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">素体</span>
+                            <span class="stat-value" id="stat-body">未装备</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">武器</span>
+                            <span class="stat-value" id="stat-weapon">未装备</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">发型</span>
+                            <span class="stat-value" id="stat-hair">未装备</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 右侧：衣柜和商城 -->
-            <div class="lg:col-span-2">
-                <div class="avatar-container p-6">
-                    <!-- 标签页 -->
-                    <div class="flex gap-2 mb-6 overflow-x-auto">
-                        <button class="tab-button active" onclick="switchTab('inventory')">
-                            <i class="fas fa-box mr-2"></i>我的衣柜
+            <!-- Right: Collection & Shop -->
+            <div>
+                <div class="collection-panel">
+                    <!-- Tabs -->
+                    <div class="tab-bar">
+                        <button class="tab-btn active" onclick="switchTab('inventory', event)">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="margin-right: 6px;">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                            我的衣柜
                         </button>
-                        <button class="tab-button" onclick="switchTab('shop')">
-                            <i class="fas fa-store mr-2"></i>皮肤商城
+                        <button class="tab-btn" onclick="switchTab('shop', event)">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="margin-right: 6px;">
+                                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                                <line x1="3" y1="6" x2="21" y2="6"></line>
+                                <path d="M16 10a4 4 0 0 1-8 0"></path>
+                            </svg>
+                            皮肤商城
                         </button>
                     </div>
 
-                    <!-- 部位筛选 -->
-                    <div class="flex gap-2 mb-6 flex-wrap">
-                        <button class="tab-button text-sm" onclick="filterByPart('ALL')">全部</button>
-                        <button class="tab-button text-sm" onclick="filterByPart('AURA')">光环</button>
-                        <button class="tab-button text-sm" onclick="filterByPart('BODY')">素体</button>
-                        <button class="tab-button text-sm" onclick="filterByPart('WEAPON')">武器</button>
-                        <button class="tab-button text-sm" onclick="filterByPart('HAIR')">发型</button>
-                        <button class="tab-button text-sm" onclick="filterByPart('EFFECT')">特效</button>
+                    <!-- Filters -->
+                    <div class="filter-bar">
+                        <button class="filter-btn active" onclick="filterByPart('ALL', event)">全部</button>
+                        <button class="filter-btn" onclick="filterByPart('AURA', event)">光环</button>
+                        <button class="filter-btn" onclick="filterByPart('BODY', event)">素体</button>
+                        <button class="filter-btn" onclick="filterByPart('WEAPON', event)">武器</button>
+                        <button class="filter-btn" onclick="filterByPart('HAIR', event)">发型</button>
+                        <button class="filter-btn" onclick="filterByPart('EFFECT', event)">特效</button>
                     </div>
 
-                    <!-- 我的衣柜内容 -->
+                    <!-- Inventory Content -->
                     <div id="inventory-content">
-                        <div id="inventory-grid" class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                            <!-- 动态加载 -->
+                        <div id="inventory-grid" class="skin-grid">
+                            <!-- Dynamic content -->
                         </div>
                     </div>
 
-                    <!-- 商城内容 -->
+                    <!-- Shop Content -->
                     <div id="shop-content" style="display: none;">
-                        <div id="shop-grid" class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                            <!-- 动态加载 -->
+                        <div id="shop-grid" class="skin-grid">
+                            <!-- Dynamic content -->
                         </div>
                     </div>
                 </div>
@@ -181,42 +449,136 @@
         </div>
     </div>
 
-    <!-- 引入Avatar渲染器 -->
+    <!-- Avatar Renderer -->
     <script src="../components/AvatarRenderer.js"></script>
 
     <script>
-        // 全局变量
+        // Constants
+        const API_BASE = '/api';
+
+        // Global variables
         let avatarRenderer;
-        let currentUserId = 1; // 示例用户ID（实际应从登录状态获取）
+        let currentUserId = null;
         let currentTab = 'inventory';
         let currentFilter = 'ALL';
         let animationEnabled = false;
 
-        // API配置
-        const apiBaseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? 'http://localhost:8070/api'
-            : 'http://42.194.245.66:8070/api';
-
-        // 初始化
+        // Initialize on page load
         document.addEventListener('DOMContentLoaded', async () => {
-            // 创建Avatar渲染器
+            initTheme();
+            initAuth();
+
+            // Create Avatar renderer
             avatarRenderer = new AvatarRenderer('avatar-canvas', 300, 400);
 
-            // 加载用户装备
+            // Load user equipment
             await refreshAvatar();
 
-            // 加载衣柜
+            // Load inventory
             await loadInventory();
         });
 
-        // 刷新Avatar
-        async function refreshAvatar() {
-            await avatarRenderer.loadEquippedSkins(currentUserId);
-            avatarRenderer.render();
-            updateStats();
+        // Theme Management
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
         }
 
-        // 更新统计信息
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Auth Management
+        function initAuth() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+
+            if (!token || !userStr) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const user = JSON.parse(userStr);
+                currentUserId = user.id;
+                renderUserMenu(user);
+            } catch (error) {
+                console.error('Failed to parse user:', error);
+                window.location.href = 'login.html';
+            }
+        }
+
+        function renderUserMenu(user) {
+            const userMenu = document.getElementById('userMenu');
+            const initial = user.username ? user.username.charAt(0).toUpperCase() : 'U';
+
+            userMenu.innerHTML = `
+                <div class="user-avatar" onclick="toggleUserDropdown(event)">
+                    ${user.avatar ? `<img src="${user.avatar}" alt="${user.username}">` : initial}
+                </div>
+                <div class="dropdown" id="userDropdown">
+                    <div class="dropdown-item" onclick="window.location.href='profile.html'">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        个人资料
+                    </div>
+                    <div class="dropdown-item" onclick="window.location.href='avatar-showcase.html'" style="color: var(--accent);">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
+                        </svg>
+                        Avatar 装扮
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item" onclick="logout()">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        退出登录
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleUserDropdown(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', () => {
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Avatar Functions
+        async function refreshAvatar() {
+            if (!currentUserId) return;
+
+            try {
+                await avatarRenderer.loadEquippedSkins(currentUserId);
+                avatarRenderer.render();
+                updateStats();
+            } catch (error) {
+                console.error('Failed to refresh avatar:', error);
+            }
+        }
+
         function updateStats() {
             const stats = {
                 AURA: '未装备',
@@ -237,12 +599,10 @@
             document.getElementById('stat-hair').textContent = stats.HAIR;
         }
 
-        // 下载Avatar
         function downloadAvatar() {
             avatarRenderer.downloadAsPNG(`avatar_${currentUserId}.png`);
         }
 
-        // 切换动画
         function toggleAnimation() {
             animationEnabled = !animationEnabled;
             if (animationEnabled) {
@@ -253,17 +613,17 @@
             }
         }
 
-        // 切换标签页
-        function switchTab(tab) {
+        // Tab Management
+        function switchTab(tab, event) {
             currentTab = tab;
 
-            // 更新按钮状态
-            document.querySelectorAll('.tab-button').forEach(btn => {
+            // Update button states
+            document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            event.target.classList.add('active');
+            event.target.closest('.tab-btn').classList.add('active');
 
-            // 显示/隐藏内容
+            // Show/hide content
             if (tab === 'inventory') {
                 document.getElementById('inventory-content').style.display = 'block';
                 document.getElementById('shop-content').style.display = 'none';
@@ -275,16 +635,34 @@
             }
         }
 
-        // 加载衣柜
+        // Filter Management
+        function filterByPart(part, event) {
+            currentFilter = part;
+
+            // Update button states
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Reload current tab content
+            if (currentTab === 'inventory') {
+                loadInventory();
+            } else {
+                loadShop();
+            }
+        }
+
+        // Load Inventory
         async function loadInventory() {
             const grid = document.getElementById('inventory-grid');
-            grid.innerHTML = '<p class="col-span-full text-center text-gray-400">加载中...</p>';
+            grid.innerHTML = createLoadingState();
 
             try {
-                // 这里需要添加token验证
-                const response = await fetch(`${apiBaseUrl}/skins/inventory`, {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/skins/inventory`, {
                     headers: {
-                        'Authorization': 'Bearer YOUR_TOKEN_HERE'
+                        'Authorization': `Bearer ${token}`
                     }
                 });
 
@@ -296,48 +674,56 @@
                 renderInventory(result.data.inventory);
 
             } catch (error) {
-                console.error('加载衣柜失败:', error);
-                grid.innerHTML = '<p class="col-span-full text-center text-red-400">加载失败，请登录后重试</p>';
+                console.error('Failed to load inventory:', error);
+                grid.innerHTML = createEmptyState('加载失败，请重试');
             }
         }
 
-        // 渲染衣柜
+        // Render Inventory
         function renderInventory(inventory) {
             const grid = document.getElementById('inventory-grid');
 
-            if (inventory.length === 0) {
-                grid.innerHTML = '<p class="col-span-full text-center text-gray-400">衣柜空空如也，去商城看看吧！</p>';
+            // Filter by part type
+            let filtered = inventory;
+            if (currentFilter !== 'ALL') {
+                filtered = inventory.filter(item => item.skinItem.partType === currentFilter);
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = createEmptyState('暂无皮肤');
                 return;
             }
 
-            grid.innerHTML = inventory.map(item => {
+            grid.innerHTML = filtered.map(item => {
                 const skin = item.skinItem;
                 return `
-                    <div class="skin-card ${item.isEquipped ? 'equipped' : ''} rarity-${skin.rarity.toLowerCase()} p-4"
+                    <div class="skin-card ${item.isEquipped ? 'equipped' : ''} rarity-${skin.rarity.toLowerCase()}"
                          onclick="equipSkin(${skin.id})">
-                        <div class="aspect-square bg-gray-800 rounded-lg mb-3 flex items-center justify-center">
+                        <div class="skin-image-wrapper">
                             <img src="${skin.imageUrl}" alt="${skin.name}"
-                                 class="max-w-full max-h-full object-contain"
-                                 onerror="this.src='/assets/placeholder.png'">
+                                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect fill=%22%23f5f5f7%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2224%22 fill=%22%2386868b%22%3E?%3C/text%3E%3C/svg%3E'">
                         </div>
-                        <h4 class="font-semibold text-sm mb-1">${skin.name}</h4>
-                        <div class="flex justify-between items-center text-xs text-gray-400">
-                            <span>${translatePartType(skin.partType)}</span>
-                            <span class="text-${getRarityColor(skin.rarity)}">${translateRarity(skin.rarity)}</span>
+                        <div class="skin-info">
+                            <div class="skin-name">${skin.name}</div>
+                            <div class="skin-meta">
+                                <span class="skin-part">${translatePartType(skin.partType)}</span>
+                                <span class="skin-rarity" style="color: ${getRarityColorValue(skin.rarity)}">${translateRarity(skin.rarity)}</span>
+                            </div>
+                            ${item.isEquipped ? '<div class="equipped-badge"><svg class="icon icon-check" viewBox="0 0 24 24" style="width: 12px; height: 12px; margin-right: 4px;"><polyline points="20 6 9 17 4 12" fill="none" stroke="currentColor" stroke-width="2"></polyline></svg>已穿戴</div>' : ''}
                         </div>
-                        ${item.isEquipped ? '<div class="mt-2 text-xs text-green-400"><i class="fas fa-check mr-1"></i>已穿戴</div>' : ''}
                     </div>
                 `;
             }).join('');
         }
 
-        // 穿戴皮肤
+        // Equip Skin
         async function equipSkin(skinId) {
             try {
-                const response = await fetch(`${apiBaseUrl}/skins/equip/${skinId}`, {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/skins/equip/${skinId}`, {
                     method: 'POST',
                     headers: {
-                        'Authorization': 'Bearer YOUR_TOKEN_HERE'
+                        'Authorization': `Bearer ${token}`
                     }
                 });
 
@@ -345,17 +731,24 @@
                 if (result.success) {
                     await refreshAvatar();
                     await loadInventory();
+                    showToast('穿戴成功');
                 } else {
-                    alert(result.message);
+                    showToast(result.message, 'error');
                 }
 
             } catch (error) {
-                console.error('穿戴失败:', error);
-                alert('穿戴失败');
+                console.error('Failed to equip skin:', error);
+                showToast('穿戴失败', 'error');
             }
         }
 
-        // 翻译函数
+        // Load Shop
+        function loadShop() {
+            const grid = document.getElementById('shop-grid');
+            grid.innerHTML = createEmptyState('商城功能开发中');
+        }
+
+        // Helper Functions
         function translatePartType(type) {
             const map = { AURA: '光环', BODY: '素体', WEAPON: '武器', HAIR: '发型', EFFECT: '特效' };
             return map[type] || type;
@@ -366,26 +759,52 @@
             return map[rarity] || rarity;
         }
 
-        function getRarityColor(rarity) {
-            const map = { COMMON: 'gray-400', RARE: 'blue-400', EPIC: 'purple-400', LEGENDARY: 'yellow-400', MYTHIC: 'red-400' };
-            return map[rarity] || 'gray-400';
+        function getRarityColorValue(rarity) {
+            const map = {
+                COMMON: '#86868b',
+                RARE: '#0071e3',
+                EPIC: '#a855f7',
+                LEGENDARY: '#f59e0b',
+                MYTHIC: '#ef4444'
+            };
+            return map[rarity] || '#86868b';
         }
 
-        // 部位筛选
-        function filterByPart(part) {
-            currentFilter = part;
-            // 重新加载当前标签页内容
-            if (currentTab === 'inventory') {
-                loadInventory();
-            } else {
-                loadShop();
-            }
+        function createLoadingState() {
+            return `
+                <div class="empty-state" style="grid-column: 1 / -1;">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                    <p>加载中...</p>
+                </div>
+            `;
         }
 
-        // 加载商城（占位）
-        function loadShop() {
-            const grid = document.getElementById('shop-grid');
-            grid.innerHTML = '<p class="col-span-full text-center text-gray-400">商城功能开发中...</p>';
+        function createEmptyState(message) {
+            return `
+                <div class="empty-state" style="grid-column: 1 / -1;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.classList.add('show'), 100);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
     </script>
 </body>

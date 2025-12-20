@@ -3,54 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>成就分享 - AI未来学院</title>
+    <title>成就分享 - AI 信息未来</title>
+    <link rel="stylesheet" href="../styles/apple-design.css">
     <!-- html2canvas库 -->
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <!-- API配置 -->
     <script src="../config/api-config.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding-top: 48px;
             min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: var(--bg-secondary);
         }
 
-        .container {
-            max-width: 500px;
-            width: 100%;
+        /* Main container */
+        .share-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 48px 22px;
         }
 
-        /* 分享卡片容器 */
-        .share-card-container {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(20px);
-            border-radius: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        /* Share card container - visible wrapper */
+        .share-card-wrapper {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border-color);
+            padding: 32px;
+            box-shadow: var(--shadow-card);
+            margin-bottom: 24px;
         }
 
-        /* 分享卡片 - 将被截图 */
+        /* Share card - will be captured */
         .share-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 1.5rem;
-            padding: 3rem;
-            width: 450px;
+            border-radius: var(--radius-lg);
+            padding: 48px 32px;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
             position: relative;
             overflow: hidden;
         }
 
-        /* 装饰性背景 */
+        /* Decorative background */
         .card-bg {
             position: absolute;
             top: 0;
@@ -70,40 +65,48 @@
             color: white;
         }
 
-        /* 成就图标 */
+        /* Achievement icon with SVG */
         .achievement-icon {
             width: 120px;
             height: 120px;
-            margin: 0 auto 1.5rem;
+            margin: 0 auto 24px;
             background: rgba(255, 255, 255, 0.2);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 4rem;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
+        .achievement-icon svg {
+            width: 64px;
+            height: 64px;
+            fill: white;
+        }
+
         .achievement-title {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            letter-spacing: -0.02em;
         }
 
         .achievement-desc {
-            font-size: 1.1rem;
-            margin-bottom: 2rem;
+            font-size: 17px;
+            margin-bottom: 32px;
             color: rgba(255, 255, 255, 0.9);
+            line-height: 1.5;
         }
 
         .achievement-stats {
             display: flex;
             justify-content: space-around;
-            margin-bottom: 2rem;
-            padding: 1.5rem;
+            margin-bottom: 32px;
+            padding: 24px 16px;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 1rem;
+            border-radius: var(--radius-md);
+            backdrop-filter: blur(10px);
         }
 
         .stat-item {
@@ -111,25 +114,26 @@
         }
 
         .stat-value {
-            font-size: 1.8rem;
-            font-weight: bold;
-            margin-bottom: 0.3rem;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            letter-spacing: -0.02em;
         }
 
         .stat-label {
-            font-size: 0.9rem;
+            font-size: 13px;
             color: rgba(255, 255, 255, 0.8);
         }
 
         .achievement-date {
-            font-size: 0.95rem;
+            font-size: 15px;
             color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 1.5rem;
+            margin-bottom: 24px;
         }
 
-        /* 底部品牌 */
+        /* Card footer */
         .card-footer {
-            padding-top: 1.5rem;
+            padding-top: 24px;
             border-top: 1px solid rgba(255, 255, 255, 0.2);
             display: flex;
             justify-content: space-between;
@@ -137,72 +141,68 @@
         }
 
         .card-logo {
-            font-size: 1.2rem;
-            font-weight: bold;
+            font-size: 17px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-logo svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
         }
 
         .card-qrcode {
             width: 60px;
             height: 60px;
             background: white;
-            border-radius: 0.5rem;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.7rem;
-            color: #333;
+            font-size: 11px;
+            color: #1d1d1f;
+            font-weight: 500;
         }
 
-        /* 按钮组 */
+        /* Button group */
         .button-group {
             display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
-        .btn {
+        .button-group .btn {
             flex: 1;
-            padding: 1rem;
-            border: none;
-            border-radius: 1rem;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
+        .btn svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.6);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-3px);
-        }
-
-        /* 预览提示 */
+        /* Preview hint */
         .preview-hint {
             text-align: center;
-            color: rgba(255, 255, 255, 0.8);
-            margin-top: 1rem;
-            font-size: 0.9rem;
+            color: var(--text-tertiary);
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
-        /* 加载动画 */
-        .loading {
+        .preview-hint svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
             display: none;
             position: fixed;
             top: 0;
@@ -213,64 +213,117 @@
             z-index: 9999;
             align-items: center;
             justify-content: center;
+            backdrop-filter: blur(4px);
         }
 
-        .loading.show {
+        .loading-overlay.show {
             display: flex;
         }
 
+        .loading-content {
+            text-align: center;
+            color: white;
+        }
+
         .loading-spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid white;
+            width: 48px;
+            height: 48px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to { transform: rotate(360deg); }
         }
 
-        /* 成功提示 */
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(16, 185, 129, 0.95);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-            z-index: 10000;
-            opacity: 0;
-            transform: translateY(-20px);
-            transition: all 0.3s ease;
+        .loading-text {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.8);
         }
 
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
+        /* Responsive */
+        @media (max-width: 768px) {
+            .share-container {
+                padding: 24px 16px;
+            }
+
+            .share-card-wrapper {
+                padding: 24px;
+            }
+
+            .share-card {
+                padding: 32px 24px;
+            }
+
+            .achievement-title {
+                font-size: 24px;
+            }
+
+            .achievement-stats {
+                padding: 16px 12px;
+            }
+
+            .stat-value {
+                font-size: 24px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .button-group .btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="share-card-container">
-            <!-- 分享卡片 -->
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="../index.html" class="nav-logo">AI 信息未来</a>
+            <div class="nav-menu">
+                <a href="../index.html" class="nav-link">首页</a>
+                <a href="./courses.html" class="nav-link">课程</a>
+                <a href="./community.html" class="nav-link">社区</a>
+                <a href="./code-arena.html" class="nav-link">PK竞技</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
+                    <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                </button>
+                <div class="user-menu" id="userMenu"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="share-container">
+        <div class="share-card-wrapper">
+            <!-- Share card - will be captured -->
             <div class="share-card" id="shareCard">
                 <div class="card-bg"></div>
                 <div class="card-content">
                     <div class="achievement-icon" id="cardIcon">
-                        🏆
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                        </svg>
                     </div>
-                    <div class="achievement-title" id="cardTitle">
-                        学习达人
-                    </div>
-                    <div class="achievement-desc" id="cardDesc">
-                        连续学习30天，完成10门课程
-                    </div>
+                    <div class="achievement-title" id="cardTitle">学习达人</div>
+                    <div class="achievement-desc" id="cardDesc">连续学习30天，完成10门课程</div>
                     <div class="achievement-stats">
                         <div class="stat-item">
                             <div class="stat-value" id="statValue1">30</div>
@@ -285,47 +338,77 @@
                             <div class="stat-label" id="statLabel3">超越%</div>
                         </div>
                     </div>
-                    <div class="achievement-date" id="cardDate">
-                        解锁时间: 2025-11-06
-                    </div>
+                    <div class="achievement-date" id="cardDate">解锁时间: 2025-11-06</div>
                     <div class="card-footer">
-                        <div class="card-logo">🎓 AI未来学院</div>
-                        <div class="card-qrcode">
-                            扫码查看
+                        <div class="card-logo">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 3L1 9L5 11.18V17.18L12 21L19 17.18V11.18L21 10.09V17H23V9L12 3ZM18.82 9L12 12.72L5.18 9L12 5.28L18.82 9ZM17 15.99L12 18.72L7 15.99V12.27L12 15L17 12.27V15.99Z"/>
+                            </svg>
+                            AI 信息未来
                         </div>
+                        <div class="card-qrcode">扫码查看</div>
                     </div>
                 </div>
             </div>
 
-            <!-- 按钮组 -->
+            <!-- Button group -->
             <div class="button-group">
                 <button class="btn btn-primary" onclick="generateShareImage()">
-                    📸 生成分享图片
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                        <circle cx="12" cy="13" r="4"/>
+                    </svg>
+                    生成分享图片
                 </button>
                 <button class="btn btn-secondary" onclick="goBack()">
-                    ← 返回
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="19" y1="12" x2="5" y2="12"/>
+                        <polyline points="12 19 5 12 12 5"/>
+                    </svg>
+                    返回
                 </button>
             </div>
 
             <div class="preview-hint">
-                💡 点击生成按钮即可下载分享图片
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                </svg>
+                点击生成按钮即可下载分享图片
             </div>
         </div>
     </div>
 
-    <!-- 加载动画 -->
-    <div class="loading" id="loading">
-        <div class="loading-spinner"></div>
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loading">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">正在生成图片...</div>
+        </div>
     </div>
 
-    <!-- 提示Toast -->
+    <!-- Toast notification -->
     <div class="toast" id="toast"></div>
 
     <script>
-        // 从URL参数获取成就数据
+        const API_BASE = '/api';
+
+        // Icon mapping
+        const iconMap = {
+            '🏆': '<path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>',
+            '🎯': '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+            '🔥': '<path d="M12 2C8 2 5 5 5 9c0 3.5 3 6.5 6 8 0-2-1-3.5-1-5.5 0-2 2-3.5 2-3.5s2 1.5 2 3.5c0 2-1 3.5-1 5.5 3-1.5 6-4.5 6-8 0-4-3-7-7-7z"/>',
+            '⭐': '<path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>',
+            '💎': '<path d="M12 2L2 7l10 13L22 7 12 2zM12 5.5L8.5 7 12 9.5 15.5 7 12 5.5z"/>',
+            '👑': '<path d="M5 16L3 5l5 4 4-6 4 6 5-4-2 11H5z"/>',
+            '🏅': '<circle cx="12" cy="8" r="6"/><path d="M8.5 13L7 22l5-3 5 3-1.5-9"/>',
+            '📚': '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+            '🚀': '<path d="M9 11L5 22l5-5 4 4 2-11-11 2 4 4-4 5z"/><path d="M13 3l7 7-3 3-7-7 3-3z"/>',
+            'default': '<path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>'
+        };
+
+        // Get achievement data from URL parameters
         function getAchievementData() {
             const params = new URLSearchParams(window.location.search);
-
             return {
                 icon: params.get('icon') || '🏆',
                 title: params.get('title') || '学习达人',
@@ -340,11 +423,15 @@
             };
         }
 
-        // 初始化卡片数据
+        // Initialize card data
         function initCard() {
             const data = getAchievementData();
 
-            document.getElementById('cardIcon').textContent = data.icon;
+            // Set icon with SVG
+            const iconElement = document.getElementById('cardIcon');
+            const svgPath = iconMap[data.icon] || iconMap['default'];
+            iconElement.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor">${svgPath}</svg>`;
+
             document.getElementById('cardTitle').textContent = data.title;
             document.getElementById('cardDesc').textContent = data.desc;
             document.getElementById('statValue1').textContent = data.stat1Value;
@@ -356,7 +443,7 @@
             document.getElementById('cardDate').textContent = `解锁时间: ${data.date}`;
         }
 
-        // 生成分享图片
+        // Generate share image
         async function generateShareImage() {
             const loading = document.getElementById('loading');
             loading.classList.add('show');
@@ -364,32 +451,32 @@
             try {
                 const card = document.getElementById('shareCard');
 
-                // 使用html2canvas截图
+                // Use html2canvas to capture
                 const canvas = await html2canvas(card, {
                     backgroundColor: null,
-                    scale: 2, // 提高清晰度
+                    scale: 2, // Higher quality
                     logging: false,
                     useCORS: true
                 });
 
-                // 转换为图片
+                // Convert to image
                 const dataUrl = canvas.toDataURL('image/png');
 
-                // 下载图片
+                // Download image
                 downloadImage(dataUrl, '成就分享-' + Date.now() + '.png');
 
-                // 显示成功提示
-                showToast('✅ 图片已生成！请查看下载文件夹');
+                // Show success message
+                showToast('图片已生成！请查看下载文件夹');
 
             } catch (error) {
                 console.error('生成图片失败:', error);
-                showToast('❌ 生成失败，请重试', 'error');
+                showToast('生成失败，请重试');
             } finally {
                 loading.classList.remove('show');
             }
         }
 
-        // 下载图片
+        // Download image
         function downloadImage(dataUrl, filename) {
             const link = document.createElement('a');
             link.href = dataUrl;
@@ -399,13 +486,10 @@
             document.body.removeChild(link);
         }
 
-        // 显示提示
-        function showToast(message, type = 'success') {
+        // Show toast notification
+        function showToast(message) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
-            toast.style.background = type === 'success'
-                ? 'rgba(16, 185, 129, 0.95)'
-                : 'rgba(239, 68, 68, 0.95)';
             toast.classList.add('show');
 
             setTimeout(() => {
@@ -413,13 +497,106 @@
             }, 3000);
         }
 
-        // 返回
+        // Go back
         function goBack() {
             window.history.back();
         }
 
-        // 页面加载时初始化
+        // Theme management
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const toggle = document.querySelector('.theme-toggle');
+            if (!toggle) return;
+
+            if (theme === 'dark') {
+                toggle.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                `;
+            } else {
+                toggle.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                `;
+            }
+        }
+
+        // User menu management
+        function updateUserMenu() {
+            const userMenu = document.getElementById('userMenu');
+            if (!userMenu) return;
+
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+            if (token && user.username) {
+                userMenu.innerHTML = `
+                    <div class="user-avatar" onclick="toggleDropdown()">
+                        ${user.username.charAt(0).toUpperCase()}
+                    </div>
+                    <div class="dropdown" id="userDropdown">
+                        <div class="dropdown-item" onclick="window.location.href='./profile.html'">个人中心</div>
+                        <div class="dropdown-item" onclick="window.location.href='./my-courses.html'">我的课程</div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item" onclick="logout()">退出登录</div>
+                    </div>
+                `;
+            } else {
+                userMenu.innerHTML = `
+                    <a href="./login.html" class="btn btn-primary btn-sm">登录</a>
+                `;
+            }
+        }
+
+        function toggleDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('show');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '../index.html';
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const userMenu = document.getElementById('userMenu');
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown && !userMenu.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
+            updateUserMenu();
             initCard();
         });
     </script>

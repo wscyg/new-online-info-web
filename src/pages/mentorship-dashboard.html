@@ -3,115 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>师徒系统 - CodeArena</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>师徒系统 - AI 信息未来</title>
+    <link rel="stylesheet" href="../styles/apple-design.css">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            font-family: 'Arial', sans-serif;
+            padding-top: 48px;
         }
 
-        .card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
+        .page-header {
+            padding: 48px 0 32px;
         }
 
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .mentor-badge {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .apprentice-badge {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 16px;
-            font-size: 12px;
+        .page-title {
+            font-size: 40px;
             font-weight: 600;
+            margin-bottom: 8px;
         }
 
-        .status-pending {
-            background: #fef3c7;
-            color: #92400e;
+        .page-subtitle {
+            font-size: 19px;
+            color: var(--text-secondary);
         }
 
-        .status-active {
-            background: #d1fae5;
-            color: #065f46;
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
         }
 
-        .status-graduated {
-            background: #dbeafe;
-            color: #1e40af;
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
         }
 
-        .status-dissolved {
-            background: #fee2e2;
-            color: #991b1b;
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-card);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .stat-label {
+            font-size: 17px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+        }
+
+        .stat-value {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .stat-description {
+            font-size: 14px;
+            color: var(--text-tertiary);
+            margin-top: 8px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .relationship-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: all var(--transition-fast);
+        }
+
+        .relationship-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-card);
+        }
+
+        .relationship-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .relationship-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            color: white;
+        }
+
+        .relationship-details {
+            flex: 1;
+        }
+
+        .relationship-name {
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .relationship-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .relationship-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-section {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .progress-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 8px;
         }
 
         .progress-bar {
-            height: 8px;
-            background: #e5e7eb;
-            border-radius: 4px;
+            height: 6px;
+            background: var(--bg-secondary);
+            border-radius: 3px;
             overflow: hidden;
         }
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            transition: width 0.3s ease;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--accent-light) 100%);
+            transition: width 0.5s var(--ease-out);
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
+        .progress-description {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-top: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 64px 24px;
+        }
+
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            background: var(--bg-secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .empty-title {
+            font-size: 21px;
             font-weight: 600;
-            transition: all 0.2s;
+            color: var(--text-primary);
+            margin-bottom: 8px;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-secondary {
-            background: white;
-            color: #667eea;
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: 2px solid #667eea;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .btn-secondary:hover {
-            background: #667eea;
-            color: white;
+        .empty-description {
+            font-size: 15px;
+            color: var(--text-secondary);
         }
 
         .modal {
@@ -119,12 +223,13 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 2000;
             align-items: center;
             justify-content: center;
+            backdrop-filter: blur(10px);
         }
 
         .modal.active {
@@ -132,155 +237,304 @@
         }
 
         .modal-content {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 32px;
             max-width: 500px;
             width: 90%;
             max-height: 80vh;
             overflow-y: auto;
+            box-shadow: var(--shadow-lg);
         }
 
-        .empty-state {
-            text-align: center;
-            padding: 48px 24px;
-            color: #6b7280;
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
         }
 
-        .empty-state i {
-            font-size: 64px;
-            color: #d1d5db;
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            background: transparent;
+            color: var(--text-secondary);
+        }
+
+        .icon-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .pending-card {
+            background: linear-gradient(135deg, rgba(255, 204, 0, 0.1) 0%, rgba(255, 149, 0, 0.1) 100%);
+            border: 1px solid rgba(255, 204, 0, 0.3);
+            border-radius: var(--radius-lg);
+            padding: 20px;
             margin-bottom: 16px;
+        }
+
+        .graduation-ready {
+            box-shadow: 0 0 20px rgba(0, 113, 227, 0.2);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .exp-indicator {
+            background: linear-gradient(90deg, var(--accent), var(--accent-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-results {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            max-height: 240px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        .search-result-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .search-result-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .detail-item {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: 16px;
+        }
+
+        .detail-label {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-bottom: 4px;
+        }
+
+        .detail-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
         }
     </style>
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="bg-white shadow-lg">
-        <div class="container mx-auto px-6 py-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <a href="../index.html" class="text-2xl font-bold text-purple-600">
-                        <i class="fas fa-code"></i> CodeArena
-                    </a>
-                    <span class="text-gray-400">|</span>
-                    <span class="text-xl font-semibold text-gray-700">师徒系统</span>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <span id="userInfo" class="text-gray-700"></span>
-                    <a href="../index.html" class="text-gray-600 hover:text-purple-600">
-                        <i class="fas fa-home"></i> 返回首页
-                    </a>
-                </div>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="../index.html" class="nav-logo">AI 信息未来</a>
+            <div class="nav-menu">
+                <a href="../index.html" class="nav-link">首页</a>
+                <a href="./courses.html" class="nav-link">课程</a>
+                <a href="./community.html" class="nav-link">社区</a>
+                <a href="./arena.html" class="nav-link">PK竞技</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+                <span id="userInfo" class="nav-link"></span>
             </div>
         </div>
     </nav>
 
     <!-- Main Container -->
-    <div class="container mx-auto px-6 py-8">
-        <!-- Header with Actions -->
-        <div class="flex items-center justify-between mb-6">
-            <h1 class="text-3xl font-bold text-white">
-                <i class="fas fa-users"></i> 我的师徒关系
-            </h1>
-            <button id="inviteBtn" class="btn-primary">
-                <i class="fas fa-paper-plane"></i> 发起邀请
-            </button>
+    <div class="container" style="padding-top: 24px; padding-bottom: 64px;">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="section-header">
+                <div>
+                    <h1 class="page-title">师徒系统</h1>
+                    <p class="page-subtitle">管理你的师徒关系，共同成长</p>
+                </div>
+                <button id="inviteBtn" class="btn btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"></path>
+                    </svg>
+                    发起邀请
+                </button>
+            </div>
         </div>
 
         <!-- Pending Invitations -->
-        <div id="pendingSection" class="mb-8" style="display: none;">
-            <div class="card p-6">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">
-                    <i class="fas fa-envelope text-yellow-500"></i> 待处理的邀请
-                    <span id="pendingCount" class="text-sm text-gray-500 ml-2"></span>
-                </h2>
-                <div id="pendingList" class="space-y-3"></div>
-            </div>
+        <div id="pendingSection" style="display: none; margin-bottom: 32px;">
+            <h2 class="section-title" style="margin-bottom: 16px;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                待处理的邀请
+                <span id="pendingCount" style="font-size: 15px; font-weight: 400; color: var(--text-tertiary);"></span>
+            </h2>
+            <div id="pendingList"></div>
         </div>
 
-        <!-- Statistics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <!-- Active Mentor Card -->
-            <div class="card p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-700">当前师父</h3>
-                    <i class="fas fa-user-tie text-3xl text-purple-500"></i>
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <!-- Current Mentor -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-label">当前师父</div>
+                    <div class="stat-icon" style="background: rgba(0, 113, 227, 0.1);">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </div>
                 </div>
                 <div id="currentMentorInfo">
-                    <p class="text-gray-500 text-sm">暂无师父</p>
+                    <p class="stat-description">加载中...</p>
                 </div>
             </div>
 
-            <!-- Apprentices Count -->
-            <div class="card p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-700">在籍徒弟</h3>
-                    <i class="fas fa-users text-3xl text-pink-500"></i>
+            <!-- Active Apprentices -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-label">在籍徒弟</div>
+                    <div class="stat-icon" style="background: rgba(52, 199, 89, 0.1);">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </div>
                 </div>
-                <p id="activeApprenticesCount" class="text-4xl font-bold text-gray-800">0</p>
-                <p class="text-sm text-gray-500 mt-2">活跃师徒关系</p>
+                <div class="stat-value" id="activeApprenticesCount">0</div>
+                <div class="stat-description">活跃师徒关系</div>
             </div>
 
             <!-- Graduated Count -->
-            <div class="card p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-700">累计出师</h3>
-                    <i class="fas fa-graduation-cap text-3xl text-blue-500"></i>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-label">累计出师</div>
+                    <div class="stat-icon" style="background: rgba(255, 149, 0, 0.1);">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                            <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                        </svg>
+                    </div>
                 </div>
-                <p id="totalGraduatedCount" class="text-4xl font-bold text-gray-800">0</p>
-                <p class="text-sm text-gray-500 mt-2">已出师徒弟</p>
+                <div class="stat-value" id="totalGraduatedCount">0</div>
+                <div class="stat-description">已出师徒弟</div>
             </div>
         </div>
 
         <!-- My Mentor Section -->
-        <div id="mentorSection" class="mb-8">
-            <div class="card p-6">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">
-                    <i class="fas fa-user-tie text-purple-500"></i> 我的师父
-                </h2>
-                <div id="mentorList"></div>
-            </div>
+        <div style="margin-bottom: 32px;">
+            <h2 class="section-title" style="margin-bottom: 16px;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                我的师父
+            </h2>
+            <div id="mentorList"></div>
         </div>
 
         <!-- My Apprentices Section -->
-        <div id="apprenticeSection" class="mb-8">
-            <div class="card p-6">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">
-                    <i class="fas fa-users text-pink-500"></i> 我的徒弟
-                </h2>
-                <div id="apprenticeList"></div>
-            </div>
+        <div>
+            <h2 class="section-title" style="margin-bottom: 16px;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                我的徒弟
+            </h2>
+            <div id="apprenticeList"></div>
         </div>
     </div>
 
     <!-- Invite Modal -->
     <div id="inviteModal" class="modal">
         <div class="modal-content">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-xl font-bold text-gray-800">发起师徒邀请</h3>
-                <button id="closeInviteModal" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times text-xl"></i>
+            <div class="modal-header">
+                <h3 class="modal-title">发起师徒邀请</h3>
+                <button id="closeInviteModal" class="icon-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
                 </button>
             </div>
-            <div class="mb-4">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">
-                    输入徒弟的用户ID或用户名
-                </label>
+            <div class="form-group search-container">
+                <label class="form-label">输入徒弟的用户ID或用户名</label>
                 <input
                     type="text"
                     id="apprenticeInput"
                     placeholder="例如: 123 或 username"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    class="form-input"
                 >
+                <div id="searchResults" class="search-results"></div>
             </div>
-            <div class="flex space-x-3">
-                <button id="sendInviteBtn" class="btn-primary flex-1">
-                    <i class="fas fa-paper-plane"></i> 发送邀请
+            <div class="modal-actions">
+                <button id="sendInviteBtn" class="btn btn-primary" style="flex: 1;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"></path>
+                    </svg>
+                    发送邀请
                 </button>
-                <button id="cancelInviteBtn" class="btn-secondary">
-                    取消
-                </button>
+                <button id="cancelInviteBtn" class="btn btn-secondary">取消</button>
             </div>
         </div>
     </div>
@@ -288,10 +542,13 @@
     <!-- Detail Modal -->
     <div id="detailModal" class="modal">
         <div class="modal-content">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-xl font-bold text-gray-800">师徒关系详情</h3>
-                <button id="closeDetailModal" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times text-xl"></i>
+            <div class="modal-header">
+                <h3 class="modal-title">师徒关系详情</h3>
+                <button id="closeDetailModal" class="icon-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
                 </button>
             </div>
             <div id="detailContent"></div>
@@ -299,5 +556,32 @@
     </div>
 
     <script type="module" src="../scripts/mentorship.js"></script>
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        htmlElement.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            htmlElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        function updateThemeIcon(theme) {
+            const icon = themeToggle.querySelector('svg');
+            if (theme === 'dark') {
+                icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+            } else {
+                icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+            }
+        }
+    </script>
 </body>
 </html>
