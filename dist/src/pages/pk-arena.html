@@ -586,7 +586,7 @@
             opacity: 1;
         }
     </style>
-  <link rel="stylesheet" href="/assets/apple-design-3a23e109.css">
+  <link rel="stylesheet" href="/assets/apple-design-5104bdc3.css">
 </head>
 <body>
     <nav class="nav">
@@ -1097,7 +1097,7 @@
                         // 存储对战信息并跳转
                         sessionStorage.setItem('pkBattle', JSON.stringify(data.data));
                         setTimeout(() => {
-                            window.location.href = `pk-battle.html?id=${data.data.battleId}`;
+                            window.location.href = `pk-battle.html?battleId=${data.data.battleId}`;
                         }, 1000);
                     } else {
                         showToast(data.data.message || '等待匹配中...');
@@ -1198,7 +1198,7 @@
                     // 存储对战信息并跳转
                     sessionStorage.setItem('pkBattle', JSON.stringify(data.data));
                     setTimeout(() => {
-                        window.location.href = `pk-battle.html?id=${data.data.battleId}`;
+                        window.location.href = `pk-battle.html?battleId=${data.data.battleId}`;
                     }, 1000);
                 } else {
                     showToast(data.message || '创建失败');

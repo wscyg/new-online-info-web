@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>支付成功 - AI 信息未来</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <style>
         /* 页面容器 */
         .page-wrapper {
@@ -379,30 +380,11 @@
         });
 
         // 初始化用户信息
-        function initAuth() {
-            const token = localStorage.getItem('token');
-            const authArea = document.getElementById('authArea');
-            if (!authArea) return;
-
-            if (token) {
-                const username = localStorage.getItem('username') || '用户';
-                authArea.innerHTML = `
-                    <div class="user-menu">
-                        <div class="user-avatar" onclick="location.href='dashboard.html'">
-                            ${username.charAt(0).toUpperCase()}
-                        </div>
-                    </div>
-                `;
-            } else {
-                authArea.innerHTML = `
-                    <a href="login.html" class="btn btn-secondary btn-sm">登录</a>
-                `;
-            }
-        }
+                }
 
         // 获取URL参数
         const urlParams = new URLSearchParams(window.location.search);
-        const orderNo = urlParams.get('out_trade_no');
+        const orderNo = urlParams.get('out_trade_no') || urlParams.get('orderNo');
         const totalAmount = urlParams.get('total_amount');
         const tradeNo = urlParams.get('trade_no');
 
@@ -480,7 +462,6 @@
                         'Content-Type': 'application/json'
                     }
                 });
-
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}`);
                 }
@@ -537,12 +518,29 @@
             }
         }
 
+        async function tryActivateSubscription() {
+            if (!orderNo) return;
+            try {
+                const token = localStorage.getItem('token');
+                await fetch(`${API_BASE}/subscriptions/activate?orderNo=${encodeURIComponent(orderNo)}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': token ? `Bearer ${token}` : ''
+                    }
+                });
+            } catch (e) {
+                // activation retry will happen via payment status checks
+            }
+        }
+
         // 初始化
         document.addEventListener('DOMContentLoaded', () => {
             initTheme();
-            initAuth();
             displayOrderInfo();
             savePaymentInfo();
+
+            // 先尝试触发一次激活（避免回调丢失导致未解锁）
+            tryActivateSubscription();
 
             // 延迟2秒后开始检查订单状态
             setTimeout(() => {
@@ -550,5 +548,7 @@
             }, 2000);
         });
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

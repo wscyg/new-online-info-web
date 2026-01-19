@@ -1,868 +1,184 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>章节内容</title>
-
-    <!-- Apple Design CSS -->
-    <link rel="stylesheet" href="../styles/apple-design.css">
-
-    <!-- 预加载所有常用依赖库 -->
-
-    <!-- KaTeX 数学公式渲染库 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-
-    <!-- GSAP 动画库 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
-
-    <!-- Highlight.js 代码高亮 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-light">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-dark" disabled>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-
-    <!-- Three.js 3D渲染 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
-    <!-- Chart.js 图表库 -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- D3.js 数据可视化 -->
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-
-    <style>
-        /* 章节内容特定样式 */
-        .chapter-wrapper {
-            padding-top: 48px;
-            min-height: 100vh;
-        }
-
-        .chapter-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 60px 22px 80px;
-        }
-
-        .chapter-header {
-            margin-bottom: 48px;
-            padding-bottom: 32px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .chapter-title {
-            font-size: 48px;
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            color: var(--text-primary);
-            margin-bottom: 16px;
-            line-height: 1.1;
-        }
-
-        .chapter-meta {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            font-size: 15px;
-            color: var(--text-tertiary);
-        }
-
-        /* 内容区域样式 */
-        .chapter-body {
-            font-size: 19px;
-            line-height: 1.7;
-            color: var(--text-secondary);
-        }
-
-        .chapter-body h1,
-        .chapter-body h2,
-        .chapter-body h3,
-        .chapter-body h4,
-        .chapter-body h5,
-        .chapter-body h6 {
-            margin-top: 48px;
-            margin-bottom: 20px;
-            color: var(--text-primary);
-            font-weight: 600;
-            letter-spacing: -0.02em;
-        }
-
-        .chapter-body h1 {
-            font-size: 40px;
-            line-height: 1.1;
-        }
-
-        .chapter-body h2 {
-            font-size: 32px;
-            line-height: 1.15;
-        }
-
-        .chapter-body h3 {
-            font-size: 24px;
-            line-height: 1.2;
-        }
-
-        .chapter-body h4 {
-            font-size: 21px;
-            line-height: 1.25;
-        }
-
-        .chapter-body p {
-            margin: 24px 0;
-            line-height: 1.7;
-        }
-
-        .chapter-body ul,
-        .chapter-body ol {
-            margin: 24px 0;
-            padding-left: 32px;
-        }
-
-        .chapter-body li {
-            margin: 12px 0;
-            line-height: 1.6;
-        }
-
-        .chapter-body a {
-            color: var(--accent);
-            text-decoration: none;
-            transition: color var(--transition-fast);
-        }
-
-        .chapter-body a:hover {
-            color: var(--accent-hover);
-            text-decoration: underline;
-        }
-
-        /* 代码块样式 */
-        .chapter-body pre {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 20px;
-            overflow-x: auto;
-            margin: 32px 0;
-            font-family: var(--font-mono);
-            font-size: 15px;
-            line-height: 1.6;
-        }
-
-        .chapter-body code {
-            background: var(--bg-secondary);
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-family: var(--font-mono);
-            font-size: 0.9em;
-            color: var(--text-primary);
-        }
-
-        .chapter-body pre code {
-            background: none;
-            padding: 0;
-        }
-
-        /* 引用样式 */
-        .chapter-body blockquote {
-            border-left: 3px solid var(--accent);
-            padding-left: 20px;
-            margin: 32px 0;
-            color: var(--text-secondary);
-            font-style: italic;
-            background: var(--bg-secondary);
-            padding: 20px 20px 20px 24px;
-            border-radius: 0 var(--radius-md) var(--radius-md) 0;
-        }
-
-        /* 表格样式 */
-        .chapter-body table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 32px 0;
-            background: var(--bg-card);
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
-
-        .chapter-body th,
-        .chapter-body td {
-            padding: 16px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .chapter-body th {
-            background: var(--bg-secondary);
-            font-weight: 600;
-            color: var(--text-primary);
-            font-size: 15px;
-        }
-
-        .chapter-body td {
-            font-size: 17px;
-        }
-
-        .chapter-body tr:last-child td {
-            border-bottom: none;
-        }
-
-        /* 图片样式 */
-        .chapter-body img {
-            max-width: 100%;
-            height: auto;
-            border-radius: var(--radius-md);
-            margin: 32px 0;
-            display: block;
-        }
-
-        /* 知识卡片样式 */
-        .chapter-body .knowledge-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 32px;
-            margin: 32px 0;
-            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-        }
-
-        .chapter-body .knowledge-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-card);
-        }
-
-        /* 加载状态 */
-        .loading-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            gap: 20px;
-        }
-
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--border-color);
-            border-top-color: var(--accent);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            font-size: 17px;
-            color: var(--text-secondary);
-        }
-
-        /* 错误状态 */
-        .error-wrapper {
-            text-align: center;
-            padding: 80px 22px;
-        }
-
-        .error-title {
-            font-size: 32px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 16px;
-        }
-
-        .error-message {
-            font-size: 17px;
-            color: var(--text-secondary);
-            margin-bottom: 32px;
-        }
-
-        /* 响应式 */
-        @media (max-width: 768px) {
-            .chapter-container {
-                padding: 40px 16px 60px;
-            }
-
-            .chapter-title {
-                font-size: 32px;
-            }
-
-            .chapter-body {
-                font-size: 17px;
-            }
-
-            .chapter-body h1 {
-                font-size: 28px;
-            }
-
-            .chapter-body h2 {
-                font-size: 24px;
-            }
-
-            .chapter-body h3 {
-                font-size: 21px;
-            }
-
-            .nav-menu {
-                display: none;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>章节查看器</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0f0f1a;color:#fff;min-height:100vh}
+    .loading-overlay{position:fixed;inset:0;background:#0f0f1a;display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:9999;transition:opacity .3s}
+    .loading-overlay.hidden{opacity:0;pointer-events:none}
+    .loading-spinner{width:40px;height:40px;border:3px solid rgba(99,102,241,.2);border-top-color:#6366f1;border-radius:50%;animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loading-text{margin-top:16px;color:#94a3b8;font-size:14px}
+    .error-container{display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:40px}
+    .error-icon{font-size:48px;margin-bottom:16px}
+    .error-title{font-size:20px;font-weight:600;margin-bottom:8px}
+    .error-message{color:#94a3b8;font-size:14px;max-width:520px;white-space:pre-wrap}
+    .error-actions{margin-top:24px}
+    .btn{display:inline-block;padding:10px 20px;background:#6366f1;color:#fff;text-decoration:none;border-radius:8px;font-size:14px;cursor:pointer;border:none;transition:background .2s}
+    .btn:hover{background:#4f46e5}
+    #htmlContainer{padding:24px;max-width:1200px;margin:0 auto}
+    #chapterFrame{position:fixed;inset:0;width:100vw;height:100vh;border:none;display:none}
+    #chapterFrame.active{display:block}
+  </style>
+  <link rel="stylesheet" href="/assets/skins/app-shell.css">
 </head>
 <body>
-    <!-- 导航栏 -->
-    <nav class="nav">
-        <div class="nav-inner">
-            <a href="../index.html" class="nav-logo">学习平台</a>
-            <div class="nav-menu">
-                <a href="../index.html" class="nav-link">首页</a>
-                <a href="./courses.html" class="nav-link">课程</a>
-                <a href="./community.html" class="nav-link">社区</a>
-                <a href="./arena.html" class="nav-link">PK竞技</a>
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">加载章节...</div>
+  </div>
+  <div id="errorContainer" style="display:none"></div>
+
+  <div id="htmlContainer"></div>
+  <iframe id="chapterFrame"></iframe>
+
+  <script></script>
+  <script src="/js/format-migrator.js"></script>
+  <script src="/js/course-json-validator.js"></script>
+  <script src="/js/unified-course-renderer.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const CONFIG = {
+        apiBase: localStorage.getItem('CHAPTER_API_BASE') || '/api',
+        defaultTemplate: 'chapter2',
+      };
+
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      const loadingText = document.getElementById('loadingText');
+      const htmlContainer = document.getElementById('htmlContainer');
+      const chapterFrame = document.getElementById('chapterFrame');
+      const errorContainer = document.getElementById('errorContainer');
+
+      function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = String(text);
+        return div.innerHTML;
+      }
+
+      function showError(title, message) {
+        loadingOverlay.classList.add('hidden');
+        htmlContainer.style.display = 'none';
+        chapterFrame.classList.remove('active');
+        errorContainer.style.display = 'block';
+        errorContainer.innerHTML = `
+          <div class="error-container">
+            <div>
+              <div class="error-icon">:(</div>
+              <div class="error-title">${escapeHtml(title)}</div>
+              <div class="error-message">${escapeHtml(message)}</div>
+              <div class="error-actions">
+                <button class="btn" onclick="location.reload()">重试</button>
+                <a href="../../template-course-manage.html" class="btn" style="background:#475569;margin-left:8px;">返回管理</a>
+              </div>
             </div>
-            <div class="nav-actions">
-                <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="10" cy="10" r="4"></circle>
-                        <path d="M10 1v2M10 17v2M18.66 5.34l-1.42 1.42M4.76 15.24l-1.42 1.42M19 10h-2M3 10H1M18.66 14.66l-1.42-1.42M4.76 4.76L3.34 3.34"></path>
-                    </svg>
-                </button>
-                <div class="user-menu" id="userMenu">
-                    <!-- User avatar will be inserted here -->
-                </div>
-            </div>
-        </div>
-    </nav>
+          </div>`;
+      }
 
-    <!-- 加载状态 -->
-    <div id="loadingIndicator" class="loading-wrapper">
-        <div class="loading-spinner"></div>
-        <p class="loading-text">正在加载章节内容...</p>
-    </div>
+      function getToken() {
+        return localStorage.getItem('token') || sessionStorage.getItem('token');
+      }
 
-    <!-- 章节内容 -->
-    <div id="chapterContent" class="chapter-wrapper" style="display: none;">
-        <div class="chapter-container">
-            <div class="chapter-header">
-                <h1 class="chapter-title" id="chapterTitle">章节标题</h1>
-                <div class="chapter-meta" id="chapterMeta">
-                    <!-- Meta info will be inserted here -->
-                </div>
-            </div>
-            <div class="chapter-body" id="chapterBody">
-                <!-- Chapter content will be inserted here -->
-            </div>
-        </div>
-    </div>
+      function getUrlParams() {
+        const params = new URLSearchParams(window.location.search);
+        return {
+          chapterId: params.get('chapterId') || params.get('id'),
+          templateId: params.get('template') || params.get('templateId') || null,
+        };
+      }
 
-    <script>
-        const API_BASE = '/api';
+      async function fetchChapterContent(chapterId) {
+        const token = getToken();
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
 
-        // 全局变量
-        let chapterData = null;
+        const res = await fetch(`${CONFIG.apiBase}/chapters/${encodeURIComponent(chapterId)}/content`, { headers });
+        if (!res.ok) throw new Error(`API错误: ${res.status} ${res.statusText}`);
+        const result = await res.json();
+        if ((result.code === 200 || result.code === 0) && result.data) return result.data;
+        return result;
+      }
 
-        // 学习会话跟踪变量
-        let currentSessionId = null;
-        let heartbeatInterval = null;
-        let currentCourseId = null;
-        let currentChapterId = null;
-
-        // 主题管理
-        function initTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            updateHighlightTheme(savedTheme);
+      function parseJsonFromBase64(jsonData) {
+        try {
+          const decoded = atob(jsonData);
+          return JSON.parse(decoded);
+        } catch (e) {
+          throw new Error('JSON数据解析失败');
         }
+      }
 
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            updateHighlightTheme(newTheme);
-        }
+      async function renderChapter(payload, templateId) {
+        const contentType = (payload.contentType || 'html').toLowerCase();
+        const content = payload.content !== undefined ? payload.content : (contentType === 'json' ? payload.contentData : payload.contentHtml);
 
-        function updateHighlightTheme(theme) {
-            const lightTheme = document.getElementById('hljs-light');
-            const darkTheme = document.getElementById('hljs-dark');
-            if (theme === 'dark') {
-                lightTheme.disabled = true;
-                darkTheme.disabled = false;
-            } else {
-                lightTheme.disabled = false;
-                darkTheme.disabled = true;
+        if (contentType === 'json') {
+          if (!window.UnifiedCourseRenderer) throw new Error('UnifiedCourseRenderer 未加载');
+          window.UnifiedCourseRenderer.init({ templateBasePath: '..' });
+
+          const rawConfig = typeof content === 'string' ? JSON.parse(content) : content;
+          if (!rawConfig || typeof rawConfig !== 'object') throw new Error('章节 JSON 格式错误');
+          let config = rawConfig;
+          if (window.CourseJsonValidator && typeof window.CourseJsonValidator.validateCourseJson === 'function') {
+            const check = window.CourseJsonValidator.validateCourseJson(rawConfig);
+            if (!check.ok) {
+              console.warn('Chapter schema validation failed:', check.errors);
+              throw new Error('章节内容格式异常，请稍后再试。');
             }
+            if (check.normalized) config = check.normalized;
+          }
+          const effectiveTemplateId = templateId || config.templateId || CONFIG.defaultTemplate;
+
+          const html = await window.UnifiedCourseRenderer.renderCourse(config, null, { templateId: effectiveTemplateId });
+          htmlContainer.style.display = 'none';
+          chapterFrame.classList.add('active');
+          chapterFrame.sandbox = 'allow-scripts allow-same-origin';
+          chapterFrame.srcdoc = html;
+          await new Promise((resolve) => (chapterFrame.onload = resolve));
+          if (config.title) document.title = config.title;
+          return;
         }
 
-        // 用户认证
-        function initAuth() {
-            const token = localStorage.getItem('token');
-            const user = localStorage.getItem('user');
-            const userMenu = document.getElementById('userMenu');
+        // html 模式：后端直出 html 内容
+        chapterFrame.classList.remove('active');
+        htmlContainer.style.display = 'block';
+        htmlContainer.innerHTML = (typeof content === 'string' ? content : '<p>暂无内容</p>');
+        document.title = payload.title ? payload.title : '章节查看器';
+      }
 
-            if (token && user) {
-                try {
-                    const userData = JSON.parse(user);
-                    const initial = userData.username ? userData.username.charAt(0).toUpperCase() : 'U';
-                    userMenu.innerHTML = `
-                        <div class="user-avatar" onclick="toggleUserDropdown()">
-                            ${initial}
-                        </div>
-                        <div class="dropdown" id="userDropdown">
-                            <div class="dropdown-item" onclick="window.location.href='./profile.html'">
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                                    <path d="M13 14v-1.5a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3V14M8 7a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-                                </svg>
-                                个人中心
-                            </div>
-                            <div class="dropdown-item" onclick="window.location.href='./my-courses.html'">
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                                    <path d="M2 4l6-2 6 2v7l-6 2-6-2V4z"/>
-                                    <path d="M2 4l6 2v7M14 4l-6 2"/>
-                                </svg>
-                                我的课程
-                            </div>
-                            <div class="dropdown-divider"></div>
-                            <div class="dropdown-item" onclick="logout()">
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                                    <path d="M11 14H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h8M11 11l3-3-3-3M6 8h8"/>
-                                </svg>
-                                退出登录
-                            </div>
-                        </div>
-                    `;
-                } catch (e) {
-                    console.error('解析用户数据失败:', e);
-                    showLoginButton();
-                }
-            } else {
-                showLoginButton();
-            }
+      async function main() {
+        try {
+          const params = getUrlParams();
+          const urlParams = new URLSearchParams(window.location.search);
+          const jsonBase64 = urlParams.get('json');
+          if (!params.chapterId && !jsonBase64) throw new Error('请提供章节ID参数，例如: ?chapterId=123，或 ?json=<base64>');
+
+          loadingText.textContent = '加载章节...';
+          const payload = jsonBase64
+            ? { contentType: 'json', content: parseJsonFromBase64(jsonBase64) }
+            : await fetchChapterContent(params.chapterId);
+
+          loadingText.textContent = '渲染中...';
+          await renderChapter(payload, params.templateId);
+
+          loadingOverlay.classList.add('hidden');
+        } catch (e) {
+          console.error(e);
+          showError('章节加载失败', e && e.message ? e.message : String(e));
         }
+      }
 
-        function showLoginButton() {
-            const userMenu = document.getElementById('userMenu');
-            userMenu.innerHTML = `
-                <button class="btn btn-primary btn-sm" onclick="window.location.href='./login.html'">登录</button>
-            `;
-        }
-
-        function toggleUserDropdown() {
-            const dropdown = document.getElementById('userDropdown');
-            if (dropdown) {
-                dropdown.classList.toggle('show');
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.href = './login.html';
-        }
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            const userMenu = document.getElementById('userMenu');
-            const dropdown = document.getElementById('userDropdown');
-            if (dropdown && !userMenu.contains(event.target)) {
-                dropdown.classList.remove('show');
-            }
-        });
-
-        // 获取URL参数
-        function getUrlParameter(name) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(name);
-        }
-
-        // 开始学习会话
-        async function startStudySession(courseId, chapterId) {
-            try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    console.log('用户未登录，跳过会话跟踪');
-                    return;
-                }
-
-                const response = await fetch(`${API_BASE}/study-sessions/start`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        courseId: courseId,
-                        chapterId: chapterId,
-                        deviceType: 'web'
-                    })
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.code === 200 && data.data) {
-                        currentSessionId = data.data.sessionId;
-                        console.log('学习会话已开始:', currentSessionId);
-                        startHeartbeat();
-                    }
-                }
-            } catch (error) {
-                console.error('开始学习会话失败:', error);
-            }
-        }
-
-        // 心跳保持会话活跃
-        async function sendHeartbeat() {
-            if (!currentSessionId) return;
-
-            try {
-                const token = localStorage.getItem('token');
-                if (!token) return;
-
-                await fetch(`${API_BASE}/study-sessions/heartbeat`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        sessionId: currentSessionId
-                    })
-                });
-                console.log('心跳发送成功');
-            } catch (error) {
-                console.error('心跳发送失败:', error);
-            }
-        }
-
-        // 启动心跳定时器
-        function startHeartbeat() {
-            if (heartbeatInterval) {
-                clearInterval(heartbeatInterval);
-            }
-
-            // 每2分钟发送一次心跳
-            heartbeatInterval = setInterval(() => {
-                sendHeartbeat();
-            }, 120000); // 120秒 = 2分钟
-        }
-
-        // 结束学习会话
-        async function endStudySession() {
-            if (!currentSessionId) return;
-
-            try {
-                const token = localStorage.getItem('token');
-                if (!token) return;
-
-                // 使用 keepalive 确保请求在页面卸载时也能发送
-                await fetch(`${API_BASE}/study-sessions/end`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        sessionId: currentSessionId
-                    }),
-                    keepalive: true
-                });
-
-                console.log('学习会话已结束');
-
-                // 清理
-                if (heartbeatInterval) {
-                    clearInterval(heartbeatInterval);
-                    heartbeatInterval = null;
-                }
-                currentSessionId = null;
-            } catch (error) {
-                console.error('结束学习会话失败:', error);
-            }
-        }
-
-        // 页面卸载时结束会话
-        window.addEventListener('beforeunload', () => {
-            endStudySession();
-        });
-
-        // 页面隐藏时也结束会话（用户切换标签页或最小化）
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                endStudySession();
-            }
-        });
-
-        // 初始化所有依赖库
-        function initializeDependencies() {
-            return new Promise((resolve) => {
-                let loadedCount = 0;
-                const totalLibraries = 4; // KaTeX, GSAP, hljs, 其他
-
-                function checkComplete() {
-                    loadedCount++;
-                    if (loadedCount >= totalLibraries) {
-                        resolve();
-                    }
-                }
-
-                // 初始化 KaTeX
-                if (typeof renderMathInElement !== 'undefined') {
-                    console.log('KaTeX 已加载');
-                    checkComplete();
-                } else {
-                    setTimeout(() => {
-                        console.log('KaTeX 延迟检查');
-                        checkComplete();
-                    }, 1000);
-                }
-
-                // 初始化 GSAP
-                if (typeof gsap !== 'undefined') {
-                    try {
-                        gsap.registerPlugin(ScrollTrigger, TextPlugin);
-                        console.log('GSAP 已初始化');
-                    } catch (e) {
-                        console.warn('GSAP 插件注册失败:', e);
-                    }
-                    checkComplete();
-                } else {
-                    setTimeout(() => {
-                        console.log('GSAP 延迟检查');
-                        checkComplete();
-                    }, 1000);
-                }
-
-                // 初始化 highlight.js
-                if (typeof hljs !== 'undefined') {
-                    console.log('highlight.js 已加载');
-                    checkComplete();
-                } else {
-                    setTimeout(() => {
-                        console.log('highlight.js 延迟检查');
-                        checkComplete();
-                    }, 1000);
-                }
-
-                // 其他库检查
-                setTimeout(() => {
-                    console.log('其他依赖库检查完成');
-                    checkComplete();
-                }, 500);
-            });
-        }
-
-        // 渲染数学公式
-        function renderMathFormulas() {
-            if (typeof renderMathInElement !== 'undefined') {
-                try {
-                    renderMathInElement(document.body, {
-                        delimiters: [
-                            {left: '$$', right: '$$', display: true},
-                            {left: '$', right: '$', display: false},
-                            {left: '\\[', right: '\\]', display: true},
-                            {left: '\\(', right: '\\)', display: false}
-                        ],
-                        throwOnError: false,
-                        errorColor: '#cc0000',
-                        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-                        strict: false,
-                        trust: true,
-                        macros: {
-                            "\\text": "\\textrm"
-                        }
-                    });
-                    console.log('数学公式渲染完成');
-                } catch (error) {
-                    console.warn('数学公式渲染失败:', error);
-                }
-            }
-        }
-
-        // 高亮代码块
-        function highlightCodeBlocks() {
-            if (typeof hljs !== 'undefined') {
-                try {
-                    hljs.highlightAll();
-                    console.log('代码高亮完成');
-                } catch (error) {
-                    console.warn('代码高亮失败:', error);
-                }
-            }
-        }
-
-        // 初始化动画
-        function initializeAnimations() {
-            if (typeof gsap === 'undefined') {
-                console.log('GSAP未加载，跳过动画');
-                return;
-            }
-
-            try {
-                const allVisibleElements = document.querySelectorAll('.chapter-body > *, .chapter-body p, .chapter-body h1, .chapter-body h2, .chapter-body h3, .chapter-body section, .chapter-body div');
-                if (allVisibleElements.length > 0) {
-                    gsap.set(allVisibleElements, { opacity: 0, y: 20 });
-                    gsap.to(allVisibleElements, {
-                        opacity: 1,
-                        y: 0,
-                        duration: 0.6,
-                        stagger: 0.05,
-                        ease: "power2.out"
-                    });
-                    console.log('内容动画已执行，元素数量:', allVisibleElements.length);
-                }
-
-                const fadeInElements = document.querySelectorAll('.fade-in');
-                if (fadeInElements.length > 0) {
-                    gsap.from('.fade-in', {
-                        opacity: 0,
-                        duration: 1,
-                        stagger: 0.2
-                    });
-                }
-
-                const slideUpElements = document.querySelectorAll('.slide-up');
-                if (slideUpElements.length > 0) {
-                    gsap.from('.slide-up', {
-                        y: 30,
-                        opacity: 0,
-                        duration: 0.8,
-                        stagger: 0.1
-                    });
-                }
-
-                console.log('动画初始化完成');
-            } catch (error) {
-                console.warn('动画初始化失败:', error);
-            }
-        }
-
-        // 显示错误
-        function showError(title, message) {
-            const loadingIndicator = document.getElementById('loadingIndicator');
-            loadingIndicator.innerHTML = `
-                <div class="error-wrapper">
-                    <h2 class="error-title">${title}</h2>
-                    <p class="error-message">${message}</p>
-                    <button class="btn btn-primary" onclick="location.reload()">重新加载</button>
-                </div>
-            `;
-        }
-
-        // 加载章节内容
-        async function loadChapterContent() {
-            const chapterId = getUrlParameter('chapterId');
-            const courseId = getUrlParameter('courseId');
-
-            if (!chapterId) {
-                showError('错误', '未指定章节ID');
-                return;
-            }
-
-            // 保存当前章节和课程ID
-            currentChapterId = chapterId;
-            currentCourseId = courseId;
-
-            try {
-                const token = localStorage.getItem('token');
-                const response = await fetch(`${API_BASE}/content/chapters/${chapterId}`, {
-                    headers: {
-                        'Authorization': token ? `Bearer ${token}` : '',
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('网络请求失败');
-                }
-
-                const result = await response.json();
-
-                if (result.code === 200 && result.data && result.data.content && result.data.content.contentHtml) {
-                    const htmlContent = result.data.content.contentHtml;
-                    const chapterTitle = result.data.chapter ? result.data.chapter.title : '章节内容';
-
-                    // 如果返回的数据中包含courseId，使用它
-                    if (result.data.courseId) {
-                        currentCourseId = result.data.courseId;
-                    }
-
-                    // 更新页面标题
-                    document.title = chapterTitle;
-                    document.getElementById('chapterTitle').textContent = chapterTitle;
-
-                    // 插入内容
-                    const contentBody = document.getElementById('chapterBody');
-                    contentBody.innerHTML = htmlContent;
-
-                    // 显示内容
-                    document.getElementById('loadingIndicator').style.display = 'none';
-                    document.getElementById('chapterContent').style.display = 'block';
-
-                    // 等待一小段时间让内容渲染
-                    setTimeout(() => {
-                        // 渲染数学公式
-                        renderMathFormulas();
-
-                        // 高亮代码块
-                        highlightCodeBlocks();
-
-                        console.log('章节内容加载完成');
-
-                        // 章节加载完成后，开始学习会话
-                        if (currentCourseId && currentChapterId) {
-                            startStudySession(currentCourseId, currentChapterId);
-                        }
-                    }, 100);
-
-                    // 延迟执行动画
-                    setTimeout(() => {
-                        initializeAnimations();
-                    }, 1000);
-
-                } else if (result.code === 403) {
-                    showError('权限不足', result.message || '需要购买课程才能查看此章节');
-                } else if (result.code === 401) {
-                    showError('需要登录', '请先登录再查看章节内容');
-                } else {
-                    throw new Error(result.message || '获取章节内容失败');
-                }
-
-            } catch (error) {
-                console.error('加载章节内容失败:', error);
-                showError('加载失败', error.message);
-            }
-        }
-
-        // 页面初始化
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('页面加载完成，开始初始化...');
-
-            // 初始化主题
-            initTheme();
-
-            // 初始化认证
-            initAuth();
-
-            // 初始化依赖库
-            await initializeDependencies();
-            console.log('依赖库初始化完成');
-
-            // 加载章节内容
-            await loadChapterContent();
-        });
-
-        // 错误处理
-        window.addEventListener('error', function(e) {
-            console.error('页面错误:', e.error);
-        });
-
-        // 未捕获的 Promise 错误
-        window.addEventListener('unhandledrejection', function(e) {
-            console.error('未处理的 Promise 错误:', e.reason);
-        });
-    </script>
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', main);
+      else main();
+    })();
+  </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

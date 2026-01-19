@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>学习广场 - AI 信息未来</title>
-    <link href="../styles/apple-design.css" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link href="../styles/apple-design.css" rel="stylesheet">
     <style>
         /* 页面布局 */
         body {
@@ -507,6 +508,134 @@
             background: var(--bg-hover);
         }
 
+        .btn-pk {
+            background: #ff3b30;
+            color: #fff;
+        }
+
+        .btn-pk:hover {
+            background: #e0342b;
+        }
+
+        .btn-friend {
+            background: #34c759;
+            color: #fff;
+        }
+
+        .btn-friend:hover {
+            background: #2db350;
+        }
+
+        .btn-chat {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-chat:hover {
+            background: var(--accent-hover);
+        }
+
+        /* PK挑战弹窗 */
+        .challenge-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            padding: 32px;
+            z-index: 3000;
+            box-shadow: var(--shadow-lg);
+            display: none;
+            animation: modalScale 0.3s var(--ease-out);
+            min-width: 320px;
+        }
+
+        .challenge-modal.show {
+            display: block;
+        }
+
+        .challenge-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2999;
+            display: none;
+            backdrop-filter: blur(5px);
+        }
+
+        .challenge-overlay.show {
+            display: block;
+        }
+
+        .challenge-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .challenge-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .challenge-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .challenge-info {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        .challenge-timer {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ff3b30;
+            text-align: center;
+            margin: 24px 0;
+        }
+
+        .challenge-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .challenge-btn {
+            flex: 1;
+            padding: 14px 24px;
+            border: none;
+            border-radius: var(--radius-full);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .challenge-accept {
+            background: #34c759;
+            color: #fff;
+        }
+
+        .challenge-accept:hover {
+            background: #2db350;
+        }
+
+        .challenge-reject {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .challenge-reject:hover {
+            background: var(--bg-hover);
+        }
+
         /* 加载状态 */
         .loading-container {
             text-align: center;
@@ -588,6 +717,7 @@
                 <a href="pk.html" class="nav-link">PK竞技</a>
             </div>
             <div class="nav-actions">
+                <div id="authArea"></div>
                 <button class="theme-toggle" id="themeToggle">
                     <svg class="icon" id="themeIcon">
                         <circle cx="12" cy="12" r="5"></circle>
@@ -601,8 +731,7 @@
                         <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                     </svg>
                 </button>
-                <div class="user-menu">
-                    <div class="user-avatar" id="navUserAvatar">U</div>
+                
                 </div>
             </div>
         </div>
@@ -691,22 +820,46 @@
                     <div class="modal-stat-label">PK胜率</div>
                 </div>
             </div>
-            <div class="modal-actions">
-                <button class="modal-btn btn-greeting" onclick="sendGreeting()">打招呼 (+2积分)</button>
+            <div class="modal-actions" style="flex-wrap: wrap;">
+                <button class="modal-btn btn-pk" onclick="sendPkChallenge()">PK挑战</button>
+                <button class="modal-btn btn-chat" onclick="startPrivateChat()">私聊</button>
+                <button class="modal-btn btn-friend" onclick="addFriend()">加好友</button>
                 <button class="modal-btn btn-close-modal" onclick="closeModal()">关闭</button>
             </div>
         </div>
     </div>
 
-    <script src="../utils/websocket-client.js"></script>
+    <!-- PK挑战接收弹窗 -->
+    <div class="challenge-overlay" id="challengeOverlay"></div>
+    <div class="challenge-modal" id="challengeModal">
+        <div class="challenge-header">
+            <div class="challenge-icon">⚔️</div>
+            <div class="challenge-title">收到PK挑战!</div>
+            <div class="challenge-info" id="challengeInfo">某用户 向你发起了PK挑战</div>
+        </div>
+        <div class="challenge-timer" id="challengeTimer">60</div>
+        <div class="challenge-actions">
+            <button class="challenge-btn challenge-accept" onclick="acceptChallenge()">接受挑战</button>
+            <button class="challenge-btn challenge-reject" onclick="rejectChallenge()">拒绝</button>
+        </div>
+    </div>
+
+    <script></script>
     <script>
         const API_BASE = '/api';
 
         // 全局变量
         let wsClient = null;
+        let chatWsClient = null;
         let currentUser = null;
         let selectedUser = null;
         let unreadCount = 0;
+        let currentChallenge = null;
+        let challengeTimer = null;
+        let heartbeatTimer = null;
+        let onlineUsersTimer = null;
+        let plazaMessagesTimer = null;
+        let lastPlazaMessageId = 0;
 
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
@@ -764,8 +917,13 @@
             loadOnlineUsers();
             loadRecentMessages();
 
-            // 连接WebSocket
-            connectWebSocket();
+            // Presence + 轮询（后端暂无 ws/plaza，使用 HTTP 降级）
+            startHeartbeat();
+            startOnlineUsersPolling();
+            startPlazaMessagesPolling();
+
+            // 连接聊天WebSocket
+            connectChatWebSocket();
 
             // 绑定事件
             bindEvents();
@@ -803,8 +961,6 @@
                 const userCard = document.querySelector(`[data-user-id="${data.userId}"]`);
                 if (userCard) {
                     userCard.remove();
-                }
-            });
 
             // 接收聊天消息
             wsClient.on('chat_message', (data) => {
@@ -813,8 +969,6 @@
                 if (!document.getElementById('chatDrawer').classList.contains('open')) {
                     unreadCount++;
                     updateChatBadge();
-                }
-            });
 
             // 用户状态变化
             wsClient.on('user_status_changed', (data) => {
@@ -844,21 +998,29 @@
         async function loadOnlineUsers() {
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(API_BASE + '/plaza/online-users?limit=100', {
+                const response = await fetch(API_BASE + '/plaza/online-users?page=1&size=100', {
                     headers: {
                         'Authorization': `Bearer ${token}`
-                    }
-                });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.code === 200 && data.data) {
-                        renderOnlineUsers(data.data.users || data.data);
-                        document.getElementById('onlineCount').textContent = data.data.total || data.data.users?.length || 0;
-                    }
+                const data = await response.json();
+
+                if (data.code === 401) {
+                    // Token过期，跳转登录
+                    alert('登录已过期，请重新登录');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                if (data.code === 200 && data.data) {
+                    renderOnlineUsers(data.data.users || data.data);
+                    document.getElementById('onlineCount').textContent = data.data.total || data.data.users?.length || 0;
+                } else {
+                    // 其他错误，显示暂无用户
+                    renderOnlineUsers([]);
                 }
             } catch (error) {
                 console.error('加载在线用户失败:', error);
+                renderOnlineUsers([]);
             }
         }
 
@@ -915,20 +1077,91 @@
                 const token = localStorage.getItem('token');
                 const response = await fetch(API_BASE + '/plaza/chat/messages?limit=50', {
                     headers: {
-                        'Authorization': `Bearer ${token}`
                     }
                 });
+                        'Authorization': `Bearer ${token}`
 
                 if (response.ok) {
                     const data = await response.json();
                     if (data.code === 200 && Array.isArray(data.data)) {
+                        // 初始化消息列表
                         data.data.reverse().forEach(msg => {
                             addChatMessage(msg, false);
                         });
+
+                        const maxId = Math.max(...data.data.map(m => Number(m.messageId || m.id || 0)));
+                        if (Number.isFinite(maxId) && maxId > lastPlazaMessageId) {
+                            lastPlazaMessageId = maxId;
+                        }
                     }
                 }
             } catch (error) {
                 console.error('加载聊天消息失败:', error);
+            }
+        }
+
+        function startHeartbeat() {
+            if (heartbeatTimer) clearInterval(heartbeatTimer);
+            sendHeartbeat();
+            heartbeatTimer = setInterval(sendHeartbeat, 60 * 1000);
+        }
+
+        async function sendHeartbeat() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return;
+                await fetch(API_BASE + '/plaza/heartbeat', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+            } catch (e) {
+                // 不阻断
+            }
+        }
+
+        function startOnlineUsersPolling() {
+            if (onlineUsersTimer) clearInterval(onlineUsersTimer);
+            onlineUsersTimer = setInterval(loadOnlineUsers, 20 * 1000);
+        }
+
+        function startPlazaMessagesPolling() {
+            if (plazaMessagesTimer) clearInterval(plazaMessagesTimer);
+            plazaMessagesTimer = setInterval(pollNewMessages, 5 * 1000);
+        }
+
+        async function pollNewMessages() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return;
+                const response = await fetch(API_BASE + '/plaza/chat/messages?limit=20', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                    }
+                });
+                });
+                if (!response.ok) return;
+                const data = await response.json();
+                if (data.code !== 200 || !Array.isArray(data.data)) return;
+
+                const incoming = data.data;
+                const newer = incoming
+                    .filter(m => Number(m.messageId || m.id || 0) > lastPlazaMessageId)
+                    .sort((a, b) => Number(a.messageId || a.id || 0) - Number(b.messageId || b.id || 0));
+
+                if (newer.length === 0) return;
+
+                const drawerOpen = document.getElementById('chatDrawer')?.classList.contains('open');
+                newer.forEach(msg => {
+                    addChatMessage(msg, true);
+                    if (!drawerOpen && msg.userId !== currentUser?.id) {
+                        unreadCount++;
+                updateChatBadge();
+
+                const maxId = Math.max(...newer.map(m => Number(m.messageId || m.id || 0)));
+                if (Number.isFinite(maxId) && maxId > lastPlazaMessageId) {
+                    lastPlazaMessageId = maxId;
+                }
+            } catch (e) {
+                // 不阻断
             }
         }
 
@@ -956,7 +1189,7 @@
         }
 
         // 发送消息
-        function sendMessage() {
+        async function sendMessage() {
             const input = document.getElementById('chatInput');
             const content = input.value.trim();
 
@@ -967,19 +1200,290 @@
                 return;
             }
 
-            wsClient.send('chat', { content });
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(API_BASE + '/plaza/chat/send', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ content })
+                });
 
-            input.value = '';
-            updateCharCount();
+                const data = await response.json();
+                if (data.code === 200 && data.data) {
+                    addChatMessage(data.data, true);
+                    const newId = Number(data.data.messageId || data.data.id || 0);
+                    if (Number.isFinite(newId) && newId > lastPlazaMessageId) {
+                        lastPlazaMessageId = newId;
+                    }
+
+                    input.value = '';
+                    updateCharCount();
+                } else {
+                    showNotification(data.message || '发送失败', 'error');
+                }
+            } catch (e) {
+                showNotification('发送失败', 'error');
+            }
         }
 
         // 发送打招呼
-        function sendGreeting() {
+        async function sendGreeting() {
+            if (!selectedUser) return;
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(API_BASE + '/plaza/greeting', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ targetUserId: selectedUser.userId })
+                });
+                const data = await response.json();
+                if (data.code === 200) {
+                    const pts = data.data?.points ? `(+${data.data.points}积分)` : '';
+                    showNotification(`打招呼成功！${pts}`, 'success');
+                    closeModal();
+                } else {
+                    showNotification(data.message || '打招呼失败', 'error');
+                }
+            } catch (e) {
+                showNotification('打招呼失败', 'error');
+            }
+        }
+
+        // 连接聊天WebSocket
+        function connectChatWebSocket() {
+            const token = localStorage.getItem('token');
+            const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
+            const wsUrl = `${proto}://${window.location.host}${API_BASE}/ws/chat?token=${encodeURIComponent(token)}`;
+
+            chatWsClient = new WebSocket(wsUrl);
+
+            chatWsClient.onopen = () => {
+                console.log('聊天WebSocket连接成功');
+            };
+
+            chatWsClient.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                handleChatMessage(data);
+            };
+
+            chatWsClient.onclose = () => {
+                console.log('聊天WebSocket断开，5秒后重连');
+                setTimeout(connectChatWebSocket, 5000);
+            };
+        }
+
+        // 处理聊天消息
+        function handleChatMessage(data) {
+            switch(data.type) {
+                case 'PK_CHALLENGE':
+                    showChallengeModal(data.challenge);
+                    break;
+                case 'PK_CHALLENGE_SENT':
+                    showNotification('挑战已发送，等待对方响应', 'success');
+                    closeModal();
+                    break;
+                case 'PK_CHALLENGE_RESPONSE':
+                    if (data.accepted) {
+                        showNotification('对方接受了挑战！', 'success');
+                        // 跳转到PK页面
+                        setTimeout(() => {
+                            window.location.href = `pk.html?matchId=${data.challenge.matchId}`;
+                        }, 1000);
+                    } else {
+                        showNotification('对方拒绝了挑战', 'info');
+                    }
+                    break;
+                case 'PRIVATE_MESSAGE':
+                    showNotification(`收到来自 ${data.message.senderName} 的消息`, 'info');
+                    break;
+                case 'USER_ONLINE':
+                    loadOnlineUsers();
+                    break;
+                case 'USER_OFFLINE':
+                    loadOnlineUsers();
+                    break;
+                case 'ERROR':
+                    showNotification(data.message, 'error');
+                    break;
+            }
+        }
+
+        // 发起PK挑战
+        async function sendPkChallenge() {
             if (!selectedUser) return;
 
-            wsClient.send('greeting', {
-                targetUserId: selectedUser.userId
-            });
+            if (selectedUser.userId === currentUser.id) {
+                showNotification('不能挑战自己', 'error');
+                return;
+            }
+
+            // 通过WebSocket发送挑战
+            if (chatWsClient && chatWsClient.readyState === WebSocket.OPEN) {
+                chatWsClient.send(JSON.stringify({
+                    type: 'PK_CHALLENGE',
+                    challengedId: selectedUser.userId,
+                    categoryId: null
+                }));
+            } else {
+                // 通过API发送
+                try {
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(API_BASE + '/pk/challenges/send', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            challengedId: selectedUser.userId,
+                            categoryId: null
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (data.code === 200) {
+                        showNotification('挑战已发送，等待对方响应', 'success');
+                        closeModal();
+                    } else {
+                        showNotification(data.message || '发送挑战失败', 'error');
+                    }
+                } catch (error) {
+                    showNotification('发送挑战失败', 'error');
+                }
+            }
+        }
+
+        // 显示挑战弹窗
+        function showChallengeModal(challenge) {
+            currentChallenge = challenge;
+            document.getElementById('challengeInfo').textContent =
+                `${challenge.challengerName} 向你发起了PK挑战`;
+
+            document.getElementById('challengeOverlay').classList.add('show');
+            document.getElementById('challengeModal').classList.add('show');
+
+            // 开始倒计时
+            let seconds = 60;
+            document.getElementById('challengeTimer').textContent = seconds;
+
+            if (challengeTimer) clearInterval(challengeTimer);
+            challengeTimer = setInterval(() => {
+                seconds--;
+                document.getElementById('challengeTimer').textContent = seconds;
+                if (seconds <= 0) {
+                    clearInterval(challengeTimer);
+                    hideChallengeModal();
+                    showNotification('挑战已超时', 'info');
+                }
+            }, 1000);
+        }
+
+        // 隐藏挑战弹窗
+        function hideChallengeModal() {
+            document.getElementById('challengeOverlay').classList.remove('show');
+            document.getElementById('challengeModal').classList.remove('show');
+            if (challengeTimer) clearInterval(challengeTimer);
+            currentChallenge = null;
+        }
+
+        // 接受挑战
+        async function acceptChallenge() {
+            if (!currentChallenge) return;
+
+            if (chatWsClient && chatWsClient.readyState === WebSocket.OPEN) {
+                chatWsClient.send(JSON.stringify({
+                    type: 'PK_CHALLENGE_RESPONSE',
+                    challengeId: currentChallenge.id,
+                    accepted: true
+                }));
+            } else {
+                try {
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(API_BASE + `/pk/challenges/${currentChallenge.id}/accept`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    const data = await response.json();
+                    if (data.code === 200) {
+                        showNotification('已接受挑战！', 'success');
+                        hideChallengeModal();
+                        setTimeout(() => {
+                            window.location.href = `pk.html?matchId=${data.data.matchId}`;
+                        }, 1000);
+                    }
+                } catch (error) {
+                    showNotification('接受挑战失败', 'error');
+                }
+            }
+            hideChallengeModal();
+        }
+
+        // 拒绝挑战
+        async function rejectChallenge() {
+            if (!currentChallenge) return;
+
+            if (chatWsClient && chatWsClient.readyState === WebSocket.OPEN) {
+                chatWsClient.send(JSON.stringify({
+                    type: 'PK_CHALLENGE_RESPONSE',
+                    challengeId: currentChallenge.id,
+                    accepted: false
+                }));
+            } else {
+                try {
+                    const token = localStorage.getItem('token');
+                    await fetch(API_BASE + `/pk/challenges/${currentChallenge.id}/reject`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                } catch (error) {
+                    console.error('拒绝挑战失败', error);
+                }
+            }
+            hideChallengeModal();
+            showNotification('已拒绝挑战', 'info');
+        }
+
+        // 开始私聊
+        function startPrivateChat() {
+            if (!selectedUser) return;
+            // 跳转到聊天页面
+            window.location.href = `chat.html?userId=${selectedUser.userId}`;
+        }
+
+        // 添加好友
+        async function addFriend() {
+            if (!selectedUser) return;
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(API_BASE + '/friends/request', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        targetUserId: selectedUser.userId
+                    })
+                });
+
+                const data = await response.json();
+                if (data.code === 200) {
+                    showNotification('好友请求已发送', 'success');
+                    closeModal();
+                } else {
+                    showNotification(data.message || '发送失败', 'error');
+                }
+            } catch (error) {
+                showNotification('发送好友请求失败', 'error');
+            }
         }
 
         // 显示用户详情
@@ -988,9 +1492,9 @@
                 const token = localStorage.getItem('token');
                 const response = await fetch(API_BASE + `/plaza/user/${userId}/preview`, {
                     headers: {
-                        'Authorization': `Bearer ${token}`
                     }
                 });
+                        'Authorization': `Bearer ${token}`
 
                 if (response.ok) {
                     const data = await response.json();
@@ -1081,8 +1585,6 @@
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     sendMessage();
-                }
-            });
         }
 
         // 更新字符计数
@@ -1116,10 +1618,28 @@
 
         // 页面卸载时断开连接
         window.addEventListener('beforeunload', () => {
-            if (wsClient) {
-                wsClient.disconnect();
-            }
+            // 标记下线（尽力而为）
+            try {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    fetch(API_BASE + '/plaza/offline', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` },
+                        keepalive: true
+                    });
+                }
+            } catch (e) {}
+
+            if (heartbeatTimer) clearInterval(heartbeatTimer);
+            if (onlineUsersTimer) clearInterval(onlineUsersTimer);
+            if (plazaMessagesTimer) clearInterval(plazaMessagesTimer);
+
+            try {
+                chatWsClient?.close();
+            } catch (e) {}
         });
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

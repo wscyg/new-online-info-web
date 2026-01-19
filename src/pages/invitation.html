@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>邀请好友 - AI 信息未来</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .page-header { padding: 100px 0 60px; text-align: center; background: var(--bg-secondary); }
@@ -70,7 +71,7 @@
         .leaderboard-points { font-weight: 700; color: #f59e0b; }
     </style>
     <!-- QRCode库 -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script></script>
 </head>
 <body>
     <nav class="nav">
@@ -235,7 +236,7 @@
         const API_BASE = '/api';
         let inviteCode = '';
 
-        document.addEventListener('DOMContentLoaded', () => { initTheme(); checkAuth(); loadInviteData(); });
+        document.addEventListener('DOMContentLoaded', () => { initTheme();  loadInviteData(); });
 
         function initTheme() {
             const saved = localStorage.getItem('theme') || 'light';
@@ -252,23 +253,10 @@
 
         function updateThemeIcon(theme) { document.querySelector('#themeToggle i').className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon'; }
 
-        function checkAuth() {
-            const token = localStorage.getItem('token');
-            const userStr = localStorage.getItem('user');
-            const authArea = document.getElementById('authArea');
-            if (token && userStr) {
-                const user = JSON.parse(userStr);
-                const initial = (user.nickname || user.username || 'U').charAt(0).toUpperCase();
-                authArea.innerHTML = `<div class="user-menu"><div class="user-avatar" onclick="toggleDropdown()">${initial}</div><div class="dropdown" id="userDropdown"><div class="dropdown-item" onclick="location.href='dashboard.html'"><i class="fas fa-tachometer-alt"></i> 学习中心</div><div class="dropdown-item" onclick="location.href='profile.html'"><i class="fas fa-user"></i> 个人主页</div><div class="dropdown-divider"></div><div class="dropdown-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出</div></div></div>`;
-            } else {
-                window.location.href = 'login.html?returnUrl=' + encodeURIComponent(window.location.href);
-            }
-        }
+                }
 
-        function toggleDropdown() { document.getElementById('userDropdown').classList.toggle('show'); }
-        function logout() { localStorage.removeItem('token'); localStorage.removeItem('user'); location.reload(); }
-        document.addEventListener('click', (e) => { if (!e.target.closest('.user-menu')) { const d = document.getElementById('userDropdown'); if (d) d.classList.remove('show'); } });
-
+                function logout() { localStorage.removeItem('token'); localStorage.removeItem('user'); location.reload(); }
+        
         async function loadInviteData() {
             try {
                 const res = await fetch(`${API_BASE}/invitation/my`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
@@ -389,6 +377,8 @@
             try {
                 const res = await fetch(`${API_BASE}/invitation/leaderboard`, {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                    }
+                });
                 });
                 const data = await res.json();
                 if (data.code === 200 && data.data && data.data.length > 0) {
@@ -437,6 +427,9 @@
             generateQRCode();
             loadLeaderboard();
         }, 500);
+        });
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

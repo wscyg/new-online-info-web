@@ -1,0 +1,1048 @@
+{
+  "version": "2.0",
+  "id": "chapter6-advanced-techniques",
+  "title": "《手撕 GPT》· Chapter 6",
+  "subtitle": "RoPE · GQA · MoE · 合成数据",
+  "templateId": "chapter2",
+  "accent": "cyan",
+  "pages": [
+    {
+      "id": "p-hero",
+      "page": 0,
+      "kind": "hero",
+      "accent": "cyan",
+      "dataTitle": "Chapter 6",
+      "dataSub": "现代 LLM 的四大核心技术",
+      "header": {
+        "badgeHtml": "<span class=\"hero-badge\"><span class=\"hero-badge-dot\"></span>手撕 GPT · 进阶篇</span>",
+        "title": "第 6 章：现代 LLM 核心技术",
+        "subtitle": "RoPE 旋转位置编码 · GQA 分组查询注意力 · MoE 混合专家 · 合成数据",
+        "extraHtml": "<p style=\"color:#94a3b8;font-size:14px;\">从 GPT-3 到 GPT-4、Llama、Mixtral 的技术演进</p>",
+        "delay": 200,
+        "speed": 28
+      },
+      "blocks": [
+        {
+          "type": "bridgeRow",
+          "prevLabel": "上一章",
+          "prev": "Transformer 优化",
+          "currentLabel": "本章",
+          "current": "四大核心技术",
+          "nextLabel": "下一章",
+          "next": "训练技巧"
+        },
+        {
+          "type": "microLead",
+          "text": "本章路线：① RoPE 旋转位置编码 ② GQA 分组查询注意力 ③ MoE 混合专家 ④ 合成数据管道"
+        },
+        {
+          "type": "keyline",
+          "dot": "!",
+          "html": "<b>核心问题：</b>如何让 LLM 处理更长序列、更快推理、更强泛化？"
+        }
+      ]
+    },
+    {
+      "id": "p-rope-intro",
+      "page": 1,
+      "kind": "section",
+      "accent": "purple",
+      "dataTitle": "RoPE",
+      "dataSub": "旋转位置编码",
+      "header": {
+        "label": "Part 1",
+        "title": "RoPE：旋转位置编码",
+        "descHtml": "为什么传统位置编码有缺陷？RoPE 如何用旋转矩阵优雅解决？"
+      },
+      "blocks": [
+        {
+          "type": "callout",
+          "title": "位置编码的三代演进",
+          "tag": "Evolution",
+          "bodyHtml": "<ul class=\"content-list\"><li><b>第一代 - 正弦编码：</b>固定模式，无法外推到更长序列</li><li><b>第二代 - 可学习编码：</b>灵活但仍受限于训练长度</li><li><b>第三代 - RoPE：</b>旋转编码，天然支持长度外推</li></ul>"
+        },
+        {
+          "type": "cardsGrid",
+          "columns": 3,
+          "cards": [
+            {
+              "accent": "cyan",
+              "icon": "📐",
+              "title": "相对位置",
+              "subtitle": "Relative Position",
+              "text": "只关心 token 之间的相对距离，而非绝对位置"
+            },
+            {
+              "accent": "purple",
+              "icon": "🔄",
+              "title": "旋转不变性",
+              "subtitle": "Rotation Invariance",
+              "text": "位置信息通过旋转角度编码，内积保持相对关系"
+            },
+            {
+              "accent": "pink",
+              "icon": "📈",
+              "title": "长度外推",
+              "subtitle": "Length Extrapolation",
+              "text": "训练 4K 可推理 16K+，突破上下文限制"
+            }
+          ]
+        },
+        {
+          "type": "thinkBox",
+          "qid": "think-rope-1",
+          "title": "思考：为什么绝对位置编码难以外推？",
+          "text": "提示：想想如果你用 [0, 1, 2, ..., 4095] 训练，遇到位置 8000 时模型见过吗？"
+        }
+      ]
+    },
+    {
+      "id": "p-rope-math",
+      "page": 2,
+      "kind": "section",
+      "accent": "purple",
+      "dataTitle": "RoPE",
+      "dataSub": "数学原理",
+      "header": {
+        "label": "Part 1.2",
+        "title": "RoPE 的数学原理",
+        "descHtml": "用复数和旋转矩阵理解 RoPE 的核心思想"
+      },
+      "blocks": [
+        {
+          "type": "formulaBox",
+          "label": "RoPE 核心公式",
+          "math": "f(q, m) = q · e^{imθ}",
+          "desc": "将位置 m 编码为复数旋转角度 mθ，应用到查询向量 q"
+        },
+        {
+          "type": "living",
+          "title": "RoPE 分步推导（点击左侧查看）",
+          "vizTitle": "可视化",
+          "hint": "点击左侧代码行查看详解",
+          "steps": [
+            {
+              "id": "rope-step1",
+              "label": "Step 1: 复数表示",
+              "code": "# 把 2D 向量看作复数\nq = q_0 + i·q_1",
+              "viz": {
+                "title": "向量 → 复数",
+                "sub": "每两个维度配对成一个复数",
+                "bullets": ["q = [q_0, q_1] → q_0 + i·q_1", "d_model=4096 → 2048 个复数"]
+              }
+            },
+            {
+              "id": "rope-step2",
+              "label": "Step 2: 旋转编码",
+              "code": "# 位置 m 对应旋转角度 m·θ\nq_rotated = q · e^(i·m·θ)",
+              "viz": {
+                "title": "位置 → 旋转角度",
+                "sub": "位置信息变成旋转操作",
+                "bullets": ["位置 0: 旋转 0°", "位置 1: 旋转 θ°", "位置 m: 旋转 m×θ°"]
+              }
+            },
+            {
+              "id": "rope-step3",
+              "label": "Step 3: 相对位置",
+              "code": "# Q·K 的内积只依赖相对位置\nq_m · k_n = q · k · e^(i·(m-n)·θ)",
+              "viz": {
+                "title": "内积 → 相对距离",
+                "sub": "绝对位置消失，只剩相对距离 m-n",
+                "bullets": ["e^(imθ) · e^(-inθ) = e^(i(m-n)θ)", "注意力分数只依赖相对位置", "这就是 RoPE 的魔法！"]
+              }
+            }
+          ]
+        },
+        {
+          "type": "codeBlock",
+          "file": "rope.py",
+          "code": "def apply_rope(x, freqs):\n    \"\"\"Apply Rotary Position Embedding\"\"\"\n    # x: [batch, seq_len, d_model]\n    # freqs: [seq_len, d_model//2]\n    \n    # 将向量配对成复数\n    x_complex = x.view(*x.shape[:-1], -1, 2)\n    x_complex = torch.view_as_complex(x_complex)\n    \n    # 旋转\n    freqs_complex = torch.polar(torch.ones_like(freqs), freqs)\n    x_rotated = x_complex * freqs_complex\n    \n    # 转回实数\n    return torch.view_as_real(x_rotated).flatten(-2)"
+        }
+      ]
+    },
+    {
+      "id": "p-rope-ext",
+      "page": 3,
+      "kind": "section",
+      "accent": "purple",
+      "dataTitle": "RoPE",
+      "dataSub": "长度扩展",
+      "header": {
+        "label": "Part 1.3",
+        "title": "RoPE 的长度扩展技巧",
+        "descHtml": "如何让 4K 训练的模型推理 100K+ 序列？"
+      },
+      "blocks": [
+        {
+          "type": "cardsGrid",
+          "columns": 2,
+          "cards": [
+            {
+              "accent": "cyan",
+              "icon": "📏",
+              "title": "Position Interpolation",
+              "subtitle": "位置插值",
+              "text": "将位置压缩到训练范围内：pos' = pos × (L_train / L_target)",
+              "bullets": ["简单有效", "需要少量微调", "Meta Llama 2 采用"]
+            },
+            {
+              "accent": "purple",
+              "icon": "🧬",
+              "title": "NTK-aware Scaling",
+              "subtitle": "神经切线核感知缩放",
+              "text": "调整基频而非位置：θ' = θ × (L_target / L_train)^(2/d)",
+              "bullets": ["无需微调", "保持高频信息", "理论更优雅"]
+            }
+          ]
+        },
+        {
+          "type": "callout",
+          "title": "YaRN：最佳实践",
+          "tag": "State-of-the-Art",
+          "bodyHtml": "<p><b>YaRN (Yet another RoPE extensioN)</b> 结合了多种技术：</p><ul class=\"content-list\"><li>NTK-aware 插值保持高频</li><li>低频外推 + 高频插值的混合策略</li><li>注意力温度缩放补偿</li></ul><p>效果：Llama 2 7B 从 4K 扩展到 128K，几乎无损！</p>"
+        },
+        {
+          "type": "stickyNote",
+          "color": "yellow",
+          "title": "💡 实战经验",
+          "text": "长度扩展后别忘了调整注意力 softmax 的温度！序列变长后注意力分数的方差会增大。"
+        }
+      ]
+    },
+    {
+      "id": "p-gqa-intro",
+      "page": 4,
+      "kind": "section",
+      "accent": "cyan",
+      "dataTitle": "GQA",
+      "dataSub": "分组查询注意力",
+      "header": {
+        "label": "Part 2",
+        "title": "GQA：分组查询注意力",
+        "descHtml": "如何在保持质量的同时加速推理？KV Cache 的内存瓶颈如何解决？"
+      },
+      "blocks": [
+        {
+          "type": "keyline",
+          "dot": "!",
+          "html": "<b>核心问题：</b>KV Cache 的内存开销与序列长度和批次大小成正比，是长序列推理的瓶颈"
+        },
+        {
+          "type": "living",
+          "title": "注意力机制的演进（点击左侧查看）",
+          "vizTitle": "架构对比",
+          "hint": "点击查看不同注意力机制",
+          "steps": [
+            {
+              "id": "mha",
+              "label": "MHA: 多头注意力",
+              "code": "# Multi-Head Attention\n# 每个头独立的 Q, K, V\nQ: [batch, heads, seq, d_head]\nK: [batch, heads, seq, d_head]\nV: [batch, heads, seq, d_head]",
+              "viz": {
+                "title": "MHA: 标准多头注意力",
+                "sub": "每个头完整的 Q, K, V",
+                "bullets": ["参数量大，表达能力强", "KV Cache: heads × seq × d_head × 2", "32 头 × 4K × 128 × 2 = 32MB/层"]
+              }
+            },
+            {
+              "id": "mqa",
+              "label": "MQA: 多查询注意力",
+              "code": "# Multi-Query Attention\n# 所有头共享 K, V\nQ: [batch, heads, seq, d_head]\nK: [batch, 1, seq, d_head]  # 共享!\nV: [batch, 1, seq, d_head]  # 共享!",
+              "viz": {
+                "title": "MQA: 极端共享",
+                "sub": "所有查询头共用一份 K, V",
+                "bullets": ["KV Cache 减少到 1/32", "但质量下降明显", "PaLM、Falcon 采用"]
+              }
+            },
+            {
+              "id": "gqa",
+              "label": "GQA: 分组查询注意力",
+              "code": "# Grouped-Query Attention\n# 每组共享 K, V\nQ: [batch, 32, seq, d_head]\nK: [batch, 8, seq, d_head]   # 8 组\nV: [batch, 8, seq, d_head]   # 8 组",
+              "viz": {
+                "title": "GQA: 平衡的选择",
+                "sub": "分组共享，质量与效率兼得",
+                "bullets": ["32 个 Q 头，8 个 KV 组", "每 4 个 Q 共享 1 个 KV", "KV Cache 减少 4x，质量几乎无损"]
+              }
+            }
+          ]
+        },
+        {
+          "type": "formulaBox",
+          "label": "KV Cache 内存公式",
+          "math": "Memory = 2 × layers × kv_heads × seq_len × d_head × bytes",
+          "desc": "GQA 通过减少 kv_heads 数量来降低内存占用"
+        }
+      ]
+    },
+    {
+      "id": "p-gqa-impl",
+      "page": 5,
+      "kind": "section",
+      "accent": "cyan",
+      "dataTitle": "GQA",
+      "dataSub": "实现细节",
+      "header": {
+        "label": "Part 2.2",
+        "title": "GQA 实现：从 MHA 到 GQA",
+        "descHtml": "如何将现有模型转换为 GQA？训练和推理有什么区别？"
+      },
+      "blocks": [
+        {
+          "type": "codeBlock",
+          "file": "gqa.py",
+          "code": "class GroupedQueryAttention(nn.Module):\n    def __init__(self, d_model, n_heads, n_kv_heads):\n        super().__init__()\n        self.n_heads = n_heads        # 32 个查询头\n        self.n_kv_heads = n_kv_heads  # 8 个 KV 组\n        self.n_rep = n_heads // n_kv_heads  # 4x 复制\n        \n        self.d_head = d_model // n_heads\n        \n        # Q 投影：完整的 32 头\n        self.wq = nn.Linear(d_model, n_heads * self.d_head)\n        # K, V 投影：只有 8 头\n        self.wk = nn.Linear(d_model, n_kv_heads * self.d_head)\n        self.wv = nn.Linear(d_model, n_kv_heads * self.d_head)\n        \n    def forward(self, x):\n        B, L, _ = x.shape\n        \n        q = self.wq(x).view(B, L, self.n_heads, self.d_head)\n        k = self.wk(x).view(B, L, self.n_kv_heads, self.d_head)\n        v = self.wv(x).view(B, L, self.n_kv_heads, self.d_head)\n        \n        # 关键：复制 K, V 以匹配 Q 的头数\n        k = k.repeat_interleave(self.n_rep, dim=2)\n        v = v.repeat_interleave(self.n_rep, dim=2)\n        \n        # 标准注意力计算\n        attn = (q @ k.transpose(-2, -1)) / math.sqrt(self.d_head)\n        attn = F.softmax(attn, dim=-1)\n        return attn @ v"
+        },
+        {
+          "type": "callout",
+          "title": "MHA → GQA 转换技巧",
+          "tag": "Uptraining",
+          "bodyHtml": "<p>已有 MHA 模型如何转成 GQA？</p><ul class=\"content-list\"><li><b>方法 1 - 均值池化：</b>将每组 KV 头的权重取平均</li><li><b>方法 2 - 选取代表：</b>每组保留一个头，丢弃其他</li><li><b>方法 3 - 渐进训练：</b>逐步增加共享程度，持续微调</li></ul><p>Llama 2 70B 采用方法 3，效果最好。</p>"
+        },
+        {
+          "type": "stickyNote",
+          "color": "blue",
+          "title": "📊 实测数据",
+          "text": "Llama 2 70B (GQA-8) vs 完整 MHA：推理速度提升 1.8x，困惑度仅增加 0.02！"
+        }
+      ]
+    },
+    {
+      "id": "p-moe-intro",
+      "page": 6,
+      "kind": "section",
+      "accent": "pink",
+      "dataTitle": "MoE",
+      "dataSub": "混合专家模型",
+      "header": {
+        "label": "Part 3",
+        "title": "MoE：混合专家模型",
+        "descHtml": "如何用稀疏激活实现万亿参数模型？为什么只激活 2 个专家就够了？"
+      },
+      "blocks": [
+        {
+          "type": "keyline",
+          "dot": "!",
+          "html": "<b>核心思想：</b>不是所有参数都需要参与每个 token 的计算——条件计算 + 稀疏激活"
+        },
+        {
+          "type": "cardsGrid",
+          "columns": 3,
+          "cards": [
+            {
+              "accent": "cyan",
+              "icon": "🧠",
+              "title": "专家网络",
+              "subtitle": "Expert Networks",
+              "text": "多个独立的 FFN，每个专精不同知识领域"
+            },
+            {
+              "accent": "purple",
+              "icon": "🎯",
+              "title": "路由器",
+              "subtitle": "Router/Gate",
+              "text": "决定每个 token 应该由哪些专家处理"
+            },
+            {
+              "accent": "pink",
+              "icon": "⚡",
+              "title": "稀疏激活",
+              "subtitle": "Sparse Activation",
+              "text": "每次只激活 Top-K 专家（通常 K=2）"
+            }
+          ]
+        },
+        {
+          "type": "formulaBox",
+          "label": "MoE 层计算公式",
+          "math": "y = \\sum_{i=1}^{K} G(x)_i \\cdot E_i(x)",
+          "desc": "G(x) 是路由器的 Top-K 门控权重，E_i 是第 i 个专家的输出"
+        },
+        {
+          "type": "callout",
+          "title": "稀疏 vs 稠密",
+          "tag": "Comparison",
+          "bodyHtml": "<table style=\"width:100%;border-collapse:collapse;\"><tr style=\"border-bottom:1px solid rgba(255,255,255,0.1);\"><th style=\"text-align:left;padding:8px;\"></th><th style=\"padding:8px;\">Dense 7B</th><th style=\"padding:8px;\">MoE 8x7B</th></tr><tr style=\"border-bottom:1px solid rgba(255,255,255,0.1);\"><td style=\"padding:8px;\">总参数</td><td style=\"text-align:center;padding:8px;\">7B</td><td style=\"text-align:center;padding:8px;\">47B</td></tr><tr style=\"border-bottom:1px solid rgba(255,255,255,0.1);\"><td style=\"padding:8px;\">激活参数</td><td style=\"text-align:center;padding:8px;\">7B</td><td style=\"text-align:center;padding:8px;\">13B</td></tr><tr><td style=\"padding:8px;\">推理速度</td><td style=\"text-align:center;padding:8px;\">1x</td><td style=\"text-align:center;padding:8px;\">~1.5x 慢</td></tr></table><p style=\"margin-top:12px;\">Mixtral 8x7B 用 13B 的推理成本获得接近 47B 的能力！</p>"
+        }
+      ]
+    },
+    {
+      "id": "p-moe-router",
+      "page": 7,
+      "kind": "section",
+      "accent": "pink",
+      "dataTitle": "MoE",
+      "dataSub": "路由机制",
+      "header": {
+        "label": "Part 3.2",
+        "title": "MoE 路由器设计",
+        "descHtml": "如何让专家负载均衡？如何避免专家坍缩？"
+      },
+      "blocks": [
+        {
+          "type": "living",
+          "title": "路由器工作流程（点击左侧查看）",
+          "vizTitle": "可视化",
+          "hint": "点击查看路由过程",
+          "steps": [
+            {
+              "id": "route-1",
+              "label": "Step 1: 计算专家分数",
+              "code": "# 输入 x，计算每个专家的匹配分数\nscores = x @ router_weights  # [batch, seq, n_experts]",
+              "viz": {
+                "title": "路由器打分",
+                "sub": "每个 token 对每个专家打分",
+                "bullets": ["scores[i] 表示第 i 个专家的匹配度", "可以是简单线性层", "也可以是更复杂的网络"]
+              }
+            },
+            {
+              "id": "route-2",
+              "label": "Step 2: Top-K 选择",
+              "code": "# 选择分数最高的 K 个专家\ntop_k_scores, top_k_indices = scores.topk(k=2)",
+              "viz": {
+                "title": "稀疏选择",
+                "sub": "只激活最相关的 K 个专家",
+                "bullets": ["K=1: 最稀疏，可能不稳定", "K=2: Mixtral 默认，平衡好", "K=4+: 更稠密，能力更强"]
+              }
+            },
+            {
+              "id": "route-3",
+              "label": "Step 3: Softmax 归一化",
+              "code": "# 对 Top-K 分数归一化\nweights = F.softmax(top_k_scores, dim=-1)",
+              "viz": {
+                "title": "权重归一化",
+                "sub": "确保专家贡献加权求和",
+                "bullets": ["weights 总和为 1", "表示各专家的贡献比例", "可加噪声增加探索性"]
+              }
+            },
+            {
+              "id": "route-4",
+              "label": "Step 4: 专家计算 + 聚合",
+              "code": "# 只计算被选中的专家\noutput = sum(weights[i] * experts[idx[i]](x)\n             for i in range(k))",
+              "viz": {
+                "title": "稀疏计算",
+                "sub": "只有被选中的专家参与计算",
+                "bullets": ["8 个专家只激活 2 个", "计算量约为 Dense 的 2/8", "但获得 8 个专家的知识"]
+              }
+            }
+          ]
+        },
+        {
+          "type": "callout",
+          "title": "负载均衡损失",
+          "tag": "Auxiliary Loss",
+          "bodyHtml": "<p>问题：路由器可能总是选择同一个专家（专家坍缩）</p><p>解决方案：添加辅助损失鼓励均衡分配</p><pre style=\"background:rgba(0,0,0,0.3);padding:12px;border-radius:8px;margin-top:8px;\"><code>L_balance = α × (n_experts × sum(f_i × P_i))\nf_i = 分配给专家 i 的 token 比例\nP_i = 路由器给专家 i 的平均概率</code></pre>"
+        }
+      ]
+    },
+    {
+      "id": "p-moe-impl",
+      "page": 8,
+      "kind": "section",
+      "accent": "pink",
+      "dataTitle": "MoE",
+      "dataSub": "代码实现",
+      "header": {
+        "label": "Part 3.3",
+        "title": "MoE 完整实现",
+        "descHtml": "从零实现一个可用的 MoE 层"
+      },
+      "blocks": [
+        {
+          "type": "codeBlock",
+          "file": "moe.py",
+          "code": "class MoELayer(nn.Module):\n    def __init__(self, d_model, d_ff, n_experts=8, top_k=2):\n        super().__init__()\n        self.n_experts = n_experts\n        self.top_k = top_k\n        \n        # 路由器：一个简单的线性层\n        self.router = nn.Linear(d_model, n_experts, bias=False)\n        \n        # 专家：n_experts 个独立的 FFN\n        self.experts = nn.ModuleList([\n            nn.Sequential(\n                nn.Linear(d_model, d_ff),\n                nn.GELU(),\n                nn.Linear(d_ff, d_model)\n            )\n            for _ in range(n_experts)\n        ])\n    \n    def forward(self, x):\n        B, L, D = x.shape\n        x_flat = x.view(-1, D)  # [B*L, D]\n        \n        # 1. 路由器打分\n        router_logits = self.router(x_flat)  # [B*L, n_experts]\n        \n        # 2. Top-K 选择\n        weights, indices = torch.topk(\n            F.softmax(router_logits, dim=-1),\n            k=self.top_k\n        )\n        weights = weights / weights.sum(dim=-1, keepdim=True)\n        \n        # 3. 稀疏计算\n        output = torch.zeros_like(x_flat)\n        for i, expert in enumerate(self.experts):\n            # 找出路由到这个专家的 token\n            mask = (indices == i).any(dim=-1)\n            if mask.any():\n                expert_out = expert(x_flat[mask])\n                # 加权求和\n                for k in range(self.top_k):\n                    k_mask = indices[:, k] == i\n                    combined = mask & k_mask\n                    output[combined] += weights[combined, k:k+1] * expert_out[k_mask[mask]]\n        \n        return output.view(B, L, D)"
+        },
+        {
+          "type": "stickyNote",
+          "color": "pink",
+          "title": "⚠️ 工程挑战",
+          "text": "实际部署 MoE 需要解决：1) 专家并行的通信开销 2) 负载不均衡导致的 GPU 利用率问题 3) 显存管理"
+        }
+      ]
+    },
+    {
+      "id": "p-moe-train",
+      "page": 9,
+      "kind": "section",
+      "accent": "pink",
+      "dataTitle": "MoE",
+      "dataSub": "训练技巧",
+      "header": {
+        "label": "Part 3.4",
+        "title": "MoE 训练的挑战与技巧",
+        "descHtml": "如何稳定训练？如何避免专家坍缩？"
+      },
+      "blocks": [
+        {
+          "type": "cardsGrid",
+          "columns": 2,
+          "cards": [
+            {
+              "accent": "red",
+              "icon": "💥",
+              "title": "专家坍缩",
+              "subtitle": "Expert Collapse",
+              "text": "问题：路由器只选择少数专家，其他专家废弃",
+              "bullets": ["添加负载均衡损失", "初始化时增加噪声", "使用容量因子限制"]
+            },
+            {
+              "accent": "orange",
+              "icon": "⚖️",
+              "title": "负载不均衡",
+              "subtitle": "Load Imbalance",
+              "text": "问题：不同专家处理的 token 数量差异大",
+              "bullets": ["设置容量因子 1.25", "丢弃溢出的 token", "动态调整路由阈值"]
+            },
+            {
+              "accent": "cyan",
+              "icon": "📡",
+              "title": "通信开销",
+              "subtitle": "Communication Cost",
+              "text": "问题：专家分布在不同 GPU，需要 All-to-All",
+              "bullets": ["专家并行 + 数据并行", "优化通信拓扑", "异步流水线"]
+            },
+            {
+              "accent": "purple",
+              "icon": "💾",
+              "title": "显存占用",
+              "subtitle": "Memory Footprint",
+              "text": "问题：总参数量大，显存需求高",
+              "bullets": ["专家分片到多卡", "使用量化技术", "动态加载专家"]
+            }
+          ]
+        },
+        {
+          "type": "callout",
+          "title": "Mixtral 的成功配方",
+          "tag": "Best Practice",
+          "bodyHtml": "<ul class=\"content-list\"><li>8 个专家，Top-2 路由</li><li>每层独立的 MoE（不共享专家）</li><li>高质量数据预训练 + 指令微调</li><li>32K 上下文窗口（RoPE 扩展）</li></ul><p>结果：用 13B 激活参数达到 Llama 2 70B 水平！</p>"
+        }
+      ]
+    },
+    {
+      "id": "p-synthetic-intro",
+      "page": 10,
+      "kind": "section",
+      "accent": "green",
+      "dataTitle": "合成数据",
+      "dataSub": "数据生成管道",
+      "header": {
+        "label": "Part 4",
+        "title": "合成数据：LLM 的秘密武器",
+        "descHtml": "为什么 GPT-4 能力突飞猛进？合成数据如何突破数据瓶颈？"
+      },
+      "blocks": [
+        {
+          "type": "keyline",
+          "dot": "!",
+          "html": "<b>核心洞察：</b>高质量数据 > 海量低质数据。用强模型生成数据来训练弱模型。"
+        },
+        {
+          "type": "cardsGrid",
+          "columns": 3,
+          "cards": [
+            {
+              "accent": "cyan",
+              "icon": "📚",
+              "title": "Self-Instruct",
+              "subtitle": "自我指令",
+              "text": "用 LLM 自己生成训练指令和回答"
+            },
+            {
+              "accent": "purple",
+              "icon": "🔄",
+              "title": "Evol-Instruct",
+              "subtitle": "进化指令",
+              "text": "迭代增加指令复杂度，从简单到困难"
+            },
+            {
+              "accent": "pink",
+              "icon": "🧪",
+              "title": "Distillation",
+              "subtitle": "知识蒸馏",
+              "text": "大模型教小模型，传递推理能力"
+            }
+          ]
+        },
+        {
+          "type": "callout",
+          "title": "为什么合成数据有效？",
+          "tag": "Insight",
+          "bodyHtml": "<ul class=\"content-list\"><li><b>质量可控：</b>可以设计特定难度、领域的数据</li><li><b>规模无限：</b>不受人工标注速度限制</li><li><b>多样性：</b>通过 temperature 采样增加变化</li><li><b>无版权问题：</b>避免 copyrighted 数据的法律风险</li></ul>"
+        },
+        {
+          "type": "thinkBox",
+          "qid": "think-synthetic-1",
+          "title": "思考：合成数据的局限性？",
+          "text": "用 GPT-4 生成数据训练小模型，能否让小模型超越 GPT-4？为什么？"
+        }
+      ]
+    },
+    {
+      "id": "p-synthetic-pipeline",
+      "page": 11,
+      "kind": "section",
+      "accent": "green",
+      "dataTitle": "合成数据",
+      "dataSub": "生成管道",
+      "header": {
+        "label": "Part 4.2",
+        "title": "合成数据生成管道",
+        "descHtml": "从种子数据到高质量训练集的完整流程"
+      },
+      "blocks": [
+        {
+          "type": "living",
+          "title": "数据生成流程（点击左侧查看）",
+          "vizTitle": "流程图",
+          "hint": "点击查看每个步骤",
+          "steps": [
+            {
+              "id": "syn-1",
+              "label": "Step 1: 种子数据准备",
+              "code": "# 准备少量高质量种子\nseeds = [\n  {\"topic\": \"数学\", \"examples\": [...]},\n  {\"topic\": \"代码\", \"examples\": [...]},\n]",
+              "viz": {
+                "title": "种子数据",
+                "sub": "人工筛选的优质样本",
+                "bullets": ["涵盖目标领域", "格式规范统一", "难度梯度分布"]
+              }
+            },
+            {
+              "id": "syn-2",
+              "label": "Step 2: 指令生成",
+              "code": "prompt = f\"\"\"基于以下示例，生成类似但不同的任务指令：\n{seeds}\n要求：更复杂、更多样、覆盖边界情况\"\"\"",
+              "viz": {
+                "title": "Self-Instruct",
+                "sub": "用 LLM 生成新指令",
+                "bullets": ["多样化 prompt 模板", "控制难度分布", "过滤重复和低质"]
+              }
+            },
+            {
+              "id": "syn-3",
+              "label": "Step 3: 回答生成",
+              "code": "for instruction in instructions:\n    response = gpt4(instruction, temperature=0.7)\n    # 可选：多次采样取最佳",
+              "viz": {
+                "title": "回答生成",
+                "sub": "用强模型生成回答",
+                "bullets": ["多次采样增加多样性", "使用 CoT 提升质量", "控制回答长度"]
+              }
+            },
+            {
+              "id": "syn-4",
+              "label": "Step 4: 质量过滤",
+              "code": "# 多维度质量过滤\nfiltered = filter(\n    lambda x: quality_check(x),\n    raw_data\n)",
+              "viz": {
+                "title": "质量把关",
+                "sub": "严格过滤低质数据",
+                "bullets": ["格式正确性", "内容一致性", "难度适中", "去除有害内容"]
+              }
+            },
+            {
+              "id": "syn-5",
+              "label": "Step 5: 数据增强",
+              "code": "# 对高质量数据进行增强\naugmented = [\n    paraphrase(x),\n    add_noise(x),\n    translate(x),\n]",
+              "viz": {
+                "title": "数据增强",
+                "sub": "扩展数据多样性",
+                "bullets": ["改写、翻译、回译", "添加噪声提高鲁棒性", "生成对抗样本"]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p-synthetic-code",
+      "page": 12,
+      "kind": "section",
+      "accent": "green",
+      "dataTitle": "合成数据",
+      "dataSub": "代码实现",
+      "header": {
+        "label": "Part 4.3",
+        "title": "合成数据代码实战",
+        "descHtml": "使用 OpenAI API 实现数据生成管道"
+      },
+      "blocks": [
+        {
+          "type": "codeBlock",
+          "file": "synthetic_data.py",
+          "code": "import openai\nimport json\nfrom typing import List, Dict\n\ndef generate_instructions(seeds: List[str], n: int = 100) -> List[str]:\n    \"\"\"基于种子生成新指令\"\"\"\n    prompt = f\"\"\"\n你是一个专业的数据标注员。基于以下示例指令，生成 {n} 个类似但不同的新指令。\n\n示例指令：\n{json.dumps(seeds, ensure_ascii=False, indent=2)}\n\n要求：\n1. 指令应该多样化，覆盖不同的场景和难度\n2. 避免与示例过于相似\n3. 每个指令独立成行，JSON 数组格式输出\n\"\"\"\n    response = openai.ChatCompletion.create(\n        model=\"gpt-4\",\n        messages=[{\"role\": \"user\", \"content\": prompt}],\n        temperature=0.9,\n        max_tokens=4096\n    )\n    return json.loads(response.choices[0].message.content)\n\ndef generate_response(instruction: str) -> Dict:\n    \"\"\"为指令生成高质量回答\"\"\"\n    system = \"你是一个专业、准确、有帮助的 AI 助手。请详细回答用户问题。\"\n    response = openai.ChatCompletion.create(\n        model=\"gpt-4\",\n        messages=[\n            {\"role\": \"system\", \"content\": system},\n            {\"role\": \"user\", \"content\": instruction}\n        ],\n        temperature=0.7,\n        max_tokens=2048\n    )\n    return {\n        \"instruction\": instruction,\n        \"response\": response.choices[0].message.content\n    }\n\ndef quality_filter(data: Dict) -> bool:\n    \"\"\"质量过滤\"\"\"\n    # 长度检查\n    if len(data[\"response\"]) < 50:\n        return False\n    # 格式检查\n    if \"我不能\" in data[\"response\"] or \"我无法\" in data[\"response\"]:\n        return False\n    # 可以添加更多规则...\n    return True"
+        },
+        {
+          "type": "stickyNote",
+          "color": "green",
+          "title": "💰 成本提示",
+          "text": "生成 10 万条高质量数据约需 $500-2000（GPT-4）。可以先用 GPT-3.5 生成，再用 GPT-4 筛选和改进。"
+        }
+      ]
+    },
+    {
+      "id": "p-synthetic-evol",
+      "page": 13,
+      "kind": "section",
+      "accent": "green",
+      "dataTitle": "合成数据",
+      "dataSub": "Evol-Instruct",
+      "header": {
+        "label": "Part 4.4",
+        "title": "Evol-Instruct：进化式数据生成",
+        "descHtml": "WizardLM 的核心技术：让指令自动进化"
+      },
+      "blocks": [
+        {
+          "type": "callout",
+          "title": "进化策略",
+          "tag": "Evolution",
+          "bodyHtml": "<p>Evol-Instruct 通过两种方式让指令\"进化\"：</p><ul class=\"content-list\"><li><b>深度进化：</b>添加约束、增加步骤、提高复杂度</li><li><b>广度进化：</b>主题变换、领域迁移、视角切换</li></ul>"
+        },
+        {
+          "type": "codeBlock",
+          "file": "evol_instruct.py",
+          "code": "EVOL_PROMPTS = {\n    \"deepen\": \"\"\"请将以下指令改写得更加复杂和有挑战性：\n原始指令：{instruction}\n\n要求：\n1. 添加更多约束条件\n2. 要求更详细的步骤分解\n3. 增加边界情况的处理\n4. 保持任务本质不变\n\n进化后的指令：\"\"\",\n    \n    \"broaden\": \"\"\"请将以下指令改写到一个新的领域或场景：\n原始指令：{instruction}\n\n要求：\n1. 保持任务类型相似\n2. 迁移到不同的专业领域\n3. 使用该领域的专业术语\n4. 难度保持相近\n\n迁移后的指令：\"\"\",\n    \n    \"concretize\": \"\"\"请将以下指令具体化：\n原始指令：{instruction}\n\n要求：\n1. 添加具体的数字、名称、场景\n2. 给出明确的输入输出格式\n3. 提供示例数据\n\n具体化后的指令：\"\"\"\n}\n\ndef evolve_instruction(instruction: str, strategy: str) -> str:\n    prompt = EVOL_PROMPTS[strategy].format(instruction=instruction)\n    response = openai.ChatCompletion.create(\n        model=\"gpt-4\",\n        messages=[{\"role\": \"user\", \"content\": prompt}],\n        temperature=0.8\n    )\n    return response.choices[0].message.content"
+        },
+        {
+          "type": "cardsGrid",
+          "columns": 2,
+          "cards": [
+            {
+              "accent": "cyan",
+              "icon": "📈",
+              "title": "进化前",
+              "text": "\"写一个排序算法\""
+            },
+            {
+              "accent": "purple",
+              "icon": "🚀",
+              "title": "进化后",
+              "text": "\"实现一个支持百万级数据的外部排序算法，要求：1) 内存限制 1GB 2) 支持断点续传 3) 提供时间复杂度分析 4) 处理重复数据\""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p-synthetic-distill",
+      "page": 14,
+      "kind": "section",
+      "accent": "green",
+      "dataTitle": "合成数据",
+      "dataSub": "知识蒸馏",
+      "header": {
+        "label": "Part 4.5",
+        "title": "知识蒸馏：让小模型学大模型",
+        "descHtml": "如何将 GPT-4 的推理能力传递给 7B 模型？"
+      },
+      "blocks": [
+        {
+          "type": "living",
+          "title": "蒸馏方法对比（点击左侧查看）",
+          "vizTitle": "方法详解",
+          "hint": "点击查看不同蒸馏方法",
+          "steps": [
+            {
+              "id": "dist-1",
+              "label": "Response Distillation",
+              "code": "# 最简单：直接用大模型回答训练\nstudent.train(input=question, target=gpt4_response)",
+              "viz": {
+                "title": "回答蒸馏",
+                "sub": "模仿大模型的输出",
+                "bullets": ["简单直接", "丢失推理过程", "Alpaca、Vicuna 采用"]
+              }
+            },
+            {
+              "id": "dist-2",
+              "label": "CoT Distillation",
+              "code": "# 连推理过程一起蒸馏\nstudent.train(\n    input=question,\n    target=gpt4_reasoning + gpt4_answer\n)",
+              "viz": {
+                "title": "推理链蒸馏",
+                "sub": "学习思考过程",
+                "bullets": ["保留 CoT 推理步骤", "提升复杂问题能力", "WizardMath 采用"]
+              }
+            },
+            {
+              "id": "dist-3",
+              "label": "Feedback Distillation",
+              "code": "# 蒸馏批评和改进能力\nstudent.train(\n    input=(question, student_response),\n    target=gpt4_feedback\n)",
+              "viz": {
+                "title": "反馈蒸馏",
+                "sub": "学习自我改进",
+                "bullets": ["Constitutional AI 思想", "学会识别和修复错误", "Self-Refine 方法"]
+              }
+            },
+            {
+              "id": "dist-4",
+              "label": "Preference Distillation",
+              "code": "# 蒸馏偏好判断能力\nstudent.train_preference(\n    query=question,\n    chosen=gpt4_good,\n    rejected=gpt4_bad\n)",
+              "viz": {
+                "title": "偏好蒸馏",
+                "sub": "学习质量判断",
+                "bullets": ["生成对比数据", "DPO/PPO 训练", "Zephyr、Neural Chat"]
+              }
+            }
+          ]
+        },
+        {
+          "type": "callout",
+          "title": "蒸馏的局限性",
+          "tag": "Limitation",
+          "bodyHtml": "<p><b>重要认知：</b>蒸馏无法让学生超越老师的能力上限。</p><ul class=\"content-list\"><li>学生可以在特定任务上接近老师水平</li><li>但泛化能力、罕见情况处理通常不如老师</li><li>老师模型的错误也会被学习</li></ul><p>解决方案：多老师蒸馏 + 人类反馈 + 自我改进</p>"
+        }
+      ]
+    },
+    {
+      "id": "p-synthetic-quality",
+      "page": 15,
+      "kind": "section",
+      "accent": "green",
+      "dataTitle": "合成数据",
+      "dataSub": "质量控制",
+      "header": {
+        "label": "Part 4.6",
+        "title": "合成数据质量控制",
+        "descHtml": "垃圾进，垃圾出——如何确保数据质量？"
+      },
+      "blocks": [
+        {
+          "type": "cardsGrid",
+          "columns": 2,
+          "cards": [
+            {
+              "accent": "cyan",
+              "icon": "🔍",
+              "title": "格式检查",
+              "text": "确保输出格式正确，JSON 可解析，代码可运行"
+            },
+            {
+              "accent": "purple",
+              "icon": "✅",
+              "title": "一致性验证",
+              "text": "问题和回答是否匹配，逻辑是否自洽"
+            },
+            {
+              "accent": "pink",
+              "icon": "🧹",
+              "title": "去重去噪",
+              "text": "移除重复、相似、低信息量的样本"
+            },
+            {
+              "accent": "green",
+              "icon": "🛡️",
+              "title": "安全过滤",
+              "text": "检测并移除有害、偏见、敏感内容"
+            }
+          ]
+        },
+        {
+          "type": "codeBlock",
+          "file": "quality_control.py",
+          "code": "from transformers import AutoModelForSequenceClassification\nimport torch\n\nclass DataQualityChecker:\n    def __init__(self):\n        # 加载质量评分模型\n        self.scorer = AutoModelForSequenceClassification.from_pretrained(\n            \"OpenAssistant/reward-model-deberta-v3-large\"\n        )\n        # 加载毒性检测模型\n        self.toxicity = AutoModelForSequenceClassification.from_pretrained(\n            \"facebook/roberta-hate-speech-dynabench-r4\"\n        )\n    \n    def check_quality(self, instruction: str, response: str) -> dict:\n        \"\"\"多维度质量检查\"\"\"\n        text = f\"### Human: {instruction}\\n\\n### Assistant: {response}\"\n        \n        # 1. 质量评分\n        quality_score = self.scorer(text).logits.item()\n        \n        # 2. 毒性检测\n        toxicity_score = self.toxicity(response).logits.softmax(-1)[0, 1].item()\n        \n        # 3. 长度检查\n        length_ok = 50 < len(response) < 4000\n        \n        # 4. 格式检查\n        format_ok = not response.startswith(\"I cannot\") \\\n                   and not \"as an AI\" in response.lower()\n        \n        return {\n            \"quality_score\": quality_score,\n            \"toxicity_score\": toxicity_score,\n            \"length_ok\": length_ok,\n            \"format_ok\": format_ok,\n            \"pass\": quality_score > 0.5 and toxicity_score < 0.3 \\\n                    and length_ok and format_ok\n        }"
+        }
+      ]
+    },
+    {
+      "id": "p-practice-1",
+      "page": 16,
+      "kind": "section",
+      "accent": "cyan",
+      "dataTitle": "实战",
+      "dataSub": "综合练习",
+      "header": {
+        "label": "Practice",
+        "title": "实战：构建完整 LLM 训练管道",
+        "descHtml": "将四大技术整合到一个项目中"
+      },
+      "blocks": [
+        {
+          "type": "callout",
+          "title": "项目目标",
+          "tag": "Mission",
+          "bodyHtml": "<p>构建一个 7B 模型的完整训练流程：</p><ul class=\"content-list\"><li>使用 <b>RoPE</b> 支持 16K 上下文</li><li>使用 <b>GQA</b> 加速推理</li><li>使用 <b>合成数据</b> 增强特定领域能力</li><li>可选：尝试 <b>MoE</b> 架构</li></ul>"
+        },
+        {
+          "type": "living",
+          "title": "实战步骤（点击左侧查看）",
+          "vizTitle": "详细指南",
+          "hint": "点击查看每个步骤",
+          "steps": [
+            {
+              "id": "prac-1",
+              "label": "Step 1: 基础模型",
+              "code": "# 选择基座模型\nmodel = AutoModelForCausalLM.from_pretrained(\n    \"meta-llama/Llama-2-7b-hf\"\n)",
+              "viz": {
+                "title": "选择基座",
+                "sub": "推荐 Llama 2 系列",
+                "bullets": ["已包含 RoPE", "已包含 GQA", "社区支持好"]
+              }
+            },
+            {
+              "id": "prac-2",
+              "label": "Step 2: 扩展上下文",
+              "code": "# 应用 YaRN 扩展到 16K\nmodel.config.rope_scaling = {\n    \"type\": \"yarn\",\n    \"factor\": 4.0,  # 4K -> 16K\n}",
+              "viz": {
+                "title": "上下文扩展",
+                "sub": "使用 YaRN 方法",
+                "bullets": ["修改 rope_scaling 配置", "需要少量微调（可选）", "验证长文本效果"]
+              }
+            },
+            {
+              "id": "prac-3",
+              "label": "Step 3: 生成数据",
+              "code": "# 使用 GPT-4 生成领域数据\ndata = generate_synthetic_data(\n    domain=\"法律咨询\",\n    n_samples=10000\n)",
+              "viz": {
+                "title": "数据生成",
+                "sub": "针对目标领域",
+                "bullets": ["Evol-Instruct 增加难度", "CoT 保留推理过程", "严格质量过滤"]
+              }
+            },
+            {
+              "id": "prac-4",
+              "label": "Step 4: 微调",
+              "code": "# LoRA 高效微调\ntrainer = SFTTrainer(\n    model=model,\n    train_dataset=data,\n    peft_config=LoraConfig(r=64),\n)",
+              "viz": {
+                "title": "高效微调",
+                "sub": "使用 LoRA/QLoRA",
+                "bullets": ["节省显存", "避免灾难遗忘", "快速迭代"]
+              }
+            },
+            {
+              "id": "prac-5",
+              "label": "Step 5: 评估部署",
+              "code": "# 评估 + 部署\nevaluate(model, benchmark=\"legal_qa\")\ndeploy(model, framework=\"vllm\")",
+              "viz": {
+                "title": "评估部署",
+                "sub": "使用 vLLM 加速",
+                "bullets": ["在目标任务上评估", "KV Cache + PagedAttention", "批量推理优化"]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p-practice-2",
+      "page": 17,
+      "kind": "section",
+      "accent": "purple",
+      "dataTitle": "代码",
+      "dataSub": "完整训练脚本",
+      "header": {
+        "label": "Code",
+        "title": "完整训练脚本",
+        "descHtml": "可直接运行的训练代码"
+      },
+      "blocks": [
+        {
+          "type": "codeBlock",
+          "file": "train.py",
+          "code": "\"\"\"完整的 LLM 微调脚本\"\"\"\nimport torch\nfrom transformers import (\n    AutoModelForCausalLM, AutoTokenizer,\n    TrainingArguments, Trainer\n)\nfrom peft import LoraConfig, get_peft_model\nfrom datasets import load_dataset\n\n# 1. 加载模型和分词器\nmodel_id = \"meta-llama/Llama-2-7b-hf\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(\n    model_id,\n    torch_dtype=torch.bfloat16,\n    device_map=\"auto\"\n)\n\n# 2. 配置 LoRA\nlora_config = LoraConfig(\n    r=64,\n    lora_alpha=128,\n    target_modules=[\"q_proj\", \"k_proj\", \"v_proj\", \"o_proj\"],\n    lora_dropout=0.05,\n    bias=\"none\",\n    task_type=\"CAUSAL_LM\"\n)\nmodel = get_peft_model(model, lora_config)\n\n# 3. 加载数据\ndataset = load_dataset(\"json\", data_files=\"synthetic_data.json\")\n\ndef format_prompt(example):\n    return f\"### Question: {example['instruction']}\\n\\n### Answer: {example['response']}\"\n\ndataset = dataset.map(lambda x: tokenizer(format_prompt(x), truncation=True, max_length=2048))\n\n# 4. 训练配置\ntraining_args = TrainingArguments(\n    output_dir=\"./output\",\n    num_train_epochs=3,\n    per_device_train_batch_size=4,\n    gradient_accumulation_steps=4,\n    learning_rate=2e-4,\n    warmup_ratio=0.1,\n    logging_steps=10,\n    save_strategy=\"epoch\",\n    bf16=True,\n)\n\n# 5. 开始训练\ntrainer = Trainer(\n    model=model,\n    args=training_args,\n    train_dataset=dataset[\"train\"],\n)\ntrainer.train()\n\n# 6. 保存模型\nmodel.save_pretrained(\"./final_model\")"
+        }
+      ]
+    },
+    {
+      "id": "p-summary",
+      "page": 18,
+      "kind": "section",
+      "accent": "cyan",
+      "dataTitle": "总结",
+      "dataSub": "Chapter 6 回顾",
+      "header": {
+        "label": "Summary",
+        "title": "第 6 章总结",
+        "descHtml": "现代 LLM 的四大核心技术"
+      },
+      "blocks": [
+        {
+          "type": "cardsGrid",
+          "columns": 2,
+          "cards": [
+            {
+              "accent": "purple",
+              "icon": "🔄",
+              "title": "RoPE",
+              "subtitle": "旋转位置编码",
+              "bullets": ["用旋转编码相对位置", "支持长度外推", "YaRN 扩展到 100K+"]
+            },
+            {
+              "accent": "cyan",
+              "icon": "🎯",
+              "title": "GQA",
+              "subtitle": "分组查询注意力",
+              "bullets": ["KV 头分组共享", "推理速度提升 2x", "质量几乎无损"]
+            },
+            {
+              "accent": "pink",
+              "icon": "🧠",
+              "title": "MoE",
+              "subtitle": "混合专家模型",
+              "bullets": ["稀疏激活降成本", "专家分工协作", "Mixtral 8x7B 成功案例"]
+            },
+            {
+              "accent": "green",
+              "icon": "📚",
+              "title": "合成数据",
+              "subtitle": "数据生成管道",
+              "bullets": ["Self/Evol-Instruct", "知识蒸馏传承能力", "质量 > 数量"]
+            }
+          ]
+        },
+        {
+          "type": "callout",
+          "title": "关键 Takeaways",
+          "tag": "Key Points",
+          "bodyHtml": "<ul class=\"content-list\"><li><b>RoPE</b> 是目前最好的位置编码方案，几乎所有新模型都在用</li><li><b>GQA</b> 是推理优化的标配，显著降低 KV Cache 开销</li><li><b>MoE</b> 是突破规模瓶颈的有效方案，但工程挑战大</li><li><b>合成数据</b> 正在成为训练数据的主要来源</li></ul>"
+        },
+        {
+          "type": "thinkBox",
+          "qid": "think-final",
+          "title": "课后思考",
+          "text": "如果你要训练一个 10B 参数的领域专用模型，你会如何组合这四种技术？请写出你的技术方案。"
+        }
+      ]
+    },
+    {
+      "id": "p-next",
+      "page": 19,
+      "kind": "section",
+      "accent": "purple",
+      "dataTitle": "预告",
+      "dataSub": "Chapter 7",
+      "header": {
+        "label": "Next",
+        "title": "下一章预告",
+        "descHtml": "第 7 章：训练技巧与工程实践"
+      },
+      "blocks": [
+        {
+          "type": "cardsGrid",
+          "columns": 3,
+          "cards": [
+            {
+              "accent": "cyan",
+              "icon": "⚡",
+              "title": "Flash Attention",
+              "text": "IO 感知的注意力算法，大幅加速训练"
+            },
+            {
+              "accent": "purple",
+              "icon": "🔧",
+              "title": "FSDP & DeepSpeed",
+              "text": "分布式训练框架与优化策略"
+            },
+            {
+              "accent": "pink",
+              "icon": "📐",
+              "title": "量化与推理",
+              "text": "INT8/INT4 量化，推理加速技术"
+            }
+          ]
+        },
+        {
+          "type": "callout",
+          "title": "预习建议",
+          "tag": "Homework",
+          "bodyHtml": "<ul class=\"content-list\"><li>阅读 Flash Attention 论文（或 Tri Dao 的博客）</li><li>了解 PyTorch FSDP 基本用法</li><li>尝试用 bitsandbytes 量化一个模型</li></ul>"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "version": 2,
+  "templates": [
+    {
+      "id": "lstm-1p5",
+      "name": "LSTM 1.5（像素级复刻）",
+      "file": "templates/lstm-1p5.template.html",
+      "example": "templates/examples/lstm-1p5.example.json",
+      "preview": "templates/previews/lstm-1p5.png",
+      "description": "从 chapter1.5html.html 拆分而来：保留原 head/body/脚本结构，仅通过 JSON pages 注入页面内容，确保与原 HTML 启动效果一致。",
+      "price": 49,
+      "originalPrice": 79,
+      "isFree": false,
+      "vipOnly": false,
+      "tags": ["复刻", "LSTM", "KaTeX", "翻页", "目录"],
+      "notes": "该模板使用 pages[].rawHtml 注入每页 page-inner 内容；请勿在 JSON 中再包一层 <section class=\"page\">。"
+    },
+    {
+      "id": "chapter2",
+      "name": "Chapter2（炫酷翻页 + 打字机 + 可视化）",
+      "file": "templates/chapter2.template.html",
+      "example": "templates/examples/chapter2.example.json",
+      "preview": "templates/previews/chapter2.png",
+      "description": "支持打字机效果、代码可视化、翻页动画的完整教学模版",
+      "price": 0,
+      "originalPrice": 0,
+      "isFree": true,
+      "vipOnly": false,
+      "tags": ["翻页", "打字机", "可视化", "教学"],
+      "notes": "需要模板内包含 <!-- TEMPLATE_PAGES_START --> 与 <!-- TEMPLATE_PAGES_END --> 标记。"
+    },
+    {
+      "id": "nordic",
+      "name": "极简北欧（赛博朋克风格）",
+      "file": "templates/nordic.template.html",
+      "example": "templates/examples/nordic.example.json",
+      "preview": "templates/previews/nordic.png",
+      "description": "左右分栏布局，适合RNN/梯度等概念讲解",
+      "price": 19,
+      "originalPrice": 39,
+      "isFree": false,
+      "vipOnly": false,
+      "tags": ["极简", "科技感", "左右分栏"],
+      "notes": "独立模版，含交互控制面板"
+    },
+    {
+      "id": "magazine",
+      "name": "杂志叙事（富媒体风格）",
+      "file": "templates/magazine.template.html",
+      "example": "templates/examples/magazine.example.json",
+      "preview": "templates/previews/magazine.png",
+      "description": "杂志风格布局，适合长篇叙事和图文混排",
+      "price": 29,
+      "originalPrice": 59,
+      "isFree": false,
+      "vipOnly": false,
+      "tags": ["杂志", "叙事", "富媒体"],
+      "notes": "独立模版，强调阅读体验"
+    },
+    {
+      "id": "particle",
+      "name": "粒子宇宙（酷炫粒子效果）",
+      "file": "templates/particle.template.html",
+      "example": "templates/examples/particle.example.json",
+      "preview": "templates/previews/particle.png",
+      "description": "粒子动画背景，适合概念演示和视觉冲击",
+      "price": 39,
+      "originalPrice": 69,
+      "isFree": false,
+      "vipOnly": true,
+      "tags": ["粒子", "动画", "酷炫"],
+      "notes": "独立模版，含粒子动画效果"
+    },
+    {
+      "id": "gpt-course",
+      "name": "GPT课程（玻璃态杂志风格）",
+      "file": "templates/gpt-course.template.html",
+      "example": "templates/gpt-course.example.json",
+      "preview": "templates/previews/gpt-course.png",
+      "description": "玻璃态设计、全屏翻页、打字机效果、15+内容块类型，适合深度技术教程",
+      "price": 99,
+      "originalPrice": 159,
+      "isFree": false,
+      "vipOnly": true,
+      "tags": ["玻璃态", "翻页", "打字机", "技术教程", "标准模版"],
+      "notes": "新标准模版，详见 GPT-COURSE-TEMPLATE-RULES.md 规范文档"
+    }
+  ]
+}

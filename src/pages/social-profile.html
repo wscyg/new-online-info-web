@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>个人主页 - 学习圈</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <style>
         /* 页面布局 */
         body {
@@ -644,6 +645,7 @@
                 <a href="/arena.html" class="nav-link">PK竞技</a>
             </div>
             <div class="nav-actions">
+                <div id="authArea"></div>
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="5"/>
@@ -657,10 +659,7 @@
                         <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
                     </svg>
                 </button>
-                <div class="user-menu">
-                    <div class="user-avatar" onclick="toggleUserMenu()">
-                        <span id="userInitial">U</span>
-                    </div>
+                
                 </div>
             </div>
         </div>
@@ -675,6 +674,7 @@
             <span>返回</span>
         </a>
         <div class="nav-actions">
+                <div id="authArea"></div>
             <button class="icon-btn" aria-label="搜索">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="11" cy="11" r="8"/>
@@ -850,8 +850,6 @@
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
-                    }
-                });
 
                 if (response.ok) {
                     if (isFollowing) {
@@ -1157,5 +1155,7 @@
             loadLikes();
         });
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PK赛季 - AI 信息未来</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <style>
         body {
             padding-top: 48px;
@@ -482,6 +483,7 @@
                 <a href="arena.html" class="nav-link active">PK竞技</a>
             </div>
             <div class="nav-actions">
+                <div id="authArea"></div>
                 <button class="theme-toggle" onclick="toggleTheme()">
                     <svg class="icon" id="theme-icon-light" style="display: block;">
                         <circle cx="10" cy="10" r="5"></circle>
@@ -498,10 +500,7 @@
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                     </svg>
                 </button>
-                <div class="user-menu">
-                    <div class="user-avatar" onclick="toggleUserMenu()">
-                        <span id="user-initial">U</span>
-                    </div>
+                
                     <div class="dropdown" id="user-dropdown">
                         <div class="dropdown-item" onclick="location.href='profile.html'">个人资料</div>
                         <div class="dropdown-item" onclick="location.href='settings.html'">设置</div>
@@ -704,17 +703,9 @@
         }
 
         // User menu
-        function toggleUserMenu() {
-            const dropdown = document.getElementById('user-dropdown');
-            dropdown.classList.toggle('show');
-        }
-
-        document.addEventListener('click', (e) => {
-            const userMenu = document.querySelector('.user-menu');
-            if (!userMenu.contains(e.target)) {
+        
+                    if (!userMenu.contains(e.target)) {
                 document.getElementById('user-dropdown').classList.remove('show');
-            }
-        });
 
         function logout() {
             localStorage.removeItem('token');
@@ -725,20 +716,11 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', async () => {
             initTheme();
-            checkAuth();
-            await loadCurrentSeason();
+                        await loadCurrentSeason();
             await loadUserStats();
         });
 
-        function checkAuth() {
-            const token = localStorage.getItem('token');
-            const user = localStorage.getItem('user');
-
-            if (!token) {
-                location.href = 'login.html';
-                return;
-            }
-
+        
             if (user) {
                 try {
                     const userData = JSON.parse(user);
@@ -1049,5 +1031,7 @@
             }
         }
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

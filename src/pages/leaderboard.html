@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>排行榜 - AI 信息未来</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <style>
         /* Hero Section */
         .leaderboard-hero {
@@ -548,7 +549,7 @@
                     </div>
                     <div class="hero-stat">
                         <div class="hero-stat-value" id="totalMatches">0</div>
-                        <div class="hero-stat-label">PK对战场次</div>
+                        <div class="hero-stat-label">今日PK场次</div>
                     </div>
                 </div>
             </div>
@@ -692,11 +693,38 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             initTheme();
-            checkAuth();
+                        applyQueryParams();
             loadStats();
             loadLeaderboard();
             setupFilters();
         });
+
+        function applyQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            const type = (params.get('type') || '').trim();
+            const time = (params.get('time') || '').trim();
+
+            const allowedTypes = new Set(['study', 'points', 'pk', 'streak', 'completion']);
+            const allowedTimes = new Set(['today', 'week', 'month', 'all']);
+
+            if (allowedTypes.has(type)) currentType = type;
+            if (allowedTimes.has(time)) currentTime = time;
+
+            document.querySelectorAll('.category-item').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.type === currentType);
+            });
+            document.querySelectorAll('.time-filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.time === currentTime);
+            });
+        }
+
+        function updateQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            params.set('type', currentType);
+            params.set('time', currentTime);
+            const next = `${window.location.pathname}?${params.toString()}`;
+            window.history.replaceState({}, '', next);
+        }
 
         function initTheme() {
             const saved = localStorage.getItem('theme') || 'light';
@@ -709,67 +737,63 @@
             });
         }
 
-        function checkAuth() {
-            const token = localStorage.getItem('token');
-            const userStr = localStorage.getItem('user');
-            const authArea = document.getElementById('authArea');
-            if (token && userStr) {
-                const user = JSON.parse(userStr);
-                currentUserId = user.id;
-                currentUserInfo = user;
-                const initial = (user.nickname || user.username || 'U').charAt(0).toUpperCase();
+                }
 
-                // Update my rank card
-                document.getElementById('myRankCard').style.display = 'block';
-                document.getElementById('myAvatar').textContent = initial;
-                document.getElementById('myName').textContent = user.nickname || user.username;
-
-                authArea.innerHTML = `
-                    <div class="user-menu">
-                        <div class="user-avatar" onclick="toggleDropdown()">${initial}</div>
-                        <div class="dropdown" id="userDropdown">
-                            <a href="dashboard.html" class="dropdown-item">
-                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                                学习中心
-                            </a>
-                            <a href="profile.html" class="dropdown-item">
-                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                                个人主页
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item" onclick="logout(); return false;">
-                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                                退出登录
-                            </a>
-                        </div>
-                    </div>`;
-            } else {
-                authArea.innerHTML = '<a href="login.html" class="btn btn-secondary" style="padding:8px 16px;font-size:14px;">登录</a>';
-            }
-        }
-
-        function toggleDropdown() {
-            document.getElementById('userDropdown').classList.toggle('show');
-        }
-
+        
         function logout() {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             location.reload();
         }
 
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.user-menu')) {
-                const d = document.getElementById('userDropdown');
-                if (d) d.classList.remove('show');
-            }
-        });
 
         function loadStats() {
-            // Animate stats
-            animateNumber('totalUsers', 1280);
-            animateNumber('totalHours', 45680);
-            animateNumber('totalMatches', 8920);
+            loadHeroStats();
+        }
+
+        async function loadHeroStats() {
+            // 参与学员：用积分榜返回的总数（上榜人数），避免伪造“全站用户数”
+            try {
+                const pointsRes = await fetch(`${API_BASE}/leaderboard/points?period=all&page=1&size=100`);
+                const pointsJson = await pointsRes.json();
+                const total = pointsJson?.data?.total ?? 0;
+                animateNumber('totalUsers', Number(total || 0) || 0);
+            } catch (e) {
+                document.getElementById('totalUsers').textContent = '--';
+            }
+
+            // 累计学习：取近30天学习时长榜 TOP100 的合计小时数
+            try {
+                const studyRes = await fetch(`${API_BASE}/leaderboard/study-time?period=monthly&page=1&size=100`);
+                const studyJson = await studyRes.json();
+                const items = studyJson?.data?.items || [];
+                const minutes = items.reduce((sum, it) => sum + (Number(it.studyMinutes || 0) || 0), 0);
+                const hours = Math.round((minutes / 60) * 10) / 10;
+                document.getElementById('totalHours').textContent = hours ? hours.toLocaleString() : '0';
+            } catch (e) {
+                document.getElementById('totalHours').textContent = '--';
+            }
+
+            // 今日PK：需要登录才能查看
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    document.getElementById('totalMatches').textContent = '--';
+                    return;
+                }
+
+                const pkRes = await fetch(`${API_BASE}/pk/lobby-stats`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const pkJson = await pkRes.json();
+                if (pkJson?.code === 200 && pkJson?.data) {
+                    document.getElementById('totalMatches').textContent = String(pkJson.data.todayBattles ?? 0);
+                } else {
+                    document.getElementById('totalMatches').textContent = '--';
+                }
+            } catch (e) {
+                document.getElementById('totalMatches').textContent = '--';
+            }
         }
 
         function animateNumber(elementId, target) {
@@ -796,38 +820,157 @@
             rankList.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div></div>';
 
             try {
-                const res = await fetch(`${API_BASE}/leaderboard?type=${currentType}&time=${currentTime}`);
-                const data = await res.json();
-                if (data.code === 200 && data.data) {
-                    renderLeaderboard(data.data);
-                } else {
-                    renderLeaderboard(getMockData());
+                const { url, headers } = buildLeaderboardRequest(currentType, currentTime);
+                const res = await fetch(url, { headers });
+
+                if ((res.status === 401 || res.status === 403) && currentType === 'pk') {
+                    renderPkAuthRequired();
+                    return;
                 }
+
+                const data = await res.json();
+                if (data.code !== 200 || !data.data) {
+                    renderLeaderboard([]);
+                    return;
+                }
+
+                const list = normalizeLeaderboardData(data.data, currentType);
+                renderLeaderboard(list);
             } catch (e) {
-                renderLeaderboard(getMockData());
+                console.error(e);
+                renderLeaderboard([]);
             }
         }
 
-        function getMockData() {
-            const typeConfig = {
-                study: { unit: '小时', base: 50, multiplier: 4 },
-                points: { unit: '分', base: 2000, multiplier: 150 },
-                pk: { unit: '胜', base: 100, multiplier: 8 },
-                streak: { unit: '天', base: 30, multiplier: 2 },
-                completion: { unit: '门', base: 15, multiplier: 1 }
-            };
-            const config = typeConfig[currentType] || typeConfig.study;
+        function renderPkAuthRequired() {
+            const podium = document.getElementById('podium');
+            const rankList = document.getElementById('rankList');
+            podium.innerHTML = '';
+            const hasToken = !!localStorage.getItem('token');
+            rankList.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                            <path d="M2 17l10 5 10-5"/>
+                            <path d="M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+                    <h3 class="empty-title">${hasToken ? '暂无权限查看 PK 排行' : '登录后查看 PK 排行'}</h3>
+                    <p class="empty-desc">${hasToken ? '如需查看，请联系管理员为账号开通权限。' : '登录后即可查看 PK ELO 排行与战绩。'}</p>
+                    ${hasToken ? '' : '<a href=\"login.html\" class=\"btn btn-primary\" style=\"padding:10px 18px;font-size:14px;\">去登录</a>'}
+                </div>
+            `;
+        }
 
-            return Array.from({ length: 20 }, (_, i) => ({
-                id: i + 1,
-                username: `user${i + 1}`,
-                nickname: `学习者${String.fromCharCode(65 + i)}`,
-                score: Math.floor(config.base - i * config.multiplier + Math.random() * config.multiplier),
-                detail: `${Math.floor(config.base - i * config.multiplier)}${config.unit}`,
-                trend: i < 5 ? 'up' : i < 10 ? 'same' : 'down',
-                trendValue: Math.floor(Math.random() * 5) + 1,
-                level: Math.floor(10 - i * 0.4)
-            }));
+        function buildLeaderboardRequest(type, time) {
+            const periodMap = { today: 'daily', week: 'weekly', month: 'monthly', all: 'all' };
+            const period = periodMap[time] || 'weekly';
+
+            const token = localStorage.getItem('token');
+            const headers = {};
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+
+            switch (type) {
+                case 'study':
+                    return { url: `${API_BASE}/leaderboard/study-time?period=${period}&page=1&size=50`, headers: {} };
+                    }
+                });
+                case 'points':
+                    return { url: `${API_BASE}/leaderboard/points?period=${period}&page=1&size=50`, headers: {} };
+                    }
+                });
+                case 'pk':
+                    return { url: `${API_BASE}/pk/leaderboard?page=1&size=50`, headers };
+                case 'streak':
+                    return { url: `${API_BASE}/checkin/leaderboard?limit=50`, headers: {} };
+                    }
+                });
+                case 'completion':
+                    return { url: `${API_BASE}/leaderboard/completion?period=${period}&page=1&size=50`, headers: {} };
+                    }
+                });
+                default:
+                    return { url: `${API_BASE}/leaderboard/points?period=${period}&page=1&size=50`, headers: {} };
+            }
+        }
+
+        function normalizeLeaderboardData(data, type) {
+            if (type === 'pk') {
+                const rankings = data.rankings || [];
+                return rankings.map((r, idx) => ({
+                    userId: r.user_id || r.userId,
+                    username: r.username || '',
+                    nickname: r.nickname || r.username || '',
+                    score: r.elo_rating || r.eloRating || 0,
+                    detail: `${r.elo_rating || r.eloRating || 0} ELO`,
+                    trend: 'same',
+                    trendValue: 0,
+                    level: 1
+                }));
+            }
+
+            if (type === 'streak') {
+                const list = data.leaderboard || [];
+                return list.map((s, idx) => ({
+                    userId: s.userId,
+                    username: s.user?.username || '',
+                    nickname: s.user?.nickname || s.user?.username || `用户${s.userId}`,
+                    score: s.currentConsecutiveDays || 0,
+                    detail: `${s.currentConsecutiveDays || 0}天`,
+                    trend: 'same',
+                    trendValue: 0,
+                    level: 1
+                }));
+            }
+
+            const items = data.items || [];
+            return items.map((it, idx) => {
+                const userId = it.userId || it.user_id;
+                const nickname = it.nickname || it.username || `用户${userId || ''}`.trim();
+
+                if (type === 'study') {
+                    const minutes = Number(it.studyMinutes || 0) || 0;
+                    const hours = it.studyHours != null ? String(it.studyHours) : (Math.round((minutes / 60) * 10) / 10).toFixed(1);
+                    return {
+                        userId,
+                        username: it.username || '',
+                        nickname,
+                        score: minutes,
+                        detail: `${hours}小时`,
+                        trend: it.change || 'same',
+                        trendValue: it.changeValue || 0,
+                        level: 1
+                    };
+                }
+
+                if (type === 'completion') {
+                    const completed = Number(it.completedCourses || 0) || 0;
+                    return {
+                        userId,
+                        username: it.username || '',
+                        nickname,
+                        score: completed,
+                        detail: `${completed}门`,
+                        trend: it.change || 'same',
+                        trendValue: it.changeValue || 0,
+                        level: 1
+                    };
+                }
+
+                // points
+                const points = Number(it.points || 0) || 0;
+                return {
+                    userId,
+                    username: it.username || '',
+                    nickname,
+                    score: points,
+                    detail: `${points}分`,
+                    trend: it.change || 'same',
+                    trendValue: it.changeValue || 0,
+                    level: 1
+                };
+            });
         }
 
         function renderLeaderboard(list) {
@@ -877,7 +1020,7 @@
             } else {
                 rankList.innerHTML = rest.map((user, i) => {
                     const rank = i + 4;
-                    const isSelf = user.id === currentUserId;
+                    const isSelf = user.userId === currentUserId;
                     const trendIcon = user.trend === 'up'
                         ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>'
                         : user.trend === 'down'
@@ -906,7 +1049,7 @@
 
             // Update my rank
             if (currentUserId) {
-                const myIndex = list.findIndex(u => u.id === currentUserId);
+                const myIndex = list.findIndex(u => u.userId === currentUserId);
                 if (myIndex >= 0) {
                     document.getElementById('myCurrentRank').textContent = `#${myIndex + 1}`;
                     document.getElementById('myCurrentScore').textContent = list[myIndex].detail || list[myIndex].score;
@@ -924,6 +1067,7 @@
                     document.querySelectorAll('.category-item').forEach(i => i.classList.remove('active'));
                     item.classList.add('active');
                     currentType = item.dataset.type;
+                    updateQueryParams();
                     loadLeaderboard();
                 });
             });
@@ -934,6 +1078,7 @@
                     document.querySelectorAll('.time-filter-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     currentTime = btn.dataset.time;
+                    updateQueryParams();
                     loadLeaderboard();
                 });
             });
@@ -945,6 +1090,9 @@
             t.classList.add('show');
             setTimeout(() => t.classList.remove('show'), 3000);
         }
+        });
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

@@ -310,6 +310,66 @@
             cursor: not-allowed;
         }
 
+        .btn-chat {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+        }
+
+        .btn-chat:hover {
+            transform: scale(1.02);
+        }
+
+        .btn-group-create {
+            background: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-group-create:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+
+        /* Create Group Modal */
+        .create-group-modal .modal-content {
+            max-width: 500px;
+        }
+
+        .create-group-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .create-group-form input,
+        .create-group-form textarea {
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .create-group-form textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .create-group-form input:focus,
+        .create-group-form textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
         /* User Modal */
         .modal-overlay {
             position: fixed;
@@ -477,7 +537,7 @@
             }
         }
     </style>
-  <link rel="stylesheet" href="/assets/apple-design-3a23e109.css">
+  <link rel="stylesheet" href="/assets/apple-design-5104bdc3.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -542,6 +602,12 @@
             <button class="filter-btn" onclick="searchUsers()">
                 <i class="fas fa-search"></i> 搜索
             </button>
+            <button class="btn-group-create" onclick="openCreateGroupModal()">
+                <i class="fas fa-users"></i> 创建群聊
+            </button>
+            <a href="chat.html" class="btn-group-create" style="text-decoration: none;">
+                <i class="fas fa-comments"></i> 我的聊天
+            </a>
         </div>
 
         <!-- Status Tabs -->
@@ -606,10 +672,33 @@
                 <button class="action-btn btn-add-friend" id="modalFriendBtn" onclick="addFriend()">
                     <i class="fas fa-user-plus"></i> 添加好友
                 </button>
+                <button class="action-btn btn-chat" id="modalChatBtn" onclick="startChat()">
+                    <i class="fas fa-comment"></i> 私聊
+                </button>
                 <button class="action-btn btn-pk" id="modalPkBtn" onclick="challengePk()">
                     <i class="fas fa-bolt"></i> 发起PK
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Create Group Modal -->
+    <div class="modal-overlay create-group-modal" id="createGroupModal" onclick="closeCreateGroupModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-modal" onclick="closeCreateGroupModalBtn()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-header">
+                <h2 style="font-size: 1.5rem; margin-bottom: 8px;">创建群聊</h2>
+                <p style="color: var(--text-secondary);">创建一个学习小组，邀请好友一起学习</p>
+            </div>
+            <form class="create-group-form" onsubmit="createGroup(event)">
+                <input type="text" id="groupName" placeholder="群聊名称" required maxlength="50">
+                <textarea id="groupDescription" placeholder="群聊描述（可选）" maxlength="200"></textarea>
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px;">
+                    <i class="fas fa-plus"></i> 创建群聊
+                </button>
+            </form>
         </div>
     </div>
 
@@ -698,11 +787,43 @@
 
         // Load online users
         async function loadOnlineUsers() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                document.getElementById('usersGrid').innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <div class="empty-icon"><i class="fas fa-sign-in-alt"></i></div>
+                        <h3>请先登录</h3>
+                        <p>登录后即可查看在线用户</p>
+                        <a href="login.html?returnUrl=online-plaza.html" class="btn btn-primary" style="margin-top: 16px;">去登录</a>
+                    </div>
+                `;
+                return;
+            }
+
             try {
                 let url = `${API_BASE}/plaza/online-users?page=1&size=50`;
                 if (currentStatus) url += `&status=${currentStatus}`;
 
-                const res = await fetch(url);
+                const res = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                // Handle 401 Unauthorized
+                if (res.status === 401) {
+                    console.warn('Token expired, redirecting to login');
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    document.getElementById('usersGrid').innerHTML = `
+                        <div class="empty-state" style="grid-column: 1/-1;">
+                            <div class="empty-icon"><i class="fas fa-clock"></i></div>
+                            <h3>登录已过期</h3>
+                            <p>请重新登录</p>
+                            <a href="login.html?returnUrl=online-plaza.html" class="btn btn-primary" style="margin-top: 16px;">重新登录</a>
+                        </div>
+                    `;
+                    return;
+                }
+
                 const data = await res.json();
 
                 if (data.code === 200 && data.data) {
@@ -774,10 +895,13 @@
                     </div>
                     <div class="user-actions" onclick="event.stopPropagation()">
                         <button class="action-btn btn-add-friend" onclick="quickAddFriend(${user.userId}, this)">
-                            <i class="fas fa-user-plus"></i> 加好友
+                            <i class="fas fa-user-plus"></i>
+                        </button>
+                        <button class="action-btn btn-chat" onclick="quickChat(${user.userId})">
+                            <i class="fas fa-comment"></i>
                         </button>
                         <button class="action-btn btn-pk" onclick="quickChallenge(${user.userId})" ${user.status === 'pk' ? 'disabled' : ''}>
-                            <i class="fas fa-bolt"></i> PK
+                            <i class="fas fa-bolt"></i>
                         </button>
                     </div>
                 </div>
@@ -812,8 +936,23 @@
                 return;
             }
 
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('请先登录');
+                return;
+            }
+
             try {
-                const res = await fetch(`${API_BASE}/plaza/search?keyword=${encodeURIComponent(keyword)}`);
+                const res = await fetch(`${API_BASE}/plaza/search?keyword=${encodeURIComponent(keyword)}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.status === 401) {
+                    alert('登录已过期，请重新登录');
+                    window.location.href = 'login.html?returnUrl=online-plaza.html';
+                    return;
+                }
+
                 const data = await res.json();
 
                 if (data.code === 200 && data.data) {
@@ -856,10 +995,13 @@
                     </div>
                     <div class="user-actions" onclick="event.stopPropagation()">
                         <button class="action-btn btn-add-friend" onclick="quickAddFriend(${user.id}, this)">
-                            <i class="fas fa-user-plus"></i> 加好友
+                            <i class="fas fa-user-plus"></i>
+                        </button>
+                        <button class="action-btn btn-chat" onclick="quickChat(${user.id})">
+                            <i class="fas fa-comment"></i>
                         </button>
                         <button class="action-btn btn-pk" onclick="quickChallenge(${user.id})" ${!user.isOnline ? 'disabled' : ''}>
-                            <i class="fas fa-bolt"></i> PK
+                            <i class="fas fa-bolt"></i>
                         </button>
                     </div>
                 </div>
@@ -996,6 +1138,84 @@
                 return;
             }
             window.location.href = `pk-arena.html?challenge=${userId}`;
+        }
+
+        // Start private chat
+        function startChat() {
+            if (!currentUser || !selectedUserId) return;
+            window.location.href = `chat.html?userId=${selectedUserId}`;
+        }
+
+        function quickChat(userId) {
+            if (!currentUser) {
+                alert('请先登录');
+                return;
+            }
+            window.location.href = `chat.html?userId=${userId}`;
+        }
+
+        // Create Group Modal
+        function openCreateGroupModal() {
+            if (!currentUser) {
+                alert('请先登录');
+                return;
+            }
+            document.getElementById('createGroupModal').classList.add('show');
+        }
+
+        function closeCreateGroupModalBtn() {
+            document.getElementById('createGroupModal').classList.remove('show');
+        }
+
+        function closeCreateGroupModal(event) {
+            if (event.target === document.getElementById('createGroupModal')) {
+                closeCreateGroupModalBtn();
+            }
+        }
+
+        // Create group
+        async function createGroup(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('groupName').value.trim();
+            const description = document.getElementById('groupDescription').value.trim();
+
+            if (!name) {
+                alert('请输入群聊名称');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                const res = await fetch(`${API_BASE}/chat-group/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, description })
+                });
+
+                if (res.status === 401) {
+                    alert('登录已过期，请重新登录');
+                    window.location.href = 'login.html?returnUrl=online-plaza.html';
+                    return;
+                }
+
+                const data = await res.json();
+
+                if (data.code === 200) {
+                    alert('群聊创建成功！');
+                    closeCreateGroupModalBtn();
+                    // 跳转到聊天页面
+                    window.location.href = `chat.html?groupId=${data.data.id}`;
+                } else {
+                    alert(data.message || '创建失败');
+                }
+            } catch (e) {
+                console.error('Create group failed:', e);
+                alert('网络错误，请重试');
+            }
         }
 
         // Load friend count

@@ -5,7 +5,7 @@
 
 const AuthHeader = {
     // API基础路径
-    apiBase: 'http://localhost:8070/api',
+    apiBase: '/api',
 
     // 用户数据
     userData: null,

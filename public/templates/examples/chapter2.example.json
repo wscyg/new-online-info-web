@@ -1,0 +1,175 @@
+{
+  "title": "Demo：用 JSON 生成炫酷章节",
+  "template": "chapter2",
+  "pages": [
+    {
+      "id": "p-hero",
+      "kind": "hero",
+      "classes": ["hero-page"],
+      "accent": "cyan",
+      "dataTitle": "Demo",
+      "dataSub": "粘贴 JSON → 一键生成 HTML",
+      "header": {
+        "badgeHtml": "<span class=\"hero-badge\"><span class=\"hero-badge-dot\"></span>Template Builder</span>",
+        "title": "用 JSON 生成章节",
+        "subtitle": "你只写结构（pages/blocks），模板负责“炸裂效果”",
+        "extraHtml": "<div class=\"hero-quick\"><span class=\"quick-pill\"><span class=\"quick-idx\">1</span><b>加载示例</b> → 先跑通</span><span class=\"quick-pill\"><span class=\"quick-idx\">2</span><b>改标题</b> → 产出你的章节</span><span class=\"quick-pill\"><span class=\"quick-idx\">3</span><b>加 living</b> → 代码可视化</span></div>"
+      },
+      "blocks": [
+        {
+          "type": "bridgeRow",
+          "prevLabel": "上一页",
+          "prev": "—",
+          "currentLabel": "本页",
+          "current": "Builder Demo",
+          "nextLabel": "下一页",
+          "next": "Code + Living"
+        },
+        {
+          "type": "microLead",
+          "text": "本页路线：① 先理解 JSON 结构 ② 复制示例 ③ 点击生成并预览"
+        },
+        {
+          "type": "keyline",
+          "dot": "!",
+          "html": "<b>一句话：</b>你写的是结构（JSON），而不是排版（HTML/CSS）。"
+        },
+        {
+          "type": "callout",
+          "title": "你将获得什么？",
+          "tag": "Outcome",
+          "bodyHtml": "<ul class=\"content-list\"><li data-delay=\"0\"><b>稳定输出：</b>同一份 JSON 任何机器都生成同样的 HTML。</li><li data-delay=\"80\"><b>新手友好：</b>用 microLead/keyline/FAQ 把阅读节奏固定住。</li><li data-delay=\"160\"><b>代码可视化：</b>用 living 块把“每一行的作用”变成可点击的画面。</li></ul>"
+        },
+        {
+          "type": "thinkBox",
+          "qid": "think-hero-1",
+          "title": "思考（20 秒）：你现在最想生成哪一类页面？",
+          "text": "是“概念讲解页”？还是“代码逐行可视化页”？先选一个，下面直接给你能复制的 JSON 结构。"
+        },
+        {
+          "type": "accordion",
+          "summary": "新手常问：这个 JSON 我需要记什么？",
+          "badge": "FAQ",
+          "open": true,
+          "contentHtml": "<ol><li><b>最重要：</b><code>pages</code> 是数组；每个 page 有 <code>header</code> + <code>blocks</code>。</li><li><b>最常用：</b><code>microLead</code>（告诉你本页怎么读） + <code>keyline</code>（一锤定音）。</li><li><b>最能卡住新手的：</b>写 <code>descHtml</code> 把“为什么”先说清楚，再进代码/公式。</li></ol>"
+        }
+      ]
+    },
+    {
+      "id": "p-code",
+      "accent": "teal",
+      "dataTitle": "Code",
+      "dataSub": "codeBlock + living",
+      "header": {
+        "label": "推导与实现",
+        "title": "10 秒解释：为什么 mask 要填 -inf？",
+        "descHtml": "先看最小代码，再点左侧每一行，对照右侧图解；最后把答案折叠起来背下来。"
+      },
+      "blocks": [
+        {
+          "type": "bridgeRow",
+          "prev": "Builder Demo",
+          "current": "mask 的本质",
+          "next": "你自己的章节"
+        },
+        {
+          "type": "microLead",
+          "text": "本页三步：① 看 codeBlock ② 点 living 的每一步 ③ 打开折叠答案复述一遍"
+        },
+        {
+          "type": "codeBlock",
+          "file": "mask_min.py",
+          "code": "import torch\\n\\n# scores: [B, L, L]\\nscores = torch.zeros(1, 4, 4)\\n\\n# causal mask: 下三角 True\\nmask = torch.tril(torch.ones(4, 4, dtype=torch.bool))\\n\\n# 关键：被 mask 的位置填 -inf\\nscores = scores.masked_fill(~mask, float('-inf'))\\n\\n# softmax 后，上三角权重严格为 0\\nw = torch.softmax(scores, dim=-1)\\nprint(w)"
+        },
+        {
+          "type": "living",
+          "title": "mask_min.py（逐步可视化：点击左侧）",
+          "vizTitle": "visualization（本例：causal mask）",
+          "steps": [
+            {
+              "id": "step-1",
+              "label": "Step 1：先记住 scores 的形状",
+              "hint": "注意力权重来自 scores 的 softmax；所以“被屏蔽的位置”，必须让 softmax 之后变成 0。",
+              "code": "# scores: [B, L, L]\\nscores = zeros(1,4,4)",
+              "viz": {
+                "title": "scores 是“每个位置看每个位置”的打分表",
+                "sub": "L=4 → 每一行代表一个 query 位置，列代表 key 位置",
+                "matrix": {
+                  "cols": 4,
+                  "rows": [
+                    ["0", "0", "0", "0"],
+                    ["0", "0", "0", "0"],
+                    ["0", "0", "0", "0"],
+                    ["0", "0", "0", "0"]
+                  ]
+                },
+                "shapePills": [{ "name": "scores", "shape": "[B, L, L]" }],
+                "bullets": ["你想让“不能看”的列，最终权重为 0。"]
+              }
+            },
+            {
+              "id": "step-2",
+              "label": "Step 2：causal mask（下三角 True）",
+              "hint": "GPT 不能偷看未来：第 i 行只能看 0..i 的列。",
+              "code": "mask = tril(ones(L,L))  # True=允许看",
+              "viz": {
+                "title": "mask 是允许关系表：下三角=允许，上三角=禁止",
+                "sub": "上三角表示未来 token（必须屏蔽）",
+                "matrix": {
+                  "cols": 4,
+                  "rows": [
+                    [{ "text": "1", "class": "on" }, { "text": "0", "class": "off" }, { "text": "0", "class": "off" }, { "text": "0", "class": "off" }],
+                    [{ "text": "1", "class": "on" }, { "text": "1", "class": "on" }, { "text": "0", "class": "off" }, { "text": "0", "class": "off" }],
+                    [{ "text": "1", "class": "on" }, { "text": "1", "class": "on" }, { "text": "1", "class": "on" }, { "text": "0", "class": "off" }],
+                    [{ "text": "1", "class": "on" }, { "text": "1", "class": "on" }, { "text": "1", "class": "on" }, { "text": "1", "class": "on" }]
+                  ]
+                },
+                "shapePills": [{ "name": "mask", "shape": "[L, L] (bool)" }],
+                "bullets": ["mask 只是“规则”，还没影响 softmax。"]
+              }
+            },
+            {
+              "id": "step-3",
+              "label": "Step 3：被屏蔽的位置填 -inf",
+              "hint": "softmax(0)=非零；只有 softmax(-inf)=0 才能保证“完全不看”。",
+              "code": "scores = scores.masked_fill(~mask, -inf)",
+              "viz": {
+                "title": "把“禁止的位置”变成 -∞，softmax 才会变 0",
+                "sub": "这是工程上最关键的一步：不是填 0，而是填 -∞",
+                "matrix": {
+                  "cols": 4,
+                  "rows": [
+                    ["0", "-∞", "-∞", "-∞"],
+                    ["0", "0", "-∞", "-∞"],
+                    ["0", "0", "0", "-∞"],
+                    ["0", "0", "0", "0"]
+                  ]
+                },
+                "shapePills": [{ "name": "scores", "shape": "[B, L, L]" }],
+                "bullets": ["填 0 只是“不给惩罚”，不是“禁止”。"]
+              }
+            },
+            {
+              "id": "step-4",
+              "label": "Step 4：softmax 后，上三角权重=0",
+              "hint": "softmax 会把 -∞ 归一化成 0，从而保证自回归不偷看未来。",
+              "code": "w = softmax(scores, dim=-1)",
+              "viz": {
+                "title": "softmax(-∞)=0：这才叫“因果”",
+                "sub": "上三角变成 0 → 彻底不依赖未来 token",
+                "bullets": ["你现在可以把“禁止”写进概率里，而不是只写在口头规则里。"]
+              }
+            }
+          ]
+        },
+        {
+          "type": "accordion",
+          "variant": "answer",
+          "summary": "答案：为什么 mask 要填 -inf，而不是 0？",
+          "badge": "Answer",
+          "contentHtml": "<p><b>因为：</b>softmax(0) 不是 0，填 0 只是不惩罚那一列；模型仍可能把概率分给“未来 token”。</p><p><b>而：</b>softmax(-inf)=0，才能保证被屏蔽的位置在概率上严格为 0（彻底不看）。</p>"
+        }
+      ]
+    }
+  ]
+}

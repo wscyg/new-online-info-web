@@ -117,18 +117,9 @@ document.addEventListener('DOMContentLoaded', async function() {
                 const paymentStatus = statusData.data.status;
                 
                 if (paymentStatus === 'TRADE_SUCCESS' || paymentStatus === 'TRADE_FINISHED') {
-                    console.log('支付已成功，尝试激活订阅...');
-                    
-                    // 激活订阅
-                    const activateResponse = await activateSubscription(orderNo);
-                    console.log('激活结果:', activateResponse);
-                    
-                    if (activateResponse.success) {
-                        showNotification('课程已成功解锁！', 'success');
-                        showSuccessModal();
-                    } else {
-                        showNotification('激活失败：' + activateResponse.message, 'error');
-                    }
+                    console.log('支付已成功，等待服务端回调激活...');
+                    showNotification('支付成功！课程解锁中，请稍后刷新课程详情', 'success');
+                    showSuccessModal();
                 } else {
                     console.log('支付状态:', paymentStatus);
                     showNotification('订单未支付或支付失败', 'warning');
@@ -1179,60 +1170,18 @@ async function processAlipayPayment(paymentData) {
                                         payWindow.close();
                                     }
                                     
-                                    // 显示支付成功通知
-                                    showNotification('支付成功！正在激活课程...', 'success');
-                                    
-                                    // 激活订阅 - 重试机制
-                                    let activateSuccess = false;
-                                    let retryCount = 0;
-                                    const maxRetries = 3;
-                                    
-                                    while (!activateSuccess && retryCount < maxRetries) {
-                                        const activateResponse = await activateSubscription(orderNo);
-                                        
-                                        if (activateResponse.success) {
-                                            activateSuccess = true;
-                                            showNotification('课程已成功解锁！', 'success');
-                                            
-                                            // 立即显示成功弹窗
-                                            showSuccessModal();
-                                            
-                                            // 返回成功结果
-                                            resolve({
-                                                success: true,
-                                                data: {
-                                                    transactionId: statusData.data.tradeNo || generateTransactionId(),
-                                                    paymentMethod: 'alipay',
-                                                    amount: paymentData.amount,
-                                                    orderNo: orderNo
-                                                }
-                                            });
-                                            return; // 确保退出循环
-                                        } else {
-                                            retryCount++;
-                                            if (retryCount < maxRetries) {
-                                                showNotification(`激活中...（第${retryCount}次尝试）`, 'info');
-                                                // 等待2秒后重试
-                                                await new Promise(resolve => setTimeout(resolve, 2000));
-                                            }
+                                    // 支付成功后由服务端回调自动激活
+                                    showNotification('支付成功！课程解锁中，请稍后刷新课程详情', 'success');
+                                    showSuccessModal();
+                                    resolve({
+                                        success: true,
+                                        data: {
+                                            transactionId: statusData.data.tradeNo || generateTransactionId(),
+                                            paymentMethod: 'alipay',
+                                            amount: paymentData.amount,
+                                            orderNo: orderNo
                                         }
-                                    }
-                                    
-                                    if (!activateSuccess) {
-                                        // 即使激活失败，也显示支付成功（因为支付确实成功了）
-                                        showNotification('支付成功！课程激活中，请稍后刷新页面', 'warning');
-                                        showSuccessModal();
-                                        
-                                        resolve({
-                                            success: true,
-                                            data: {
-                                                transactionId: statusData.data.tradeNo || generateTransactionId(),
-                                                paymentMethod: 'alipay',
-                                                amount: paymentData.amount,
-                                                orderNo: orderNo
-                                            }
-                                        });
-                                    }
+                                    });
                                 } else if (paymentStatus === 'TRADE_CLOSED') {
                                     // 支付失败或取消
                                     clearInterval(checkPaymentStatus);
@@ -1553,37 +1502,7 @@ async function createSubscriptionOrder() {
     }
 }
 
-// 激活订阅
-async function activateSubscription(orderNo) {
-    try {
-        console.log('开始激活订阅，订单号:', orderNo);
-        const token = localStorage.getItem('token');
-        const response = await fetch('/api/subscriptions/activate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': token ? `Bearer ${token}` : ''
-            },
-            body: new URLSearchParams({
-                orderNo: orderNo
-            })
-        });
-
-        const data = await response.json();
-        console.log('激活订阅响应:', data);
-        
-        return {
-            success: data.code === 200 || data.success === true,
-            message: data.message
-        };
-    } catch (error) {
-        console.error('激活订阅失败:', error);
-        return {
-            success: false,
-            message: error.message || '激活失败'
-        };
-    }
-}
+// 激活订阅由服务端支付回调完成（前端不再主动触发）
 
 // 检查用户订阅状态
 async function checkSubscriptionStatus(courseId) {
@@ -1978,17 +1897,9 @@ async function startPaymentStatusCheck(orderNo, payWindow) {
                     clearInterval(checkInterval);
                     if (payWindow && !payWindow.closed) payWindow.close();
 
-                    // 激活订阅
-                    const activateResult = await activateSubscription(orderNo);
-                    if (activateResult.success) {
-                        showNotification('支付成功！课程包已激活', 'success');
-                        showSuccessModal();
-                    } else {
-                        showNotification('支付成功！正在激活课程包...', 'info');
-                        setTimeout(() => {
-                            window.location.href = '/src/pages/courses.html';
-                        }, 2000);
-                    }
+                    // 支付成功后由服务端回调自动激活
+                    showNotification('支付成功！课程包解锁中，请稍后在课程列表查看', 'success');
+                    showSuccessModal();
                 } else if (paymentStatus === 'TRADE_CLOSED') {
                     clearInterval(checkInterval);
                     if (payWindow && !payWindow.closed) payWindow.close();

@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>学习中心 - AI 信息未来</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <style>
         body {
             padding-top: 48px;
@@ -681,6 +682,7 @@
             </div>
 
             <div class="nav-actions">
+                <div id="authArea"></div>
                 <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="5"></circle>
@@ -694,10 +696,7 @@
                         <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                     </svg>
                 </button>
-                <div class="user-menu">
-                    <div class="user-avatar" id="userAvatar">
-                        <span id="avatarText">U</span>
-                    </div>
+                
                 </div>
             </div>
         </div>
@@ -911,8 +910,7 @@
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
             initTheme();
-            checkAuth();
-            loadUserData();
+                        loadUserData();
             loadCourses();
             loadRecommendations();
             generateCalendar();
@@ -957,164 +955,8 @@
             document.documentElement.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
             updateThemeIcon(newTheme);
-        });
-
-        // 认证检查
-        function checkAuth() {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                window.location.href = 'login.html';
-                return;
-            }
-        }
-
-        // 加载用户数据
-        async function loadUserData() {
-            try {
-                const user = JSON.parse(localStorage.getItem('user') || '{}');
-                userData = user;
-
-                if (user.username) {
-                    const initials = user.username.charAt(0).toUpperCase();
-                    document.getElementById('avatarText').textContent = initials;
-                    document.getElementById('profileName').textContent = user.username;
-                    document.getElementById('welcomeTitle').textContent = `欢迎回来，${user.username}`;
-                }
-
-                // Mock data for stats
-                document.getElementById('studyDays').textContent = '156';
-                document.getElementById('completedCourses').textContent = '42';
-                document.getElementById('totalPoints').textContent = '2850';
-                document.getElementById('certificates').textContent = '28';
-                document.getElementById('todayHours').textContent = '3.5';
-                document.getElementById('weekLessons').textContent = '12';
-                document.getElementById('monthAttendance').textContent = '95';
-                document.getElementById('welcomeSubtitle').textContent = '今天是您学习的第156天，继续保持！';
-
-            } catch (error) {
-                console.error('Error loading user data:', error);
-            }
-        }
-
-        // 加载课程
-        async function loadCourses() {
-            const courseList = document.getElementById('courseList');
-
-            // Mock course data
-            const courses = [
-                { id: 1, title: 'Vue 3 高级开发实战', chapter: '第8章 · 组合式API深入 · 共12课时', progress: 65 },
-                { id: 2, title: 'UI/UX设计原理与实践', chapter: '第3章 · 色彩理论 · 共8课时', progress: 35 },
-                { id: 3, title: '人工智能入门到精通', chapter: '第5章 · 深度学习基础 · 共15课时', progress: 80 }
-            ];
-
-            courseList.innerHTML = courses.map(course => `
-                <div class="course-item">
-                    <div class="course-thumb">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/>
-                        </svg>
-                    </div>
-                    <div class="course-details">
-                        <div class="course-name">${course.title}</div>
-                        <div class="course-chapter">${course.chapter}</div>
-                        <div class="progress-track">
-                            <div class="progress-bar" style="width: ${course.progress}%;"></div>
-                        </div>
-                    </div>
-                    <div class="course-action">
-                        <button class="continue-btn" onclick="continueCourse(${course.id})">继续学习</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // 加载推荐课程
-        async function loadRecommendations() {
-            const grid = document.getElementById('recommendedCourses');
-
-            // Mock recommended courses
-            const courses = [
-                { id: 101, title: 'React 18 新特性详解', category: '前端开发', instructor: '李明', price: 299, rating: 4.9 },
-                { id: 102, title: 'Python高性能编程', category: '后端开发', instructor: '王芳', price: 399, rating: 4.8 },
-                { id: 103, title: 'AWS云架构师认证', category: '云计算', instructor: '赵强', price: 599, rating: 5.0 },
-                { id: 104, title: '数据可视化实战', category: '数据分析', instructor: '刘洋', price: 199, rating: 4.7 }
-            ];
-
-            grid.innerHTML = courses.map(course => `
-                <div class="rec-course-card" onclick="viewCourse(${course.id})">
-                    <div class="rec-course-cover">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/>
-                        </svg>
-                    </div>
-                    <div class="rec-course-body">
-                        <div class="rec-course-category">${course.category}</div>
-                        <div class="rec-course-title">${course.title}</div>
-                        <div class="rec-course-instructor">讲师：${course.instructor}</div>
-                        <div class="rec-course-footer">
-                            <span class="rec-course-price">¥${course.price}</span>
-                            <span class="rec-course-rating">
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                                </svg>
-                                ${course.rating}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // 生成日历
-        function generateCalendar() {
-            const grid = document.getElementById('calendarGrid');
-            const days = ['日', '一', '二', '三', '四', '五', '六'];
-            const activeDays = [1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 15];
-
-            let html = days.map(day => `<div class="calendar-cell">${day}</div>`).join('');
-
-            for (let i = 1; i <= 21; i++) {
-                const active = activeDays.includes(i) ? 'active' : '';
-                html += `<div class="calendar-cell ${active}">${i}</div>`;
-            }
-
-            grid.innerHTML = html;
-        }
-
-        // 加载排行榜
-        function loadLeaderboard() {
-            const list = document.getElementById('leaderboardList');
-
-            const users = [
-                { rank: 1, name: '王小明', hours: 42, points: 2890 },
-                { rank: 2, name: '李华', hours: 38, points: 2650 },
-                { rank: 3, name: '张三（你）', hours: 35, points: 2450 },
-                { rank: 4, name: '赵六', hours: 32, points: 2280 }
-            ];
-
-            list.innerHTML = users.map(user => `
-                <div class="leaderboard-row">
-                    <div class="rank-badge rank-${user.rank <= 3 ? user.rank : 'other'}">${user.rank}</div>
-                    <div class="rank-user">
-                        <div class="rank-user-name">${user.name}</div>
-                        <div class="rank-user-hours">本周学习 ${user.hours} 小时</div>
-                    </div>
-                    <div class="rank-points">${user.points}</div>
-                </div>
-            `).join('');
-        }
-
-        // 继续学习课程
-        function continueCourse(courseId) {
-            console.log('Continue course:', courseId);
-            window.location.href = `course-detail.html?id=${courseId}`;
-        }
-
-        // 查看课程
-        function viewCourse(courseId) {
-            console.log('View course:', courseId);
-            window.location.href = `course-detail.html?id=${courseId}`;
-        }
-    </script>
+        });</script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

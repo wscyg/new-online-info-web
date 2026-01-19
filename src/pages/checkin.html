@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>每日签到 - AI 信息未来</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script></script>
 </head>
 <body>
     <!-- 导航栏 -->
@@ -112,6 +114,46 @@
                         <div class="calendar-day header">四</div>
                         <div class="calendar-day header">五</div>
                         <div class="calendar-day header">六</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 近期趋势 & 下一档奖励 -->
+    <section class="section" style="padding-top: 40px; padding-bottom: 40px;">
+        <div class="container">
+            <div class="grid grid-2" style="gap: 16px;">
+                <div class="card">
+                    <div class="card-body" style="padding: 32px 24px;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-end; gap: 12px; margin-bottom: 16px;">
+                            <div>
+                                <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 6px; color: var(--text-primary);">近30天签到趋势</h2>
+                                <div style="font-size: 13px; color: var(--text-tertiary);" id="trendSummary">加载中…</div>
+                            </div>
+                            <a href="points-shop.html" class="btn btn-secondary" style="padding: 10px 16px; font-size: 14px; height: auto;">去积分商城</a>
+                        </div>
+                        <div class="trend-canvas">
+                            <canvas id="checkinTrendChart" height="140"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body" style="padding: 32px 24px;">
+                        <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 16px; color: var(--text-primary);">下一档奖励</h2>
+                        <div id="milestoneTitle" style="font-size: 17px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px;">加载中…</div>
+                        <div id="milestoneDesc" style="font-size: 14px; color: var(--text-secondary); margin-bottom: 18px;"></div>
+                        <div class="milestone-bar" aria-hidden="true">
+                            <div class="milestone-fill" id="milestoneFill" style="width: 0%"></div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; gap: 12px; font-size: 13px; color: var(--text-tertiary); margin-top: 10px;">
+                            <span id="milestoneLeft">当前 0 天</span>
+                            <span id="milestoneRight">目标 Day -</span>
+                        </div>
+                        <div style="display:flex; gap: 10px; margin-top: 18px; flex-wrap: wrap;">
+                            <button class="btn btn-primary" style="padding: 10px 16px; font-size: 14px; height: auto;" onclick="document.getElementById('rewards-grid')?.scrollIntoView({behavior:'smooth', block:'start'})">查看全部奖励</button>
+                            <button class="btn btn-secondary" style="padding: 10px 16px; font-size: 14px; height: auto;" onclick="location.href='dashboard.html'">去学习中心</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -311,6 +353,26 @@
             color: #34c759;
         }
 
+        .trend-canvas {
+            width: 100%;
+            position: relative;
+        }
+
+        .milestone-bar {
+            height: 10px;
+            background: var(--bg-secondary);
+            border-radius: 999px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .milestone-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #34c759);
+            border-radius: 999px;
+            transition: width 0.4s var(--ease-out);
+        }
+
         @keyframes slideIn {
             from { transform: translateX(120%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
@@ -332,11 +394,13 @@
     <script>
         const API_BASE = '/api';
         let currentStats = null;
+        let recentRecords = [];
+        let allRewards = [];
+        let checkinTrendChart = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             initTheme();
-            checkAuth();
-            init();
+                        init();
         });
 
         function initTheme() {
@@ -349,6 +413,7 @@
                 document.documentElement.setAttribute('data-theme', next);
                 localStorage.setItem('theme', next);
                 updateThemeIcon(next);
+                redrawTrendChart();
             });
         }
 
@@ -357,52 +422,28 @@
             icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
         }
 
-        function checkAuth() {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                location.href = 'login.html';
-                return;
-            }
-
+        
             const userStr = localStorage.getItem('user');
             const authArea = document.getElementById('authArea');
             if (token && userStr) {
                 const user = JSON.parse(userStr);
                 const initial = (user.nickname || user.username || 'U').charAt(0).toUpperCase();
-                authArea.innerHTML = `
-                    <div class="user-menu">
-                        <div class="user-avatar" onclick="toggleDropdown()">${user.avatar ? '<img src="'+user.avatar+'" alt="">' : initial}</div>
-                        <div class="dropdown" id="userDropdown">
-                            <div class="dropdown-item" onclick="location.href='dashboard.html'"><i class="fas fa-tachometer-alt"></i> 学习中心</div>
-                            <div class="dropdown-item" onclick="location.href='profile.html'"><i class="fas fa-user"></i> 个人主页</div>
-                            <div class="dropdown-item" onclick="location.href='my-courses.html'"><i class="fas fa-book"></i> 我的课程</div>
-                            <div class="dropdown-divider"></div>
-                            <div class="dropdown-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出登录</div>
-                        </div>
-                    </div>`;
-            }
+                            }
         }
 
-        function toggleDropdown() {
-            document.getElementById('userDropdown').classList.toggle('show');
-        }
-
+        
         function logout() {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             location.href = 'login.html';
         }
 
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.user-menu')) {
-                const d = document.getElementById('userDropdown');
-                if (d) d.classList.remove('show');
-            }
-        });
+                        if (d) d.classList.remove('show');
 
         async function init() {
             await loadStats();
             await loadCalendar();
+            await loadRecentTrend();
             await loadRewards();
             await loadLeaderboard();
         }
@@ -412,12 +453,15 @@
                 const token = localStorage.getItem('token');
                 const response = await fetch(API_BASE + '/checkin/stats', {
                     headers: { 'Authorization': 'Bearer ' + token }
+                    }
+                });
                 });
                 const data = await response.json();
 
                 if (data.code === 200 && data.data) {
                     currentStats = data.data.stats;
                     updateStatsUI(currentStats);
+                    updateMilestoneProgressUI();
 
                     if (data.data.checkedInToday) {
                         const btn = document.getElementById('checkin-btn');
@@ -453,6 +497,8 @@
                 const response = await fetch(API_BASE + '/checkin/daily', {
                     method: 'POST',
                     headers: { 'Authorization': 'Bearer ' + token }
+                    }
+                });
                 });
                 const data = await response.json();
 
@@ -467,6 +513,8 @@
 
                     await loadStats();
                     await loadCalendar();
+                    await loadRecentTrend();
+                    await loadRewards();
 
                     btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>今日已签到';
                     btn.style.cursor = 'not-allowed';
@@ -539,6 +587,137 @@
             }
         }
 
+        async function loadRecentTrend(days = 30) {
+            const summaryEl = document.getElementById('trendSummary');
+            if (summaryEl) summaryEl.textContent = '加载中…';
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(API_BASE + `/checkin/recent?days=${encodeURIComponent(days)}`, {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await response.json();
+
+                if (data.code === 200 && data.data) {
+                    recentRecords = Array.isArray(data.data.records) ? data.data.records : [];
+                    renderTrendChart(recentRecords, data.data.days || days);
+                    return;
+                }
+
+                recentRecords = [];
+                renderTrendChart([], days);
+            } catch (error) {
+                console.error('加载趋势失败:', error);
+                recentRecords = [];
+                renderTrendChart([], days, { error: true });
+            }
+        }
+
+        function renderTrendChart(records, days, options = {}) {
+            const summaryEl = document.getElementById('trendSummary');
+            const canvas = document.getElementById('checkinTrendChart');
+            if (!canvas) return;
+
+            // Chart.js 可能因为 CDN/网络原因不可用：降级为文本提示
+            if (typeof Chart === 'undefined') {
+                if (summaryEl) {
+                    summaryEl.textContent = '图表组件加载失败，请刷新重试';
+                }
+                return;
+            }
+
+            const today = new Date();
+            const labelDates = [];
+            for (let i = (days - 1); i >= 0; i--) {
+                const d = new Date(today);
+                d.setDate(today.getDate() - i);
+                const key = formatDateKey(d);
+                labelDates.push(key);
+            }
+
+            const pointsMap = new Map();
+            records.forEach(r => {
+                const dateKey = r?.checkinDate || r?.date || r?.checkin_date;
+                if (!dateKey) return;
+                const points = Number(r?.pointsEarned ?? r?.points ?? 0) || 0;
+                pointsMap.set(String(dateKey), points);
+            });
+
+            const points = labelDates.map(d => pointsMap.get(d) || 0);
+            const checkinDays = points.filter(p => p > 0).length;
+            const totalPoints = points.reduce((sum, p) => sum + p, 0);
+
+            if (summaryEl) {
+                if (options.error) {
+                    summaryEl.textContent = '趋势加载失败（可正常签到）';
+                } else if (checkinDays === 0) {
+                    summaryEl.textContent = '最近暂无签到记录';
+                } else {
+                    summaryEl.textContent = `近${days}天签到 ${checkinDays} 天 · 共 ${totalPoints} 积分`;
+                }
+            }
+
+            const css = getComputedStyle(document.documentElement);
+            const textSecondary = css.getPropertyValue('--text-secondary').trim() || '#6e6e73';
+            const borderColor = css.getPropertyValue('--border-color').trim() || 'rgba(0,0,0,0.08)';
+            const accent = css.getPropertyValue('--accent').trim() || '#0071e3';
+
+            const ctx = canvas.getContext('2d');
+            if (checkinTrendChart) {
+                checkinTrendChart.destroy();
+                checkinTrendChart = null;
+            }
+
+            checkinTrendChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labelDates.map(d => d.slice(5)),
+                    datasets: [{
+                        label: '签到积分',
+                        data: points,
+                        borderRadius: 8,
+                        backgroundColor: accent + '33',
+                        borderColor: accent,
+                        borderWidth: 1,
+                        maxBarThickness: 18
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => ` ${ctx.raw || 0} 积分`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: textSecondary, maxTicksLimit: 10 }
+                        },
+                        y: {
+                            grid: { color: borderColor },
+                            ticks: { color: textSecondary }
+                        }
+                    }
+        }
+
+        function formatDateKey(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function redrawTrendChart() {
+            // 用已有数据重绘，避免重新请求
+            if (!recentRecords) return;
+            renderTrendChart(recentRecords, 30);
+        }
+
         async function loadRewards() {
             try {
                 const token = localStorage.getItem('token');
@@ -548,11 +727,59 @@
                 const data = await response.json();
 
                 if (data.code === 200 && data.data) {
+                    allRewards = Array.isArray(data.data) ? data.data : [];
                     renderRewards(data.data);
+                    updateMilestoneProgressUI();
                 }
             } catch (error) {
                 console.error('加载奖励失败:', error);
             }
+        }
+
+        function updateMilestoneProgressUI() {
+            const titleEl = document.getElementById('milestoneTitle');
+            const descEl = document.getElementById('milestoneDesc');
+            const fillEl = document.getElementById('milestoneFill');
+            const leftEl = document.getElementById('milestoneLeft');
+            const rightEl = document.getElementById('milestoneRight');
+
+            const consecutive = Number(currentStats?.currentConsecutiveDays ?? 0) || 0;
+            const rewards = Array.isArray(allRewards) ? [...allRewards] : [];
+            rewards.sort((a, b) => (a.milestoneDays || 0) - (b.milestoneDays || 0));
+
+            if (rewards.length === 0) {
+                if (titleEl) titleEl.textContent = `已连续 ${consecutive} 天`;
+                if (descEl) descEl.textContent = '奖励配置加载中或暂不可用';
+                if (fillEl) fillEl.style.width = '0%';
+                if (leftEl) leftEl.textContent = `当前 ${consecutive} 天`;
+                if (rightEl) rightEl.textContent = '目标 Day -';
+                return;
+            }
+
+            const next = rewards.find(r => (r.milestoneDays || 0) > consecutive) || null;
+            const maxMilestone = rewards[rewards.length - 1];
+
+            if (!next) {
+                if (titleEl) titleEl.textContent = '已达最高里程碑';
+                if (descEl) descEl.textContent = `继续保持签到节奏，积分与荣誉会持续累积（当前连续 ${consecutive} 天）`;
+                if (fillEl) fillEl.style.width = '100%';
+                if (leftEl) leftEl.textContent = `当前 ${consecutive} 天`;
+                if (rightEl) rightEl.textContent = `最高 Day ${maxMilestone.milestoneDays || '-'}`;
+                return;
+            }
+
+            const targetDays = Number(next.milestoneDays || 0) || 0;
+            const points = Number(next.points || 0) || 0;
+            const remaining = Math.max(targetDays - consecutive, 0);
+            const percent = targetDays > 0 ? Math.min((consecutive / targetDays) * 100, 100) : 0;
+
+            if (titleEl) titleEl.textContent = `目标：Day ${targetDays}`;
+            if (descEl) descEl.textContent = remaining > 0
+                ? `再坚持 ${remaining} 天可获得 +${points} 积分奖励`
+                : `恭喜达成！领取 +${points} 积分奖励`;
+            if (fillEl) fillEl.style.width = `${percent.toFixed(0)}%`;
+            if (leftEl) leftEl.textContent = `当前 ${consecutive} 天`;
+            if (rightEl) rightEl.textContent = `目标 Day ${targetDays}`;
         }
 
         function renderRewards(rewards) {
@@ -641,6 +868,9 @@
                 setTimeout(() => div.remove(), 300);
             }, 3000);
         }
+        });
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

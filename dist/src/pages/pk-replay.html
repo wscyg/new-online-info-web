@@ -372,7 +372,7 @@
             color: var(--text-secondary);
         }
     </style>
-  <link rel="stylesheet" href="/assets/apple-design-3a23e109.css">
+  <link rel="stylesheet" href="/assets/apple-design-5104bdc3.css">
 </head>
 <body>
     <!-- 导航栏 -->
@@ -603,7 +603,7 @@
         async function loadReplay() {
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`${API_BASE}/pk/battle/${battleId}/details`, {
+                const response = await fetch(`${API_BASE}/pk/battle/${battleId}/replay`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -614,8 +614,8 @@
                 }
 
                 const result = await response.json();
-                if (result.success && result.data) {
-                    renderReplay(result.data);
+                if (result.code === 200 && result.data) {
+                    await renderReplay(result.data);
                 } else {
                     throw new Error(result.message || '加载失败');
                 }
@@ -627,49 +627,76 @@
         }
 
         // 渲染回放
-        function renderReplay(battleData) {
+        async function renderReplay(replayData) {
             document.getElementById('loadingContainer').style.display = 'none';
             document.getElementById('replayContent').style.display = 'block';
 
-            // 基本信息
-            document.getElementById('battleTime').textContent = new Date(battleData.startTime).toLocaleString('zh-CN', {
+            const battle = replayData.battle || {};
+            const token = localStorage.getItem('token');
+
+            // 基本信息（兼容不同字段）
+            const startAt = battle.startedAt || battle.startTime || battle.createdAt;
+            const endAt = battle.endedAt || battle.endTime;
+
+            document.getElementById('battleTime').textContent = startAt ? new Date(startAt).toLocaleString('zh-CN', {
                 year: 'numeric',
                 month: '2-digit',
                 day: '2-digit',
                 hour: '2-digit',
                 minute: '2-digit'
-            });
-            document.getElementById('battleMode').textContent = getModeText(battleData.mode);
+            }) : '-';
+            document.getElementById('battleMode').textContent = getModeText(battle.battleMode || battle.mode);
 
-            const duration = Math.floor((new Date(battleData.endTime) - new Date(battleData.startTime)) / 1000);
-            document.getElementById('battleDuration').textContent = `${Math.floor(duration / 60)}分${duration % 60}秒`;
+            const durationSeconds = replayData.duration || battle.battleDuration ||
+                (startAt && endAt ? Math.floor((new Date(endAt) - new Date(startAt)) / 1000) : 0);
+            document.getElementById('battleDuration').textContent = durationSeconds
+                ? `${Math.floor(durationSeconds / 60)}分${durationSeconds % 60}秒`
+                : '-';
+
+            // 拉取玩家预览信息
+            const [p1Preview, p2Preview] = await Promise.all([
+                fetch(`${API_BASE}/plaza/user/${battle.player1Id}/preview`, { headers: { 'Authorization': `Bearer ${token}` } })
+                    .then(r => r.ok ? r.json() : null)
+                    .then(r => (r && r.code === 200 ? r.data : null))
+                    .catch(() => null),
+                fetch(`${API_BASE}/plaza/user/${battle.player2Id}/preview`, { headers: { 'Authorization': `Bearer ${token}` } })
+                    .then(r => r.ok ? r.json() : null)
+                    .then(r => (r && r.code === 200 ? r.data : null))
+                    .catch(() => null)
+            ]);
 
             // 玩家1信息
-            const player1 = battleData.player1;
-            document.getElementById('player1Avatar').src = player1.avatar || '/images/default-avatar.png';
-            document.getElementById('player1Name').textContent = player1.username;
-            document.getElementById('player1Rank').textContent = getRankText(player1.rankTier);
-            document.getElementById('player1Score').textContent = battleData.player1Score;
-            document.getElementById('player1Correct').textContent = battleData.player1Correct;
-            document.getElementById('player1Time').textContent = calculateTotalTime(battleData.player1Details);
+            const player1Name = p1Preview?.nickname || p1Preview?.username || `用户${battle.player1Id}`;
+            document.getElementById('player1Avatar').src = p1Preview?.avatar || '/images/default-avatar.png';
+            document.getElementById('player1Name').textContent = player1Name;
+            document.getElementById('player1Rank').textContent = '-';
+            document.getElementById('player1Score').textContent = replayData.player1Score ?? battle.player1Score ?? 0;
+            document.getElementById('player1Correct').textContent = battle.player1CorrectCount ?? battle.player1Correct ?? 0;
+            document.getElementById('player1Time').textContent = '-';
 
             // 玩家2信息
-            const player2 = battleData.player2;
-            document.getElementById('player2Avatar').src = player2.avatar || '/images/default-avatar.png';
-            document.getElementById('player2Name').textContent = player2.username;
-            document.getElementById('player2Rank').textContent = getRankText(player2.rankTier);
-            document.getElementById('player2Score').textContent = battleData.player2Score;
-            document.getElementById('player2Correct').textContent = battleData.player2Correct;
-            document.getElementById('player2Time').textContent = calculateTotalTime(battleData.player2Details);
+            const player2Name = p2Preview?.nickname || p2Preview?.username || `用户${battle.player2Id}`;
+            document.getElementById('player2Avatar').src = p2Preview?.avatar || '/images/default-avatar.png';
+            document.getElementById('player2Name').textContent = player2Name;
+            document.getElementById('player2Rank').textContent = '-';
+            document.getElementById('player2Score').textContent = replayData.player2Score ?? battle.player2Score ?? 0;
+            document.getElementById('player2Correct').textContent = battle.player2CorrectCount ?? battle.player2Correct ?? 0;
+            document.getElementById('player2Time').textContent = '-';
 
             // 标记获胜者
-            if (battleData.winnerId) {
-                const winnerCard = battleData.winnerId === player1.id ? 'player1Card' : 'player2Card';
+            const winnerId = replayData.winner || battle.winnerId;
+            if (winnerId) {
+                const winnerCard = Number(winnerId) === Number(battle.player1Id) ? 'player1Card' : 'player2Card';
                 document.getElementById(winnerCard).classList.add('winner');
             }
 
-            // 渲染题目详情
-            renderQuestions(battleData);
+            // 回放题目详情目前后端未提供：显示占位提示
+            const questionsContainer = document.getElementById('questionsContainer');
+            questionsContainer.innerHTML = `
+                <div class="empty-state">
+                    <p>该版本暂不支持题目级回放详情（仅展示对战结果）。</p>
+                </div>
+            `;
         }
 
         // 渲染题目列表

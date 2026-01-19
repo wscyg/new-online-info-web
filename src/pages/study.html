@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>学习中心 - AI 信息未来</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
     <link rel="stylesheet" href="../styles/apple-design.css">
@@ -24,6 +25,238 @@
             height: 100%;
             border: none;
             display: none;
+        }
+        .study-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 9999;
+            padding: 10px 14px;
+            pointer-events: none;
+        }
+        .study-bar {
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 10px 12px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            background: rgba(251, 251, 253, 0.72);
+            backdrop-filter: saturate(180%) blur(18px);
+            -webkit-backdrop-filter: saturate(180%) blur(18px);
+            box-shadow: var(--shadow-sm);
+        }
+        [data-theme="dark"] .study-bar {
+            background: rgba(22, 22, 23, 0.72);
+        }
+        .study-left, .study-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+        .study-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 44vw;
+        }
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            font-size: 12px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        .save-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #9ca3af;
+        }
+        .save-dot.saving { background: #f59e0b; }
+        .save-dot.saved { background: #10b981; }
+        .btn-mini {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 10px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            user-select: none;
+        }
+        .btn-mini:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+        .btn-mini.primary {
+            background: var(--accent);
+            border-color: transparent;
+            color: #fff;
+        }
+        .btn-mini:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .study-toast {
+            position: fixed;
+            left: 50%;
+            bottom: 22px;
+            transform: translateX(-50%);
+            background: rgba(17, 24, 39, 0.92);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            z-index: 10000;
+        }
+        .study-toast.show { opacity: 1; }
+        .complete-modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10001;
+        }
+        .complete-modal.show { display: flex; }
+        .complete-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(8px);
+        }
+        .complete-card {
+            position: relative;
+            width: min(520px, calc(100vw - 32px));
+            background: var(--bg-primary);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-lg);
+            padding: 22px;
+        }
+        .complete-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+        .complete-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+        .complete-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+        .toc-modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10002;
+        }
+        .toc-modal.show { display: flex; }
+        .toc-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(8px);
+        }
+        .toc-card {
+            position: relative;
+            width: min(720px, calc(100vw - 32px));
+            max-height: min(72vh, 640px);
+            overflow: hidden;
+            background: var(--bg-primary);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+        }
+        .toc-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .toc-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+        .toc-body {
+            padding: 12px 10px;
+            overflow: auto;
+        }
+        .toc-item {
+            width: 100%;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 10px;
+            border-radius: 14px;
+            border: 1px solid transparent;
+            background: transparent;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-primary);
+            transition: background 0.15s, border-color 0.15s;
+        }
+        .toc-item:hover {
+            background: var(--bg-secondary);
+        }
+        .toc-item.active {
+            background: rgba(0, 113, 227, 0.10);
+            border-color: rgba(0, 113, 227, 0.25);
+        }
+        .toc-level {
+            width: 28px;
+            height: 28px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .toc-text {
+            flex: 1;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .status-container {
             display: flex;
@@ -96,12 +329,69 @@
     </style>
 </head>
 <body>
+    <div class="study-overlay" id="studyOverlay" style="display:none;">
+        <div class="study-bar">
+            <div class="study-left">
+                <a class="btn-mini" id="backToCourse" href="#" title="返回课程">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    返回
+                </a>
+                <button class="btn-mini" id="tocBtn" type="button" title="目录" style="display:none;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 6h16M4 12h16M4 18h10"/>
+                    </svg>
+                    目录
+                </button>
+                <div class="study-title" id="studyTitle">学习中…</div>
+            </div>
+            <div class="study-right">
+                <div class="pill" title="进度">
+                    <span id="progressText">0%</span>
+                </div>
+                <div class="pill" title="保存状态">
+                    <span class="save-dot" id="saveDot"></span>
+                    <span id="saveText">未登录</span>
+                </div>
+                <button class="btn-mini" id="prevBtn" type="button" style="display:none;">上一节</button>
+                <button class="btn-mini primary" id="nextBtn" type="button" style="display:none;">下一节</button>
+            </div>
+        </div>
+    </div>
+
     <div id="status" class="status-container">
         <div class="loading-spinner"></div>
         <h1>正在加载学习内容</h1>
         <p>请稍候...</p>
     </div>
     <iframe id="contentFrame" sandbox="allow-scripts allow-same-origin"></iframe>
+    <div class="study-toast" id="studyToast"></div>
+    <div class="complete-modal" id="completeModal" aria-hidden="true">
+        <div class="complete-backdrop" onclick="hideCompleteModal()"></div>
+        <div class="complete-card" role="dialog" aria-modal="true">
+            <div class="complete-title" id="completeTitle">本节已完成</div>
+            <div class="complete-desc" id="completeDesc">已为你保存学习进度，继续下一节保持节奏。</div>
+            <div class="complete-actions">
+                <button class="btn-mini" type="button" onclick="hideCompleteModal()">稍后再说</button>
+                <a class="btn-mini" id="completeBackBtn" href="#">返回课程</a>
+                <a class="btn-mini" id="completePracticeBtn" href="#" style="display:none;">去练习</a>
+                <button class="btn-mini primary" id="completeNextBtn" type="button" style="display:none;">下一节</button>
+            </div>
+        </div>
+    </div>
+    <div class="toc-modal" id="tocModal" aria-hidden="true">
+        <div class="toc-backdrop" onclick="hideToc()"></div>
+        <div class="toc-card" role="dialog" aria-modal="true">
+            <div class="toc-header">
+                <div class="toc-title">本节目录</div>
+                <button class="btn-mini" type="button" onclick="hideToc()">关闭</button>
+            </div>
+            <div class="toc-body" id="tocList">
+                <div style="padding:12px 14px; color: var(--text-secondary); font-size: 13px;">暂无目录</div>
+            </div>
+        </div>
+    </div>
 
     <script>
         // 初始化主题
@@ -111,12 +401,41 @@
         const statusContainer = document.getElementById('status');
         const contentFrame = document.getElementById('contentFrame');
         const API_BASE = '/api';
+        const studyOverlay = document.getElementById('studyOverlay');
+        const progressText = document.getElementById('progressText');
+        const saveDot = document.getElementById('saveDot');
+        const saveText = document.getElementById('saveText');
+        const studyTitle = document.getElementById('studyTitle');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const backToCourse = document.getElementById('backToCourse');
+        const tocBtn = document.getElementById('tocBtn');
+        const toastEl = document.getElementById('studyToast');
 
         // 学习会话跟踪变量
         let currentSessionId = null;
         let heartbeatInterval = null;
         let currentCourseId = null;
         let currentChapterId = null;
+        let currentChapterTitle = '';
+        let previousChapter = null;
+        let nextChapter = null;
+
+        // 学习进度（本地/后端）
+        let hasLogin = false;
+        let canSyncProgress = false;
+        let lastKnownProgress = 0;
+        let lastKnownPosition = 0;
+        let lastSavedProgress = -1;
+        let lastSavedPosition = 0;
+        let lastSaveAt = 0;
+        let pendingTimeSpentSeconds = 0;
+        let timeTickInterval = null;
+        let saveTimer = null;
+        let frameScrollListenerBound = false;
+        let completionShown = false;
+        let chapterOutline = [];
+        let activeAnchor = null;
 
         function showStatus(title, message = '', error = null, showBack = false) {
             let html = '';
@@ -145,6 +464,371 @@
             statusContainer.innerHTML = html;
         }
 
+        function showToast(message, duration = 2200) {
+            toastEl.textContent = message;
+            toastEl.classList.add('show');
+            window.clearTimeout(showToast._t);
+            showToast._t = window.setTimeout(() => toastEl.classList.remove('show'), duration);
+        }
+
+        function setSaveState(state, text) {
+            saveDot.classList.remove('saving', 'saved');
+            if (state === 'saving') saveDot.classList.add('saving');
+            if (state === 'saved') saveDot.classList.add('saved');
+            saveText.textContent = text;
+        }
+
+        function showCompleteModal() {
+            const modal = document.getElementById('completeModal');
+            if (!modal) return;
+            modal.classList.add('show');
+        }
+        function hideCompleteModal() {
+            const modal = document.getElementById('completeModal');
+            if (!modal) return;
+            modal.classList.remove('show');
+        }
+        window.hideCompleteModal = hideCompleteModal;
+
+        function showToc() {
+            const modal = document.getElementById('tocModal');
+            if (!modal) return;
+            modal.classList.add('show');
+            renderToc();
+        }
+        function hideToc() {
+            const modal = document.getElementById('tocModal');
+            if (!modal) return;
+            modal.classList.remove('show');
+        }
+        window.hideToc = hideToc;
+
+        function renderToc() {
+            const list = document.getElementById('tocList');
+            if (!list) return;
+
+            if (!Array.isArray(chapterOutline) || !chapterOutline.length) {
+                list.innerHTML = `<div style="padding:12px 14px; color: var(--text-secondary); font-size: 13px;">暂无目录（本节内容未包含标题）</div>`;
+                return;
+            }
+
+            list.innerHTML = chapterOutline.map((item, idx) => {
+                const levelStr = (item.level || 'h2').toString().toLowerCase();
+                const levelNum = Number(levelStr.replace('h', '')) || 2;
+                const anchor = item.anchor || `heading-${idx + 1}`;
+                const text = item.text || `标题 ${idx + 1}`;
+                const pad = Math.max(0, (levelNum - 2)) * 14;
+                return `
+                    <button class="toc-item" data-anchor="${anchor}" style="padding-left:${10 + pad}px" onclick="jumpToAnchor('${anchor}')">
+                        <span class="toc-level">H${levelNum}</span>
+                        <span class="toc-text">${text}</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function buildOutlineFromFrame() {
+            try {
+                const doc = contentFrame.contentDocument;
+                if (!doc) return [];
+
+                const headings = Array.from(doc.querySelectorAll('h1,h2,h3,h4,h5,h6'));
+                if (!headings.length) return [];
+
+                return headings.map((h, idx) => {
+                    const tag = h.tagName.toLowerCase();
+                    if (!h.id) {
+                        h.id = `heading-${idx + 1}`;
+                    }
+                    return {
+                        level: tag,
+                        text: (h.textContent || '').trim() || `标题 ${idx + 1}`,
+                        anchor: h.id
+                    };
+                });
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function updateActiveTocFromFrame() {
+            try {
+                const doc = contentFrame.contentDocument;
+                const win = contentFrame.contentWindow;
+                if (!doc || !win) return;
+
+                const headings = Array.from(doc.querySelectorAll('h1,h2,h3,h4,h5,h6')).filter(h => h.id);
+                if (!headings.length) return;
+
+                const scrollTop = win.scrollY || doc.documentElement.scrollTop || 0;
+                const target = scrollTop + 110; // 预留顶部学习条
+
+                let current = headings[0];
+                for (const h of headings) {
+                    if (h.offsetTop <= target) current = h;
+                    else break;
+                }
+
+                const newAnchor = current?.id || null;
+                if (!newAnchor || newAnchor === activeAnchor) return;
+                activeAnchor = newAnchor;
+
+                const list = document.getElementById('tocList');
+                if (!list) return;
+                list.querySelectorAll('.toc-item').forEach(btn => {
+                    btn.classList.toggle('active', btn.getAttribute('data-anchor') === newAnchor);
+                });
+            } catch (e) {
+                // ignore
+            }
+        }
+
+        function jumpToAnchor(anchor) {
+            try {
+                const doc = contentFrame.contentDocument;
+                const win = contentFrame.contentWindow;
+                if (!doc || !win) return;
+
+                const el = doc.getElementById(anchor);
+                if (!el) {
+                    showToast('未找到该小节');
+                    return;
+                }
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                activeAnchor = anchor;
+                hideToc();
+            } catch (e) {
+                // ignore
+            }
+        }
+        window.jumpToAnchor = jumpToAnchor;
+
+        function goToNextChapter() {
+            if (!nextChapter?.id) return;
+            const courseId = currentCourseId || new URLSearchParams(window.location.search).get('courseId');
+            window.location.href = `study.html?courseId=${courseId}&chapterId=${nextChapter.id}`;
+        }
+
+        async function ensureLearningProgress(chapterId) {
+            const token = localStorage.getItem('token');
+            if (!token) return null;
+
+            try {
+                const res = await fetch(`${API_BASE}/learning/start/${chapterId}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (res.ok && data.code === 200 && data.data?.progress) {
+                    return data.data.progress;
+                }
+            } catch (e) {
+                // ignore
+            }
+            return null;
+        }
+
+        function getLocalProgressKey(chapterId) {
+            return `study_progress_${chapterId}`;
+        }
+
+        function loadLocalProgress(chapterId) {
+            try {
+                const raw = localStorage.getItem(getLocalProgressKey(chapterId));
+                return raw ? JSON.parse(raw) : null;
+            } catch {
+                return null;
+            }
+        }
+
+        function saveLocalProgress(chapterId, progressPercent, lastPosition) {
+            try {
+                localStorage.setItem(getLocalProgressKey(chapterId), JSON.stringify({
+                    progressPercent,
+                    lastPosition,
+                    updatedAt: Date.now()
+                }));
+            } catch {
+                // ignore
+            }
+        }
+
+        function updateOverlayUI() {
+            studyOverlay.style.display = 'block';
+            studyTitle.textContent = currentChapterTitle || '学习中…';
+            progressText.textContent = `${Math.round(lastKnownProgress)}%`;
+
+            const courseId = currentCourseId || new URLSearchParams(window.location.search).get('courseId');
+            if (courseId) {
+                backToCourse.href = `course-detail.html?id=${courseId}`;
+                document.getElementById('completeBackBtn').href = `course-detail.html?id=${courseId}`;
+            }
+
+            tocBtn.style.display = (Array.isArray(chapterOutline) && chapterOutline.length) ? 'inline-flex' : 'none';
+            tocBtn.onclick = showToc;
+
+            prevBtn.style.display = previousChapter?.id ? 'inline-flex' : 'none';
+            nextBtn.style.display = nextChapter?.id ? 'inline-flex' : 'none';
+            const completeNextBtn = document.getElementById('completeNextBtn');
+            completeNextBtn.style.display = nextChapter?.id ? 'inline-flex' : 'none';
+            prevBtn.title = previousChapter?.title ? `上一节：${previousChapter.title}` : '';
+            nextBtn.title = nextChapter?.title ? `下一节：${nextChapter.title}` : '';
+
+            if (nextChapter?.title) {
+                nextBtn.textContent = `下一节`;
+                completeNextBtn.textContent = `下一节：${nextChapter.title.length > 12 ? nextChapter.title.slice(0, 12) + '…' : nextChapter.title}`;
+            } else {
+                completeNextBtn.textContent = `下一节`;
+            }
+
+            const practiceBtn = document.getElementById('completePracticeBtn');
+            if (practiceBtn && courseId) {
+                practiceBtn.href = `practice.html?courseId=${encodeURIComponent(courseId)}&autostart=true&count=10`;
+                practiceBtn.style.display = 'inline-flex';
+            } else if (practiceBtn) {
+                practiceBtn.style.display = 'none';
+            }
+
+            prevBtn.onclick = () => {
+                if (!previousChapter?.id) return;
+                window.location.href = `study.html?courseId=${courseId}&chapterId=${previousChapter.id}`;
+            };
+            nextBtn.onclick = goToNextChapter;
+            completeNextBtn.onclick = goToNextChapter;
+        }
+
+        async function saveProgressToServer({ chapterId, progressPercent, lastPosition, timeSpent, force = false }) {
+            const token = localStorage.getItem('token');
+            if (!token) return { ok: false, reason: 'no_token' };
+
+            const now = Date.now();
+            const tooSoon = now - lastSaveAt < 10_000;
+            const smallChange = Math.abs(progressPercent - lastSavedProgress) < 2 && Math.abs(lastPosition - lastSavedPosition) < 120;
+            const hasTimeSpent = Number.isFinite(timeSpent) && timeSpent > 0;
+            if (!force && !hasTimeSpent && (tooSoon || smallChange)) return { ok: true, skipped: true };
+
+            lastSaveAt = now;
+            setSaveState('saving', '保存中…');
+
+            const params = new URLSearchParams({ chapterId: String(chapterId) });
+            if (Number.isFinite(progressPercent)) params.append('progressPercent', String(progressPercent));
+            if (Number.isFinite(lastPosition)) params.append('lastPosition', String(lastPosition));
+            if (hasTimeSpent) params.append('timeSpent', String(timeSpent));
+
+            try {
+                const res = await fetch(`${API_BASE}/learning/progress/update?${params.toString()}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    }
+                });
+                    keepalive: force
+                });
+                const data = await res.json().catch(() => ({}));
+                if (res.ok && data.code === 200) {
+                    lastSavedProgress = progressPercent;
+                    lastSavedPosition = lastPosition;
+                    setSaveState('saved', '已保存');
+                    if (hasTimeSpent) pendingTimeSpentSeconds = Math.max(0, pendingTimeSpentSeconds - timeSpent);
+
+                    const justCompleted = data.data?.justCompleted;
+                    if (justCompleted && !completionShown) {
+                        completionShown = true;
+                        document.getElementById('completeTitle').textContent = '本节已完成';
+                        document.getElementById('completeDesc').textContent = '恭喜完成本节！继续下一节保持节奏。';
+                        showCompleteModal();
+                    }
+                    return { ok: true };
+                }
+                setSaveState('saving', '保存失败');
+                return { ok: false, reason: data.message || 'save_failed' };
+            } catch (e) {
+                setSaveState('saving', '保存失败');
+                return { ok: false, reason: e?.message || 'network' };
+            }
+        }
+
+        function queueProgressSave({ force = false } = {}) {
+            if (!currentChapterId) return;
+
+            const chapterId = currentChapterId;
+            const progressPercent = Math.round(lastKnownProgress);
+            const lastPosition = Math.round(lastKnownPosition);
+
+            saveLocalProgress(chapterId, progressPercent, lastPosition);
+
+            if (!canSyncProgress) {
+                setSaveState('', '离线保存');
+                return;
+            }
+
+            window.clearTimeout(saveTimer);
+            saveTimer = window.setTimeout(() => {
+                const timeSpent = Math.min(600, Math.max(0, pendingTimeSpentSeconds));
+                saveProgressToServer({ chapterId, progressPercent, lastPosition, timeSpent, force });
+            }, force ? 0 : 900);
+        }
+
+        function computeProgressFromFrame() {
+            const win = contentFrame.contentWindow;
+            const docEl = contentFrame.contentDocument?.documentElement;
+            if (!win || !docEl) return { percent: 0, scrollTop: 0 };
+
+            const scrollTop = Math.max(0, win.scrollY || docEl.scrollTop || 0);
+            const scrollHeight = docEl.scrollHeight || 0;
+            const clientHeight = docEl.clientHeight || 0;
+            const maxScroll = Math.max(1, scrollHeight - clientHeight);
+            const raw = (scrollTop / maxScroll) * 100;
+            const percent = Math.max(0, Math.min(100, Math.round(raw)));
+
+            return { percent, scrollTop };
+        }
+
+        function onFrameScroll() {
+            const { percent, scrollTop } = computeProgressFromFrame();
+            lastKnownProgress = percent;
+            lastKnownPosition = scrollTop;
+            progressText.textContent = `${percent}%`;
+            updateActiveTocFromFrame();
+
+            if (percent >= 99 && !completionShown) {
+                lastKnownProgress = 100;
+                progressText.textContent = `100%`;
+                queueProgressSave({ force: true });
+                if (!canSyncProgress) {
+                    completionShown = true;
+                    document.getElementById('completeTitle').textContent = '本节已完成';
+                    document.getElementById('completeDesc').textContent = '你已读到本节末尾（离线保存）。登录后可同步进度并获得奖励。';
+                    showCompleteModal();
+                }
+            } else {
+                queueProgressSave();
+            }
+        }
+
+        function startTimeTick() {
+            if (timeTickInterval) window.clearInterval(timeTickInterval);
+            timeTickInterval = window.setInterval(() => {
+                if (!currentChapterId) return;
+                if (!canSyncProgress) return;
+                if (document.hidden) return;
+                if (!contentFrame || contentFrame.style.display !== 'block') return;
+
+                // 仅用于积分/统计口径：每 30s 累计一次 timeSpent，并合并发送
+                pendingTimeSpentSeconds = Math.min(3600, pendingTimeSpentSeconds + 30);
+                queueProgressSave();
+            }, 30_000);
+        }
+
+        function restoreScrollPosition(position) {
+            try {
+                const win = contentFrame.contentWindow;
+                if (!win) return;
+                win.scrollTo(0, Math.max(0, Number(position || 0)));
+            } catch {
+                // ignore
+            }
+        }
+
         // 开始学习会话
         async function startStudySession(courseId, chapterId) {
             try {
@@ -162,8 +846,6 @@
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`
-                    }
-                });
 
                 if (response.ok) {
                     const data = await response.json();
@@ -190,8 +872,6 @@
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`
-                    }
-                });
 
                 if (response.ok) {
                     const data = await response.json();
@@ -218,6 +898,9 @@
                 const token = localStorage.getItem('token');
                 if (!token) return;
 
+                // 结束前尽量同步一次学习进度
+                queueProgressSave({ force: true });
+
                 await fetch(`${API_BASE}/study-sessions/end?sessionId=${currentSessionId}`, {
                     method: 'POST',
                     headers: {
@@ -232,16 +915,24 @@
                     clearInterval(heartbeatInterval);
                     heartbeatInterval = null;
                 }
+                if (timeTickInterval) {
+                    clearInterval(timeTickInterval);
+                    timeTickInterval = null;
+                }
                 currentSessionId = null;
             } catch (error) {
                 console.error('结束学习会话失败:', error);
             }
         }
 
-        window.addEventListener('beforeunload', endStudySession);
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) endStudySession();
+        window.addEventListener('beforeunload', () => {
+            queueProgressSave({ force: true });
+            endStudySession();
         });
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                queueProgressSave({ force: true });
+                endStudySession();
 
         (async function loadChapter() {
             try {
@@ -253,6 +944,8 @@
 
                 currentChapterId = chapterId;
                 currentCourseId = courseId;
+                hasLogin = !!localStorage.getItem('token');
+                setSaveState('', hasLogin ? '准备中' : '未登录');
 
                 showStatus('正在获取章节内容', `章节ID: ${chapterId}`);
 
@@ -268,15 +961,45 @@
                     throw new Error(data.message || 'API响应格式不正确或未包含HTML内容');
                 }
 
-                if (data.data.courseId) {
-                    currentCourseId = data.data.courseId;
+                // 章节信息（ContentController 返回 chapter/nextChapter/previousChapter）
+                currentCourseId = data.data.chapter?.courseId || data.data.courseId || currentCourseId;
+                currentChapterTitle = data.data.chapter?.title || '';
+                previousChapter = data.data.previousChapter || null;
+                nextChapter = data.data.nextChapter || null;
+                chapterOutline = Array.isArray(data.data.chapterOutline) ? data.data.chapterOutline : [];
+
+                // 确保后端有学习进度记录 + 读取上次位置（优先后端，其次本地）
+                let serverProgress = null;
+                if (hasLogin) {
+                    serverProgress = await ensureLearningProgress(chapterId);
                 }
+                const localProgress = loadLocalProgress(chapterId);
+                const initialPosition = Number(serverProgress?.lastPosition ?? localProgress?.lastPosition ?? 0);
+                const initialProgress = Number(serverProgress?.progressPercent ?? localProgress?.progressPercent ?? 0);
+
+                canSyncProgress = hasLogin && !!serverProgress;
+
+                lastKnownPosition = initialPosition;
+                lastKnownProgress = Math.max(0, Math.min(100, Math.round(initialProgress)));
+                lastSavedProgress = canSyncProgress ? lastKnownProgress : -1;
+                lastSavedPosition = canSyncProgress ? initialPosition : 0;
+                setSaveState(canSyncProgress ? 'saved' : '', canSyncProgress ? '已同步' : (hasLogin ? '离线保存' : '未登录'));
+                updateOverlayUI();
 
                 let htmlText = data.data.content.contentHtml;
 
                 // 添加安全头部和导航修复脚本
                 const cspMeta = `<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:;">`;
                 const baseTag = `<base href="${window.location.origin}/">`;
+                const studyContentStyle = `
+                    <style>
+                        body { padding-top: 78px; }
+                        @media (max-width: 640px) { body { padding-top: 88px; } }
+                        img, video, canvas, svg { max-width: 100%; height: auto; }
+                        pre { overflow: auto; border-radius: 12px; }
+                        code { font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace); }
+                    </style>
+                `;
                 const navFixScript = `
                     <script>
                         document.addEventListener('DOMContentLoaded', function() {
@@ -288,8 +1011,6 @@
                                     if (href && href.startsWith('#')) {
                                         const target = document.querySelector(href);
                                         if (target) target.scrollIntoView({ behavior: 'smooth' });
-                                    }
-                                });
                             });
                             const allLinks = document.querySelectorAll('a[href]');
                             allLinks.forEach(link => {
@@ -297,13 +1018,11 @@
                                 if (href && !href.startsWith('#') && !href.startsWith('javascript:')) {
                                     link.setAttribute('target', '_blank');
                                     link.setAttribute('rel', 'noopener noreferrer');
-                                }
-                            });
                         });
                     <\/script>
                 `;
 
-                let processedHtml = htmlText.replace(/<head>/i, `<head>\n${cspMeta}\n${baseTag}\n${navFixScript}`);
+                let processedHtml = htmlText.replace(/<head>/i, `<head>\n${cspMeta}\n${baseTag}\n${studyContentStyle}\n${navFixScript}`);
 
                 const blob = new Blob([processedHtml], { type: 'text/html' });
                 const blobUrl = URL.createObjectURL(blob);
@@ -312,9 +1031,60 @@
                 contentFrame.onload = () => {
                     statusContainer.style.display = 'none';
                     contentFrame.style.display = 'block';
+
+                    // 代码高亮 / 公式渲染（可选增强，不影响功能）
+                    try {
+                        const doc = contentFrame.contentDocument;
+                        if (doc) {
+                            doc.querySelectorAll('pre code').forEach((el) => {
+                                if (window.hljs?.highlightElement) window.hljs.highlightElement(el);
+                            });
+                            if (window.renderMathInElement) {
+                                window.renderMathInElement(doc.body, {
+                                    delimiters: [
+                                        { left: '$$', right: '$$', display: true },
+                                        { left: '$', right: '$', display: false },
+                                    ],
+                                    throwOnError: false
+                                });
+                            }
+                        }
+                    } catch (e) {}
+
+                    // 基于 iframe 实际 heading 重建目录（比服务端正则更可靠）
+                    const frameOutline = buildOutlineFromFrame();
+                    if (frameOutline.length) {
+                        chapterOutline = frameOutline;
+                        updateOverlayUI();
+                        renderToc();
+                    }
+
+                    // 恢复滚动位置
+                    if (initialPosition > 0) {
+                        window.setTimeout(() => restoreScrollPosition(initialPosition), 120);
+                        window.setTimeout(() => restoreScrollPosition(initialPosition), 420);
+                        showToast('已为你恢复到上次学习位置');
+                    }
+
+                    // 绑定滚动监听（用于进度展示与保存）
+                    if (!frameScrollListenerBound) {
+                        try {
+                            contentFrame.contentWindow.addEventListener('scroll', onFrameScroll, { passive: true });
+                            frameScrollListenerBound = true;
+                        } catch (e) {}
+                    }
+
+                    // 首次计算进度（避免等待滚动才刷新顶部条）
+                    window.setTimeout(() => {
+                        try { onFrameScroll(); } catch (e) {}
+                    }, 260);
+
                     if (currentCourseId && currentChapterId) {
                         startStudySession(currentCourseId, currentChapterId);
                     }
+
+                    // 开始学习时长 tick（用于累计 timeSpent）
+                    startTimeTick();
                 };
 
             } catch (error) {
@@ -323,5 +1093,7 @@
             }
         })();
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

@@ -955,7 +955,8 @@
             opacity: 1;
         }
     </style>
-  <link rel="stylesheet" href="/assets/apple-design-3a23e109.css">
+  <script type="module" crossorigin src="/assets/modulepreload-polyfill-3cfb730f.js"></script>
+  <link rel="stylesheet" href="/assets/apple-design-5104bdc3.css">
 </head>
 <body>
     <nav class="nav">
@@ -1127,9 +1128,9 @@
                                     <path d="M3 9h18M9 3v18"/>
                                 </svg>
                             </div>
-                            学习热力图
+                            签到热力图
                         </div>
-                        <span style="font-size: 14px; color: var(--text-secondary);" id="heatmapTotal">过去一年学习 0 天</span>
+                        <span style="font-size: 14px; color: var(--text-secondary);" id="heatmapTotal">过去一年签到 0 天</span>
                     </div>
                     <div class="card-body">
                         <div class="heatmap-container">
@@ -1196,7 +1197,7 @@
                                     <path d="M18 17l-5-5-4 4-4-4"/>
                                 </svg>
                             </div>
-                            学习趋势
+                            签到趋势
                         </div>
                         <select id="chartPeriod" style="padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary); font-size: 13px;">
                             <option value="week">最近7天</option>
@@ -1332,6 +1333,7 @@
         let currentUser = null;
         let studyChart = null;
         let checkinDays = new Set();
+        let checkinPointsByDate = new Map(); // key: YYYY-MM-DD, value: pointsEarned
 
         document.addEventListener('DOMContentLoaded', () => {
             initTheme();
@@ -1443,10 +1445,11 @@
                 loadUserStats(),
                 loadLearningCourses(),
                 loadPkStats(),
-                loadAchievementProgress(),
-                loadDailyTasks(),
-                loadCheckinHistory()
+                loadAchievementProgress()
             ]);
+
+            await loadCheckinHistory();
+            await loadDailyTasks();
 
             generateHeatmap();
             loadStudyChart('week');
@@ -1495,7 +1498,7 @@
         async function loadLearningCourses() {
             const container = document.getElementById('learningCourses');
             try {
-                const response = await fetch(`${API_BASE}/user/learning-courses`, {
+                const response = await fetch(`${API_BASE}/user/courses`, {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                 });
 
@@ -1557,7 +1560,7 @@
         // ==================== PK统计 ====================
         async function loadPkStats() {
             try {
-                const response = await fetch(`${API_BASE}/pk/my-stats`, {
+                const response = await fetch(`${API_BASE}/pk/stats`, {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                 });
 
@@ -1605,7 +1608,7 @@
         async function loadAchievementProgress() {
             const container = document.getElementById('achievementProgress');
             try {
-                const response = await fetch(`${API_BASE}/achievements/in-progress`, {
+                const response = await fetch(`${API_BASE}/achievements/my`, {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                 });
 
@@ -1687,7 +1690,7 @@
             // 检查本地存储的任务完成状态
             const today = new Date().toDateString();
             const taskStatus = JSON.parse(localStorage.getItem('dailyTasks_' + today) || '{}');
-            const checkedIn = localStorage.getItem('lastCheckin') === today;
+            const checkedIn = checkinDays.has(today) || localStorage.getItem('lastCheckin') === today;
 
             const tasks = [
                 { id: 'checkin', name: '每日签到', reward: '+10 积分', completed: checkedIn },
@@ -1727,18 +1730,26 @@
 
         // ==================== 签到系统 ====================
         async function loadCheckinHistory() {
-            try {
-                const response = await fetch(`${API_BASE}/user/checkin-history`, {
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                });
+            const token = localStorage.getItem('token');
+            const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
 
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.code === 200 && data.data) {
-                        data.data.forEach(record => {
-                            checkinDays.add(new Date(record.checkinDate).toDateString());
-                        });
-                    }
+            try {
+                // 最近一年签到记录（包含积分，用于热力图强度 + 趋势图）
+                const resp = await fetch(`${API_BASE}/checkin/recent?days=365`, { headers });
+                if (resp.ok) {
+                    const json = await resp.json();
+                    const records = json?.data?.records || [];
+
+                    checkinDays = new Set();
+                    checkinPointsByDate = new Map();
+
+                    records.forEach(r => {
+                        const iso = (r.checkinDate || '').toString().slice(0, 10);
+                        if (!iso) return;
+
+                        checkinPointsByDate.set(iso, Number(r.pointsEarned ?? 0));
+                        checkinDays.add(new Date(iso).toDateString());
+                    });
                 }
             } catch (e) {
                 console.error('Load checkin history error:', e);
@@ -1751,6 +1762,10 @@
                 if (lastCheckin === new Date().toDateString()) {
                     markAsChecked();
                 }
+            }
+
+            if (checkinDays.has(new Date().toDateString())) {
+                markAsChecked();
             }
         }
 
@@ -1801,14 +1816,14 @@
             btn.innerHTML = '<div class="spinner"></div> 签到中...';
 
             try {
-                const response = await fetch(`${API_BASE}/user/checkin`, {
+                const response = await fetch(`${API_BASE}/checkin/daily`, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                 });
 
                 const data = await response.json();
                 if (response.ok && data.code === 200) {
-                    const points = data.data?.points || 10;
+                    const points = data.data?.pointsEarned ?? 0;
                     showToast(`签到成功！获得 ${points} 积分`);
                     markAsChecked();
                     localStorage.setItem('lastCheckin', new Date().toDateString());
@@ -1868,6 +1883,8 @@
             let monthsHtml = '';
             let lastMonth = -1;
             let totalDays = 0;
+            const pointsValues = Array.from(checkinPointsByDate.values()).filter(v => Number.isFinite(v) && v > 0);
+            const maxPoints = pointsValues.length ? Math.max(...pointsValues) : 0;
 
             // 生成过去52周的数据
             for (let w = weeks - 1; w >= 0; w--) {
@@ -1877,13 +1894,26 @@
                     const date = new Date(now);
                     date.setDate(date.getDate() - (w * 7 + (6 - d)));
 
-                    // 检查是否有学习记录（这里用模拟数据，实际应从API获取）
-                    const hasActivity = checkinDays.has(date.toDateString());
-                    const level = hasActivity ? Math.floor(Math.random() * 4) + 1 : 0;
-                    if (level > 0) totalDays++;
-
                     const dateStr = date.toISOString().split('T')[0];
-                    html += `<div class="heatmap-day ${level > 0 ? 'level-' + level : ''}" data-date="${dateStr}" title="${dateStr}"></div>`;
+                    const points = Number(checkinPointsByDate.get(dateStr) ?? 0);
+                    const hasActivity = points > 0 || checkinDays.has(date.toDateString());
+
+                    let level = 0;
+                    if (hasActivity) {
+                        if (maxPoints <= 0) {
+                            level = 1;
+                        } else {
+                            const ratio = points / maxPoints;
+                            level = ratio >= 0.75 ? 4 : ratio >= 0.5 ? 3 : ratio >= 0.25 ? 2 : 1;
+                        }
+                        totalDays++;
+                    }
+
+                    const title = hasActivity
+                        ? `${dateStr} · 已签到${points ? ` · +${points}积分` : ''}`
+                        : `${dateStr} · 未签到`;
+
+                    html += `<div class="heatmap-day ${level > 0 ? 'level-' + level : ''}" data-date="${dateStr}" title="${title}"></div>`;
 
                     // 检查月份变化
                     if (d === 0 && date.getMonth() !== lastMonth) {
@@ -1898,11 +1928,11 @@
 
             weeksContainer.innerHTML = html;
             monthsContainer.innerHTML = monthsHtml;
-            document.getElementById('heatmapTotal').textContent = `过去一年学习 ${totalDays} 天`;
+            document.getElementById('heatmapTotal').textContent = `过去一年签到 ${totalDays} 天`;
         }
 
         // ==================== 学习趋势图表 ====================
-        function loadStudyChart(period) {
+        async function loadStudyChart(period) {
             const ctx = document.getElementById('studyChart').getContext('2d');
 
             // 销毁旧图表
@@ -1910,18 +1940,40 @@
                 studyChart.destroy();
             }
 
-            // 生成模拟数据（实际应从API获取）
             const days = period === 'week' ? 7 : 30;
             const labels = [];
-            const studyData = [];
+            const checkinData = [];
             const pointsData = [];
+
+            const token = localStorage.getItem('token');
+            const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+
+            const recordMap = new Map();
+            try {
+                const resp = await fetch(`${API_BASE}/checkin/recent?days=${days}`, { headers });
+                if (resp.ok) {
+                    const json = await resp.json();
+                    const records = json?.data?.records || json?.data || [];
+                    records.forEach(r => {
+                        const key = (r.checkinDate || '').toString().slice(0, 10);
+                        if (key) recordMap.set(key, r);
+                    });
+                }
+            } catch (e) {
+                console.error('Load checkin recent error:', e);
+            }
 
             for (let i = days - 1; i >= 0; i--) {
                 const date = new Date();
                 date.setDate(date.getDate() - i);
-                labels.push(`${date.getMonth() + 1}/${date.getDate()}`);
-                studyData.push(Math.floor(Math.random() * 120) + 10);
-                pointsData.push(Math.floor(Math.random() * 50) + 5);
+
+                const label = `${date.getMonth() + 1}/${date.getDate()}`;
+                const key = date.toISOString().split('T')[0];
+                const record = recordMap.get(key);
+
+                labels.push(label);
+                checkinData.push(record ? 1 : 0);
+                pointsData.push(Number(record?.pointsEarned ?? 0));
             }
 
             const theme = document.documentElement.getAttribute('data-theme');
@@ -1929,22 +1981,23 @@
             const gridColor = theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
 
             studyChart = new Chart(ctx, {
-                type: 'line',
+                type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [
                         {
-                            label: '学习时长(分钟)',
-                            data: studyData,
-                            borderColor: '#3b82f6',
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            pointRadius: 4,
-                            pointHoverRadius: 6
+                            type: 'bar',
+                            label: '签到(1/0)',
+                            data: checkinData,
+                            borderRadius: 8,
+                            backgroundColor: 'rgba(59, 130, 246, 0.25)',
+                            borderColor: 'rgba(59, 130, 246, 0.6)',
+                            borderWidth: 1,
+                            yAxisID: 'yCheckin'
                         },
                         {
-                            label: '获得积分',
+                            type: 'line',
+                            label: '签到积分',
                             data: pointsData,
                             borderColor: '#f59e0b',
                             backgroundColor: 'rgba(245, 158, 11, 0.1)',
@@ -1989,6 +2042,18 @@
                                 color: textColor
                             },
                             beginAtZero: true
+                        },
+                        yCheckin: {
+                            position: 'right',
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: textColor,
+                                stepSize: 1
+                            },
+                            min: 0,
+                            max: 1
                         }
                     }
                 }
@@ -2023,6 +2088,6 @@
     </script>
 
     <!-- 新用户引导组件 -->
-    <script src="../utils/onboarding.js"></script>
+    
 </body>
 </html>

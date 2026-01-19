@@ -125,8 +125,25 @@
         .input-hint.success {
             color: #34c759;
         }
+
+        /* Email verification */
+        .verify-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .verify-row .form-input {
+            flex: 1;
+        }
+
+        .verify-row .btn {
+            height: 50px;
+            white-space: nowrap;
+            padding: 0 14px;
+        }
     </style>
-  <link rel="stylesheet" href="/assets/apple-design-3a23e109.css">
+  <link rel="stylesheet" href="/assets/apple-design-5104bdc3.css">
 </head>
 <body>
     <a href="home.html" class="back-link">
@@ -157,6 +174,14 @@
                         <input type="email" class="form-input" id="email" placeholder="用于找回密码" required>
                     </div>
                     <div class="form-group">
+                        <label class="form-label">邮箱验证码</label>
+                        <div class="verify-row">
+                            <input type="text" class="form-input" id="emailCode" inputmode="numeric" placeholder="6位数字" maxlength="6" required>
+                            <button type="button" class="btn btn-secondary" id="sendCodeBtn">发送验证码</button>
+                        </div>
+                        <div class="input-hint" id="emailCodeHint"></div>
+                    </div>
+                    <div class="form-group">
                         <label class="form-label">密码</label>
                         <input type="password" class="form-input" id="password" placeholder="至少6个字符" required>
                     </div>
@@ -182,6 +207,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             initTheme();
             setupUsernameCheck();
+            setupEmailVerification();
         });
 
         function initTheme() {
@@ -218,12 +244,16 @@
                     try {
                         const res = await fetch(API_BASE + '/auth/check-username?username=' + encodeURIComponent(val));
                         const data = await res.json();
-                        if (data.data === true) {
+                        // 后端返回 data=true 表示“可用”
+                        if (data.code === 200 && data.data === true) {
+                            hint.textContent = '用户名可用';
+                            hint.className = 'input-hint success';
+                        } else if (data.code === 200 && data.data === false) {
                             hint.textContent = '用户名已存在';
                             hint.className = 'input-hint error';
                         } else {
-                            hint.textContent = '用户名可用';
-                            hint.className = 'input-hint success';
+                            hint.textContent = '';
+                            hint.className = 'input-hint';
                         }
                     } catch (e) {
                         hint.textContent = '';
@@ -232,11 +262,92 @@
             });
         }
 
+        function setupEmailVerification() {
+            const emailInput = document.getElementById('email');
+            const codeInput = document.getElementById('emailCode');
+            const hint = document.getElementById('emailCodeHint');
+            const btn = document.getElementById('sendCodeBtn');
+
+            let timer = null;
+            let secondsLeft = 0;
+
+            const setHint = (text, type) => {
+                hint.textContent = text || '';
+                hint.className = 'input-hint' + (type ? ` ${type}` : '');
+            };
+
+            const setButtonState = (disabled, text) => {
+                btn.disabled = !!disabled;
+                btn.textContent = text || '发送验证码';
+            };
+
+            const startCountdown = (seconds) => {
+                clearInterval(timer);
+                secondsLeft = Math.max(0, Number(seconds) || 0);
+                if (secondsLeft <= 0) {
+                    setButtonState(false, '发送验证码');
+                    return;
+                }
+                setButtonState(true, `${secondsLeft}s后重试`);
+                timer = setInterval(() => {
+                    secondsLeft -= 1;
+                    if (secondsLeft <= 0) {
+                        clearInterval(timer);
+                        setButtonState(false, '发送验证码');
+                        return;
+                    }
+                    setButtonState(true, `${secondsLeft}s后重试`);
+                }, 1000);
+            };
+
+            // 邮箱变化时清理提示与验证码
+            emailInput.addEventListener('input', () => {
+                setHint('', '');
+            });
+
+            btn.addEventListener('click', async () => {
+                const email = emailInput.value.trim();
+
+                if (!email || !email.includes('@')) {
+                    setHint('请输入有效的邮箱地址', 'error');
+                    return;
+                }
+
+                setHint('正在发送验证码...', '');
+                setButtonState(true, '发送中...');
+
+                try {
+                    const res = await fetch(`${API_BASE}/auth/send-email-verification?email=${encodeURIComponent(email)}`, {
+                        method: 'POST'
+                    });
+                    const data = await res.json();
+
+                    if (data.code === 200) {
+                        setHint('验证码已发送，请查收邮箱（有效期10分钟）', 'success');
+                        // 后端默认 60s 冷却；如返回 waitSeconds 则使用之
+                        startCountdown(data.data?.waitSeconds || 60);
+                        // 自动聚焦验证码输入
+                        setTimeout(() => codeInput.focus(), 50);
+                        return;
+                    }
+
+                    // 常见：频率限制/参数错误
+                    setHint(data.message || '发送失败，请稍后重试', 'error');
+                    startCountdown(data.data?.waitSeconds || 0);
+                    setButtonState(false, '发送验证码');
+                } catch (e) {
+                    setHint('网络错误，请稍后重试', 'error');
+                    setButtonState(false, '发送验证码');
+                }
+            });
+        }
+
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const username = document.getElementById('username').value.trim();
             const email = document.getElementById('email').value.trim();
+            const emailVerificationCode = document.getElementById('emailCode').value.trim();
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
             const submitBtn = document.getElementById('submitBtn');
@@ -249,6 +360,10 @@
             }
             if (!email.includes('@')) {
                 showError('请输入有效的邮箱');
+                return;
+            }
+            if (!/^\d{6}$/.test(emailVerificationCode)) {
+                showError('请输入6位邮箱验证码');
                 return;
             }
             if (password.length < 6) {
@@ -267,7 +382,7 @@
                 const res = await fetch(API_BASE + '/auth/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, email, password })
+                    body: JSON.stringify({ username, email, password, emailVerificationCode })
                 });
                 const data = await res.json();
 

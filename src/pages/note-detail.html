@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>笔记详情 - 社区广场</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <style>
         body {
             padding-top: 48px;
@@ -658,12 +659,13 @@
                 <a href="arena.html" class="nav-link">PK竞技</a>
             </div>
             <div class="nav-actions">
+                <div id="authArea"></div>
                 <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                         <path d="M8 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0-1a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-8.5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0V3a.5.5 0 0 1 .5-.5zm0 11a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0v-1a.5.5 0 0 1 .5-.5zm6-5.5a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1 0-1h1a.5.5 0 0 1 .5.5zm-11 0a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1 0-1h1a.5.5 0 0 1 .5.5z"/>
                     </svg>
                 </button>
-                <div class="user-menu" id="userMenuContainer"></div>
+                
             </div>
         </div>
     </nav>
@@ -842,27 +844,12 @@
         }
 
         // 初始化用户菜单
-        function initUserMenu() {
-            const user = JSON.parse(localStorage.getItem('user') || 'null');
-            const container = document.getElementById('userMenuContainer');
-
-            if (user) {
-                const initial = (user.nickname || user.username || 'U').charAt(0).toUpperCase();
-                container.innerHTML = `
-                    <div class="user-avatar" onclick="window.location.href='profile.html'">${initial}</div>
-                `;
-                // 更新当前用户头像
-                document.getElementById('currentUserAvatar').textContent = initial;
-            } else {
-                container.innerHTML = `<button class="btn btn-sm btn-primary" onclick="window.location.href='login.html'">登录</button>`;
-            }
-        }
+                }
 
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
             initTheme();
-            initUserMenu();
-
+            
             // 从URL获取笔记ID
             const params = new URLSearchParams(window.location.search);
             noteId = params.get('id') || 1;
@@ -1051,8 +1038,6 @@
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
 
                 const result = await response.json();
                 if (result.success) {
@@ -1077,8 +1062,6 @@
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
 
                 const result = await response.json();
                 if (result.success) {
@@ -1494,10 +1477,10 @@
                         ind.classList.add('active');
                     } else {
                         ind.classList.remove('active');
-                    }
-                });
             }
         }
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

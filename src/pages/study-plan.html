@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>学习计划 - AI 信息未来</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <style>
         /* 页面布局 */
         body {
@@ -473,6 +474,7 @@
                 <a href="/src/pages/arena.html" class="nav-link">PK竞技</a>
             </div>
             <div class="nav-actions">
+                <div id="authArea"></div>
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
                     <svg class="icon" viewBox="0 0 24 24">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
@@ -677,7 +679,7 @@
 
             if (token && user.username) {
                 userSection.innerHTML = `
-                    <div class="user-avatar" onclick="toggleUserMenu()">
+                    <div class="user-avatar" >
                         ${user.username.charAt(0).toUpperCase()}
                     </div>
                 `;
@@ -796,8 +798,6 @@
                 const response = await fetch(`${API_BASE}/study-plans`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
-                    }
-                });
 
                 if (response.ok) {
                     const data = await response.json();
@@ -861,8 +861,6 @@
                 const response = await fetch(`${API_BASE}/study-plans/stats`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
-                    }
-                });
 
                 if (response.ok) {
                     const data = await response.json();
@@ -915,8 +913,6 @@
                 const response = await fetch(`${API_BASE}/courses`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
-                    }
-                });
 
                 if (response.ok) {
                     const data = await response.json();
@@ -979,15 +975,13 @@
                 }
             } catch (error) {
                 console.error('创建计划失败:', error);
-            }
-        });
 
         // 点击模态框背景关闭
         document.getElementById('planModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closePlanModal();
-            }
-        });
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

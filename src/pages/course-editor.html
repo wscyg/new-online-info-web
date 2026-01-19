@@ -1,0 +1,3312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课程编辑器 - 左模板右JSON</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-dark: #0f0f1a;
+            --bg-panel: #1a1a2e;
+            --border: rgba(255,255,255,0.08);
+            --text: #ffffff;
+            --text-muted: rgba(255,255,255,0.6);
+            --accent: #667eea;
+            --accent-secondary: #764ba2;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 顶部工具栏 */
+        .toolbar {
+            height: 56px;
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .toolbar-title {
+            font-size: 16px;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .toolbar-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--text);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* 统一输入与按钮质感 */
+        .btn {
+            letter-spacing: 0.01em;
+            box-shadow: 0 10px 26px rgba(0,0,0,0.22);
+        }
+        .btn-secondary {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(255,255,255,0.12);
+        }
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.12);
+        }
+        .template-select,
+        .course-select,
+        .json-editor {
+            border: 1px solid rgba(255,255,255,0.12);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
+        }
+        .template-select:focus,
+        .course-select:focus,
+        .json-editor:focus {
+            border-color: rgba(102, 126, 234, 0.65);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        /* 主内容区 */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 56px);
+        }
+
+        /* 左侧预览区 */
+        .preview-panel {
+            flex: 1;
+            position: relative;
+            border-right: 1px solid var(--border);
+            background: #0a0a0f;
+        }
+
+        .preview-header {
+            height: 40px;
+            background: rgba(255,255,255,0.02);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+        }
+
+        .preview-title {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .preview-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .preview-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .preview-btn:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text);
+        }
+
+        .template-select {
+            height: 28px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,0.02);
+            color: var(--text);
+            font-size: 12px;
+            padding: 0 8px;
+            outline: none;
+        }
+        .template-select:focus {
+            border-color: var(--accent);
+        }
+
+        .preview-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .preview-iframe-container {
+            height: calc(100% - 40px);
+            position: relative;
+        }
+
+        .preview-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #0a0a0f;
+        }
+
+        /* 右侧编辑区 */
+        .editor-panel {
+            width: 50%;
+            min-width: 400px;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-panel);
+        }
+
+        .editor-header {
+            height: 40px;
+            background: rgba(255,255,255,0.02);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+        }
+
+        .editor-tabs {
+            display: flex;
+            gap: 4px;
+        }
+
+        .editor-tab {
+            padding: 6px 12px;
+            border-radius: 6px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .editor-tab:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .editor-tab.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .editor-body {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .json-editor {
+            width: 100%;
+            height: 100%;
+            background: #1e1e2e;
+            color: #e4e4e7;
+            border: none;
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+        }
+
+        .json-editor:focus {
+            box-shadow: inset 0 0 0 1px var(--accent);
+        }
+
+        /* 状态栏 */
+        .status-bar {
+            height: 28px;
+            background: rgba(0,0,0,0.3);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-dot.success { background: #10b981; }
+        .status-dot.error { background: #ef4444; }
+        .status-dot.warning { background: #f59e0b; }
+
+        /* 分割线拖拽 */
+        .resizer {
+            width: 4px;
+            cursor: col-resize;
+            background: var(--border);
+            transition: background 0.2s;
+        }
+
+        .resizer:hover {
+            background: var(--accent);
+        }
+
+        /* 课程选择器 */
+        .course-selector {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .course-select {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: var(--text);
+            font-size: 13px;
+            min-width: 200px;
+            cursor: pointer;
+        }
+
+        .course-select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* 页面选择器 */
+        .page-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(0,0,0,0.2);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .page-nav-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .page-nav-btn:hover:not(:disabled) {
+            background: rgba(255,255,255,0.05);
+            color: var(--text);
+        }
+
+        .page-nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .page-dots {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .page-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .page-dot:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .page-dot.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .page-info {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-left: auto;
+        }
+
+        /* 加载状态 */
+        .loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(10,10,15,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 16px;
+            z-index: 100;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .hidden { display: none !important; }
+
+        /* 新增样式 - 编辑器增强 */
+        .editor-view-toggle {
+            display: flex;
+            gap: 4px;
+        }
+
+        .view-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: transparent;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .view-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .editor-pane {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .pane-header {
+            padding: 8px 12px;
+            background: rgba(0,0,0,0.2);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .pane-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .pane-hint {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .template-tabs {
+            display: flex;
+            gap: 2px;
+            padding: 6px 8px;
+            background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .template-tab {
+            padding: 4px 10px;
+            border-radius: 4px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .template-tab:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .template-tab.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .template-editor {
+            flex: 1;
+        }
+
+        /* 分屏模式 */
+        .editor-split {
+            display: flex;
+            height: 100%;
+        }
+
+        .split-left, .split-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .split-divider {
+            width: 4px;
+            background: var(--border);
+            cursor: col-resize;
+            transition: background 0.2s;
+        }
+
+        .split-divider:hover {
+            background: var(--accent);
+        }
+
+        .split-json, .split-template {
+            flex: 1;
+            font-size: 11px;
+        }
+
+        /* 编辑器内textarea样式调整 */
+        .editor-pane .json-editor,
+        .editor-split .json-editor {
+            flex: 1;
+            height: auto;
+        }
+
+        /* Toast提示 */
+        .toast {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            padding: 12px 20px;
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            border-radius: 8px;
+            font-size: 13px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.error {
+            background: rgba(239, 68, 68, 0.9);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* 快捷键提示 */
+        .shortcut-hint {
+            position: fixed;
+            bottom: 50px;
+            right: 20px;
+            padding: 12px 16px;
+            background: rgba(0,0,0,0.8);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 11px;
+            color: var(--text-muted);
+            z-index: 100;
+        }
+
+        .shortcut-hint kbd {
+            padding: 2px 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            font-family: var(--font-mono, monospace);
+        }
+
+        /* 状态栏增强 */
+        .status-center {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-separator {
+            color: var(--border);
+        }
+
+        #templateStatus {
+            color: var(--accent);
+        }
+
+        #currentTabInfo {
+            font-size: 10px;
+            padding: 2px 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 4px;
+        }
+
+        /* ===== 视觉精修覆盖 ===== */
+        body {
+            background:
+                radial-gradient(900px 520px at 12% 12%, rgba(102, 126, 234, 0.18), transparent 55%),
+                radial-gradient(700px 420px at 88% 78%, rgba(118, 75, 162, 0.16), transparent 55%),
+                var(--bg-dark);
+        }
+        .toolbar {
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.98), rgba(18, 18, 32, 0.96));
+            box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+        }
+        .toolbar-title {
+            text-shadow: 0 10px 26px rgba(102, 126, 234, 0.25);
+        }
+        .btn {
+            border-radius: 10px;
+        }
+        .btn-primary {
+            box-shadow: 0 12px 32px rgba(102, 126, 234, 0.35);
+        }
+        .btn-primary:hover {
+            box-shadow: 0 16px 38px rgba(102, 126, 234, 0.45);
+        }
+        .course-select,
+        .template-select {
+            background: rgba(255,255,255,0.04);
+            border-color: rgba(255,255,255,0.14);
+        }
+        .preview-panel,
+        .editor-panel {
+            background: linear-gradient(180deg, rgba(10,10,15,0.95), rgba(10,10,15,0.88));
+        }
+        .preview-header,
+        .editor-header {
+            background: rgba(255,255,255,0.03);
+        }
+        .json-editor {
+            background: rgba(10,10,15,0.7);
+        }
+        .status-bar {
+            background: rgba(0,0,0,0.35);
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部工具栏 -->
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <a href="template-course-manage.html" class="btn btn-secondary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                返回
+            </a>
+            <span class="toolbar-title">课程可视化编辑器</span>
+        </div>
+
+        <div class="course-selector">
+            <select class="course-select" id="courseSelect">
+                <option value="">选择课程...</option>
+            </select>
+            <button class="btn btn-secondary" id="newCourseBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14M5 12h14"/>
+                </svg>
+                新建
+            </button>
+        </div>
+
+        <div class="toolbar-actions">
+            <button class="btn btn-secondary" id="templateDocsBtn" title="查看模版规则，复制给AI生成JSON" onclick="showTemplateRulesModal()">
+                📖 模版规则
+            </button>
+            <button class="btn btn-secondary" id="formatBtn" title="格式化JSON">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 6h16M4 12h10M4 18h14"/>
+                </svg>
+                格式化
+            </button>
+            <button class="btn btn-secondary" id="validateBtn" title="校验JSON格式">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                </svg>
+                校验
+            </button>
+            <button class="btn btn-secondary" id="regressionBtn" title="运行离线渲染回归（开发者用）">
+                回归检查
+            </button>
+            <button class="btn btn-secondary" id="exportHtmlBtn" title="导出当前预览为HTML文件（用于发布前核对）">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                导出HTML
+            </button>
+            <button class="btn btn-secondary" id="previewDraftBtn" title="不保存到后端，直接用当前JSON生成预览链接打开">
+                草稿预览
+            </button>
+            <button class="btn btn-secondary" id="openOnlinePreviewBtn" title="打开线上 course-viewer（按当前courseId）">
+                打开线上预览
+            </button>
+            <button class="btn btn-secondary" id="copyPreviewLinkBtn" title="复制预览链接到剪贴板">
+                复制预览链接
+            </button>
+            <button class="btn btn-secondary" id="saveTemplateBtn" title="保存自定义模板样式">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <polyline points="21,15 16,10 5,21"/>
+                </svg>
+                存模板
+            </button>
+            <button class="btn btn-primary" id="saveBtn" title="保存课程内容 (Ctrl+S)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                    <polyline points="17,21 17,13 7,13 7,21"/>
+                    <polyline points="7,3 7,8 15,8"/>
+                </svg>
+                保存
+            </button>
+            <button class="btn btn-primary" id="publishBtn" title="发布课程">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                </svg>
+                发布
+            </button>
+            <button class="btn btn-secondary" id="openChapterViewerBtn" title="打开章节查看器（后端 content_html / content_data 兼容预览）">
+                章节预览
+            </button>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main-container">
+        <!-- 左侧预览区 -->
+        <div class="preview-panel" id="previewPanel">
+            <div class="preview-header">
+                <span class="preview-title">实时预览</span>
+                <div class="preview-controls">
+                    <select class="template-select" id="templateSelect" title="选择模板">
+                        <option value="chapter2">chapter2（炫酷翻页 + 打字机 + 可视化）</option>
+                        <option value="gpt-course">gpt-course（玻璃态杂志风格）</option>
+                        <option value="nordic">nordic（极简北欧）</option>
+                        <option value="magazine">magazine（杂志叙事）</option>
+                        <option value="particle">particle（粒子宇宙）</option>
+                    </select>
+                    <button class="preview-btn active" data-device="desktop" title="桌面">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                            <line x1="8" y1="21" x2="16" y2="21"/>
+                            <line x1="12" y1="17" x2="12" y2="21"/>
+                        </svg>
+                    </button>
+                    <button class="preview-btn" data-device="tablet" title="平板">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="4" y="2" width="16" height="20" rx="2" ry="2"/>
+                            <line x1="12" y1="18" x2="12.01" y2="18"/>
+                        </svg>
+                    </button>
+                    <button class="preview-btn" data-device="mobile" title="手机">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                            <line x1="12" y1="18" x2="12.01" y2="18"/>
+                        </svg>
+                    </button>
+                    <button class="preview-btn" id="refreshPreviewBtn" title="刷新">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M23 4v6h-6M1 20v-6h6"/>
+                            <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+                        </svg>
+                    </button>
+                    <button class="preview-btn" id="fullscreenBtn" title="全屏">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 页面导航 -->
+            <div class="page-nav" id="pageNav">
+                <button class="page-nav-btn" id="prevPageBtn" disabled>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                </button>
+                <div class="page-dots" id="pageDots"></div>
+                <button class="page-nav-btn" id="nextPageBtn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                </button>
+                <span class="page-info" id="pageInfo">第 1 页 / 共 8 页</span>
+            </div>
+
+            <div class="preview-iframe-container">
+                <iframe class="preview-iframe" id="previewFrame" src="about:blank"></iframe>
+                <div class="loading-overlay" id="previewLoading">
+                    <div class="loading-spinner"></div>
+                    <span class="loading-text">加载预览...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 拖拽分割线 -->
+        <div class="resizer" id="resizer"></div>
+
+        <!-- 右侧编辑区 -->
+        <div class="editor-panel" id="editorPanel">
+            <div class="editor-header">
+                <div class="editor-tabs">
+                    <button class="editor-tab active" data-tab="json">📝 JSON内容</button>
+                    <button class="editor-tab" data-tab="template">🎨 模板代码</button>
+                    <button class="editor-tab" data-tab="split">◐ 分屏模式</button>
+                </div>
+                <div class="editor-view-toggle">
+                    <button class="view-btn" id="copyJsonBtn" title="复制JSON">📋</button>
+                    <button class="view-btn" id="copyTemplateBtn" title="复制模板">📋</button>
+                    <button class="view-btn" id="resetTemplateBtn" title="重置模板">🔄</button>
+                </div>
+            </div>
+
+            <div class="editor-body">
+                <!-- JSON编辑器 -->
+                <div class="editor-pane" id="jsonPane">
+                    <div class="pane-header">
+                        <span class="pane-title">课程内容 JSON</span>
+                        <span class="pane-hint">编辑课程结构、页面、组件</span>
+                    </div>
+                    <textarea class="json-editor" id="jsonEditor" spellcheck="false" placeholder="在此输入或粘贴课程JSON..."></textarea>
+                </div>
+
+                <!-- 模板代码编辑器 -->
+                <div class="editor-pane hidden" id="templatePane">
+                    <div class="pane-header">
+                        <span class="pane-title">模板渲染代码</span>
+                        <span class="pane-hint">CSS样式 + 组件渲染函数</span>
+                    </div>
+                    <div class="template-tabs">
+                        <button class="template-tab active" data-section="css">🎨 CSS样式</button>
+                        <button class="template-tab" data-section="render">⚙️ 渲染函数</button>
+                        <button class="template-tab" data-section="preview">👁️ 预览HTML</button>
+                    </div>
+                    <textarea class="json-editor template-editor" id="templateEditor" spellcheck="false"></textarea>
+                </div>
+
+                <!-- 分屏模式 -->
+                <div class="editor-split hidden" id="splitPane">
+                    <div class="split-left">
+                        <div class="pane-header">
+                            <span class="pane-title">📝 JSON</span>
+                        </div>
+                        <textarea class="json-editor split-json" id="splitJsonEditor" spellcheck="false"></textarea>
+                    </div>
+                    <div class="split-divider"></div>
+                    <div class="split-right">
+                        <div class="pane-header">
+                            <span class="pane-title">🎨 模板</span>
+                        </div>
+                        <textarea class="json-editor split-template" id="splitTemplateEditor" spellcheck="false"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="status-bar">
+                <div class="status-indicator">
+                    <span class="status-dot success" id="statusDot"></span>
+                    <span id="statusText">就绪</span>
+                </div>
+                <div class="status-center">
+                    <span id="jsonStats">0 页 · 0 组件</span>
+                    <span class="status-separator">|</span>
+                    <span id="templateStatus">默认模板</span>
+                </div>
+                <span id="currentTabInfo">JSON模式</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 校验报告抽屉（放在 body 尾部，避免影响布局） -->
+    <div class="drawer-backdrop" id="validationBackdrop"></div>
+    <aside class="drawer" id="validationDrawer" aria-hidden="true">
+        <div class="drawer-header">
+            <div>
+                <div class="drawer-title">校验报告</div>
+                <div class="drawer-sub" id="validationSub">—</div>
+            </div>
+            <div class="drawer-actions">
+                <button class="btn btn-secondary" id="autoFixBtn" title="自动修复常见问题（version/templateId/pages等）">自动修复</button>
+                <button class="btn btn-secondary" id="copyValidationBtn" title="复制校验报告">复制</button>
+                <button class="btn btn-secondary" id="closeValidationBtn" title="关闭">关闭</button>
+            </div>
+        </div>
+        <div class="drawer-body">
+            <div class="val-summary" id="validationSummary"></div>
+            <div class="val-list" id="validationList"></div>
+        </div>
+    </aside>
+
+    <!-- 渲染引擎依赖 -->
+    <script></script>
+    <script src="/js/format-migrator.js"></script>
+    <script src="/js/unified-course-renderer.js"></script>
+    <script src="/js/course-json-validator.js"></script>
+    <script src="/js/json-path-locator.js"></script>
+
+    <script>
+        // API配置 - 默认使用绝对路径
+        const API_BASE = localStorage.getItem('ADMIN_API_BASE') || '/api';
+
+        // 获取认证headers
+        function getAuthHeaders() {
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            return token ? { 'Authorization': `Bearer ${token}` } : {};
+        }
+
+        // 状态
+        let currentCourse = null;
+        let currentPage = 0;
+        let totalPages = 0;
+        let isDirty = false;
+        let debounceTimer = null;
+        let currentTab = 'json';
+        let currentTemplateSection = 'css';
+        let customTemplateStyles = null;
+        let customRenderFunctions = null;
+        let lastValidationResult = null;
+        
+                
+        const NORDIC_TEMPLATE_HTML = `<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" /><title>nordic</title></head><body><div style=\"padding:16px;color:#fff;background:#111;border-radius:12px;\">模板未内联</div><!-- TEMPLATE_PAGES_START --><!-- TEMPLATE_PAGES_END -->    <script src="/js/app-shell.js"></script>
+    
+</body></html>`;
+        const MAGAZINE_TEMPLATE_HTML = `<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" /><title>magazine</title></head><body><div style=\"padding:16px;color:#fff;background:#111;border-radius:12px;\">模板未内联</div><!-- TEMPLATE_PAGES_START --><!-- TEMPLATE_PAGES_END --></body></html>`;
+        const PARTICLE_TEMPLATE_HTML = `<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" /><title>particle</title></head><body><div style=\"padding:16px;color:#fff;background:#111;border-radius:12px;\">模板未内联</div><!-- TEMPLATE_PAGES_START --><!-- TEMPLATE_PAGES_END --></body></html>`;
+const GPT_COURSE_TEMPLATE_HTML = `<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" /><title>gpt-course</title></head><body><div style=\"padding:16px;color:#fff;background:#111;border-radius:12px;\">模板未内联</div><!-- TEMPLATE_PAGES_START --><!-- TEMPLATE_PAGES_END --></body></html>`;
+// 内联模板：保证预览 Blob 无需额外网络/文件依赖
+        // 注意：模板本身仍会引用本项目的 js/css（同源可加载）
+                const CHAPTER2_TEMPLATE_HTML = `<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" /><title>chapter2</title></head><body><div style=\"padding:16px;color:#fff;background:#111;border-radius:12px;\">模板未内联</div><!-- TEMPLATE_PAGES_START --><!-- TEMPLATE_PAGES_END --></body></html>`;
+// DOM元素
+        const courseSelect = document.getElementById('courseSelect');
+        const jsonEditor = document.getElementById('jsonEditor');
+        const templateEditor = document.getElementById('templateEditor');
+        const templateSelect = document.getElementById('templateSelect');
+        const splitJsonEditor = document.getElementById('splitJsonEditor');
+        const splitTemplateEditor = document.getElementById('splitTemplateEditor');
+        const previewFrame = document.getElementById('previewFrame');
+        const previewLoading = document.getElementById('previewLoading');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const jsonStats = document.getElementById('jsonStats');
+        const pageDots = document.getElementById('pageDots');
+        const pageInfo = document.getElementById('pageInfo');
+
+        // 初始化
+        async function init() {
+            await loadCourseList();
+            setupEventListeners();
+            setupResizer();
+            loadSavedTemplate();
+            loadSavedTemplateSelection();
+            setupTemplateSelect();
+            await hydrateTemplateSelectFromManifest();
+            ensureJsonEditorHasContent();
+
+            // 检查URL参数
+            const params = new URLSearchParams(window.location.search);
+            const courseId = params.get('id');
+            // 默认不自动加载（避免后端未启动/未登录时弹错影响编辑体验）
+            if (courseId) {
+                courseSelect.value = courseId;
+                setStatus('success', '已选择课程ID（未自动加载），点击"加载"手动拉取');
+            }
+
+            // 初始化时立即更新预览和导航
+            updateStats();
+            updatePageNav();
+            updatePreview();
+
+            // 显示快捷键提示
+            showShortcutHint();
+        }
+
+        function loadSavedTemplateSelection() {
+            if (!templateSelect) return;
+            const saved = localStorage.getItem('courseEditorTemplateId');
+            if (saved) templateSelect.value = saved;
+        }
+
+        function setupTemplateSelect() {
+            if (!templateSelect) return;
+            templateSelect.addEventListener('change', () => {
+                localStorage.setItem('courseEditorTemplateId', templateSelect.value);
+                updatePreview();
+            });
+        }
+
+        async function hydrateTemplateSelectFromManifest() {
+            if (!templateSelect || !window.UnifiedCourseRenderer) return;
+            try {
+                window.UnifiedCourseRenderer.init({ templateBasePath: '' });
+                const templates = await window.UnifiedCourseRenderer.getTemplates();
+                if (!Array.isArray(templates) || templates.length === 0) return;
+
+                const selected = templateSelect.value;
+                templateSelect.innerHTML = '';
+                templates.forEach(t => {
+                    const opt = document.createElement('option');
+                    opt.value = t.id;
+                    opt.textContent = t.name ? `${t.id}（${t.name}）` : t.id;
+                    templateSelect.appendChild(opt);
+                });
+                // 恢复用户选择
+                const saved = localStorage.getItem('courseEditorTemplateId');
+                const next = saved || selected;
+                if (next && Array.from(templateSelect.options).some(o => o.value === next)) {
+                    templateSelect.value = next;
+                }
+            } catch (e) {
+                // 不阻断：manifest 失败则使用静态选项
+                console.warn('hydrateTemplateSelectFromManifest failed:', e);
+            }
+        }
+
+        // 显示快捷键提示
+        function showShortcutHint() {
+            const hint = document.createElement('div');
+            hint.className = 'shortcut-hint';
+            hint.innerHTML = `
+                <kbd>Ctrl+S</kbd> 保存 &nbsp;
+                <kbd>Ctrl+1/2/3</kbd> 切换标签 &nbsp;
+                <kbd>Ctrl+R</kbd> 刷新预览
+            `;
+            document.body.appendChild(hint);
+            setTimeout(() => hint.remove(), 5000);
+        }
+
+        function getDefaultExampleCourseV2() {
+            return {
+                version: "2.0",
+                id: "example-course",
+                title: "示例课程（粘贴你的JSON即可替换）",
+                subtitle: "用于验证模板渲染与导出",
+                templateId: "chapter2",
+                accent: "cyan",
+                pages: [
+                    {
+                        id: "hero",
+                        page: 0,
+                        kind: "hero",
+                        accent: "cyan",
+                        dataTitle: "示例",
+                        dataSub: "Hero 页",
+                        header: {
+                            badge: { text: "DEMO" },
+                            badgeHtml: "",
+                            title: "课程编辑器验证页",
+                            subtitle: "粘贴 JSON → 预览渲染 → 导出 HTML",
+                            extraHtml: "",
+                            delay: 200,
+                            speed: 28,
+                        },
+                        blocks: [],
+                    },
+                    {
+                        id: "blocks",
+                        page: 1,
+                        kind: "section",
+                        accent: "purple",
+                        dataTitle: "组件示例",
+                        dataSub: "blocks 渲染",
+                        header: {
+                            label: "Demo",
+                            title: "常用 Block 展示",
+                            descHtml: "确认 cardsGrid / codeBlock / living 等交互是否完整生效",
+                        },
+                        blocks: [
+                            { type: "microLead", text: "本页路线：① cardsGrid ② codeBlock ③ living ④ callout" },
+                            {
+                                type: "cardsGrid",
+                                columns: 2,
+                                cards: [
+                                    { accent: "cyan", icon: "🧩", title: "cardsGrid", text: "卡片布局是否正确" },
+                                    { accent: "purple", icon: "🧠", title: "living", text: "点击代码行联动右侧" },
+                                ],
+                            },
+                            {
+                                type: "codeBlock",
+                                file: "demo.py",
+                                code: "def hello():\n    return 'hello'\n",
+                            },
+                            {
+                                type: "living",
+                                title: "逐行可视化（点击左侧）",
+                                vizTitle: "visualization",
+                                hint: "提示：点击左侧代码行",
+                                steps: [
+                                    { id: "s1", label: "QKV", code: "qkv = Wqkv @ x", viz: { bullets: ["投影到 Q/K/V"] } },
+                                    { id: "s2", label: "Attention", code: "attn = softmax(q @ k.T) @ v", viz: { bullets: ["注意力权重", "加权求和"] } },
+                                ],
+                            },
+                            { type: "callout", title: "导出", tag: "Tip", bodyHtml: "<p>点击顶部“导出HTML”保存当前预览文件。</p>" },
+                        ],
+                    },
+                ],
+            };
+        }
+
+        function ensureJsonEditorHasContent() {
+            const raw = (jsonEditor && jsonEditor.value) ? String(jsonEditor.value).trim() : "";
+            if (raw) return;
+            const example = getDefaultExampleCourseV2();
+            jsonEditor.value = JSON.stringify(example, null, 2);
+            setStatus("success", "已载入示例JSON（直接粘贴你的JSON覆盖即可）");
+        }
+
+        // 显示Toast
+        function showToast(message, isError = false) {
+            const toast = document.createElement('div');
+            toast.className = 'toast' + (isError ? ' error' : '');
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function escapeHtml(text) {
+            if (text === undefined || text === null) return '';
+            const div = document.createElement('div');
+            div.textContent = String(text);
+            return div.innerHTML;
+        }
+
+        function openValidationDrawer() {
+            const drawer = document.getElementById('validationDrawer');
+            const backdrop = document.getElementById('validationBackdrop');
+            if (!drawer || !backdrop) return;
+            drawer.classList.add('open');
+            backdrop.classList.add('open');
+            drawer.setAttribute('aria-hidden', 'false');
+        }
+
+        function closeValidationDrawer() {
+            const drawer = document.getElementById('validationDrawer');
+            const backdrop = document.getElementById('validationBackdrop');
+            if (!drawer || !backdrop) return;
+            drawer.classList.remove('open');
+            backdrop.classList.remove('open');
+            drawer.setAttribute('aria-hidden', 'true');
+        }
+
+        function renderValidationDrawer(result) {
+            const sub = document.getElementById('validationSub');
+            const summary = document.getElementById('validationSummary');
+            const list = document.getElementById('validationList');
+            if (!sub || !summary || !list) return;
+
+            if (!result) {
+                sub.textContent = '—';
+                summary.innerHTML = '';
+                list.innerHTML = '';
+                return;
+            }
+
+            const ok = !!result.ok;
+            const count = (result.errors || []).length;
+            sub.textContent = ok ? '通过（schema v2）' : `失败（${count} 项）`;
+            summary.innerHTML = `
+                <div style="font-weight:700; font-size:13px; color:rgba(255,255,255,.92);">
+                    ${ok ? '可以发布' : '阻止发布'}
+                </div>
+                <div class="val-badges">
+                    <span class="badge ${ok ? 'ok' : 'bad'}">${ok ? 'OK' : 'FAIL'}</span>
+                    <span class="badge">${count} errors</span>
+                    <span class="badge">version: ${(result.normalized && result.normalized.version) ? escapeHtml(result.normalized.version) : '—'}</span>
+                    <span class="badge">templateId: ${(result.normalized && result.normalized.templateId) ? escapeHtml(result.normalized.templateId) : '—'}</span>
+                </div>
+            `;
+
+            list.innerHTML = '';
+            // 分组：按 pages[i] 聚合，减少噪声
+            const errors = Array.isArray(result.errors) ? result.errors : [];
+            const groups = new Map();
+            const order = [];
+            errors.forEach((e) => {
+                const m = String(e.path || '').match(/pages\\[(\\d+)\\]/);
+                const key = m ? `pages[${m[1]}]` : '$';
+                if (!groups.has(key)) { groups.set(key, []); order.push(key); }
+                groups.get(key).push(e);
+            });
+
+            order.forEach((key) => {
+                const header = document.createElement('div');
+                header.className = 'val-item';
+                header.style.cursor = 'default';
+                header.innerHTML = `<div class="val-path">${escapeHtml(key)}</div><div class="val-msg">共 ${(groups.get(key) || []).length} 项</div>`;
+                list.appendChild(header);
+
+                (groups.get(key) || []).forEach((e, idx) => {
+                const item = document.createElement('div');
+                item.className = 'val-item';
+                item.dataset.path = e.path || '$';
+                item.dataset.index = String(idx);
+                item.innerHTML = `
+                    <div class="val-path">${escapeHtml(e.path || '$')}</div>
+                    <div class="val-msg">${escapeHtml(e.message || '')}</div>
+                    ${e.error ? `<div class="val-error">${escapeHtml(e.error)}</div>` : ''}
+                `;
+                item.addEventListener('click', () => {
+                    try { locateJsonPathInEditor(e.path || '$'); } catch (_) {}
+                });
+                list.appendChild(item);
+                });
+            });
+        }
+
+        function locateJsonPathInEditor(path) {
+            const text = String(jsonEditor.value || '');
+            if (!path || path === '$') {
+                jsonEditor.focus();
+                jsonEditor.setSelectionRange(0, 0);
+                return;
+            }
+
+            if (window.JsonPathLocator && typeof window.JsonPathLocator.locatePathRange === 'function') {
+                const range = window.JsonPathLocator.locatePathRange(text, path);
+                if (range && Number.isFinite(range.start) && Number.isFinite(range.end)) {
+                    jsonEditor.focus();
+                    jsonEditor.setSelectionRange(range.start, range.end);
+                    return;
+                }
+            }
+
+            // 兜底：旧粗定位
+            const mKey = path.match(/\.([a-zA-Z0-9_]+)$/);
+            const needle = mKey ? `"${mKey[1]}"` : '';
+            const at = needle ? text.indexOf(needle) : -1;
+            jsonEditor.focus();
+            jsonEditor.setSelectionRange(at !== -1 ? at : 0, Math.min((at !== -1 ? at : 0) + 200, text.length));
+        }
+
+        function downloadTextFile(filename, content, mime = 'text/plain') {
+            const blob = new Blob([content], { type: mime });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 2000);
+        }
+
+        // 加载保存的模板
+        function loadSavedTemplate() {
+            const savedStyles = localStorage.getItem('customTemplateStyles');
+            const savedRender = localStorage.getItem('customRenderFunctions');
+            if (savedStyles) {
+                customTemplateStyles = savedStyles;
+            }
+            if (savedRender) {
+                customRenderFunctions = savedRender;
+            }
+            updateTemplateEditor();
+            // 更新状态栏
+            const templateStatus = document.getElementById('templateStatus');
+            if (templateStatus) {
+                templateStatus.textContent = customTemplateStyles ? '🎨 自定义模板' : '默认模板';
+            }
+        }
+
+        // 更新模板编辑器内容
+        function updateTemplateEditor() {
+            const section = currentTemplateSection;
+            if (section === 'css') {
+                templateEditor.value = customTemplateStyles || getTemplateStyles();
+            } else if (section === 'render') {
+                templateEditor.value = customRenderFunctions || getRenderFunctionsSource();
+            } else if (section === 'preview') {
+                try {
+                    const courseData = JSON.parse(jsonEditor.value);
+                    templateEditor.value = generatePreviewHtml(courseData, currentPage);
+                } catch (e) {
+                    templateEditor.value = '// JSON解析错误，无法生成预览';
+                }
+            }
+        }
+
+        // 获取渲染函数源码
+        function getRenderFunctionsSource() {
+            return `// 组件渲染函数
+// 修改这些函数来自定义组件的渲染方式
+
+function renderComponent(component) {
+    const content = component.content || {};
+
+    switch (component.type) {
+        case 'hero':
+            return \`
+                <span class="hero-badge">
+                    <span class="hero-badge-dot"></span>
+                    \${content.badge || 'AI 课程'}
+                </span>
+                <h1 class="hero-title">
+                    <span class="hero-title-gradient">
+                        <span class="typing-text" data-text="\${content.title || ''}">\${content.title || ''}</span>
+                    </span>
+                </h1>
+                <p class="hero-subtitle">
+                    <span class="typing-text" data-text="\${content.subtitle || ''}">\${content.subtitle || ''}</span>
+                </p>
+            \`;
+
+        case 'heading':
+            const level = content.level || 2;
+            return \`
+                <span class="section-label">\${content.icon || ''} \${content.label || ''}</span>
+                <h\${level} class="section-title">
+                    <span class="typing-text" data-text="\${content.text || ''}">\${content.text || ''}</span>
+                </h\${level}>
+            \`;
+
+        case 'paragraph':
+            return \`<p class="section-desc">\${content.html || content.text || ''}</p>\`;
+
+        case 'cards-grid':
+            const cards = (content.cards || []).map((card, i) => \`
+                <div class="glass-card" data-delay="\${i * 150}">
+                    <div class="card-icon \${card.iconClass || ''}">\${card.icon || ''}</div>
+                    <h3 class="card-title">\${card.title || ''}</h3>
+                    \${card.subtitle ? \`<p class="card-subtitle">\${card.subtitle}</p>\` : ''}
+                    <p class="card-text">\${card.description || ''}</p>
+                </div>
+            \`).join('');
+            return \`<div class="cards-grid">\${cards}</div>\`;
+
+        case 'formula-box':
+            return \`
+                <div class="formula-box">
+                    <div class="formula-label">\${content.label || '公式'}</div>
+                    <div class="formula-main">\${content.formula || content.html || ''}</div>
+                    \${content.explanation ? \`<p class="formula-desc">\${content.explanation}</p>\` : ''}
+                </div>
+            \`;
+
+        case 'sticky-note':
+            return \`
+                <div class="sticky-note \${content.color || 'yellow'}">
+                    <div class="sticky-title">\${content.title || ''}</div>
+                    <p class="sticky-text">\${content.text || content.content || ''}</p>
+                </div>
+            \`;
+
+        case 'code-block':
+            return \`
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-dots">
+                            <span class="code-dot red"></span>
+                            <span class="code-dot yellow"></span>
+                            <span class="code-dot green"></span>
+                        </div>
+                        <span class="code-lang">\${content.language || 'python'}</span>
+                    </div>
+                    <div class="code-body">
+                        <pre>\${escapeHtml(content.code || '')}</pre>
+                    </div>
+                </div>
+            \`;
+
+        // 更多组件类型...
+        default:
+            return \`<div class="unknown-component">[\${component.type}]</div>\`;
+    }
+}`;
+        }
+
+        // 切换编辑器标签
+        function switchTab(tab) {
+            currentTab = tab;
+            const jsonPane = document.getElementById('jsonPane');
+            const templatePane = document.getElementById('templatePane');
+            const splitPane = document.getElementById('splitPane');
+            const currentTabInfo = document.getElementById('currentTabInfo');
+            const templateStatus = document.getElementById('templateStatus');
+
+            // 更新标签样式
+            document.querySelectorAll('.editor-tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.tab === tab);
+            });
+
+            // 切换面板
+            jsonPane.classList.toggle('hidden', tab !== 'json');
+            templatePane.classList.toggle('hidden', tab !== 'template');
+            splitPane.classList.toggle('hidden', tab !== 'split');
+
+            // 更新状态栏
+            const tabNames = { json: 'JSON模式', template: '模板模式', split: '分屏模式' };
+            currentTabInfo.textContent = tabNames[tab];
+
+            // 更新模板状态
+            templateStatus.textContent = customTemplateStyles ? '🎨 自定义模板' : '默认模板';
+
+            // 同步内容
+            if (tab === 'template') {
+                updateTemplateEditor();
+            } else if (tab === 'split') {
+                splitJsonEditor.value = jsonEditor.value;
+                splitTemplateEditor.value = customTemplateStyles || getTemplateStyles();
+            }
+        }
+
+        // 切换模板子标签
+        function switchTemplateSection(section) {
+            currentTemplateSection = section;
+            document.querySelectorAll('.template-tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.section === section);
+            });
+            updateTemplateEditor();
+        }
+
+        // 保存模板
+        function saveTemplate() {
+            const templateStatus = document.getElementById('templateStatus');
+            if (currentTemplateSection === 'css') {
+                customTemplateStyles = templateEditor.value;
+                localStorage.setItem('customTemplateStyles', customTemplateStyles);
+                showToast('CSS样式已保存');
+            } else if (currentTemplateSection === 'render') {
+                customRenderFunctions = templateEditor.value;
+                localStorage.setItem('customRenderFunctions', customRenderFunctions);
+                showToast('渲染函数已保存');
+            }
+            // 更新状态栏
+            templateStatus.textContent = customTemplateStyles ? '🎨 自定义模板' : '默认模板';
+            updatePreview();
+        }
+
+        // 重置模板
+        function resetTemplate() {
+            if (confirm('确定要重置为默认模板吗？')) {
+                localStorage.removeItem('customTemplateStyles');
+                localStorage.removeItem('customRenderFunctions');
+                customTemplateStyles = null;
+                customRenderFunctions = null;
+                updateTemplateEditor();
+                updatePreview();
+                // 更新状态栏
+                document.getElementById('templateStatus').textContent = '默认模板';
+                showToast('模板已重置');
+            }
+        }
+
+        // 加载课程列表
+        async function loadCourseList() {
+            try {
+                const res = await fetch(`${API_BASE}/course-templates/courses`, {
+                    headers: getAuthHeaders()
+                });
+                const result = await res.json();
+
+                if (result.code === 0 && result.data) {
+                    courseSelect.innerHTML = '<option value="">选择课程...</option>';
+                    result.data.forEach(course => {
+                        const option = document.createElement('option');
+                        option.value = course.courseId;
+                        option.textContent = `${course.title} (${course.status === 'published' ? '已发布' : '草稿'})`;
+                        courseSelect.appendChild(option);
+                    });
+                }
+            } catch (e) {
+                console.error('加载课程列表失败:', e);
+            }
+        }
+
+        // 加载课程
+        async function loadCourse(courseId) {
+            if (!courseId) return;
+
+            previewLoading.classList.remove('hidden');
+            setStatus('loading', '加载中...');
+
+            try {
+                const res = await fetch(`${API_BASE}/course-templates/courses/by-course-id/${courseId}/content`, {
+                    headers: getAuthHeaders()
+                });
+                const data = await res.json();
+
+                if (data.pages || data.title) {
+                    currentCourse = data;
+                    jsonEditor.value = JSON.stringify(data, null, 2);
+                    updateStats();
+                    updatePageNav();
+                    updatePreview();
+                    setStatus('success', '已加载');
+                    isDirty = false;
+                } else {
+                    throw new Error(data.message || '加载失败');
+                }
+            } catch (e) {
+                console.error('加载课程失败:', e);
+                setStatus('error', '加载失败: ' + e.message);
+            } finally {
+                previewLoading.classList.add('hidden');
+            }
+        }
+
+        // 更新预览
+        async function updatePreview() {
+            // 预览 loading：进入更新时显示，完成后隐藏
+            if (previewLoading) previewLoading.classList.remove('hidden');
+            try {
+                const courseData = JSON.parse(jsonEditor.value);
+                const previewHtml = await generatePreviewHtml(courseData, currentPage);
+
+                const blob = new Blob([previewHtml], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                previewFrame.src = url;
+                previewFrame.onload = () => {
+                    if (previewLoading) previewLoading.classList.add('hidden');
+                };
+                previewFrame.onerror = () => {
+                    if (previewLoading) previewLoading.classList.add('hidden');
+                    setStatus('error', '预览iframe加载失败');
+                };
+
+                setTimeout(() => URL.revokeObjectURL(url), 5000);
+                setStatus('success', '预览已更新');
+            } catch (e) {
+                setStatus('error', '预览生成失败: ' + (e && e.message ? e.message : String(e)));
+            } finally {
+                // 兜底：避免 onload 不触发时一直转圈
+                setTimeout(() => {
+                    if (previewLoading) previewLoading.classList.add('hidden');
+                }, 800);
+            }
+        }
+
+        // 生成预览HTML（使用用户提供的精美模板）
+        async function generatePreviewHtml(courseData, pageIndex = 0) {
+            const v2 = (window.FormatMigrator ? window.FormatMigrator.ensureV2(courseData) : courseData);
+            const selectedTemplateId = (templateSelect && templateSelect.value) ? templateSelect.value : (v2.templateId || 'chapter2');
+
+            if (!window.UnifiedCourseRenderer) {
+                throw new Error('UnifiedCourseRenderer not loaded');
+            }
+
+            // 统一走同一条渲染链路：manifest.json -> template.html -> ChapterTemplateEngine.applyTemplate
+            window.UnifiedCourseRenderer.init({ templateBasePath: '' });
+            const html = await window.UnifiedCourseRenderer.renderCourse(v2, null, { templateId: selectedTemplateId });
+
+            // 编辑器需要固定打开到当前页（如果模板提供 goToPage 则调用，否则兜底 class）
+            const bootScript = `
+<script>
+  (function(){
+    try {
+      var target = ${pageIndex};
+      if (typeof window.goToPage === 'function') {
+        window.goToPage(target);
+      } else {
+        var pages = Array.from(document.querySelectorAll('.page'));
+        pages.forEach(function(p, i){
+          p.classList.remove('active'); p.classList.remove('prev');
+          if (i === target) p.classList.add('active');
+          else if (i < target) p.classList.add('prev');
+        });
+      }
+    } catch(e) {}
+  })();
+<\/script>`;
+
+            return html.replace(new RegExp("<\\\\/body>", "i"), `${bootScript}\\n</body>`);
+        }
+
+        // overrideTemplatePrimaryStyle / getTemplateHtmlById 已废弃：统一由 UnifiedCourseRenderer + manifest 负责加载模板
+
+        // 生成单个页面HTML
+        function generatePageHtml(page, index, activeClass) {
+            // 兼容两种格式：
+            // 1. page.components 数组格式
+            // 2. page.blocks 数组格式 (schema v2.0)
+            // 3. page.type + page.content 直接格式
+            let components = page.components || page.blocks || [];
+
+            // 如果页面本身有type，将其作为一个组件处理
+            if (page.type && !components.length) {
+                components = [{ type: page.type, content: page.content || {} }];
+            }
+
+            const isHero = page.type === 'hero' || page.layout === 'hero' || components.some(c => c.type === 'hero');
+
+            let innerHtml = '';
+
+            components.forEach(component => {
+                innerHtml += renderComponent(component);
+            });
+
+            return `
+                <section class="page ${isHero ? 'hero-page' : ''} ${activeClass}" data-page="${index}">
+                    <div class="page-inner">
+                        ${innerHtml}
+                    </div>
+                </section>
+            `;
+        }
+
+        // 渲染组件
+        function renderComponent(component) {
+            const content = component.content || component;
+
+            switch (component.type) {
+                // 支持 schema v2.0 块类型
+                case 'html':
+                    return content.html || '';
+                case 'bridgeRow':
+                    return `
+                        <div class="bridge-row">
+                            <span class="prev">${content.prevLabel}: ${content.prev}</span>
+                            <span class="current">${content.currentLabel}: ${content.current}</span>
+                            <span class="next">${content.nextLabel}: ${content.next}</span>
+                        </div>
+                    `;
+                case 'microLead':
+                    return `<div class="micro-lead">${content.text}</div>`;
+                case 'keyline':
+                    return `<div class="keyline"><span class="dot">${content.dot}</span>${content.html}</div>`;
+                case 'accordion':
+                    return `
+                        <div class="accordion ${content.open ? 'open' : ''}">
+                            <div class="accordion-summary">${content.summary} <span class="badge">${content.badge}</span></div>
+                            <div class="accordion-content">${content.contentHtml}</div>
+                        </div>
+                    `;
+                case 'thinkBox':
+                    return `
+                        <div class="think-box">
+                            <h4>${content.title}</h4>
+                            <p>${content.text}</p>
+                        </div>
+                    `;
+                case 'prose':
+                    return `<div class="prose">${content.paragraphs.map(p => `<p>${p}</p>`).join('')}</div>`;
+                case 'callout':
+                    return `
+                        <div class="callout">
+                            <h4>${content.title} <span class="tag">${content.tag}</span></h4>
+                            <div class="callout-body">${content.bodyHtml}</div>
+                        </div>
+                    `;
+                case 'codeBlock':
+                    return `
+                        <div class="code-container">
+                            <div class="code-header">
+                                <div class="code-dots"><span class="code-dot red"></span><span class="code-dot yellow"></span><span class="code-dot green"></span></div>
+                                <span class="code-lang">${escapeHtml(content.file || content.filename || content.title || 'code')}</span>
+                            </div>
+                            <div class="code-body"><pre>${escapeHtml(content.code || '')}</pre></div>
+                        </div>
+                    `;
+                case 'living':
+                    return `
+                        <div class="living">
+                            <div class="code-panel">
+                                <div class="code-panel-head">
+                                    <div class="code-dots"><span class="code-dot red"></span><span class="code-dot yellow"></span><span class="code-dot green"></span></div>
+                                    <div class="code-panel-title">${escapeHtml(content.title || content.codeTitle || '代码（逐行可视化：点击左侧）')}</div>
+                                </div>
+                                <div class="code-lines">
+                                    ${(content.steps || []).map((step, idx) => {
+                                        const id = escapeHtml(step.id || `step-${idx + 1}`);
+                                        const label = escapeHtml(step.label || `Step ${idx + 1}`);
+                                        const hint = escapeHtml(step.hint || '');
+                                        const hintAttr = hint ? ` data-hint="${hint}"` : '';
+                                        const active = (step.active || (!(content.steps || []).some(s => s && s.active) && idx === 0)) ? ' active' : '';
+                                        const lineHtml = escapeHtml((step.code || step.text || '')).replace(/\n/g, '<br/>');
+                                        return `<div class="code-line${active}" data-target="${id}" data-label="${label}"${hintAttr}>${lineHtml}</div>`;
+                                    }).join('')}
+                                </div>
+                            </div>
+                            <div class="visual-panel">
+                                <div class="visual-head">
+                                    <div class="visual-title">${escapeHtml(content.vizTitle || 'visualization')}</div>
+                                    <div class="visual-title" data-role="viz-label"></div>
+                                    <div class="hint" data-role="viz-hint">${escapeHtml(content.hint || '提示：点击左侧代码行')}</div>
+                                </div>
+                                <div class="visual-body">
+                                    ${(content.steps || []).map((step, idx) => {
+                                        const id = escapeHtml(step.id || `step-${idx + 1}`);
+                                        const active = (step.active || (!(content.steps || []).some(s => s && s.active) && idx === 0)) ? ' active' : '';
+                                        // 简化：编辑器里先以 vizHtml/viz.html 为主，缺失则兜底展示 bullets
+                                        const viz = step.viz || {};
+                                        const body = step.vizHtml || viz.html || (Array.isArray(viz.bullets) ? `<ul class="viz-list">${viz.bullets.map(b => `<li><span class="viz-dot">!</span><span>${escapeHtml(b)}</span></li>`).join('')}</ul>` : '');
+                                        return `<div class="viz-step${active}" data-step="${id}"><div class="viz-card">${body}</div></div>`;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                case 'cardsGrid':
+                    return `
+                        <div class="cards-grid" style="--grid-cols:${Number(content.columns || content.cols || 3)}">
+                            <div class="cards-container">
+                                ${(content.cards || []).map(card => `
+                                    <div class="grid-card" ${card.accent ? `data-accent="${escapeHtml(card.accent)}"` : ''}>
+                                        ${card.icon ? `<div class="card-icon">${escapeHtml(card.icon)}</div>` : ''}
+                                        <div class="card-head">
+                                            <div class="card-title">${escapeHtml(card.title || '')}</div>
+                                            ${card.subtitle ? `<div class="card-subtitle">${escapeHtml(card.subtitle)}</div>` : ''}
+                                        </div>
+                                        <div class="card-body">
+                                            ${card.text ? escapeHtml(card.text) : ''}
+                                            ${Array.isArray(card.bullets) ? `<ul class="card-bullets">${card.bullets.map(b => `<li>${escapeHtml(b)}</li>`).join('')}</ul>` : ''}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                case 'diagram':
+                    return `
+                        <div class="diagram">
+                            ${content.svg}
+                            ${content.caption ? `<p class="diagram-caption">${content.caption}</p>` : ''}
+                        </div>
+                    `;
+                case 'timeline':
+                    return `
+                        <div class="timeline">
+                            ${content.items.map(item => `
+                                <div class="timeline-item">
+                                    <span class="timeline-year">${item.year || item.date}</span>
+                                    <h4>${item.title}</h4>
+                                    <p>${item.text}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                case 'table':
+                    return `
+                        <div class="data-table">
+                            ${content.caption ? `<p class="table-caption">${content.caption}</p>` : ''}
+                            <table>
+                                ${content.headers ? `<thead><tr>${content.headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>` : ''}
+                                <tbody>
+                                    ${content.rows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                case 'formulaBox':
+                    return `
+                        <div class="formula-box">
+                            <span class="formula-label">${content.label}</span>
+                            <div class="formula-main">${content.math}</div>
+                            ${content.desc ? `<p class="formula-desc">${content.desc}</p>` : ''}
+                        </div>
+                    `;
+                case 'exampleBox':
+                    return `
+                        <div class="example-box ${content.variant}">
+                            <span class="example-icon">${content.icon}</span>
+                            <h4>${content.title}</h4>
+                            ${content.code ? `<pre><code>${escapeHtml(content.code)}</code></pre>` : ''}
+                            ${content.note ? `<p class="example-note">${content.note}</p>` : ''}
+                        </div>
+                    `;
+                case 'mathBlock':
+                    return `
+                        <div class="math-block">
+                            <span class="math-label">${content.label}</span>
+                            <div class="math-main">${content.math}</div>
+                            ${content.note ? `<p class="math-note">${content.note}</p>` : ''}
+                        </div>
+                    `;
+                case 'quoteBox':
+                    return `
+                        <div class="quote-box">
+                            <blockquote>${content.quote}</blockquote>
+                            ${content.author ? `<cite>${content.author}${content.source ? `, ${content.source}` : ''}</cite>` : ''}
+                        </div>
+                    `;
+                case 'stickyNote':
+                    return `
+                        <div class="sticky-note ${content.color || 'yellow'}" style="transform: rotate(${content.rotate || 0}deg)">
+                            <h4>${content.title}</h4>
+                            <p>${content.text}</p>
+                        </div>
+                    `;
+                case 'labCard':
+                    return `
+                        <div class="lab-card">
+                            <span class="lab-icon">${content.icon}</span>
+                            <h4>${content.title}</h4>
+                            <p class="lab-description">${content.description}</p>
+                            ${content.tags ? `<div class="lab-tags">${content.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>` : ''}
+                            ${content.link ? `<a href="${content.link}" class="lab-link">查看详情</a>` : ''}
+                        </div>
+                    `;
+                case 'codeDiagramSplit':
+                    return `
+                        <div class="code-diagram-split">
+                            <div class="code-section">
+                                <h4>${content.codeTitle}</h4>
+                                <pre><code>${escapeHtml(content.code)}</code></pre>
+                            </div>
+                            <div class="diagram-section">
+                                <h4>${content.diagramTitle}</h4>
+                                ${content.diagramSvg}
+                                ${content.diagramCaption ? `<p class="diagram-caption">${content.diagramCaption}</p>` : ''}
+                            </div>
+                        </div>
+                    `;
+                case 'pageTransition':
+                    return `
+                        <div class="page-transition">
+                            <span class="transition-from">${content.from}</span>
+                            <span class="transition-arrow">→</span>
+                            <span class="transition-to">${content.to}</span>
+                            <p class="transition-text">${content.text}</p>
+                        </div>
+                    `;
+
+                // 保留原有的组件类型支持
+                case 'hero':
+                    return `
+                        <span class="hero-badge">
+                            <span class="hero-badge-dot"></span>
+                            ${content.badge || 'AI 课程'}
+                        </span>
+                        <h1 class="hero-title">
+                            <span class="hero-title-gradient">
+                                <span class="typing-text" data-text="${content.title || ''}">${content.title || ''}</span>
+                            </span>
+                        </h1>
+                        <p class="hero-subtitle">
+                            <span class="typing-text" data-text="${content.subtitle || ''}" data-delay="600">${content.subtitle || ''}</span>
+                        </p>
+                    `;
+
+                case 'heading':
+                    const level = content.level || 2;
+                    return `
+                        <span class="section-label">${content.icon || ''} ${content.label || ''}</span>
+                        <h${level} class="section-title">
+                            <span class="typing-text" data-text="${content.text || ''}">${content.text || ''}</span>
+                        </h${level}>
+                    `;
+
+                case 'paragraph':
+                    return `<p class="section-desc">${content.html || content.text || ''}</p>`;
+
+                case 'cards-grid':
+                    const cards = (content.cards || []).map((card, i) => `
+                        <div class="glass-card" data-delay="${i * 150}">
+                            <div class="card-icon ${card.iconClass || ''}">${card.icon || ''}</div>
+                            <h3 class="card-title">${card.title || ''}</h3>
+                            ${card.subtitle ? `<p class="card-subtitle">${card.subtitle}</p>` : ''}
+                            <p class="card-text">${card.description || ''}</p>
+                        </div>
+                    `).join('');
+                    return `<div class="cards-grid">${cards}</div>`;
+
+                case 'formula-box':
+                    return `
+                        <div class="formula-box">
+                            <div class="formula-label">${content.label || '公式'}</div>
+                            <div class="formula-main">${content.formula || content.html || ''}</div>
+                            ${content.explanation ? `<p class="formula-desc">${content.explanation}</p>` : ''}
+                        </div>
+                    `;
+
+                case 'sticky-note':
+                    return `
+                        <div class="sticky-note ${content.color || 'yellow'}" data-delay="${content.delay || 400}">
+                            <div class="sticky-title">${content.title || ''}</div>
+                            <p class="sticky-text">${content.text || content.content || ''}</p>
+                        </div>
+                    `;
+
+                case 'timeline':
+                    const items = (content.items || []).map((item, i) => `
+                        <div class="timeline-item" data-delay="${i * 150}">
+                            <span class="timeline-year">${item.year || item.date || ''}</span>
+                            <h4 class="timeline-title">${item.title || ''}</h4>
+                            <p class="timeline-desc">${item.description || ''}</p>
+                        </div>
+                    `).join('');
+                    return `<div class="timeline">${items}</div>`;
+
+                case 'diagram':
+                    return `
+                        <div class="diagram-container">
+                            ${content.svg || ''}
+                            ${content.caption ? `<p class="diagram-caption">${content.caption}</p>` : ''}
+                        </div>
+                    `;
+
+                case 'code-block':
+                    return `
+                        <div class="code-container">
+                            <div class="code-header">
+                                <div class="code-dots">
+                                    <span class="code-dot red"></span>
+                                    <span class="code-dot yellow"></span>
+                                    <span class="code-dot green"></span>
+                                </div>
+                                <span class="code-lang">${content.language || 'python'}</span>
+                            </div>
+                            <div class="code-body">
+                                <pre>${escapeHtml(content.code || '')}</pre>
+                            </div>
+                        </div>
+                    `;
+
+                case 'key-points':
+                    const points = (content.points || []).map(p => `<li>${p}</li>`).join('');
+                    return `
+                        <div class="key-points">
+                            <h4>${content.icon || '⭐'} ${content.title || '要点'}</h4>
+                            <ul>${points}</ul>
+                        </div>
+                    `;
+
+                case 'callout':
+                    return `
+                        <div class="sticky-note ${content.type === 'tip' ? 'blue' : content.type === 'warning' ? 'yellow' : 'green'}">
+                            <div class="sticky-title">${content.title || ''}</div>
+                            <p class="sticky-text">${content.text || ''}</p>
+                        </div>
+                    `;
+
+                case 'socratic-dialogue':
+                    const dialogues = (content.dialogues || []).map(d => `
+                        <div class="dialogue-item ${d.role}">
+                            <div class="dialogue-avatar">${d.role === 'teacher' ? '👨‍🏫' : '🧑‍🎓'}</div>
+                            <div class="dialogue-content">
+                                <div class="dialogue-name">${d.name || ''}</div>
+                                <div class="dialogue-text">${d.text || ''}</div>
+                                ${d.thought ? `<div class="dialogue-thought">💭 ${d.thought}</div>` : ''}
+                            </div>
+                        </div>
+                    `).join('');
+                    return `<div class="socratic-dialogues">${dialogues}</div>`;
+
+                default:
+                    return `<div class="unknown-component">[${component.type}]</div>`;
+            }
+        }
+
+        function renderLivingCode(steps) {
+            return steps.map((step, index) => `
+                <div class="living-step">
+                    <div class="step-number">Step ${index + 1}</div>
+                    <div class="step-content">
+                        ${step.html || `<pre><code>${escapeHtml(step.code || '')}</code></pre>`}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        // 获取模板样式
+        function getTemplateStyles() {
+            return `
+                :root {
+                    --color-primary: #667eea;
+                    --color-secondary: #764ba2;
+                    --color-accent-pink: #f093fb;
+                    --color-accent-cyan: #4facfe;
+                    --color-accent-teal: #00f2fe;
+                    --color-text: #ffffff;
+                    --color-text-muted: rgba(255, 255, 255, 0.7);
+                    --color-glass: rgba(255, 255, 255, 0.04);
+                    --color-glass-border: rgba(255, 255, 255, 0.08);
+                    --font-display: 'Syne', sans-serif;
+                    --font-serif: 'Noto Serif SC', serif;
+                    --font-sans: 'Noto Sans SC', sans-serif;
+                    --font-mono: 'JetBrains Mono', monospace;
+                    --font-handwriting: 'Caveat', cursive;
+                }
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                html, body { overflow: hidden; height: 100%; width: 100%; }
+                body { font-family: var(--font-sans); background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); color: var(--color-text); line-height: 1.7; }
+
+                .bg-container { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+                .glass-orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5; animation: orbFloat 25s ease-in-out infinite; }
+                .glass-orb-1 { width: 700px; height: 700px; background: linear-gradient(135deg, #667eea, #764ba2); top: -250px; right: -200px; }
+                .glass-orb-2 { width: 600px; height: 600px; background: linear-gradient(135deg, #f093fb, #f5576c); bottom: -200px; left: -200px; animation-delay: -8s; }
+                .glass-orb-3 { width: 500px; height: 500px; background: linear-gradient(135deg, #4facfe, #00f2fe); top: 40%; left: 30%; animation-delay: -16s; }
+                @keyframes orbFloat { 0%, 100% { transform: translate3d(0, 0, 0) scale(1); } 25% { transform: translate3d(40px, -40px, 0) scale(1.08); } 50% { transform: translate3d(-30px, 30px, 0) scale(0.95); } 75% { transform: translate3d(-40px, -30px, 0) scale(1.03); } }
+
+                .grid-overlay { position: fixed; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; z-index: 1; }
+
+                .pages-wrapper { position: relative; width: 100%; height: 100vh; overflow: hidden; z-index: 10; }
+                .page { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 80px 100px; opacity: 0; transform: translate3d(100%, 0, 0); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); overflow-y: auto; }
+                .page.active { opacity: 1; transform: translate3d(0, 0, 0); }
+                .page.prev { transform: translate3d(-100%, 0, 0); }
+                .page-inner { max-width: 1200px; margin: 0 auto; width: 100%; }
+
+                .hero-page { text-align: center; justify-content: center; align-items: center; }
+                .hero-badge { display: inline-flex; align-items: center; gap: 10px; padding: 12px 24px; background: var(--color-glass); backdrop-filter: blur(10px); border: 1px solid var(--color-glass-border); border-radius: 100px; font-size: 14px; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 32px; }
+                .hero-badge-dot { width: 10px; height: 10px; background: linear-gradient(135deg, var(--color-accent-cyan), var(--color-accent-teal)); border-radius: 50%; animation: pulse 2s ease infinite; }
+                @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.8; transform: scale(0.9); } }
+                .hero-title { font-family: var(--font-display); font-size: clamp(56px, 10vw, 120px); font-weight: 800; letter-spacing: -0.04em; line-height: 1.05; margin-bottom: 32px; }
+                .hero-title-gradient { background: linear-gradient(135deg, #fff 0%, #a5b4fc 40%, #818cf8 70%, #667eea 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+                .hero-subtitle { font-size: 20px; color: var(--color-text-muted); max-width: 700px; margin: 0 auto; line-height: 1.9; }
+
+                .section-label { display: inline-flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--color-accent-cyan); margin-bottom: 16px; }
+                .section-label::before { content: ''; width: 24px; height: 2px; background: linear-gradient(90deg, var(--color-accent-cyan), transparent); }
+                .section-title { font-family: var(--font-serif); font-size: clamp(32px, 5vw, 52px); font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 20px; }
+                .section-desc { font-size: 17px; color: var(--color-text-muted); max-width: 680px; line-height: 1.9; }
+
+                .cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 40px; }
+                .glass-card { background: var(--color-glass); backdrop-filter: blur(20px); border: 1px solid var(--color-glass-border); border-radius: 24px; padding: 32px; transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); opacity: 0; transform: translate3d(0, 40px, 0) scale(0.98); }
+                .glass-card.visible { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+                .glass-card:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); transform: translate3d(0, -8px, 0) scale(1.02); }
+                .card-icon { width: 64px; height: 64px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 28px; font-weight: 800; margin-bottom: 20px; background: rgba(255, 255, 255, 0.03); }
+                .card-icon.q { color: #a5b4fc; }
+                .card-icon.k { color: #f9a8d4; }
+                .card-icon.v { color: #67e8f9; }
+                .card-title { font-family: var(--font-serif); font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+                .card-subtitle { font-family: var(--font-mono); font-size: 12px; color: var(--color-accent-cyan); margin-bottom: 12px; opacity: 0.8; }
+                .card-text { font-size: 14px; color: var(--color-text-muted); line-height: 1.75; }
+
+                .sticky-note { position: relative; padding: 24px 28px; margin-top: 32px; border-radius: 4px; box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.3); opacity: 0; transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
+                .sticky-note.fly-in { opacity: 1; }
+                .sticky-note.yellow { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); transform: rotate(-1.5deg) translate3d(80px, 0, 0); }
+                .sticky-note.yellow.fly-in { transform: rotate(-1.5deg) translate3d(0, 0, 0); }
+                .sticky-note.pink { background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%); transform: rotate(1.5deg) translate3d(80px, 0, 0); }
+                .sticky-note.pink.fly-in { transform: rotate(1.5deg) translate3d(0, 0, 0); }
+                .sticky-note.blue { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); transform: rotate(-0.5deg) translate3d(80px, 0, 0); }
+                .sticky-note.blue.fly-in { transform: rotate(-0.5deg) translate3d(0, 0, 0); }
+                .sticky-note.green { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); transform: rotate(1deg) translate3d(80px, 0, 0); }
+                .sticky-note.green.fly-in { transform: rotate(1deg) translate3d(0, 0, 0); }
+                .sticky-note::before { content: ''; position: absolute; top: -8px; left: 50%; transform: translateX(-50%); width: 20px; height: 20px; background: radial-gradient(circle at 30% 30%, #f87171 0%, #dc2626 60%, #991b1b 100%); border-radius: 50%; box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3); }
+                .sticky-title { font-family: var(--font-handwriting); font-size: 18px; font-weight: 700; color: #374151; margin-bottom: 10px; text-decoration: underline wavy rgba(0, 0, 0, 0.2); text-underline-offset: 4px; }
+                .sticky-text { font-family: var(--font-handwriting); font-size: 17px; font-weight: 500; color: #4b5563; line-height: 1.6; }
+
+                .formula-box { background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.05)); border: 1px solid rgba(102, 126, 234, 0.25); border-radius: 20px; padding: 36px; margin: 36px 0; text-align: center; opacity: 0; transform: scale(0.9); transition: all 0.8s ease; }
+                .formula-box.visible { opacity: 1; transform: scale(1); }
+                .formula-label { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-accent-cyan); margin-bottom: 16px; }
+                .formula-main { font-family: var(--font-mono); font-size: clamp(16px, 2.5vw, 26px); font-weight: 500; color: white; }
+                .formula-desc { font-size: 13px; color: var(--color-text-muted); margin-top: 16px; }
+
+                .diagram-container { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid var(--color-glass-border); border-radius: 24px; padding: 40px; margin-top: 40px; opacity: 0; transform: translate3d(0, 30px, 0); transition: all 0.8s ease; }
+                .diagram-container.visible { opacity: 1; transform: translate3d(0, 0, 0); }
+                .diagram-container svg { width: 100%; max-width: 800px; height: auto; margin: 0 auto; display: block; }
+                .diagram-caption { text-align: center; font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 20px; font-style: italic; }
+
+                .timeline { margin-top: 36px; position: relative; padding-left: 36px; }
+                .timeline::before { content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--color-primary), var(--color-secondary), var(--color-accent-cyan)); }
+                .timeline-item { position: relative; padding: 16px 0 32px; opacity: 0; transform: translate3d(-20px, 0, 0); transition: all 0.6s ease; }
+                .timeline-item.visible { opacity: 1; transform: translate3d(0, 0, 0); }
+                .timeline-item::before { content: ''; position: absolute; left: -32px; top: 20px; width: 12px; height: 12px; border-radius: 50%; background: var(--color-primary); box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.25); }
+                .timeline-year { font-family: var(--font-mono); font-size: 13px; font-weight: 500; color: var(--color-accent-cyan); margin-bottom: 6px; }
+                .timeline-title { font-family: var(--font-serif); font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+                .timeline-desc { font-size: 13px; color: var(--color-text-muted); line-height: 1.7; }
+
+                .code-container { background: rgba(0, 0, 0, 0.5); border: 1px solid var(--color-glass-border); border-radius: 16px; overflow: hidden; margin-top: 24px; }
+                .code-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: rgba(255, 255, 255, 0.03); border-bottom: 1px solid var(--color-glass-border); }
+                .code-dots { display: flex; gap: 6px; }
+                .code-dot { width: 10px; height: 10px; border-radius: 50%; }
+                .code-dot.red { background: #ff5f57; }
+                .code-dot.yellow { background: #febc2e; }
+                .code-dot.green { background: #28c840; }
+                .code-lang { font-family: var(--font-mono); font-size: 11px; color: rgba(255,255,255,0.4); }
+                .code-body { padding: 18px; overflow-x: auto; }
+                .code-body pre { font-family: var(--font-mono); font-size: 12px; line-height: 1.8; color: #e4e4e7; }
+
+                .socratic-dialogues { margin-top: 24px; }
+                .dialogue-item { display: flex; gap: 16px; padding: 16px; margin-bottom: 16px; background: var(--color-glass); border-radius: 16px; }
+                .dialogue-avatar { font-size: 32px; }
+                .dialogue-content { flex: 1; }
+                .dialogue-name { font-weight: 600; font-size: 14px; margin-bottom: 6px; color: var(--color-accent-cyan); }
+                .dialogue-text { font-size: 14px; line-height: 1.7; color: var(--color-text-muted); }
+                .dialogue-thought { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 8px; font-style: italic; }
+
+                .key-points { margin-top: 24px; padding: 24px; background: var(--color-glass); border-radius: 16px; }
+                .key-points h4 { font-size: 16px; margin-bottom: 16px; }
+                .key-points ul { list-style: none; }
+                .key-points li { padding: 8px 0; border-bottom: 1px solid var(--color-glass-border); font-size: 14px; color: var(--color-text-muted); }
+                .key-points li:last-child { border-bottom: none; }
+
+                .page-nav { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; z-index: 100; }
+                .nav-dots { display: flex; gap: 10px; padding: 12px 20px; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px); border: 1px solid var(--color-glass-border); border-radius: 50px; }
+                .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.25); cursor: pointer; transition: all 0.3s ease; }
+                .nav-dot.active { background: var(--color-accent-cyan); transform: scale(1.3); box-shadow: 0 0 10px var(--color-accent-cyan); }
+                .page-btn { width: 48px; height: 48px; border-radius: 50%; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px); border: 1px solid var(--color-glass-border); color: white; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
+                .page-btn:hover:not(:disabled) { background: rgba(102, 126, 234, 0.4); border-color: var(--color-primary); transform: scale(1.1); }
+                .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+                .page-counter { font-family: var(--font-mono); font-size: 13px; color: var(--color-text-muted); min-width: 50px; text-align: center; }
+
+                @media (max-width: 1024px) {
+                    .page { padding: 60px 40px; }
+                    .cards-grid { grid-template-columns: 1fr; }
+                }
+                @media (max-width: 768px) {
+                    .page { padding: 60px 20px; }
+                    .glass-orb { opacity: 0.3; }
+                }
+            `;
+        }
+
+        // 更新统计
+        function updateStats() {
+            try {
+                const data = JSON.parse(jsonEditor.value);
+                let pageCount = 0;
+                let componentCount = 0;
+
+                if (data.chapters) {
+                    data.chapters.forEach(ch => {
+                        if (ch.pages) {
+                            pageCount += ch.pages.length;
+                            ch.pages.forEach(p => {
+                                if (p.components) componentCount += p.components.length;
+                            });
+                } else if (data.pages) {
+                    pageCount = data.pages.length;
+                    data.pages.forEach(p => {
+                        if (p.components) componentCount += p.components.length;
+                    });
+                }
+
+                jsonStats.textContent = `${pageCount} 页 · ${componentCount} 组件`;
+                totalPages = pageCount;
+            } catch (e) {
+                jsonStats.textContent = 'JSON 解析错误';
+            }
+        }
+
+        // 更新页面导航
+        function updatePageNav() {
+            pageDots.innerHTML = '';
+            for (let i = 0; i < totalPages; i++) {
+                const dot = document.createElement('button');
+                dot.className = `page-dot ${i === currentPage ? 'active' : ''}`;
+                dot.textContent = i + 1;
+                dot.onclick = () => {
+                    currentPage = i;
+                    updatePageNav();
+                    updatePreview();
+                };
+                pageDots.appendChild(dot);
+            }
+            pageInfo.textContent = `第 ${currentPage + 1} 页 / 共 ${totalPages} 页`;
+            document.getElementById('prevPageBtn').disabled = currentPage === 0;
+            document.getElementById('nextPageBtn').disabled = currentPage >= totalPages - 1;
+        }
+
+        // 设置状态
+        function setStatus(type, text) {
+            statusDot.className = 'status-dot ' + type;
+            statusText.textContent = text;
+        }
+
+        // 设置事件监听
+        function setupEventListeners() {
+            // 课程选择
+            courseSelect.addEventListener('change', () => {
+                loadCourse(courseSelect.value);
+            });
+
+            // 新建课程（章节）- 最简创建：生成 courseId 并用当前 JSON 保存
+            document.getElementById('newCourseBtn').addEventListener('click', async () => {
+                try {
+                    const raw = (jsonEditor && jsonEditor.value) ? String(jsonEditor.value).trim() : '';
+                    let data;
+                    if (raw) {
+                        data = JSON.parse(raw);
+                    } else if (window.CourseJsonValidator) {
+                        data = (await window.CourseJsonValidator.validateCourseJson(getDefaultExampleCourseV2())).normalized;
+                    } else {
+                        data = getDefaultExampleCourseV2();
+                    }
+
+                    const suggested = `CHAP-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+                    const courseId = prompt('请输入新课程ID（用于上线URL），建议格式：CHAP-XXXXXX', suggested);
+                    if (!courseId) return;
+                    const trimmed = String(courseId).trim();
+                    if (!trimmed) return;
+
+                    data.id = trimmed;
+                    if (!data.templateId && templateSelect && templateSelect.value) data.templateId = templateSelect.value;
+                    jsonEditor.value = JSON.stringify(data, null, 2);
+                    updateStats();
+                    updatePageNav();
+
+                    // 直接保存到后端（管理端发版入口）
+                    courseSelect.value = trimmed;
+                    await saveCourse();
+                    showToast('已创建并保存: ' + trimmed);
+                } catch (e) {
+                    setStatus('error', '新建失败: ' + (e.message || String(e)));
+                    showToast('新建失败: ' + (e.message || String(e)), true);
+
+            // JSON编辑器变化
+            jsonEditor.addEventListener('input', () => {
+                isDirty = true;
+                setStatus('warning', '未保存');
+
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    updateStats();
+                    updatePageNav();
+                    updatePreview();
+                    // 同步到分屏模式
+                    if (currentTab === 'split') {
+                        splitJsonEditor.value = jsonEditor.value;
+                    }
+                }, 500);
+            });
+
+            // 分屏JSON编辑器
+            splitJsonEditor.addEventListener('input', () => {
+                jsonEditor.value = splitJsonEditor.value;
+                isDirty = true;
+                setStatus('warning', '未保存');
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    updateStats();
+                    updatePageNav();
+                    updatePreview();
+                }, 500);
+            });
+
+            // 分屏模板编辑器
+            splitTemplateEditor.addEventListener('input', () => {
+                customTemplateStyles = splitTemplateEditor.value;
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    updatePreview();
+                }, 500);
+            });
+
+            // 模板编辑器变化
+            templateEditor.addEventListener('input', () => {
+                if (currentTemplateSection === 'css') {
+                    customTemplateStyles = templateEditor.value;
+                } else if (currentTemplateSection === 'render') {
+                    customRenderFunctions = templateEditor.value;
+                }
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(updatePreview, 500);
+            });
+
+            // 编辑器标签切换
+            document.querySelectorAll('.editor-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    switchTab(tab.dataset.tab);
+                });
+            });
+
+            // 模板子标签切换
+            document.querySelectorAll('.template-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    switchTemplateSection(tab.dataset.section);
+                });
+            });
+
+            // 复制JSON按钮
+            document.getElementById('copyJsonBtn').addEventListener('click', () => {
+                navigator.clipboard.writeText(jsonEditor.value);
+                showToast('JSON已复制到剪贴板');
+            });
+
+            // 复制模板按钮
+            document.getElementById('copyTemplateBtn').addEventListener('click', () => {
+                navigator.clipboard.writeText(customTemplateStyles || getTemplateStyles());
+                showToast('模板代码已复制到剪贴板');
+            });
+
+            // 重置模板按钮
+            document.getElementById('resetTemplateBtn').addEventListener('click', resetTemplate);
+
+            // 保存模板按钮
+            document.getElementById('saveTemplateBtn').addEventListener('click', () => {
+                saveTemplate();
+            });
+
+            // 格式化
+            document.getElementById('formatBtn').addEventListener('click', () => {
+                try {
+                    const data = JSON.parse(jsonEditor.value);
+                    jsonEditor.value = JSON.stringify(data, null, 2);
+                    setStatus('success', '已格式化');
+                } catch (e) {
+                    setStatus('error', 'JSON格式错误');
+
+            // 校验
+            document.getElementById('validateBtn').addEventListener('click', async () => {
+                try {
+                    if (!window.CourseJsonValidator) {
+                        throw new Error('CourseJsonValidator 未加载');
+                    }
+                    const res = await window.CourseJsonValidator.validateCourseJson(jsonEditor.value);
+                    lastValidationResult = res;
+                    renderValidationDrawer(res);
+                    openValidationDrawer();
+                    if (res.ok) {
+                        setStatus('success', '校验通过');
+                        showToast('校验通过（schema v2）');
+                    } else {
+                        setStatus('error', `校验失败: ${res.errors.length} 项`);
+                        showToast(`校验失败：${res.errors.length}项`, true);
+                    }
+                } catch (e) {
+                    setStatus('error', '校验异常: ' + e.message);
+                    showToast('校验异常: ' + e.message, true);
+
+            // 回归检查（前端版本）：用当前 JSON 调用渲染器，检测 unknown-block / throw
+            document.getElementById('regressionBtn')?.addEventListener('click', async () => {
+                try {
+                    const raw = String(jsonEditor.value || '').trim();
+                    if (!raw) {
+                        showToast('JSON为空', true);
+                        return;
+                    }
+                    const parsed = JSON.parse(raw);
+                    const cfg = window.FormatMigrator ? window.FormatMigrator.ensureV2(parsed) : parsed;
+                    const pages = Array.isArray(cfg.pages) ? cfg.pages : [];
+                    const unknown = [];
+                    if (window.ChapterTemplateEngine) {
+                        pages.forEach(p => (p.blocks || []).forEach(b => {
+                            if (!b || typeof b !== 'object') return;
+                            try {
+                                const html = window.ChapterTemplateEngine.renderBlock(b);
+                                if (typeof html === 'string' && html.includes('unknown-block')) {
+                                    unknown.push({ pageId: p.id, type: b.type });
+                                }
+                            } catch (e) {
+                                unknown.push({ pageId: p.id, type: b.type, error: e.message || String(e) });
+                            }
+                        }));
+                    }
+                    if (unknown.length) {
+                        showToast(`回归失败：${unknown.length} 个 block 不支持/报错`, true);
+                        alert('回归失败（前 20 项）：\n' + unknown.slice(0, 20).map(x => `${x.pageId}: ${x.type}${x.error ? ' (' + x.error + ')' : ''}`).join('\n'));
+                        return;
+                    }
+                    // 尝试完整渲染（模板加载由 UnifiedCourseRenderer 负责）
+                    if (window.UnifiedCourseRenderer) {
+                        await window.UnifiedCourseRenderer.renderCourse(cfg, null, { templateId: cfg.templateId || (templateSelect ? templateSelect.value : 'chapter2') });
+                    }
+                    showToast('回归通过');
+                } catch (e) {
+                    showToast('回归异常: ' + (e.message || String(e)), true);
+
+            // 草稿预览：不写后端，直接用 base64 json 打开 course-viewer
+            document.getElementById('previewDraftBtn').addEventListener('click', async () => {
+                try {
+                    const raw = (jsonEditor && jsonEditor.value) ? String(jsonEditor.value).trim() : '';
+                    if (!raw) {
+                        showToast('JSON为空', true);
+                        return;
+                    }
+                    // 校验通过再预览（减少空白页）
+                    if (window.CourseJsonValidator) {
+                        const check = await window.CourseJsonValidator.validateCourseJson(raw);
+                        if (!check.ok) {
+                            showToast(`校验失败：${check.errors.length}项（先修复再预览）`, true);
+                            return;
+                        }
+                    }
+                    const base64 = btoa(unescape(encodeURIComponent(raw)));
+                    const url = `/src/pages/course-viewer.html?json=${encodeURIComponent(base64)}`;
+                    window.open(url, '_blank');
+                } catch (e) {
+                    showToast('草稿预览失败: ' + (e.message || String(e)), true);
+
+            // 打开线上预览（按 courseId）
+            document.getElementById('openOnlinePreviewBtn').addEventListener('click', () => {
+                try {
+                    const data = JSON.parse(jsonEditor.value);
+                    const courseId = courseSelect.value || data.id;
+                    if (!courseId) {
+                        showToast('缺少 courseId（请先新建或在JSON中设置 id）', true);
+                        return;
+                    }
+                    const url = `/src/pages/course-viewer.html?id=${encodeURIComponent(courseId)}`;
+                    window.open(url, '_blank');
+                } catch (e) {
+                    showToast('打开失败: ' + (e.message || String(e)), true);
+
+            // 复制预览链接：优先复制线上链接，否则复制草稿链接
+            document.getElementById('copyPreviewLinkBtn').addEventListener('click', async () => {
+                try {
+                    let url = '';
+                    try {
+                        const data = JSON.parse(jsonEditor.value);
+                        const courseId = courseSelect.value || data.id;
+                        if (courseId) url = `${location.origin}/src/pages/course-viewer.html?id=${encodeURIComponent(courseId)}`;
+                    } catch (e) {}
+                    if (!url) {
+                        const raw = (jsonEditor && jsonEditor.value) ? String(jsonEditor.value).trim() : '';
+                        const base64 = btoa(unescape(encodeURIComponent(raw)));
+                        url = `${location.origin}/src/pages/course-viewer.html?json=${encodeURIComponent(base64)}`;
+                    }
+                    await navigator.clipboard.writeText(url);
+                    showToast('已复制链接');
+                } catch (e) {
+                    showToast('复制失败: ' + (e.message || String(e)), true);
+
+            // 导出HTML（发布前核对/存档）
+            document.getElementById('exportHtmlBtn').addEventListener('click', () => {
+                try {
+                    const data = JSON.parse(jsonEditor.value);
+                    const html = generatePreviewHtml(data, currentPage);
+                    const safeId = (data && (data.id || data.title)) ? String(data.id || data.title) : 'course';
+                    const filename = safeId.replace(/[\\/:*?"<>|\\s]+/g, '_').slice(0, 80) + '.html';
+                    downloadTextFile(filename, html, 'text/html');
+                    setStatus('success', '已导出: ' + filename);
+                    showToast('已导出HTML: ' + filename);
+                } catch (e) {
+                    setStatus('error', '导出失败: ' + e.message);
+                    showToast('导出失败: ' + e.message, true);
+
+            // 保存
+            document.getElementById('saveBtn').addEventListener('click', async () => {
+                await saveCourse();
+                // 同时保存模板（如果有修改）
+                if (customTemplateStyles || customRenderFunctions) {
+                    saveTemplate();
+
+            // 发布
+            document.getElementById('publishBtn').addEventListener('click', publishCourse);
+
+            // 打开章节查看器（用于验证后端 chapter_contents 的 html/json 双模式）
+            // 不影响 TemplateCourse 的 JSON 模板体系，只是补一个兼容入口
+            const openChapterViewerBtn = document.getElementById('openChapterViewerBtn');
+            if (openChapterViewerBtn) {
+                openChapterViewerBtn.addEventListener('click', () => {
+                    // 优先：直接用当前 JSON 预览（json base64），用于“章节JSON模式”快速验证
+                    try {
+                        const raw = (jsonEditor && jsonEditor.value) ? String(jsonEditor.value).trim() : '';
+                        if (raw) {
+                            const base64 = btoa(unescape(encodeURIComponent(raw)));
+                            window.open(`/src/pages/chapter-viewer.html?json=${encodeURIComponent(base64)}`, '_blank');
+                            return;
+                        }
+                    } catch (e) {}
+                    // 兜底：输入 chapterId 预览后端 chapter_contents（html/json）
+                    const rawId = prompt('输入 chapterId（数字）用于预览章节内容：');
+                    if (!rawId) return;
+                    const chapterId = String(rawId).trim();
+                    window.open(`/src/pages/chapter-viewer.html?chapterId=${encodeURIComponent(chapterId)}`, '_blank');
+                });
+            }
+
+            // 校验抽屉按钮
+            document.getElementById('closeValidationBtn')?.addEventListener('click', closeValidationDrawer);
+            document.getElementById('validationBackdrop')?.addEventListener('click', closeValidationDrawer);
+            document.getElementById('copyValidationBtn')?.addEventListener('click', async () => {
+                try {
+                    const res = lastValidationResult;
+                    if (!res) return;
+                    const lines = [];
+                    lines.push(res.ok ? '校验通过' : `校验失败（${(res.errors || []).length}项）`);
+                    lines.push('');
+                    lines.push('请按以下错误修复 JSON（schema v2），修复后重新校验：');
+                    lines.push('');
+                    (res.errors || []).forEach(e => {
+                        lines.push(`- path: ${e.path}`);
+                        lines.push(`  message: ${e.message}`);
+                        if (e.error) lines.push(`  error: ${e.error}`);
+                    });
+                    await navigator.clipboard.writeText(lines.join('\n'));
+                    showToast('校验报告已复制');
+                } catch (e) {
+                    showToast('复制失败: ' + (e.message || String(e)), true);
+
+            document.getElementById('autoFixBtn')?.addEventListener('click', () => {
+                try {
+                    const raw = String(jsonEditor.value || '').trim();
+                    if (!raw) return;
+                    let obj = JSON.parse(raw);
+                    // 尽量先迁移到 v2
+                    if (window.FormatMigrator) obj = window.FormatMigrator.ensureV2(obj);
+
+                    // 规则：缺什么补什么（只补安全字段，不做内容重写）
+                    if (!obj.version) obj.version = '2.0';
+                    if (!obj.templateId && templateSelect && templateSelect.value) obj.templateId = templateSelect.value;
+                    if (!obj.title) obj.title = '未命名课程';
+                    if (!Array.isArray(obj.pages)) obj.pages = [];
+                    if (obj.pages.length === 0) {
+                        obj.pages.push({
+                            id: 'hero',
+                            kind: 'hero',
+                            accent: obj.accent || 'cyan',
+                            dataTitle: obj.title || '课程',
+                            dataSub: obj.subtitle || '',
+                            header: { badge: { text: 'NEW' }, title: obj.title || '未命名课程', subtitle: obj.subtitle || '', badgeHtml: '', extraHtml: '' },
+                            blocks: []
+                        });
+                    }
+
+                    jsonEditor.value = JSON.stringify(obj, null, 2);
+                    isDirty = true;
+                    updateStats();
+                    updatePageNav();
+                    updatePreview();
+                    showToast('已自动修复常见字段');
+                    // 重新校验并刷新抽屉
+                    if (window.CourseJsonValidator) {
+                        const res = await window.CourseJsonValidator.validateCourseJson(jsonEditor.value);
+                        lastValidationResult = res;
+                        renderValidationDrawer(res);
+                    }
+                } catch (e) {
+                    showToast('自动修复失败: ' + (e.message || String(e)), true);
+
+            // 刷新预览
+            document.getElementById('refreshPreviewBtn').addEventListener('click', updatePreview);
+
+            // 全屏
+            document.getElementById('fullscreenBtn').addEventListener('click', () => {
+                previewFrame.requestFullscreen();
+            });
+
+            // 页面导航
+            document.getElementById('prevPageBtn').addEventListener('click', () => {
+                if (currentPage > 0) {
+                    currentPage--;
+                    updatePageNav();
+                    updatePreview();
+
+            document.getElementById('nextPageBtn').addEventListener('click', () => {
+                if (currentPage < totalPages - 1) {
+                    currentPage++;
+                    updatePageNav();
+                    updatePreview();
+
+            // 设备切换
+            document.querySelectorAll('.preview-btn[data-device]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.preview-btn[data-device]').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    const device = btn.dataset.device;
+                    const frame = previewFrame;
+                    if (device === 'mobile') {
+                        frame.style.width = '375px';
+                        frame.style.margin = '0 auto';
+                    } else if (device === 'tablet') {
+                        frame.style.width = '768px';
+                        frame.style.margin = '0 auto';
+                    } else {
+                        frame.style.width = '100%';
+                        frame.style.margin = '0';
+            });
+
+            // 监听iframe消息
+            window.addEventListener('message', (e) => {
+                if (e.data.type === 'pageChange') {
+                    currentPage = e.data.page;
+                    updatePageNav();
+
+            // 键盘快捷键
+            document.addEventListener('keydown', (e) => {
+                // Ctrl+S 保存
+                if (e.ctrlKey && e.key === 's') {
+                    e.preventDefault();
+                    saveCourse();
+                }
+                // Ctrl+1/2/3 切换标签
+                if (e.ctrlKey && e.key === '1') {
+                    e.preventDefault();
+                    switchTab('json');
+                }
+                if (e.ctrlKey && e.key === '2') {
+                    e.preventDefault();
+                    switchTab('template');
+                }
+                if (e.ctrlKey && e.key === '3') {
+                    e.preventDefault();
+                    switchTab('split');
+                }
+                // Ctrl+R 刷新预览
+                if (e.ctrlKey && e.key === 'r') {
+                    e.preventDefault();
+                    updatePreview();
+        }
+
+        // 保存课程
+        async function saveCourse() {
+            try {
+                // 保存门禁：先校验（避免把明显错误写入后端）
+                if (window.CourseJsonValidator) {
+                    const check = await window.CourseJsonValidator.validateCourseJson(jsonEditor.value);
+                    lastValidationResult = check;
+                    renderValidationDrawer(check);
+                    if (!check.ok) {
+                        openValidationDrawer();
+                        setStatus('error', `保存被拦截：校验失败（${check.errors.length}项）`);
+                        return;
+                    }
+                }
+
+                const data = JSON.parse(jsonEditor.value);
+                const courseId = courseSelect.value || data.id;
+
+                if (!courseId) {
+                    setStatus('error', '请选择或创建课程');
+                    return;
+                }
+
+                setStatus('loading', '保存中...');
+
+                // 这里调用保存API
+                const res = await fetch(`${API_BASE}/course-templates/courses/by-course-id/${courseId}/content`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...getAuthHeaders()
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+                if (result.code === 0) {
+                    setStatus('success', '已保存');
+                    isDirty = false;
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (e) {
+                setStatus('error', '保存失败: ' + e.message);
+            }
+        }
+
+        // 发布课程
+        async function publishCourse() {
+            // 发布门禁：必须先通过校验
+            if (!window.CourseJsonValidator) {
+                alert('缺少校验器：CourseJsonValidator 未加载');
+                return;
+            }
+            const check = await window.CourseJsonValidator.validateCourseJson(jsonEditor.value);
+            lastValidationResult = check;
+            renderValidationDrawer(check);
+            if (!check.ok) {
+                openValidationDrawer();
+                showToast(`发布被拦截：校验失败（${check.errors.length}项）`, true);
+                return;
+            }
+
+            if (isDirty) await saveCourse();
+
+            // 发布动作：优先调用后端 by-course-id publish（最稳定）
+            try {
+                const data = JSON.parse(jsonEditor.value);
+                const courseId = courseSelect.value || data.id;
+                if (!courseId) {
+                    setStatus('error', '缺少 courseId');
+                    return;
+                }
+                const pub = await fetch(`${API_BASE}/course-templates/courses/by-course-id/${courseId}/publish`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+                    body: JSON.stringify({ publishUrl: '' })
+                });
+                const pubRes = await pub.json();
+                if (pubRes.code === 0) {
+                    setStatus('success', '已发布');
+                    const url = `/src/pages/course-viewer.html?id=${encodeURIComponent(courseId)}`;
+                    window.open(url, '_blank');
+                } else {
+                    throw new Error(pubRes.message || '发布失败');
+                }
+            } catch (e) {
+                setStatus('error', '发布失败: ' + (e.message || String(e)));
+                showToast('发布失败（已保存）: ' + (e.message || String(e)), true);
+            }
+        }
+
+        // 拖拽分割线
+        function setupResizer() {
+            const resizer = document.getElementById('resizer');
+            const previewPanel = document.getElementById('previewPanel');
+            const editorPanel = document.getElementById('editorPanel');
+            let isResizing = false;
+
+            resizer.addEventListener('mousedown', (e) => {
+                isResizing = true;
+                document.body.style.cursor = 'col-resize';
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isResizing) return;
+                const containerWidth = document.body.clientWidth;
+                const newEditorWidth = containerWidth - e.clientX;
+
+                if (newEditorWidth >= 400 && newEditorWidth <= 800) {
+                    editorPanel.style.width = newEditorWidth + 'px';
+
+            document.addEventListener('mouseup', () => {
+                isResizing = false;
+                document.body.style.cursor = '';
+            });
+        }
+
+        // ========== 模版规则功能 ==========
+        const DEFAULT_TEMPLATE_RULES = `# 课程模板规则 - AI课程JSON生成指南
+
+请帮我生成一个课程JSON，需要符合以下规则：
+
+## 一、JSON基本结构
+\`\`\`json
+{
+  "id": "course-unique-id",
+  "title": "课程标题",
+  "pages": [
+    {
+      "id": "page-1",
+      "layout": "hero | content",
+      "components": [/* 组件数组 */]
+    }
+  ]
+}
+\`\`\`
+
+## 二、页面布局 (layout)
+- \`hero\` - 全屏居中大标题，用于封面
+- \`content\` - 标准内容页，用于知识点
+
+## 三、组件类型（12种）
+
+### 1. hero - 封面大标题 ⭐必用
+\`\`\`json
+{"type": "hero", "content": {"badge": "🚀 AI 课程", "title": "主标题", "subtitle": "副标题"}}
+\`\`\`
+
+### 2. heading - 章节标题
+\`\`\`json
+{"type": "heading", "content": {"icon": "🧠", "label": "CHAPTER 01", "text": "章节名", "level": 2}}
+\`\`\`
+
+### 3. paragraph - 文本段落
+\`\`\`json
+{"type": "paragraph", "content": {"text": "普通文本", "html": "支持<strong>HTML</strong>"}}
+\`\`\`
+
+### 4. cards-grid - 卡片网格 ⭐常用
+\`\`\`json
+{"type": "cards-grid", "content": {"cards": [
+  {"icon": "Q", "iconClass": "q", "title": "Query", "subtitle": "查询", "description": "说明"},
+  {"icon": "K", "iconClass": "k", "title": "Key", "subtitle": "键", "description": "说明"},
+  {"icon": "V", "iconClass": "v", "title": "Value", "subtitle": "值", "description": "说明"}
+]}}
+\`\`\`
+iconClass: q(蓝紫), k(粉色), v(青色)
+
+### 5. formula-box - 公式框
+\`\`\`json
+{"type": "formula-box", "content": {"label": "核心公式", "formula": "E=mc²", "explanation": "解释"}}
+\`\`\`
+
+### 6. sticky-note - 便签纸 ⭐常用
+\`\`\`json
+{"type": "sticky-note", "content": {"color": "yellow", "title": "💡 洞察", "text": "内容"}}
+\`\`\`
+color: yellow, pink, blue, green
+
+### 7. code-block - 代码块
+\`\`\`json
+{"type": "code-block", "content": {"language": "python", "code": "print('Hello')"}}
+\`\`\`
+
+### 8. timeline - 时间线
+\`\`\`json
+{"type": "timeline", "content": {"items": [
+  {"year": "2017", "title": "标题", "description": "描述"}
+]}}
+\`\`\`
+
+### 9. key-points - 要点列表
+\`\`\`json
+{"type": "key-points", "content": {"icon": "⭐", "title": "要点", "points": ["1", "2", "3"]}}
+\`\`\`
+
+### 10. callout - 提示框
+\`\`\`json
+{"type": "callout", "content": {"type": "tip", "title": "💡 提示", "text": "内容"}}
+\`\`\`
+type: tip(蓝), warning(黄), success(绿)
+
+### 11. socratic-dialogue - 对话
+\`\`\`json
+{"type": "socratic-dialogue", "content": {"dialogues": [
+  {"role": "teacher", "name": "老师", "text": "问题"},
+  {"role": "student", "name": "学生", "text": "回答", "thought": "想法"}
+]}}
+\`\`\`
+
+### 12. diagram - SVG图表
+\`\`\`json
+{"type": "diagram", "content": {"svg": "<svg>...</svg>", "caption": "说明"}}
+\`\`\`
+
+## 四、CSS样式变量
+--color-primary: #667eea (蓝紫)
+--color-secondary: #764ba2 (紫)
+--color-accent-cyan: #4facfe (青)
+--color-accent-pink: #f093fb (粉)
+
+## 五、完整示例
+\`\`\`json
+{
+  "id": "transformer-basics",
+  "title": "Transformer深度解析",
+  "pages": [
+    {"id": "cover", "layout": "hero", "components": [
+      {"type": "hero", "content": {"badge": "🧠 深度学习", "title": "Transformer", "subtitle": "Attention is All You Need"}}
+    ]},
+    {"id": "intro", "layout": "content", "components": [
+      {"type": "heading", "content": {"icon": "🎯", "label": "01", "text": "自注意力机制", "level": 2}},
+      {"type": "paragraph", "content": {"text": "自注意力机制是Transformer的核心创新..."}},
+      {"type": "cards-grid", "content": {"cards": [
+        {"icon": "Q", "iconClass": "q", "title": "Query", "description": "查询向量"},
+        {"icon": "K", "iconClass": "k", "title": "Key", "description": "键向量"},
+        {"icon": "V", "iconClass": "v", "title": "Value", "description": "值向量"}
+      ]}},
+      {"type": "sticky-note", "content": {"color": "yellow", "title": "💡 直觉", "text": "Q问K答，V是内容"}}
+    ]}
+  ]
+}
+\`\`\`
+
+---
+请根据以上规则，帮我生成一个关于「[你的课程主题]」的课程JSON，要求：
+1. 包含5-8个页面
+2. 第一页必须是hero封面
+3. 使用多种组件（卡片、公式、便签、代码等）
+4. 内容专业准确、通俗易懂
+5. 适当使用emoji`;
+
+        function showTemplateRulesModal() {
+            // 加载保存的规则或使用默认
+            const savedRules = localStorage.getItem('courseTemplateRules');
+            document.getElementById('templateRulesContent').value = savedRules || DEFAULT_TEMPLATE_RULES;
+            document.getElementById('templateRulesModal').classList.add('active');
+            updateRulesStatus();
+        }
+
+        function closeTemplateRulesModal() {
+            document.getElementById('templateRulesModal').classList.remove('active');
+        }
+
+        function copyTemplateRules() {
+            const rulesText = document.getElementById('templateRulesContent').value;
+            navigator.clipboard.writeText(rulesText).then(() => {
+                showToast('已复制模版规则到剪贴板！');
+            }).catch(() => {
+                showToast('复制失败，请手动选择复制', true);
+            });
+        }
+
+        function saveTemplateRules() {
+            const rulesText = document.getElementById('templateRulesContent').value;
+            localStorage.setItem('courseTemplateRules', rulesText);
+            showToast('模版规则已保存！');
+            updateRulesStatus();
+        }
+
+        function resetTemplateRules() {
+            if (confirm('确定要重置为默认模版规则吗？您的自定义修改将丢失。')) {
+                localStorage.removeItem('courseTemplateRules');
+                document.getElementById('templateRulesContent').value = DEFAULT_TEMPLATE_RULES;
+                showToast('已重置为默认模版规则');
+                updateRulesStatus();
+            }
+        }
+
+        function updateRulesStatus() {
+            const savedRules = localStorage.getItem('courseTemplateRules');
+            const statusEl = document.getElementById('rulesStatus');
+            if (statusEl) {
+                if (savedRules) {
+                    statusEl.textContent = '📝 已自定义';
+                    statusEl.style.color = '#10b981';
+                } else {
+                    statusEl.textContent = '📄 默认规则';
+                    statusEl.style.color = '#6b7280';
+                }
+            }
+        }
+
+        // 启动
+        init();
+        });
+    </script>
+
+    <!-- 模版规则模态框 -->
+    <div class="modal-overlay" id="templateRulesModal">
+        <div class="modal" style="max-width: 800px; max-height: 90vh;">
+            <div class="modal-header">
+                <h3 class="modal-title">📖 模版规则 - 复制给AI生成JSON</h3>
+                <button class="modal-close" onclick="closeTemplateRulesModal()">&times;</button>
+            </div>
+            <div class="modal-body" style="overflow-y: hidden; max-height: calc(90vh - 140px); padding: 0; display: flex; flex-direction: column;">
+                <div style="background: #f59e0b; color: #78350f; padding: 12px 20px; font-size: 14px; display: flex; justify-content: space-between; align-items: center;">
+                    <span>💡 <strong>使用方法：</strong>编辑规则 → 保存 → 复制给AI → AI生成JSON → 粘贴到编辑器</span>
+                    <span id="rulesStatus" style="font-size: 12px;">📄 默认规则</span>
+                </div>
+                <textarea id="templateRulesContent" style="flex: 1; background: #1e1e2e; color: #e4e4e7; padding: 20px; margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.6; border: none; resize: none; outline: none; min-height: 400px;"># 课程模板规则 - AI课程JSON生成指南
+
+请帮我生成一个课程JSON，需要符合以下规则：
+
+## 一、JSON基本结构
+```json
+{
+  "id": "course-unique-id",
+  "title": "课程标题",
+  "pages": [
+    {
+      "id": "page-1",
+      "layout": "hero | content",
+      "components": [/* 组件数组 */]
+    }
+  ]
+}
+```
+
+## 二、页面布局 (layout)
+- `hero` - 全屏居中大标题，用于封面
+- `content` - 标准内容页，用于知识点
+
+## 三、组件类型（12种）
+
+### 1. hero - 封面大标题 ⭐必用
+```json
+{
+  "type": "hero",
+  "content": {
+    "badge": "🚀 AI 课程",
+    "title": "课程主标题",
+    "subtitle": "副标题说明"
+  }
+}
+```
+
+### 2. heading - 章节标题
+```json
+{
+  "type": "heading",
+  "content": {
+    "icon": "🧠",
+    "label": "CHAPTER 01",
+    "text": "章节名称",
+    "level": 2
+  }
+}
+```
+
+### 3. paragraph - 文本段落
+```json
+{
+  "type": "paragraph",
+  "content": {
+    "text": "普通文本",
+    "html": "支持&lt;strong&gt;HTML&lt;/strong&gt;富文本"
+  }
+}
+```
+
+### 4. cards-grid - 卡片网格 ⭐常用
+```json
+{
+  "type": "cards-grid",
+  "content": {
+    "cards": [
+      {"icon": "Q", "iconClass": "q", "title": "Query", "subtitle": "查询", "description": "说明文字"},
+      {"icon": "K", "iconClass": "k", "title": "Key", "subtitle": "键", "description": "说明文字"},
+      {"icon": "V", "iconClass": "v", "title": "Value", "subtitle": "值", "description": "说明文字"}
+    ]
+  }
+}
+```
+iconClass: q(蓝紫), k(粉色), v(青色)
+
+### 5. formula-box - 公式框
+```json
+{
+  "type": "formula-box",
+  "content": {
+    "label": "核心公式",
+    "formula": "Attention(Q,K,V) = softmax(QK&lt;sup&gt;T&lt;/sup&gt;/√d&lt;sub&gt;k&lt;/sub&gt;)V",
+    "explanation": "公式解释说明"
+  }
+}
+```
+
+### 6. sticky-note - 便签纸 ⭐常用
+```json
+{
+  "type": "sticky-note",
+  "content": {
+    "color": "yellow",
+    "title": "💡 关键洞察",
+    "text": "便签内容"
+  }
+}
+```
+color: yellow, pink, blue, green
+
+### 7. code-block - 代码块
+```json
+{
+  "type": "code-block",
+  "content": {
+    "language": "python",
+    "code": "import torch\\nprint('Hello')"
+  }
+}
+```
+
+### 8. timeline - 时间线
+```json
+{
+  "type": "timeline",
+  "content": {
+    "items": [
+      {"year": "2017", "title": "事件标题", "description": "事件描述"},
+      {"year": "2020", "title": "事件标题", "description": "事件描述"}
+    ]
+  }
+}
+```
+
+### 9. key-points - 要点列表
+```json
+{
+  "type": "key-points",
+  "content": {
+    "icon": "⭐",
+    "title": "本节要点",
+    "points": ["要点1", "要点2", "要点3"]
+  }
+}
+```
+
+### 10. callout - 提示框
+```json
+{
+  "type": "callout",
+  "content": {
+    "type": "tip",
+    "title": "💡 小提示",
+    "text": "提示内容"
+  }
+}
+```
+type: tip(蓝), warning(黄), success(绿)
+
+### 11. socratic-dialogue - 对话
+```json
+{
+  "type": "socratic-dialogue",
+  "content": {
+    "dialogues": [
+      {"role": "teacher", "name": "老师", "text": "问题"},
+      {"role": "student", "name": "学生", "text": "回答", "thought": "内心想法"}
+    ]
+  }
+}
+```
+
+### 12. diagram - SVG图表
+```json
+{
+  "type": "diagram",
+  "content": {
+    "svg": "&lt;svg&gt;...&lt;/svg&gt;",
+    "caption": "图表说明"
+  }
+}
+```
+
+## 四、CSS样式变量（了解即可）
+```css
+--color-primary: #667eea;     /* 主色-蓝紫 */
+--color-secondary: #764ba2;   /* 次色-紫 */
+--color-accent-cyan: #4facfe; /* 强调-青 */
+--color-accent-pink: #f093fb; /* 强调-粉 */
+```
+
+## 五、完整示例
+```json
+{
+  "id": "transformer-basics",
+  "title": "Transformer深度解析",
+  "pages": [
+    {
+      "id": "cover",
+      "layout": "hero",
+      "components": [
+        {"type": "hero", "content": {"badge": "🧠 深度学习", "title": "Transformer", "subtitle": "Attention is All You Need"}}
+      ]
+    },
+    {
+      "id": "intro",
+      "layout": "content",
+      "components": [
+        {"type": "heading", "content": {"icon": "🎯", "label": "CHAPTER 01", "text": "自注意力机制", "level": 2}},
+        {"type": "paragraph", "content": {"text": "自注意力机制是Transformer的核心创新..."}},
+        {"type": "cards-grid", "content": {"cards": [
+          {"icon": "Q", "iconClass": "q", "title": "Query", "description": "查询向量"},
+          {"icon": "K", "iconClass": "k", "title": "Key", "description": "键向量"},
+          {"icon": "V", "iconClass": "v", "title": "Value", "description": "值向量"}
+        ]}},
+        {"type": "formula-box", "content": {"label": "核心公式", "formula": "Attention(Q,K,V) = softmax(QK&lt;sup&gt;T&lt;/sup&gt;/√d)V"}},
+        {"type": "sticky-note", "content": {"color": "yellow", "title": "💡 直觉", "text": "Q问K答，V是内容"}}
+      ]
+    }
+  ]
+}
+```
+
+---
+请根据以上规则，帮我生成一个关于「[你的课程主题]」的课程JSON，要求：
+1. 包含5-8个页面
+2. 第一页必须是hero封面
+3. 使用多种组件（卡片、公式、便签、代码等）
+4. 内容专业准确、通俗易懂
+5. 适当使用emoji</textarea>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: space-between;">
+                <div>
+                    <button class="btn btn-secondary" onclick="resetTemplateRules()" style="color: #ef4444;">
+                        🔄 重置默认
+                    </button>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-secondary" onclick="closeTemplateRulesModal()">关闭</button>
+                    <button class="btn btn-primary" onclick="saveTemplateRules()" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+                        💾 保存规则
+                    </button>
+                    <button class="btn btn-primary" onclick="copyTemplateRules()" style="background: linear-gradient(135deg, #10b981, #059669);">
+                        📋 复制给AI
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* 模态框样式 */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal {
+            background: var(--bg-panel);
+            border-radius: 16px;
+            width: 90%;
+            border: 1px solid var(--border);
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-close:hover {
+            background: rgba(255,255,255,0.2);
+            color: var(--text);
+        }
+        .modal-body {
+            padding: 20px;
+        }
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* ===== Validation Drawer ===== */
+        .drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100vh;
+            width: min(520px, 92vw);
+            background: rgba(10,10,20,0.92);
+            backdrop-filter: blur(12px);
+            border-left: 1px solid var(--border);
+            box-shadow: -20px 0 60px rgba(0,0,0,0.35);
+            z-index: 20000;
+            transform: translate3d(100%,0,0);
+            transition: transform 0.25s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .drawer.open { transform: translate3d(0,0,0); }
+        .drawer-header {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap: 10px;
+        }
+        .drawer-title { font-weight: 700; font-size: 13px; color: var(--text); }
+        .drawer-sub { font-size: 12px; color: var(--text-muted); }
+        .drawer-actions { display:flex; gap: 8px; align-items:center; }
+        .drawer-body { padding: 12px; overflow:auto; display:flex; flex-direction:column; gap: 10px; }
+        .val-summary {
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.03);
+        }
+        .val-badges { display:flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+        .badge {
+            font-size: 12px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.10);
+            background: rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.86);
+        }
+        .badge.ok { border-color: rgba(34,197,94,0.35); background: rgba(34,197,94,0.12); }
+        .badge.bad { border-color: rgba(239,68,68,0.35); background: rgba(239,68,68,0.12); }
+        .val-list { display:flex; flex-direction:column; gap: 8px; }
+        .val-item {
+            padding: 10px 10px;
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.03);
+            cursor: pointer;
+            transition: transform 0.12s ease, background 0.12s ease;
+        }
+        .val-item:hover { background: rgba(255,255,255,0.05); transform: translateY(-1px); }
+        .val-path { font-family: var(--font-mono, monospace); font-size: 12px; color: rgba(255,255,255,0.85); }
+        .val-msg { margin-top: 6px; font-size: 12px; color: var(--text-muted); white-space: pre-wrap; }
+        .val-error { margin-top: 6px; font-size: 12px; color: rgba(255,255,255,0.7); }
+        .drawer-backdrop{
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 19999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.18s ease;
+        }
+        .drawer-backdrop.open{ opacity: 1; pointer-events: auto; }
+    </style>
+</body>
+</html>

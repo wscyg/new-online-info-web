@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会员订阅 - AI 信息未来</title>
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
+    <style>
+        body { padding-top: 48px; background: var(--bg-secondary); }
+        .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(255,255,255,0.85); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border-color); }
+        [data-theme="dark"] .nav { background: rgba(17,17,19,0.85); }
+        .nav-inner { max-width: 1200px; margin: 0 auto; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; }
+        .nav-left { display: flex; align-items: center; gap: 16px; }
+        .logo { font-weight: 700; color: var(--text-primary); text-decoration: none; }
+        .nav-links { display: flex; gap: 12px; }
+        .nav-link { color: var(--text-secondary); text-decoration: none; padding: 8px 10px; border-radius: 10px; }
+        .nav-link:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .nav-right { display: flex; align-items: center; gap: 10px; }
+        .user-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; text-decoration: none; }
+        .theme-btn { width: 38px; height: 38px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-card); cursor: pointer; }
+
+        .hero { padding: 70px 0 28px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .hero-title { font-size: 46px; font-weight: 800; letter-spacing: -0.03em; margin: 0 0 10px; }
+        .hero-subtitle { font-size: 18px; color: var(--text-secondary); margin: 0; }
+
+        .status-card { margin-top: 18px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 18px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+        .status-left { display: flex; flex-direction: column; gap: 4px; }
+        .status-title { font-weight: 650; }
+        .status-desc { color: var(--text-secondary); font-size: 14px; }
+
+        .plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 18px; }
+        .plan { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; position: relative; overflow: hidden; }
+        .plan.recommend { border-color: rgba(102,126,234,0.45); box-shadow: 0 16px 40px rgba(102,126,234,0.12); }
+        .badge { position: absolute; top: 14px; right: 14px; font-size: 12px; padding: 6px 10px; border-radius: 999px; background: rgba(102,126,234,0.12); color: var(--accent); font-weight: 650; }
+        .plan-name { font-size: 18px; font-weight: 750; margin: 2px 0 10px; }
+        .plan-price { font-size: 34px; font-weight: 800; letter-spacing: -0.02em; margin: 0; }
+        .plan-price small { font-size: 14px; font-weight: 600; color: var(--text-secondary); }
+        .plan-desc { margin: 10px 0 0; color: var(--text-secondary); font-size: 14px; }
+        .plan-features { margin: 16px 0 0; padding-left: 18px; color: var(--text-secondary); font-size: 14px; line-height: 1.8; }
+        .plan-actions { margin-top: 16px; display: flex; gap: 10px; }
+        .btn { border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary); padding: 10px 14px; border-radius: 12px; cursor: pointer; font-weight: 650; }
+        .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+        .btn:disabled { opacity: 0.65; cursor: not-allowed; }
+
+        .faq { margin-top: 22px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 18px; }
+        .faq h2 { margin: 0 0 12px; font-size: 18px; }
+        .faq-item { padding: 12px 0; border-top: 1px solid var(--border-color); }
+        .faq-item:first-of-type { border-top: none; }
+        .faq-q { font-weight: 650; margin-bottom: 4px; }
+        .faq-a { color: var(--text-secondary); font-size: 14px; margin: 0; line-height: 1.7; }
+
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: #fff; padding: 10px 14px; border-radius: 12px; opacity: 0; transition: opacity .2s; z-index: 1200; }
+        .toast.show { opacity: 1; }
+
+        @media (max-width: 980px) { .plans { grid-template-columns: 1fr; } .hero-title { font-size: 36px; } }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <div class="nav-inner">
+            <div class="nav-left">
+                <a class="logo" href="../../index.html">AI未来学院</a>
+                <div class="nav-links">
+                    <a class="nav-link" href="courses.html">课程</a>
+                    <a class="nav-link" href="community.html">社区</a>
+                    <a class="nav-link" href="vip.html" style="color: var(--text-primary); font-weight: 700;">会员</a>
+                </div>
+            </div>
+            <div class="nav-right">
+                <button class="theme-btn" id="themeToggle" title="切换主题">🌓</button>
+                <div id="authArea"></div>
+            </div>
+        </div>
+    </div>
+
+    <main class="container">
+        <section class="hero">
+            <h1 class="hero-title">开通会员，解锁全部课程</h1>
+            <p class="hero-subtitle">更简单的付费方式：一次开通，全站学习。支持月度/年度/终身。</p>
+
+            <div class="status-card">
+                <div class="status-left">
+                    <div class="status-title" id="vipStatusTitle">会员状态：加载中...</div>
+                    <div class="status-desc" id="vipStatusDesc"> </div>
+                </div>
+                <div>
+                    <button class="btn" id="manageBtn" style="display:none;" onclick="goToOrders()">查看订单</button>
+                    <button class="btn btn-primary" id="loginBtn" style="display:none;" onclick="goLogin()">登录后开通</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="plans" id="plans">
+            <div class="plan">
+                <div class="plan-name">月度会员</div>
+                <p class="plan-price">¥29.90 <small>/ 月</small></p>
+                <p class="plan-desc">适合试用与短期冲刺</p>
+                <ul class="plan-features">
+                    <li>解锁全部付费课程</li>
+                    <li>课程更新同步可学</li>
+                    <li>学习记录与进度保存</li>
+                </ul>
+                <div class="plan-actions">
+                    <button class="btn btn-primary" onclick="buyVip('monthly')">立即开通</button>
+                </div>
+            </div>
+            <div class="plan recommend">
+                <div class="badge">最划算</div>
+                <div class="plan-name">年度会员</div>
+                <p class="plan-price">¥299.00 <small>/ 年</small></p>
+                <p class="plan-desc">适合系统化提升</p>
+                <ul class="plan-features">
+                    <li>解锁全部付费课程</li>
+                    <li>新课上线自动可学</li>
+                    <li>更低的单月成本</li>
+                </ul>
+                <div class="plan-actions">
+                    <button class="btn btn-primary" onclick="buyVip('yearly')">立即开通</button>
+                </div>
+            </div>
+            <div class="plan">
+                <div class="plan-name">终身会员</div>
+                <p class="plan-price">¥999.00 <small>/ 一次</small></p>
+                <p class="plan-desc">适合长期学习与陪跑</p>
+                <ul class="plan-features">
+                    <li>永久解锁全部付费课程</li>
+                    <li>未来新增内容持续可学</li>
+                    <li>一次投入长期回报</li>
+                </ul>
+                <div class="plan-actions">
+                    <button class="btn btn-primary" onclick="buyVip('lifetime')">立即开通</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="faq">
+            <h2>常见问题</h2>
+            <div class="faq-item">
+                <div class="faq-q">会员能学什么？</div>
+                <p class="faq-a">会员可访问平台内所有付费课程内容；免费课程无需会员也可学习。</p>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">续费怎么计算？</div>
+                <p class="faq-a">若当前会员未到期，新的月度/年度会从到期日继续顺延；终身会员不设置到期时间。</p>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">支付后多久生效？</div>
+                <p class="faq-a">支付成功后系统会自动激活会员；如遇延迟可稍后刷新页面查看状态。</p>
+            </div>
+        </section>
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const API_BASE = '/api';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            initTheme();
+            renderAuthArea();
+            await loadPlans();
+            await loadVipStatus();
+        });
+
+        function initTheme() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+            document.getElementById('themeToggle').addEventListener('click', () => {
+                const current = document.documentElement.getAttribute('data-theme');
+                const next = current === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('theme', next);
+            });
+        }
+
+        function renderAuthArea() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            const authArea = document.getElementById('authArea');
+
+            if (token && userStr) {
+                const user = JSON.parse(userStr);
+                const initial = (user.nickname || user.username || 'U').charAt(0).toUpperCase();
+                            } else {
+                            }
+        }
+
+        
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+
+        async function loadPlans() {
+            try {
+                const res = await fetch(`${API_BASE}/vip/plans`);
+                const json = await res.json();
+                if (json?.code !== 200 || !Array.isArray(json?.data)) return;
+
+                const byType = Object.fromEntries(json.data.map(p => [p.type, p]));
+                updatePlanCard('monthly', byType.monthly);
+                updatePlanCard('yearly', byType.yearly);
+                updatePlanCard('lifetime', byType.lifetime);
+            } catch (e) {}
+        }
+
+        function updatePlanCard(type, plan) {
+            if (!plan) return;
+            const root = document.getElementById('plans');
+            const nodes = root.querySelectorAll('.plan');
+            for (const n of nodes) {
+                const name = n.querySelector('.plan-name')?.textContent || '';
+                const isMatch =
+                    (type === 'monthly' && name.includes('月度')) ||
+                    (type === 'yearly' && name.includes('年度')) ||
+                    (type === 'lifetime' && name.includes('终身'));
+                if (!isMatch) continue;
+
+                const priceEl = n.querySelector('.plan-price');
+                if (priceEl) {
+                    const suffix = type === 'monthly' ? '/ 月' : (type === 'yearly' ? '/ 年' : '/ 一次');
+                    priceEl.innerHTML = `¥${Number(plan.price).toFixed(2)} <small>${suffix}</small>`;
+                }
+            }
+        }
+
+        async function loadVipStatus() {
+            const token = localStorage.getItem('token');
+            const title = document.getElementById('vipStatusTitle');
+            const desc = document.getElementById('vipStatusDesc');
+            const loginBtn = document.getElementById('loginBtn');
+            const manageBtn = document.getElementById('manageBtn');
+
+            if (!token) {
+                title.textContent = '会员状态：未登录';
+                desc.textContent = '登录后可查看会员有效期，并一键开通。';
+                loginBtn.style.display = 'inline-block';
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/vip/status`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const json = await res.json();
+                if (json?.code !== 200) {
+                    title.textContent = '会员状态：获取失败';
+                    desc.textContent = json?.message || '请稍后重试';
+                    return;
+                }
+
+                const data = json.data || {};
+                if (data.active) {
+                    const planName = data.plan?.displayName || 'VIP会员';
+                    title.textContent = `会员状态：已开通（${planName}）`;
+                    desc.textContent = data.isLifetime ? '有效期：终身' : `有效期至：${formatDateTime(data.expireAt)}`;
+                    manageBtn.style.display = 'inline-block';
+                } else {
+                    title.textContent = '会员状态：未开通';
+                    desc.textContent = '选择一个套餐即可开通，立即解锁全部课程。';
+                }
+            } catch (e) {
+                title.textContent = '会员状态：获取失败';
+                desc.textContent = '请检查网络或稍后重试';
+            }
+        }
+
+        function formatDateTime(value) {
+            if (!value) return '';
+            // 兼容后端返回的 LocalDateTime 序列化格式（字符串或数组）
+            if (Array.isArray(value)) {
+                const [y,m,d,hh,mm,ss] = value;
+                return `${y}-${pad(m)}-${pad(d)} ${pad(hh)}:${pad(mm)}:${pad(ss || 0)}`;
+            }
+            return String(value).replace('T', ' ').slice(0, 19);
+        }
+
+        function pad(n) { return String(n).padStart(2, '0'); }
+
+        async function buyVip(vipType) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                goLogin();
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/orders/vip/subscribe`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ vipType, paymentMethod: 'alipay' })
+                });
+                const json = await res.json();
+                if (json?.code !== 200) {
+                    showToast(json?.message || '创建订单失败');
+                    return;
+                }
+
+                const order = json?.data?.order;
+                if (!order?.id && !order?.orderNo) {
+                    showToast('订单数据缺失');
+                    return;
+                }
+
+                if (order.orderNo) {
+                    window.location.href = `payment.html?orderNo=${encodeURIComponent(order.orderNo)}`;
+                    return;
+                }
+                window.location.href = `payment.html?orderId=${encodeURIComponent(order.id)}`;
+            } catch (e) {
+                showToast('网络异常，请稍后重试');
+            }
+        }
+
+        function goLogin() {
+            const redirect = encodeURIComponent(window.location.pathname + window.location.search);
+            window.location.href = `login.html?redirect=${redirect}`;
+        }
+
+        function goToOrders() {
+            window.location.href = 'orders.html';
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+        });
+    </script>
+    <script src="/js/app-shell.js"></script>
+    
+</body>
+</html>

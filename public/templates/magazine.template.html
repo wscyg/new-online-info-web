@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注意力机制 | Magazine Editorial</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Source+Sans+3:wght@300;400;500;600;700&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0c0c0c;
+            --bg-light: #f5f5f0;
+            --text-light: #fafafa;
+            --text-dark: #1a1a1a;
+            --text-muted-light: rgba(250, 250, 250, 0.6);
+            --text-muted-dark: #666666;
+            --accent-gold: #d4af37;
+            --accent-coral: #ff6b6b;
+            --accent-teal: #2dd4bf;
+            --accent-blue: #3b82f6;
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-sans: 'Source Sans 3', -apple-system, sans-serif;
+            --font-mono: 'Source Code Pro', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-snap-type: y mandatory;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ===== FULL SCREEN SECTIONS ===== */
+        .screen {
+            min-height: 100vh;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .screen-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 64px;
+            width: 100%;
+        }
+
+        /* ===== HERO SCREEN ===== */
+        .hero-screen {
+            background: var(--bg-dark);
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-eyebrow {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--accent-gold);
+            margin-bottom: 24px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 1s ease 0.2s forwards;
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(60px, 12vw, 140px);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 0.95;
+            margin-bottom: 32px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeUp 1s ease 0.4s forwards;
+        }
+
+        .hero-title em {
+            font-style: italic;
+            color: var(--accent-gold);
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            font-weight: 300;
+            color: var(--text-muted-light);
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 1s ease 0.6s forwards;
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 48px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            animation: fadeIn 1s ease 1s forwards;
+        }
+
+        .scroll-hint span {
+            font-size: 11px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-muted-light);
+        }
+
+        .scroll-arrow {
+            width: 24px;
+            height: 24px;
+            border-left: 2px solid var(--text-muted-light);
+            border-bottom: 2px solid var(--text-muted-light);
+            transform: rotate(-45deg);
+            animation: bounce 2s ease infinite;
+        }
+
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: rotate(-45deg) translate(0, 0); }
+            50% { transform: rotate(-45deg) translate(5px, 5px); }
+        }
+
+        /* ===== CHAPTER SCREEN ===== */
+        .chapter-screen {
+            background: var(--bg-light);
+            color: var(--text-dark);
+        }
+
+        .chapter-number {
+            font-family: var(--font-display);
+            font-size: 120px;
+            font-weight: 800;
+            color: rgba(0, 0, 0, 0.05);
+            position: absolute;
+            top: 80px;
+            right: 80px;
+            line-height: 1;
+        }
+
+        .chapter-label {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-muted-dark);
+            margin-bottom: 16px;
+        }
+
+        .chapter-title {
+            font-family: var(--font-display);
+            font-size: clamp(36px, 6vw, 64px);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            max-width: 700px;
+        }
+
+        .chapter-desc {
+            font-size: 18px;
+            font-weight: 400;
+            color: var(--text-muted-dark);
+            max-width: 540px;
+            line-height: 1.8;
+        }
+
+        /* ===== QKV CARDS ===== */
+        .qkv-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            background: #e5e5e5;
+            margin-top: 64px;
+        }
+
+        .qkv-card {
+            background: white;
+            padding: 48px 40px;
+            position: relative;
+        }
+
+        .qkv-letter {
+            font-family: var(--font-display);
+            font-size: 72px;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 16px;
+        }
+
+        .qkv-card.q .qkv-letter { color: var(--accent-blue); }
+        .qkv-card.k .qkv-letter { color: var(--accent-coral); }
+        .qkv-card.v .qkv-letter { color: var(--accent-teal); }
+
+        .qkv-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .qkv-formula {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-muted-dark);
+            margin-bottom: 16px;
+        }
+
+        .qkv-text {
+            font-size: 15px;
+            color: var(--text-muted-dark);
+            line-height: 1.7;
+        }
+
+        /* ===== DARK SCREEN ===== */
+        .dark-screen {
+            background: var(--bg-dark);
+            color: var(--text-light);
+        }
+
+        .dark-screen .chapter-number {
+            color: rgba(255, 255, 255, 0.03);
+        }
+
+        .dark-screen .chapter-label {
+            color: var(--accent-gold);
+        }
+
+        .dark-screen .chapter-desc {
+            color: var(--text-muted-light);
+        }
+
+        /* ===== FORMULA SHOWCASE ===== */
+        .formula-showcase {
+            margin-top: 64px;
+            padding: 64px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .formula-eyebrow {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent-gold);
+            margin-bottom: 24px;
+        }
+
+        .formula-main {
+            font-family: var(--font-mono);
+            font-size: clamp(18px, 3vw, 32px);
+            font-weight: 500;
+        }
+
+        .formula-main .q { color: var(--accent-blue); }
+        .formula-main .k { color: var(--accent-coral); }
+        .formula-main .v { color: var(--accent-teal); }
+
+        .formula-note {
+            font-size: 14px;
+            color: var(--text-muted-light);
+            margin-top: 24px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* ===== SPLIT LAYOUT ===== */
+        .split-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 100vh;
+        }
+
+        .split-left {
+            background: var(--bg-dark);
+            color: var(--text-light);
+            padding: 80px 64px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .split-right {
+            background: var(--bg-light);
+            color: var(--text-dark);
+            padding: 80px 64px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .split-left .chapter-label { color: var(--accent-gold); }
+        .split-right .chapter-label { color: var(--text-muted-dark); }
+
+        .split-left .chapter-desc { color: var(--text-muted-light); }
+        .split-right .chapter-desc { color: var(--text-muted-dark); }
+
+        /* ===== REASON LIST ===== */
+        .reason-list {
+            list-style: none;
+            margin-top: 48px;
+        }
+
+        .reason-item {
+            display: flex;
+            gap: 20px;
+            padding: 24px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .split-right .reason-item {
+            border-color: #e5e5e5;
+        }
+
+        .reason-num {
+            font-family: var(--font-display);
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--accent-gold);
+            line-height: 1;
+            flex-shrink: 0;
+            width: 48px;
+        }
+
+        .split-right .reason-num {
+            color: var(--text-dark);
+        }
+
+        .reason-content h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .reason-content p {
+            font-size: 14px;
+            color: var(--text-muted-light);
+        }
+
+        .split-right .reason-content p {
+            color: var(--text-muted-dark);
+        }
+
+        /* ===== CODE BLOCK ===== */
+        .code-block {
+            background: #1a1a1a;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 32px;
+        }
+
+        .code-header {
+            padding: 12px 20px;
+            background: #252525;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .code-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .code-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .code-dot.r { background: #ff5f56; }
+        .code-dot.y { background: #ffbd2e; }
+        .code-dot.g { background: #27c93f; }
+
+        .code-lang {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: #808080;
+        }
+
+        .code-body {
+            padding: 24px;
+            overflow-x: auto;
+        }
+
+        .code-body pre {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            line-height: 1.8;
+            color: #d4d4d4;
+        }
+
+        .code-body .kw { color: #c586c0; }
+        .code-body .fn { color: #dcdcaa; }
+        .code-body .cm { color: #6a9955; }
+        .code-body .nu { color: #b5cea8; }
+        .code-body .op { color: #d4d4d4; }
+
+        /* ===== HEADS SHOWCASE ===== */
+        .heads-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2px;
+            background: rgba(255, 255, 255, 0.08);
+            margin-top: 64px;
+        }
+
+        .head-card {
+            background: var(--bg-dark);
+            padding: 40px 32px;
+            text-align: center;
+            transition: background 0.3s ease;
+        }
+
+        .head-card:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .head-number {
+            font-family: var(--font-display);
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1;
+        }
+
+        .head-card:nth-child(1) .head-number { color: var(--accent-blue); }
+        .head-card:nth-child(2) .head-number { color: var(--accent-coral); }
+        .head-card:nth-child(3) .head-number { color: var(--accent-teal); }
+        .head-card:nth-child(4) .head-number { color: var(--accent-gold); }
+
+        .head-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .head-desc {
+            font-size: 13px;
+            color: var(--text-muted-light);
+        }
+
+        /* ===== STATS BANNER ===== */
+        .stats-banner {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            margin: 64px 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 32px;
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .stat-item:last-child {
+            border-right: none;
+        }
+
+        .stat-value {
+            font-family: var(--font-display);
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--accent-gold);
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-muted-light);
+        }
+
+        /* ===== TIMELINE ===== */
+        .timeline-container {
+            margin-top: 64px;
+        }
+
+        .timeline-item {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 48px;
+            padding: 40px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .timeline-year {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent-gold);
+        }
+
+        .timeline-content h4 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .timeline-content p {
+            font-size: 15px;
+            color: var(--text-muted-light);
+            line-height: 1.7;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer-screen {
+            background: var(--bg-dark);
+            text-align: center;
+        }
+
+        .footer-title {
+            font-family: var(--font-display);
+            font-size: clamp(32px, 5vw, 48px);
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .footer-desc {
+            font-size: 17px;
+            color: var(--text-muted-light);
+            max-width: 500px;
+            margin: 0 auto 40px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+        }
+
+        .footer-link {
+            font-size: 14px;
+            color: var(--text-muted-light);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--accent-gold);
+        }
+
+        .footer-copy {
+            margin-top: 64px;
+            padding-top: 32px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 12px;
+            color: var(--text-muted-light);
+        }
+
+        /* ===== PROGRESS BAR ===== */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent-gold);
+            z-index: 1000;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        /* ===== NAV DOTS ===== */
+        .nav-dots {
+            position: fixed;
+            right: 32px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .nav-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-dot.active {
+            background: var(--accent-gold);
+            transform: scale(1.3);
+        }
+
+        .nav-dot:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Light screen dots */
+        .nav-dot.light {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-dot.light.active {
+            background: var(--text-dark);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .split-layout { grid-template-columns: 1fr; }
+            .qkv-grid { grid-template-columns: 1fr; }
+            .heads-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats-banner { grid-template-columns: repeat(2, 1fr); }
+            .stat-item { border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+        }
+
+        @media (max-width: 768px) {
+            .screen-inner { padding: 60px 24px; }
+            .split-left, .split-right { padding: 60px 24px; }
+            .chapter-number { display: none; }
+            .heads-grid { grid-template-columns: 1fr; }
+            .stats-banner { grid-template-columns: 1fr; }
+            .timeline-item { grid-template-columns: 1fr; gap: 12px; }
+            .nav-dots { display: none; }
+            html { scroll-snap-type: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progress"></div>
+
+<!-- Nav Dots -->
+<nav class="nav-dots" id="navDots">
+    <div class="nav-dot active" data-screen="0"></div>
+    <div class="nav-dot" data-screen="1"></div>
+    <div class="nav-dot" data-screen="2"></div>
+    <div class="nav-dot" data-screen="3"></div>
+    <div class="nav-dot" data-screen="4"></div>
+    <div class="nav-dot" data-screen="5"></div>
+</nav>
+
+<!-- Screen 0: Hero -->
+<section class="screen hero-screen" data-screen="0">
+    <div class="screen-inner">
+        <p class="hero-eyebrow">Transformer Architecture</p>
+        <h1 class="hero-title">The <em>Attention</em><br>Mechanism</h1>
+        <p class="hero-subtitle">深入理解支撑现代人工智能的核心引擎——让模型学会聚焦于真正重要的信息</p>
+    </div>
+    <div class="scroll-hint">
+        <span>Scroll to explore</span>
+        <div class="scroll-arrow"></div>
+    </div>
+</section>
+
+<!-- Screen 1: QKV -->
+<section class="screen chapter-screen" data-screen="1">
+    <div class="screen-inner">
+        <span class="chapter-number">01</span>
+        <p class="chapter-label">Core Concepts</p>
+        <h2 class="chapter-title">Query, Key, Value<br>三位一体</h2>
+        <p class="chapter-desc">注意力机制将输入转换为三种不同的表示，各司其职，在信息交换中扮演独特角色。</p>
+
+        <div class="qkv-grid">
+            <div class="qkv-card q">
+                <div class="qkv-letter">Q</div>
+                <h3 class="qkv-title">Query 查询</h3>
+                <p class="qkv-formula">Q = X · W_Q</p>
+                <p class="qkv-text">"我在寻找什么信息"——每个位置发出查询信号，主动在序列中搜索相关上下文。</p>
+            </div>
+            <div class="qkv-card k">
+                <div class="qkv-letter">K</div>
+                <h3 class="qkv-title">Key 键</h3>
+                <p class="qkv-formula">K = X · W_K</p>
+                <p class="qkv-text">"我能提供什么匹配"——定义每个位置的特征标签，与查询计算相关性分数。</p>
+            </div>
+            <div class="qkv-card v">
+                <div class="qkv-letter">V</div>
+                <h3 class="qkv-title">Value 值</h3>
+                <p class="qkv-formula">V = X · W_V</p>
+                <p class="qkv-text">"我实际传递的内容"——承载语义信息，根据注意力权重被加权聚合。</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Screen 2: Formula -->
+<section class="screen dark-screen" data-screen="2">
+    <div class="screen-inner">
+        <span class="chapter-number">02</span>
+        <p class="chapter-label">The Formula</p>
+        <h2 class="chapter-title">缩放点积注意力</h2>
+        <p class="chapter-desc">一个简洁而强大的公式，定义了信息如何在序列中流动与聚合。</p>
+
+        <div class="formula-showcase">
+            <p class="formula-eyebrow">Scaled Dot-Product Attention</p>
+            <div class="formula-main">
+                Attention(<span class="q">Q</span>, <span class="k">K</span>, <span class="v">V</span>) = softmax(<span class="q">Q</span><span class="k">K</span><sup>T</sup> / √d<sub>k</sub>) · <span class="v">V</span>
+            </div>
+            <p class="formula-note">计算 Query 与 Key 的点积相似度，通过缩放因子防止梯度消失，经过 Softmax 归一化后加权聚合 Value。</p>
+        </div>
+
+        <div class="stats-banner">
+            <div class="stat-item">
+                <div class="stat-value">O(n²)</div>
+                <div class="stat-label">时间复杂度</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">√d</div>
+                <div class="stat-label">缩放因子</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">100%</div>
+                <div class="stat-label">并行化</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">∞</div>
+                <div class="stat-label">序列感受野</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Screen 3: Why Separate - Split Layout -->
+<section class="split-layout" data-screen="3">
+    <div class="split-left">
+        <p class="chapter-label">Design Rationale</p>
+        <h2 class="chapter-title" style="font-size: 36px;">为什么分离<br>Q、K、V？</h2>
+        <p class="chapter-desc">三个独立投影是成功的关键设计决策。</p>
+
+        <ul class="reason-list">
+            <li class="reason-item">
+                <div class="reason-num">1</div>
+                <div class="reason-content">
+                    <h4>打破对称性</h4>
+                    <p>"猫注意狗" ≠ "狗注意猫"</p>
+                </div>
+            </li>
+            <li class="reason-item">
+                <div class="reason-num">2</div>
+                <div class="reason-content">
+                    <h4>信息解耦</h4>
+                    <p>"匹配什么"与"传递什么"分离</p>
+                </div>
+            </li>
+            <li class="reason-item">
+                <div class="reason-num">3</div>
+                <div class="reason-content">
+                    <h4>增强表达力</h4>
+                    <p>3×d² 可学习参数</p>
+                </div>
+            </li>
+            <li class="reason-item">
+                <div class="reason-num">4</div>
+                <div class="reason-content">
+                    <h4>跨注意力支持</h4>
+                    <p>编码器-解码器信息流动</p>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="split-right">
+        <p class="chapter-label">Implementation</p>
+        <h2 class="chapter-title" style="font-size: 36px;">代码实现</h2>
+
+        <div class="code-block">
+            <div class="code-header">
+                <div class="code-dots">
+                    <span class="code-dot r"></span>
+                    <span class="code-dot y"></span>
+                    <span class="code-dot g"></span>
+                </div>
+                <span class="code-lang">attention.py</span>
+            </div>
+            <div class="code-body">
+<pre><span class="kw">class</span> <span class="fn">Attention</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, d, d_k):
+        <span class="fn">super</span>().__init__()
+        self.W_q <span class="op">=</span> nn.Linear(d, d_k)
+        self.W_k <span class="op">=</span> nn.Linear(d, d_k)
+        self.W_v <span class="op">=</span> nn.Linear(d, d_k)
+        self.scale <span class="op">=</span> d_k <span class="op">**</span> <span class="nu">0.5</span>
+
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x):
+        Q <span class="op">=</span> self.W_q(x)
+        K <span class="op">=</span> self.W_k(x)
+        V <span class="op">=</span> self.W_v(x)
+
+        scores <span class="op">=</span> Q @ K.T <span class="op">/</span> self.scale
+        attn <span class="op">=</span> F.softmax(scores, <span class="nu">-1</span>)
+        <span class="kw">return</span> attn @ V</pre>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Screen 4: Multi-Head -->
+<section class="screen dark-screen" data-screen="4">
+    <div class="screen-inner">
+        <span class="chapter-number">04</span>
+        <p class="chapter-label">Advanced Architecture</p>
+        <h2 class="chapter-title">多头注意力机制</h2>
+        <p class="chapter-desc">并行运行多个注意力头，让模型同时从不同子空间捕获不同类型的依赖关系。</p>
+
+        <div class="heads-grid">
+            <div class="head-card">
+                <div class="head-number">H₁</div>
+                <h4 class="head-title">句法结构</h4>
+                <p class="head-desc">主谓宾语法关系</p>
+            </div>
+            <div class="head-card">
+                <div class="head-number">H₂</div>
+                <h4 class="head-title">指代消解</h4>
+                <p class="head-desc">代词与实体关系</p>
+            </div>
+            <div class="head-card">
+                <div class="head-number">H₃</div>
+                <h4 class="head-title">语义关联</h4>
+                <p class="head-desc">同义近义联系</p>
+            </div>
+            <div class="head-card">
+                <div class="head-number">H₄</div>
+                <h4 class="head-title">位置模式</h4>
+                <p class="head-desc">局部全局依赖</p>
+            </div>
+        </div>
+
+        <div class="formula-showcase" style="margin-top: 48px;">
+            <p class="formula-eyebrow">Multi-Head Formula</p>
+            <div class="formula-main">
+                MultiHead(Q, K, V) = Concat(head₁, ..., head<sub>h</sub>) · W<sup>O</sup>
+            </div>
+            <p class="formula-note">每个头独立计算注意力，拼接后通过线性变换融合多视角信息。</p>
+        </div>
+    </div>
+</section>
+
+<!-- Screen 5: Timeline & Footer -->
+<section class="screen dark-screen footer-screen" data-screen="5">
+    <div class="screen-inner">
+        <span class="chapter-number">05</span>
+        <p class="chapter-label">Evolution</p>
+        <h2 class="chapter-title">发展历程</h2>
+
+        <div class="timeline-container">
+            <div class="timeline-item">
+                <div class="timeline-year">2014</div>
+                <div class="timeline-content">
+                    <h4>Bahdanau Attention</h4>
+                    <p>首次在神经机器翻译中引入注意力机制，允许解码器动态关注编码器的不同部分。</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-year">2017</div>
+                <div class="timeline-content">
+                    <h4>Transformer 诞生</h4>
+                    <p>"Attention Is All You Need"——完全基于注意力的架构，摒弃循环结构，实现高度并行化。</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-year">2018+</div>
+                <div class="timeline-content">
+                    <h4>预训练时代</h4>
+                    <p>BERT、GPT 系列爆发，注意力机制成为 NLP 的标准组件，推动生成式 AI 革命。</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-year">今天</div>
+                <div class="timeline-content">
+                    <h4>多模态大模型</h4>
+                    <p>ViT、CLIP、GPT-4、Claude——注意力拓展到视觉与多模态，参数规模突破万亿。</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 80px; padding-top: 48px; border-top: 1px solid rgba(255,255,255,0.08); text-align: center;">
+            <h3 class="footer-title">继续探索</h3>
+            <p class="footer-desc">掌握注意力机制，你就掌握了现代 AI 的核心。</p>
+            <div class="footer-links">
+                <a href="https://arxiv.org/abs/1706.03762" class="footer-link" target="_blank">原始论文</a>
+                <a href="https://jalammar.github.io/illustrated-transformer/" class="footer-link" target="_blank">图解 Transformer</a>
+                <a href="https://github.com/karpathy/nanoGPT" class="footer-link" target="_blank">nanoGPT</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Progress bar
+    const progressBar = document.getElementById('progress');
+    const screens = document.querySelectorAll('[data-screen]');
+    const navDots = document.querySelectorAll('.nav-dot');
+
+    function updateProgress() {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = (scrollTop / docHeight) * 100;
+        progressBar.style.width = progress + '%';
+
+        // Update nav dots
+        const screenHeight = window.innerHeight;
+        const currentScreen = Math.round(scrollTop / screenHeight);
+
+        navDots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === currentScreen);
+
+            // Check if we're on a light screen
+            const screen = screens[currentScreen];
+            if (screen && screen.classList.contains('chapter-screen') && !screen.classList.contains('dark-screen')) {
+                dot.classList.add('light');
+            } else {
+                dot.classList.remove('light');
+            }
+        });
+    }
+
+    window.addEventListener('scroll', updateProgress);
+
+    // Nav dot click
+    navDots.forEach(dot => {
+        dot.addEventListener('click', () => {
+            const screenIndex = parseInt(dot.dataset.screen);
+            const target = document.querySelector(`[data-screen="${screenIndex}"]`);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    });
+
+    // Initial call
+    updateProgress();
+</script>
+
+</body>
+</html>

@@ -271,7 +271,7 @@ function initializeParticles() {
 // 从API加载课程数据
 async function loadCoursesFromAPI() {
     try {
-        const response = await fetch('http://42.194.245.66/api/courses');
+        const response = await fetch('/api/courses');
         const data = await response.json();
         
         if (data.code === 200 && data.data) {
@@ -576,7 +576,7 @@ async function showCourseModal(courseId) {
 // 加载课程章节
 async function loadCourseChapters(courseId) {
     try {
-        const response = await fetch(`http://42.194.245.66/api/content/courses/${courseId}/chapters`);
+        const response = await fetch(`/api/content/courses/${courseId}/chapters`);
         const data = await response.json();
         
         if (data.code === 200 && data.data) {

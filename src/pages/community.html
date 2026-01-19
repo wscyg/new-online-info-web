@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>学习社区 - AI 信息未来</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* 社区特定样式 */
@@ -706,8 +707,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             initTheme();
-            checkAuth();
-            initTabs();
+                        initTabs();
             loadPosts();
             initInfiniteScroll();
             initSearchEnter();
@@ -757,46 +757,12 @@
             icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
         }
 
-        // 认证检查
-        function checkAuth() {
-            const token = localStorage.getItem('token');
-            const userStr = localStorage.getItem('user');
-            const authArea = document.getElementById('authArea');
-            if (token && userStr) {
-                const user = JSON.parse(userStr);
-                const initial = (user.nickname || user.username || 'U').charAt(0).toUpperCase();
-                authArea.innerHTML = `
-                    <div class="user-menu">
-                        <div class="user-avatar" onclick="toggleDropdown()">${user.avatar ? '<img src="'+user.avatar+'" alt="">' : initial}</div>
-                        <div class="dropdown" id="userDropdown">
-                            <div class="dropdown-item" onclick="location.href='dashboard.html'"><i class="fas fa-tachometer-alt"></i> 学习中心</div>
-                            <div class="dropdown-item" onclick="location.href='profile.html'"><i class="fas fa-user"></i> 个人主页</div>
-                            <div class="dropdown-item" onclick="location.href='my-courses.html'"><i class="fas fa-book"></i> 我的课程</div>
-                            <div class="dropdown-divider"></div>
-                            <div class="dropdown-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出登录</div>
-                        </div>
-                    </div>`;
-            } else {
-                authArea.innerHTML = '<a href="login.html" class="btn btn-sm btn-secondary">登录</a> <a href="register.html" class="btn btn-sm btn-primary">注册</a>';
-            }
-        }
-
-        function toggleDropdown() {
-            document.getElementById('userDropdown').classList.toggle('show');
-        }
-
         function logout() {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             location.reload();
         }
 
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.user-menu')) {
-                const d = document.getElementById('userDropdown');
-                if (d) d.classList.remove('show');
-            }
-        });
 
         // 标签初始化
         function initTabs() {
@@ -1100,5 +1066,7 @@
             }
         });
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

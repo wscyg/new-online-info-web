@@ -1,0 +1,60 @@
+{
+  "version": "2.0",
+  "id": "minimal-v2",
+  "title": "Minimal v2 Example",
+  "subtitle": "用于回归测试与快速预览",
+  "templateId": "chapter2",
+  "accent": "cyan",
+  "pages": [
+    {
+      "id": "hero",
+      "page": 0,
+      "kind": "hero",
+      "accent": "cyan",
+      "dataTitle": "Demo",
+      "dataSub": "Hero",
+      "header": {
+        "badge": { "text": "DEMO" },
+        "badgeHtml": "",
+        "title": "Minimal v2",
+        "subtitle": "JSON → 模板 → 渲染",
+        "extraHtml": "",
+        "delay": 200,
+        "speed": 28
+      },
+      "blocks": []
+    },
+    {
+      "id": "content",
+      "page": 1,
+      "kind": "section",
+      "accent": "purple",
+      "dataTitle": "Blocks",
+      "dataSub": "Regression",
+      "header": { "label": "Demo", "title": "Blocks", "descHtml": "回归测试常用 block" },
+      "blocks": [
+        { "type": "microLead", "text": "cardsGrid / codeBlock / living" },
+        {
+          "type": "cardsGrid",
+          "columns": 2,
+          "cards": [
+            { "accent": "cyan", "icon": "🧩", "title": "cardsGrid", "text": "布局检查" },
+            { "accent": "purple", "icon": "🧠", "title": "living", "text": "交互检查" }
+          ]
+        },
+        { "type": "codeBlock", "file": "demo.py", "code": "print('hello')\n" },
+        {
+          "type": "living",
+          "title": "逐行可视化",
+          "vizTitle": "visualization",
+          "hint": "点击左侧代码行",
+          "steps": [
+            { "id": "s1", "label": "Step1", "code": "qkv = Wqkv @ x", "viz": { "bullets": ["QKV 投影"] } },
+            { "id": "s2", "label": "Step2", "code": "attn = softmax(q @ k.T) @ v", "viz": { "bullets": ["注意力计算"] } }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

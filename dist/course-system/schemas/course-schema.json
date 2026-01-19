@@ -1,0 +1,501 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Course Content Schema",
+  "description": "JSON Schema for interactive course content",
+  "type": "object",
+  "required": ["id", "title", "chapters"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique course identifier"
+    },
+    "title": {
+      "type": "string",
+      "description": "Course title"
+    },
+    "subtitle": {
+      "type": "string",
+      "description": "Course subtitle or tagline"
+    },
+    "description": {
+      "type": "string",
+      "description": "Course description"
+    },
+    "category": {
+      "type": "string",
+      "description": "Course category"
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": ["beginner", "intermediate", "advanced"],
+      "description": "Course difficulty level"
+    },
+    "duration": {
+      "type": "string",
+      "description": "Estimated completion time"
+    },
+    "author": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "avatar": { "type": "string" },
+        "bio": { "type": "string" }
+      }
+    },
+    "pricing": {
+      "type": "object",
+      "properties": {
+        "isFree": { "type": "boolean", "default": false },
+        "price": { "type": "number" },
+        "originalPrice": { "type": "number" },
+        "currency": { "type": "string", "default": "CNY" }
+      }
+    },
+    "thumbnail": {
+      "type": "string",
+      "description": "Course thumbnail URL"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "prerequisites": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "learningObjectives": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "chapters": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/chapter" }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "version": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" },
+        "publishedAt": { "type": "string" }
+      }
+    }
+  },
+  "definitions": {
+    "chapter": {
+      "type": "object",
+      "required": ["id", "title", "pages"],
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "isFreePreview": { "type": "boolean", "default": false },
+        "pages": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/page" }
+        }
+      }
+    },
+    "page": {
+      "type": "object",
+      "required": ["id", "components"],
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "layout": {
+          "type": "string",
+          "enum": ["default", "hero", "split", "fullscreen"],
+          "default": "default"
+        },
+        "background": {
+          "type": "object",
+          "properties": {
+            "type": { "type": "string", "enum": ["color", "gradient", "image", "pattern"] },
+            "value": { "type": "string" }
+          }
+        },
+        "components": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/component" }
+        }
+      }
+    },
+    "component": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "hero",
+            "section",
+            "heading",
+            "paragraph",
+            "highlight",
+            "cards-grid",
+            "card",
+            "glass-card",
+            "sticky-note",
+            "formula",
+            "formula-box",
+            "code-block",
+            "diagram",
+            "svg",
+            "animation",
+            "timeline",
+            "comparison",
+            "two-column",
+            "quiz",
+            "interactive",
+            "image",
+            "video",
+            "audio",
+            "quote",
+            "callout",
+            "divider",
+            "spacer",
+            "reveal",
+            "typing-text",
+            "socratic-dialogue",
+            "experiment",
+            "key-points",
+            "navigation-hint"
+          ]
+        },
+        "id": { "type": "string" },
+        "className": { "type": "string" },
+        "style": { "type": "object" },
+        "animation": { "$ref": "#/definitions/animation" },
+        "content": { "$ref": "#/definitions/componentContent" }
+      }
+    },
+    "animation": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["fadeIn", "slideUp", "slideLeft", "slideRight", "scaleUp", "typewriter", "float", "pulse", "none"]
+        },
+        "delay": { "type": "number", "description": "Delay in milliseconds" },
+        "duration": { "type": "number", "description": "Duration in milliseconds" },
+        "trigger": {
+          "type": "string",
+          "enum": ["onEnter", "onClick", "onScroll", "immediate"]
+        }
+      }
+    },
+    "componentContent": {
+      "oneOf": [
+        { "$ref": "#/definitions/heroContent" },
+        { "$ref": "#/definitions/sectionContent" },
+        { "$ref": "#/definitions/headingContent" },
+        { "$ref": "#/definitions/paragraphContent" },
+        { "$ref": "#/definitions/cardsGridContent" },
+        { "$ref": "#/definitions/cardContent" },
+        { "$ref": "#/definitions/stickyNoteContent" },
+        { "$ref": "#/definitions/formulaContent" },
+        { "$ref": "#/definitions/codeBlockContent" },
+        { "$ref": "#/definitions/diagramContent" },
+        { "$ref": "#/definitions/timelineContent" },
+        { "$ref": "#/definitions/comparisonContent" },
+        { "$ref": "#/definitions/twoColumnContent" },
+        { "$ref": "#/definitions/quizContent" },
+        { "$ref": "#/definitions/interactiveContent" },
+        { "$ref": "#/definitions/imageContent" },
+        { "$ref": "#/definitions/videoContent" },
+        { "$ref": "#/definitions/quoteContent" },
+        { "$ref": "#/definitions/calloutContent" },
+        { "$ref": "#/definitions/typingTextContent" },
+        { "$ref": "#/definitions/socraticContent" },
+        { "$ref": "#/definitions/experimentContent" },
+        { "$ref": "#/definitions/keyPointsContent" }
+      ]
+    },
+    "heroContent": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "description": { "type": "string" },
+        "badge": { "type": "string" },
+        "backgroundImage": { "type": "string" },
+        "particles": { "type": "boolean" }
+      }
+    },
+    "sectionContent": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/component" }
+        }
+      }
+    },
+    "headingContent": {
+      "type": "object",
+      "properties": {
+        "level": { "type": "integer", "minimum": 1, "maximum": 6 },
+        "text": { "type": "string" },
+        "icon": { "type": "string" }
+      }
+    },
+    "paragraphContent": {
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" },
+        "html": { "type": "string" }
+      }
+    },
+    "cardsGridContent": {
+      "type": "object",
+      "properties": {
+        "columns": { "type": "integer", "default": 3 },
+        "gap": { "type": "string" },
+        "cards": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/cardContent" }
+        }
+      }
+    },
+    "cardContent": {
+      "type": "object",
+      "properties": {
+        "variant": { "type": "string", "enum": ["default", "glass", "gradient", "bordered"] },
+        "icon": { "type": "string" },
+        "emoji": { "type": "string" },
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "description": { "type": "string" },
+        "content": { "type": "string" },
+        "color": { "type": "string" },
+        "link": { "type": "string" }
+      }
+    },
+    "stickyNoteContent": {
+      "type": "object",
+      "properties": {
+        "color": { "type": "string", "enum": ["yellow", "pink", "blue", "green", "purple"] },
+        "rotation": { "type": "number" },
+        "title": { "type": "string" },
+        "text": { "type": "string" },
+        "icon": { "type": "string" }
+      }
+    },
+    "formulaContent": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "latex": { "type": "string" },
+        "html": { "type": "string" },
+        "explanation": { "type": "string" },
+        "parts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "symbol": { "type": "string" },
+              "description": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "codeBlockContent": {
+      "type": "object",
+      "properties": {
+        "language": { "type": "string" },
+        "code": { "type": "string" },
+        "filename": { "type": "string" },
+        "highlightLines": {
+          "type": "array",
+          "items": { "type": "integer" }
+        },
+        "showLineNumbers": { "type": "boolean", "default": true },
+        "runnable": { "type": "boolean", "default": false }
+      }
+    },
+    "diagramContent": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "type": { "type": "string", "enum": ["svg", "mermaid", "flowchart", "image"] },
+        "svg": { "type": "string" },
+        "mermaid": { "type": "string" },
+        "src": { "type": "string" },
+        "caption": { "type": "string" },
+        "interactive": { "type": "boolean" }
+      }
+    },
+    "timelineContent": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "orientation": { "type": "string", "enum": ["vertical", "horizontal"] },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "year": { "type": "string" },
+              "date": { "type": "string" },
+              "title": { "type": "string" },
+              "description": { "type": "string" },
+              "icon": { "type": "string" },
+              "color": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "comparisonContent": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "leftTitle": { "type": "string" },
+        "rightTitle": { "type": "string" },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "aspect": { "type": "string" },
+              "left": { "type": "string" },
+              "right": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "twoColumnContent": {
+      "type": "object",
+      "properties": {
+        "ratio": { "type": "string", "default": "1:1" },
+        "left": { "$ref": "#/definitions/component" },
+        "right": { "$ref": "#/definitions/component" }
+      }
+    },
+    "quizContent": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "type": { "type": "string", "enum": ["single", "multiple", "true-false", "fill-blank", "matching"] },
+        "question": { "type": "string" },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "text": { "type": "string" },
+              "isCorrect": { "type": "boolean" }
+            }
+          }
+        },
+        "correctAnswer": { "type": "string" },
+        "explanation": { "type": "string" },
+        "hint": { "type": "string" },
+        "points": { "type": "integer" }
+      }
+    },
+    "interactiveContent": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["slider", "toggle", "input", "drag-drop", "click-reveal"] },
+        "config": { "type": "object" }
+      }
+    },
+    "imageContent": {
+      "type": "object",
+      "properties": {
+        "src": { "type": "string" },
+        "alt": { "type": "string" },
+        "caption": { "type": "string" },
+        "width": { "type": "string" },
+        "height": { "type": "string" }
+      }
+    },
+    "videoContent": {
+      "type": "object",
+      "properties": {
+        "src": { "type": "string" },
+        "poster": { "type": "string" },
+        "autoplay": { "type": "boolean" },
+        "controls": { "type": "boolean", "default": true }
+      }
+    },
+    "quoteContent": {
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" },
+        "author": { "type": "string" },
+        "source": { "type": "string" }
+      }
+    },
+    "calloutContent": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["info", "warning", "success", "error", "tip"] },
+        "title": { "type": "string" },
+        "text": { "type": "string" }
+      }
+    },
+    "typingTextContent": {
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" },
+        "speed": { "type": "integer", "default": 50 },
+        "cursor": { "type": "boolean", "default": true }
+      }
+    },
+    "socraticContent": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "dialogues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "role": { "type": "string", "enum": ["teacher", "student"] },
+              "name": { "type": "string" },
+              "text": { "type": "string" },
+              "thought": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "experimentContent": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "instruction": { "type": "string" },
+              "code": { "type": "string" },
+              "expected": { "type": "string" }
+            }
+          }
+        },
+        "conclusion": { "type": "string" }
+      }
+    },
+    "keyPointsContent": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "icon": { "type": "string" },
+        "points": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

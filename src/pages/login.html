@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>登录 - AI 信息未来</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .login-page {
@@ -167,21 +168,25 @@
         </div>
     </div>
 
-    <div id="toast" class="toast"></div>
-
-    <script src="../utils/api.js"></script>
     <script>
         const API_BASE = '/api';
 
         document.addEventListener('DOMContentLoaded', () => {
+            // 初始化主题
             initTheme();
 
             // 检查是否已登录
             const token = localStorage.getItem('token');
             if (token) {
-                const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
-                window.location.href = returnUrl || 'dashboard.html';
+                redirectAfterLogin();
                 return;
+            }
+
+            // 兼容 returnUrl/redirect 参数
+            const params = new URLSearchParams(window.location.search);
+            const returnUrl = params.get('returnUrl') || params.get('redirect');
+            if (returnUrl) {
+                localStorage.setItem('redirectAfterLogin', returnUrl);
             }
         });
 
@@ -189,6 +194,7 @@
             const saved = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-theme', saved);
             updateThemeIcon(saved);
+
             document.getElementById('themeToggle').addEventListener('click', () => {
                 const current = document.documentElement.getAttribute('data-theme');
                 const next = current === 'dark' ? 'light' : 'dark';
@@ -198,8 +204,24 @@
             });
         }
 
-        function updateThemeIcon(theme) {
-            document.querySelector('#themeToggle i').className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        function updateThemeIcon(currentTheme) {
+            document.querySelector('#themeToggle i').className = currentTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        function redirectAfterLogin() {
+            const redirect = localStorage.getItem('redirectAfterLogin') || 'home.html';
+            localStorage.removeItem('redirectAfterLogin');
+            window.location.href = redirect;
+        }
+
+        function setButtonLoading(btn, isLoading, text = '登录') {
+            if (isLoading) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 登录中...';
+            } else {
+                btn.disabled = false;
+                btn.textContent = text;
+            }
         }
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
@@ -215,12 +237,11 @@
                 return;
             }
 
-            submitBtn.disabled = true;
-            submitBtn.textContent = '登录中...';
+            setButtonLoading(submitBtn, true);
             errorMsg.classList.remove('show');
 
             try {
-                const res = await fetch(API_BASE + '/auth/login', {
+                const res = await fetch(`${API_BASE}/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
@@ -228,24 +249,23 @@
                 const data = await res.json();
 
                 if (data.code === 200 && data.data) {
-                    // 保存登录信息
                     localStorage.setItem('token', data.data.token);
-                    localStorage.setItem('user', JSON.stringify(data.data.user));
+                    if (data.data.user) {
+                        localStorage.setItem('user', JSON.stringify(data.data.user));
+                    }
 
-                    showToast('登录成功');
-                    setTimeout(() => {
-                        const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
-                        window.location.href = returnUrl || 'dashboard.html';
-                    }, 500);
+                    // 如果勾选了"记住我"，token已经存在localStorage中
+                    // 如果没勾选，可以用sessionStorage（这里简化处理）
+
+                    alert('登录成功');
+                    setTimeout(() => redirectAfterLogin(), 300);
                 } else {
                     showError(data.message || '登录失败');
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = '登录';
+                    setButtonLoading(submitBtn, false, '登录');
                 }
             } catch (err) {
-                showError('网络错误，请重试');
-                submitBtn.disabled = false;
-                submitBtn.textContent = '登录';
+                showError(err.message || '网络错误，请重试');
+                setButtonLoading(submitBtn, false, '登录');
             }
         });
 
@@ -254,13 +274,8 @@
             el.textContent = msg;
             el.classList.add('show');
         }
-
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 3000);
-        }
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

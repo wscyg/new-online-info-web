@@ -1,0 +1,101 @@
+{
+  "title": "《手撕 GPT》· Chapter 1",
+  "pages": [
+    {
+      "id": "p-hero",
+      "kind": "hero",
+      "accent": "purple",
+      "header": {
+        "badgeHtml": "<span class=\"hero-badge\"><span class=\"hero-badge-dot\"></span>深度学习必修课</span>",
+        "title": "第 1 章：序列建模",
+        "subtitle": "为什么序列建模这么难？RNN 为什么会遗忘？",
+        "extraHtml": "<p style=\"color:#94a3b8;font-size:14px;\">目标：写出最小 TransformerBlock + 解释每一行为什么</p>"
+      },
+      "blocks": [
+        {
+          "type": "bridgeRow",
+          "prevLabel": "上一页",
+          "prev": "—",
+          "currentLabel": "本页",
+          "current": "序列建模难题",
+          "nextLabel": "下一页",
+          "next": "RNN → LSTM"
+        },
+        {
+          "type": "microLead",
+          "text": "本页路线：① 理解序列的三个硬约束 ② 工程补丁为何救不了 ③ 突破方案"
+        },
+        {
+          "type": "keyline",
+          "dot": "!",
+          "html": "<b>核心问题：</b>如何让神经网络处理变长、有顺序、有远距离依赖的序列？"
+        },
+        {
+          "type": "callout",
+          "title": "序列建模的三大挑战",
+          "tag": "Challenge",
+          "bodyHtml": "<ul class=\"content-list\"><li><b>变长序列：</b>一句话可以是 5 个字，也可以是 500 个字</li><li><b>顺序敏感：</b>\"我爱你\" 和 \"你爱我\" 意思完全不同</li><li><b>长距离依赖：</b>句首的主语可能影响句尾的动词</li></ul>"
+        },
+        {
+          "type": "living",
+          "title": "序列建模演进（点击左侧查看详情）",
+          "vizTitle": "详细解析",
+          "steps": [
+            {
+              "id": "step1",
+              "label": "问题：序列的硬约束",
+              "code": "# 固定尺寸的神经网络无法处理变长输入",
+              "viz": {
+                "title": "序列的三个硬约束",
+                "sub": "MLP/CNN 无法直接处理",
+                "bullets": ["变长：输入维度不固定", "顺序：位置信息很重要", "远依赖：句首影响句尾"]
+              }
+            },
+            {
+              "id": "step2",
+              "label": "方案：RNN 循环处理",
+              "code": "h_t = tanh(W @ h_{t-1} + U @ x_t)",
+              "viz": {
+                "title": "RNN：一个词一个词地读",
+                "sub": "用隐藏状态传递\"记忆\"",
+                "bullets": ["参数共享：同一套 W, U 处理每个位置", "顺序处理：天然保持顺序信息", "但是...记忆会衰减"]
+              }
+            },
+            {
+              "id": "step3",
+              "label": "问题：梯度消失",
+              "code": "gradient = 0.9^100 ≈ 0.00002  # 记忆腐烂",
+              "viz": {
+                "title": "梯度消失：RNN 的致命伤",
+                "sub": "反向传播时梯度连乘导致消失",
+                "bullets": ["第 10 步：0.9^10 ≈ 0.34", "第 100 步：0.9^100 ≈ 0.00002", "句首信息对句尾预测无贡献"]
+              }
+            },
+            {
+              "id": "step4",
+              "label": "突破：LSTM 门控记忆",
+              "code": "c_t = f_t * c_{t-1} + i_t * g_t  # 加法！",
+              "viz": {
+                "title": "LSTM：加法高速公路",
+                "sub": "用门控机制选择性记忆",
+                "bullets": ["遗忘门 f：决定丢弃什么", "输入门 i：决定记住什么", "细胞状态 c：加法传递，梯度不消失"]
+              }
+            }
+          ]
+        },
+        {
+          "type": "thinkBox",
+          "qid": "think-1",
+          "title": "思考：为什么 LSTM 用加法而不是乘法？",
+          "text": "提示：考虑反向传播时梯度的计算方式。加法的梯度是什么？乘法的梯度是什么？"
+        },
+        {
+          "type": "accordion",
+          "summary": "答案：加法 vs 乘法的梯度区别",
+          "badge": "Answer",
+          "contentHtml": "<p><b>加法：</b>∂(a+b)/∂a = 1，梯度直接传递，不衰减</p><p><b>乘法：</b>∂(a×b)/∂a = b，梯度会乘以 b，可能衰减</p><p>LSTM 的细胞状态用加法更新，所以梯度可以\"高速公路\"般直接传到很远的过去。</p>"
+        }
+      ]
+    }
+  ]
+}

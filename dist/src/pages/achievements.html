@@ -391,7 +391,7 @@
             }
         }
     </style>
-  <link rel="stylesheet" href="/assets/apple-design-3a23e109.css">
+  <link rel="stylesheet" href="/assets/apple-design-5104bdc3.css">
 </head>
 <body>
     <!-- 导航栏 -->
@@ -556,13 +556,17 @@
         async function fetchAchievements() {
             const token = localStorage.getItem('token');
             try {
-                const response = await fetch(`${API_BASE}/achievements`, {
+                const response = await fetch(`${API_BASE}/achievements/my`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
                 if (!response.ok) throw new Error('Failed to fetch achievements');
                 const data = await response.json();
+                // 处理返回数据：可能是 {achievements: [], stats: {}} 或直接是数组
+                if (data.data && data.data.achievements) {
+                    return data.data.achievements;
+                }
                 return data.data || [];
             } catch (error) {
                 console.error('获取成就失败:', error);
@@ -570,18 +574,31 @@
             }
         }
 
-        // 获取统计数据
+        // 获取统计数据 - 从/achievements/my响应中提取或计算
         async function fetchStats() {
             const token = localStorage.getItem('token');
             try {
-                const response = await fetch(`${API_BASE}/achievements/stats`, {
+                const response = await fetch(`${API_BASE}/achievements/my`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
                 if (!response.ok) throw new Error('Failed to fetch stats');
                 const data = await response.json();
-                return data.data || {};
+                // 如果返回数据包含stats，直接使用
+                if (data.data && data.data.stats) {
+                    return data.data.stats;
+                }
+                // 否则从成就列表计算统计
+                const achievements = data.data?.achievements || data.data || [];
+                const unlocked = achievements.filter(a => a.unlocked);
+                const totalPoints = unlocked.reduce((sum, a) => sum + (a.points || 0), 0);
+                return {
+                    totalAchievements: achievements.length,
+                    unlockedAchievements: unlocked.length,
+                    totalPoints: totalPoints,
+                    completionRate: achievements.length > 0 ? (unlocked.length / achievements.length) * 100 : 0
+                };
             } catch (error) {
                 console.error('获取统计失败:', error);
                 return {

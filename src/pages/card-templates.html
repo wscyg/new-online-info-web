@@ -6,7 +6,8 @@
     <title>卡片模板预览系统 - AI 信息未来</title>
 
     <!-- Apple Design CSS -->
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,7 +16,7 @@
 
     <!-- KaTeX -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 
     <!-- Highlight.js -->
@@ -533,16 +534,15 @@
                 <a href="/pk.html" class="nav-link">PK竞技</a>
             </div>
             <div class="nav-actions">
+                <div id="authArea"></div>
                 <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M10 2V4M10 16V18M4 10H2M18 10H16M15.5 4.5L14 6M6 14L4.5 15.5M15.5 15.5L14 14M6 6L4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                         <circle cx="10" cy="10" r="4" stroke="currentColor" stroke-width="2"/>
                     </svg>
                 </button>
-                <div class="user-menu" id="userMenu">
-                    <div class="user-avatar" id="userAvatar">U</div>
-                    <div class="dropdown" id="userDropdown">
-                        <div class="dropdown-item" onclick="window.location.href='/profile.html'">个人中心</div>
+                
+                    
                         <div class="dropdown-item" onclick="window.location.href='/my-courses.html'">我的课程</div>
                         <div class="dropdown-divider"></div>
                         <div class="dropdown-item" id="logoutBtn">退出登录</div>
@@ -847,19 +847,7 @@
         }
 
         // === Auth Management ===
-        function initAuth() {
-            const token = localStorage.getItem('token');
-            const user = localStorage.getItem('user');
-
-            if (user) {
-                try {
-                    const userData = JSON.parse(user);
-                    const avatar = document.getElementById('userAvatar');
-                    avatar.textContent = userData.username ? userData.username.charAt(0).toUpperCase() : 'U';
-                } catch (e) {
-                    console.error('Failed to parse user data:', e);
-                }
-            }
+                    }
         }
 
         function logout() {
@@ -872,24 +860,16 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Initialize theme and auth
             initTheme();
-            initAuth();
-
+            
             // Theme toggle
             document.getElementById('themeToggle').addEventListener('click', toggleTheme);
 
             // User dropdown
             const userAvatar = document.getElementById('userAvatar');
-            const userDropdown = document.getElementById('userDropdown');
-            userAvatar.addEventListener('click', () => {
-                userDropdown.classList.toggle('show');
-            });
+                        userAvatar.addEventListener('click', () => {
+                            });
 
             // Close dropdown when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!document.getElementById('userMenu').contains(e.target)) {
-                    userDropdown.classList.remove('show');
-                }
-            });
 
             // Logout
             document.getElementById('logoutBtn').addEventListener('click', logout);
@@ -907,5 +887,7 @@
             renderAllCards('classic');
         });
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

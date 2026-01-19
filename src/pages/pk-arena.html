@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PK竞技场 - AI 信息未来</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <style>
         /* Hero */
         .arena-hero {
@@ -605,6 +606,7 @@
                 <a href="community.html" class="nav-link">社区</a>
             </div>
             <div class="nav-actions">
+                <div id="authArea"></div>
                 <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
                     <svg class="sun-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M10 2a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 2z"/>
@@ -789,11 +791,11 @@
     <script>
         const API_BASE = '/api';
         let currentUser = null;
+        let onlineUsersCount = 0;
 
         document.addEventListener('DOMContentLoaded', () => {
             initTheme();
-            checkAuth();
-            setupTabs();
+                        setupTabs();
             loadPkStats();
             loadArenaData();
             loadCourses();
@@ -823,21 +825,16 @@
             document.querySelector('.moon-icon').style.display = theme === 'dark' ? 'none' : 'block';
         }
 
-        function checkAuth() {
-            const token = localStorage.getItem('token');
+        function initUser() {
             const userStr = localStorage.getItem('user');
-
-            if (!token) {
-                window.location.href = 'login.html?returnUrl=' + encodeURIComponent(window.location.pathname);
-                return;
-            }
-
             if (userStr) {
                 currentUser = JSON.parse(userStr);
                 const initial = (currentUser.nickname || currentUser.username || 'U').charAt(0).toUpperCase();
                 document.getElementById('userAvatar').textContent = initial;
             }
         }
+
+        initUser();
 
         function setupTabs() {
             document.querySelectorAll('.arena-tab').forEach(tab => {
@@ -893,9 +890,24 @@
         }
 
         async function loadArenaData() {
-            document.getElementById('onlinePlayers').textContent = Math.floor(Math.random() * 50) + 20;
-            document.getElementById('todayBattles').textContent = Math.floor(Math.random() * 100) + 50;
-            document.getElementById('seasonDays').textContent = Math.floor(Math.random() * 20) + 10 + '天';
+            document.getElementById('onlinePlayers').textContent = onlineUsersCount ? String(onlineUsersCount) : '--';
+            document.getElementById('todayBattles').textContent = '--';
+            document.getElementById('seasonDays').textContent = '--';
+
+            try {
+                const res = await fetch(`${API_BASE}/pk/lobby-stats`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                if (!res.ok) return;
+                const data = await res.json();
+                if (data.code !== 200 || !data.data) return;
+
+                document.getElementById('todayBattles').textContent = String(data.data.todayBattles ?? 0);
+                const daysLeft = Number(data.data.seasonDaysLeft ?? 0) || 0;
+                document.getElementById('seasonDays').textContent = `${daysLeft}天`;
+            } catch (e) {
+                console.error('Load lobby stats error:', e);
+            }
         }
 
         async function loadCourses() {
@@ -925,6 +937,8 @@
                 if (res.ok) {
                     const data = await res.json();
                     const users = data.data?.users || data.data || [];
+                    onlineUsersCount = Array.isArray(users) ? users.length : 0;
+                    document.getElementById('onlinePlayers').textContent = onlineUsersCount ? String(onlineUsersCount) : '--';
                     const select = document.getElementById('opponentSelect');
                     users.forEach(user => {
                         const opt = document.createElement('option');
@@ -1095,7 +1109,7 @@
                         // 存储对战信息并跳转
                         sessionStorage.setItem('pkBattle', JSON.stringify(data.data));
                         setTimeout(() => {
-                            window.location.href = `pk-battle.html?id=${data.data.battleId}`;
+                            window.location.href = `pk-battle.html?battleId=${data.data.battleId}`;
                         }, 1000);
                     } else {
                         showToast(data.data.message || '等待匹配中...');
@@ -1196,7 +1210,7 @@
                     // 存储对战信息并跳转
                     sessionStorage.setItem('pkBattle', JSON.stringify(data.data));
                     setTimeout(() => {
-                        window.location.href = `pk-battle.html?id=${data.data.battleId}`;
+                        window.location.href = `pk-battle.html?battleId=${data.data.battleId}`;
                     }, 1000);
                 } else {
                     showToast(data.message || '创建失败');
@@ -1214,5 +1228,7 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

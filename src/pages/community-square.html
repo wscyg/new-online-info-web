@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>社区广场 - AI 信息未来</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <style>
         /* Page specific styles */
         .page-header {
@@ -551,21 +552,15 @@
                 <a href="pk-arena.html" class="nav-link">PK竞技</a>
             </div>
             <div class="nav-actions">
+                <div id="authArea"></div>
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="5"/>
                         <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
                     </svg>
                 </button>
-                <div class="user-menu" id="userMenu">
-                    <div class="user-avatar" onclick="toggleUserMenu()">
-                        <span id="userInitial">U</span>
-                    </div>
-                    <div class="dropdown" id="userDropdown">
-                        <a href="profile.html" class="dropdown-item">个人中心</a>
-                        <a href="my-courses.html" class="dropdown-item">我的课程</a>
-                        <a href="notes.html" class="dropdown-item">我的笔记</a>
-                        <div class="dropdown-divider"></div>
+                
+                    
                         <div class="dropdown-item" onclick="handleLogout()">退出登录</div>
                     </div>
                 </div>
@@ -716,8 +711,7 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             initTheme();
-            initAuth();
-            loadNotesFromAPI();
+                        loadNotesFromAPI();
             bindEvents();
         });
 
@@ -735,19 +729,9 @@
         }
 
         // Auth Management
-        function initAuth() {
-            const user = JSON.parse(localStorage.getItem('user') || '{}');
-            const userInitial = document.getElementById('userInitial');
-            if (user.username) {
-                userInitial.textContent = user.username.charAt(0).toUpperCase();
-            }
-        }
+                }
 
-        function toggleUserMenu() {
-            const dropdown = document.getElementById('userDropdown');
-            dropdown.classList.toggle('show');
-        }
-
+        
         function handleLogout() {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
@@ -755,13 +739,6 @@
         }
 
         // Close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            const userMenu = document.getElementById('userMenu');
-            const dropdown = document.getElementById('userDropdown');
-            if (!userMenu.contains(event.target)) {
-                dropdown.classList.remove('show');
-            }
-        });
 
         // API Functions
         async function loadNotesFromAPI() {
@@ -958,16 +935,12 @@
                     if (!isLoading && page > 0 && page < 3) {
                         loadMoreNotes();
                     }
-                }
-            });
 
             // Image upload
             document.getElementById('imageInput').addEventListener('change', function(e) {
                 if (e.target.files && e.target.files[0]) {
                     const fileName = e.target.files[0].name;
                     document.querySelector('.upload-text').textContent = fileName;
-                }
-            });
         }
 
         // Load More Notes
@@ -1092,5 +1065,7 @@
             }
         }
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

@@ -9,13 +9,21 @@ export default defineConfig({
     strictPort: true,
     proxy: {
       '/api': {
-        target: 'http://42.194.245.66:8070',
-        changeOrigin: true
+        target: 'http://localhost:8070',
+        changeOrigin: true,
+        ws: true
+      },
+      '/ws': {
+        target: 'ws://localhost:8070',
+        ws: true
       }
     }
   },
   build: {
     outDir: 'dist',
+    // Some environments (or dev setups) can block unlinking existing files in dist.
+    // Disabling emptyOutDir prevents build failures while keeping output deterministic by hashed filenames.
+    emptyOutDir: false,
     rollupOptions: {
       input: {
         main: 'home.html',
@@ -48,12 +56,16 @@ export default defineConfig({
         // 练习场
         practice: 'src/pages/practice.html',
         // 在线广场
-        'online-plaza': 'src/pages/online-plaza.html'
+        'online-plaza': 'src/pages/online-plaza.html',
+        // 聊天系统
+        chat: 'src/pages/chat.html',
+        // 课程系统
+        'free-course': 'src/pages/free-course.html'
       }
     },
     copyPublicDir: true
   },
-  publicDir: false,
+  publicDir: 'public',
   assetsInclude: ['**/*.js'],
   css: {
     postcss: './postcss.config.js'

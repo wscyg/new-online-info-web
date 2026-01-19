@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>水印效果预览 - www.infofuture.online</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <style>
         /* 水印容器样式 */
         .watermark-container {
@@ -270,6 +271,7 @@
                 <a href="./arena.html" class="nav-link">PK竞技</a>
             </div>
             <div class="nav-actions">
+                <div id="authArea"></div>
                 <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
                     <svg class="icon" id="sunIcon" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M10 2a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 2zM10 15a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 15zM10 7a3 3 0 100 6 3 3 0 000-6zM15.657 5.404a.75.75 0 10-1.06-1.06l-1.061 1.06a.75.75 0 001.06 1.06l1.06-1.06zM6.464 14.596a.75.75 0 10-1.06-1.06l-1.06 1.06a.75.75 0 001.06 1.06l1.06-1.06zM18 10a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0118 10zM5 10a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 015 10zM14.596 15.657a.75.75 0 001.06-1.06l-1.06-1.061a.75.75 0 10-1.06 1.06l1.06 1.06zM5.404 6.464a.75.75 0 001.06-1.06l-1.06-1.06a.75.75 0 10-1.061 1.06l1.06 1.06z" />
@@ -278,15 +280,8 @@
                         <path fill-rule="evenodd" d="M7.455 2.004a.75.75 0 01.26.77 7 7 0 009.958 7.967.75.75 0 011.067.853A8.5 8.5 0 116.647 1.921a.75.75 0 01.808.083z" clip-rule="evenodd" />
                     </svg>
                 </button>
-                <div class="user-menu" id="userMenu">
-                    <div class="user-avatar" id="userAvatar"></div>
-                    <div class="dropdown" id="userDropdown">
-                        <div class="dropdown-item" onclick="window.location.href='./profile.html'">
-                            <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z" />
-                            </svg>
-                            <span>个人中心</span>
-                        </div>
+                
+                    
                         <div class="dropdown-divider"></div>
                         <div class="dropdown-item" id="logoutBtn">
                             <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -456,14 +451,11 @@
             } else {
                 sunIcon.style.display = 'none';
                 moonIcon.style.display = 'block';
-            }
-        });
 
         // 用户认证和菜单
         const userMenu = document.getElementById('userMenu');
         const userAvatar = document.getElementById('userAvatar');
-        const userDropdown = document.getElementById('userDropdown');
-        const logoutBtn = document.getElementById('logoutBtn');
+                const logoutBtn = document.getElementById('logoutBtn');
 
         // 检查登录状态
         const token = localStorage.getItem('token');
@@ -492,13 +484,10 @@
         // 用户菜单切换
         userAvatar.addEventListener('click', (e) => {
             e.stopPropagation();
-            userDropdown.classList.toggle('show');
-        });
+                    });
 
         // 点击其他地方关闭菜单
-        document.addEventListener('click', () => {
-            userDropdown.classList.remove('show');
-        });
+                });
 
         // 退出登录
         logoutBtn.addEventListener('click', () => {
@@ -514,13 +503,13 @@
             if (!watermark && watermarkContainer) {
                 document.body.appendChild(watermarkContainer.cloneNode(true));
                 console.log('水印已自动恢复');
-            }
-        });
 
         observer.observe(document.body, {
             childList: true,
             subtree: true
         });
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

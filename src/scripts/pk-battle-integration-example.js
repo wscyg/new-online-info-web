@@ -50,7 +50,7 @@ class PKBattle {
         } catch (error) {
             console.error('❌ 初始化失败', error);
             alert('初始化失败：' + error.message);
-            window.location.href = 'pk-arena-new.html';
+            window.location.href = 'pk-arena.html';
         }
     }
 
@@ -416,7 +416,7 @@ class PKBattle {
 
             if (result.code === 200) {
                 // 跳转到结果页面
-                window.location.href = `pk-result-new.html?battleId=${this.battleId}`;
+                window.location.href = `pk-result.html?battleId=${this.battleId}`;
             }
 
         } catch (error) {

@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的2025学习报告 - AI 信息未来</title>
     <!-- Apple Design CSS -->
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <!-- html2canvas -->
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <!-- API Config -->
-    <script src="../config/api-config.js"></script>
+    <!-- 统一工具模块 -->
+    <script src="/utils/utils-bundle.js"></script>
     <style>
         /* Additional styles for annual report */
         body {
@@ -414,6 +415,7 @@
                 <a href="pk-arena.html" class="nav-link">PK竞技</a>
             </div>
             <div class="nav-actions">
+                <div id="authArea"></div>
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="5"/>
@@ -752,8 +754,6 @@
                             grid: { color: gridColor, drawBorder: false }
                         }
                     }
-                }
-            });
         }
 
         // Generate Share Image
@@ -839,5 +839,7 @@
             };
         }
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

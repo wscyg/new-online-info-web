@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>练习场 - AI 信息未来</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .practice-container {
@@ -465,19 +466,11 @@
                 <a href="community.html" class="nav-link">社区</a>
             </div>
             <div class="nav-actions">
+                <div id="authArea"></div>
                 <button class="theme-toggle" id="themeToggle" title="切换主题">
                     <i class="fas fa-moon"></i>
                 </button>
-                <div class="user-menu" id="userMenu" style="display: none;">
-                    <button class="user-avatar" onclick="toggleDropdown()">
-                        <img id="userAvatar" src="" alt="avatar">
-                    </button>
-                    <div class="user-dropdown" id="userDropdown">
-                        <a href="dashboard.html"><i class="fas fa-chart-line"></i> 学习中心</a>
-                        <a href="profile.html"><i class="fas fa-user"></i> 个人中心</a>
-                        <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出登录</a>
-                    </div>
-                </div>
+                
                 <a href="login.html" class="btn btn-primary" id="loginBtn">登录</a>
             </div>
         </div>
@@ -553,6 +546,20 @@
         let correctCount = 0;
         let selectedAnswer = null;
         let answered = false;
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialCourseId = urlParams.get('courseId');
+        const initialDifficulty = urlParams.get('difficulty');
+        const initialCount = urlParams.get('count');
+        const autoStart = urlParams.get('autostart') === 'true' || urlParams.get('autostart') === '1';
+
+        function applyQueryFilters() {
+            if (initialDifficulty) {
+                document.getElementById('difficultyFilter').value = initialDifficulty;
+            }
+            if (initialCount) {
+                document.getElementById('countFilter').value = initialCount;
+            }
+        }
 
         // Theme toggle
         const themeToggle = document.getElementById('themeToggle');
@@ -576,21 +583,9 @@
         }
 
         // Auth check
-        async function checkAuth() {
-            const token = localStorage.getItem('token');
-            const user = JSON.parse(localStorage.getItem('user') || 'null');
+        async         }
 
-            if (token && user) {
-                document.getElementById('loginBtn').style.display = 'none';
-                document.getElementById('userMenu').style.display = 'block';
-                document.getElementById('userAvatar').src = user.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + user.username;
-            }
-        }
-
-        function toggleDropdown() {
-            document.getElementById('userDropdown').classList.toggle('show');
-        }
-
+        
         function logout() {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
@@ -611,6 +606,15 @@
                         option.textContent = course.title;
                         select.appendChild(option);
                     });
+
+                    // Apply query selection after options are ready
+                    if (initialCourseId) {
+                        select.value = initialCourseId;
+                    }
+
+                    if (autoStart) {
+                        setTimeout(() => startPractice(), 120);
+                    }
                 }
             } catch (error) {
                 console.error('加载课程失败:', error);
@@ -688,6 +692,8 @@
                 `;
             }
         }
+
+        applyQueryFilters();
 
         // Show question
         function showQuestion() {
@@ -777,8 +783,6 @@
                     item.classList.add('correct');
                 } else if (item.dataset.key === selectedAnswer && !isCorrect) {
                     item.classList.add('wrong');
-                }
-            });
 
             // Show explanation
             document.getElementById('explanation').classList.add('show');
@@ -863,16 +867,11 @@
         }
 
         // Init
-        checkAuth();
-        loadCourses();
+                loadCourses();
         loadStats();
 
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.user-menu')) {
-                const d = document.getElementById('userDropdown');
-                if (d) d.classList.remove('show');
-            }
-        });
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

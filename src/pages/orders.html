@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的订单 - AI 信息未来</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <style>
         /* 订单页面专属样式 */
         body {
@@ -96,6 +97,37 @@
             border: 1px solid var(--border-color);
             padding: 32px;
             min-height: 400px;
+        }
+
+        /* ===== 视觉精修覆盖 ===== */
+        .orders-hero {
+            position: relative;
+        }
+        .orders-hero::after {
+            content: '';
+            position: absolute;
+            inset: auto 0 0 0;
+            height: 60px;
+            background: linear-gradient(180deg, rgba(255,255,255,0), rgba(245,245,247,1));
+            pointer-events: none;
+        }
+        .tabs {
+            background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.8));
+            box-shadow: var(--shadow-sm);
+        }
+        .tab.active {
+            box-shadow: 0 12px 28px rgba(0, 113, 227, 0.2);
+        }
+        .order-item {
+            background: var(--bg-tertiary);
+            border-color: transparent;
+            box-shadow: var(--shadow-sm);
+        }
+        .order-item:hover {
+            box-shadow: var(--shadow-lg);
+        }
+        .action-btn {
+            border-radius: 999px;
         }
 
         /* 订单项 */
@@ -197,6 +229,15 @@
             color: #ff3b30;
         }
 
+        .btn-secondary {
+            background: rgba(0, 122, 255, 0.12);
+            color: #007aff;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 122, 255, 0.2);
+        }
+
         .btn-learn {
             background: rgba(52, 199, 89, 0.1);
             color: #34c759;
@@ -285,6 +326,43 @@
             }
         }
 
+        /* ===== 视觉精修覆盖 ===== */
+        body {
+            background:
+                radial-gradient(1100px 700px at 18% 12%, rgba(59,130,246,0.12), transparent 60%),
+                radial-gradient(900px 600px at 80% 20%, rgba(99,102,241,0.16), transparent 55%),
+                linear-gradient(180deg, #f7f8ff 0%, #f5f7ff 50%, #f1f5ff 100%);
+        }
+        .orders-hero h1 {
+            text-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
+        }
+        .tabs {
+            border: 1px solid rgba(148, 163, 184, 0.24);
+        }
+        .tab {
+            font-weight: 600;
+        }
+        .tab.active {
+            box-shadow: 0 12px 28px rgba(99, 102, 241, 0.2);
+        }
+        .orders-container {
+            border: 1px solid rgba(148, 163, 184, 0.24);
+            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.12);
+        }
+        .order-item {
+            background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.92));
+        }
+        .action-btn {
+            border-radius: 999px;
+            font-weight: 600;
+        }
+        .btn-pay {
+            box-shadow: 0 12px 26px rgba(79, 70, 229, 0.22);
+        }
+        .btn-pay:hover {
+            box-shadow: 0 16px 32px rgba(79, 70, 229, 0.28);
+        }
+
         /* SVG 图标样式 */
         .icon {
             width: 20px;
@@ -302,23 +380,24 @@
     <!-- 导航栏 -->
     <nav class="nav">
         <div class="nav-inner">
-            <a href="/home.html" class="nav-logo">AI 信息未来</a>
+            <a href="home.html" class="nav-logo">AI 信息未来</a>
             <div class="nav-menu">
-                <a href="/home.html" class="nav-link">首页</a>
-                <a href="/src/pages/courses.html" class="nav-link">课程</a>
-                <a href="/src/pages/community.html" class="nav-link">社区</a>
-                <a href="/src/pages/arena.html" class="nav-link">PK竞技</a>
+                <a href="home.html" class="nav-link">首页</a>
+                <a href="courses.html" class="nav-link">课程</a>
+                <a href="online-plaza.html" class="nav-link">在线广场</a>
+                <a href="pk-arena.html" class="nav-link">PK竞技</a>
+                <a href="community.html" class="nav-link">社区</a>
             </div>
             <div class="nav-actions">
                 <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
-                    <svg class="icon" viewBox="0 0 24 24">
-                        <path class="sun-icon" d="M12 18C8.68629 18 6 15.3137 6 12C6 8.68629 8.68629 6 12 6C15.3137 6 18 8.68629 18 12C18 15.3137 15.3137 18 12 18ZM12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16ZM11 1H13V4H11V1ZM11 20H13V23H11V20ZM3.51472 4.92893L4.92893 3.51472L7.05025 5.63604L5.63604 7.05025L3.51472 4.92893ZM16.9497 18.364L18.364 16.9497L20.4853 19.0711L19.0711 20.4853L16.9497 18.364ZM19.0711 3.51472L20.4853 4.92893L18.364 7.05025L16.9497 5.63604L19.0711 3.51472ZM5.63604 16.9497L7.05025 18.364L4.92893 20.4853L3.51472 19.0711L5.63604 16.9497ZM23 11V13H20V11H23ZM4 11V13H1V11H4Z"/>
-                        <path class="moon-icon" style="display:none;" d="M10 7C10 10.866 13.134 14 17 14C18.9584 14 20.729 13.1957 21.9995 11.8995C22 11.933 22 11.9665 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C12.0335 2 12.067 2 12.1005 2.00049C10.8043 3.27098 10 5.04157 10 7Z"/>
+                    <svg class="sun-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10 2a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 2z"/>
+                    </svg>
+                    <svg class="moon-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor" style="display:none;">
+                        <path d="M17.293 13.293A8 8 0 116.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
                     </svg>
                 </button>
-                <div class="user-menu" id="userMenu">
-                    <!-- 用户菜单将通过 JS 动态加载 -->
-                </div>
+                <div id="authArea"></div>
             </div>
         </div>
     </nav>
@@ -418,70 +497,10 @@
             }
         }
 
-        // 认证检查
-        function checkAuth() {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                window.location.href = '/src/pages/login.html?returnUrl=' + encodeURIComponent(location.pathname);
-                return false;
-            }
-            return true;
-        }
-
-        // 初始化用户菜单
-        function initUserMenu() {
-            const token = localStorage.getItem('token');
-            const userMenuEl = document.getElementById('userMenu');
-
-            if (token) {
-                const username = localStorage.getItem('username') || '用户';
-                userMenuEl.innerHTML = `
-                    <div class="user-avatar" onclick="toggleDropdown()">
-                        ${username.charAt(0).toUpperCase()}
-                    </div>
-                    <div class="dropdown" id="userDropdown">
-                        <div class="dropdown-item" onclick="location.href='/src/pages/dashboard.html'">
-                            <svg class="icon icon-sm" viewBox="0 0 24 24">
-                                <path d="M4 22C4 17.5817 7.58172 14 12 14C16.4183 14 20 17.5817 20 22H18C18 18.6863 15.3137 16 12 16C8.68629 16 6 18.6863 6 22H4ZM12 13C8.685 13 6 10.315 6 7C6 3.685 8.685 1 12 1C15.315 1 18 3.685 18 7C18 10.315 15.315 13 12 13ZM12 11C14.21 11 16 9.21 16 7C16 4.79 14.21 3 12 3C9.79 3 8 4.79 8 7C8 9.21 9.79 11 12 11Z" fill="currentColor"/>
-                            </svg>
-                            学习中心
-                        </div>
-                        <div class="dropdown-item" onclick="location.href='/src/pages/orders.html'">
-                            <svg class="icon icon-sm" viewBox="0 0 24 24">
-                                <path d="M6.5 2H17.5C17.776 2 18 2.224 18 2.5V21.5C18 21.776 17.776 22 17.5 22H6.5C6.224 22 6 21.776 6 21.5V2.5C6 2.224 6.224 2 6.5 2ZM8 4V20H16V4H8ZM10 6H14V8H10V6ZM10 9H14V11H10V9ZM10 12H14V14H10V12Z" fill="currentColor"/>
-                            </svg>
-                            我的订单
-                        </div>
-                        <div class="dropdown-divider"></div>
-                        <div class="dropdown-item" onclick="logout()">
-                            <svg class="icon icon-sm" viewBox="0 0 24 24">
-                                <path d="M5 22C4.44772 22 4 21.5523 4 21V3C4 2.44772 4.44772 2 5 2H19C19.5523 2 20 2.44772 20 3V6H18V4H6V20H18V18H20V21C20 21.5523 19.5523 22 19 22H5ZM18 16V13H11V11H18V8L23 12L18 16Z" fill="currentColor"/>
-                            </svg>
-                            退出登录
-                        </div>
-                    </div>
-                `;
-            }
-        }
-
-        function toggleDropdown() {
-            const dropdown = document.getElementById('userDropdown');
-            dropdown.classList.toggle('show');
-        }
-
-        // 点击外部关闭下拉菜单
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.user-menu')) {
-                const dropdown = document.getElementById('userDropdown');
-                if (dropdown) dropdown.classList.remove('show');
-            }
-        });
-
-        // 退出登录
         function logout() {
             localStorage.removeItem('token');
             localStorage.removeItem('username');
-            window.location.href = '/src/pages/login.html';
+            window.location.href = 'login.html';
         }
 
         // 加载订单
@@ -490,7 +509,7 @@
                 showLoading();
 
                 const token = localStorage.getItem('token');
-                const response = await fetch(`${API_BASE}/subscriptions/my?size=100`, {
+                const response = await fetch(`${API_BASE}/orders/my/merged?size=100`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -499,7 +518,7 @@
                 const data = await response.json();
 
                 if (data.success && data.data) {
-                    allOrders = data.data.subscriptions || data.data.list || [];
+                    allOrders = data.data.orders || data.data.subscriptions || [];
 
                     // 预处理订单数据
                     allOrders = allOrders.map(order => {
@@ -530,10 +549,11 @@
             };
 
             orders.forEach(order => {
-                if (order.status === 'pending') stats.pending++;
-                else if (order.status === 'active') stats.active++;
-                else if (order.status === 'cancelled') stats.cancelled++;
-                else if (order.status === 'expired') stats.expired++;
+                const status = normalizeStatus(order);
+                if (status === 'pending') stats.pending++;
+                else if (status === 'paid') stats.active++;
+                else if (status === 'cancelled') stats.cancelled++;
+                else if (status === 'expired') stats.expired++;
             });
 
             document.getElementById('totalCount').textContent = stats.total;
@@ -558,7 +578,7 @@
             // 筛选订单
             let filteredOrders = allOrders;
             if (status !== 'all') {
-                filteredOrders = allOrders.filter(order => order.status === status);
+                filteredOrders = allOrders.filter(order => normalizeStatus(order) === status);
             }
 
             displayOrders(filteredOrders);
@@ -587,15 +607,19 @@
                 const statusText = getStatusText(order.status);
                 const isPayable = order.status === 'pending' && isOrderPayable(order.createdAt);
                 const actionButtons = getActionButtons(order, isPayable);
-                const orderTypeLabel = order.type === 'bundle' ?
-                    '<span class="badge badge-primary">课程包</span>' :
-                    '<span class="badge">单课程</span>';
+                const orderType = order.orderType || order.type || order.subscribableType || '';
+                const orderTypeLabel = orderType === 'bundle_subscription' || orderType === 'bundle'
+                    ? '<span class="badge badge-primary">课程包</span>'
+                    : (orderType === 'course_product'
+                        ? '<span class="badge">课程产品</span>'
+                        : '<span class="badge">单课程</span>');
 
+                const displayTitle = order.title || order.courseName || '未知课程';
                 return `
                     <div class="order-item">
                         <div class="order-info">
                             <div class="order-title">
-                                ${order.courseName || '未知课程'}
+                                ${displayTitle}
                                 ${orderTypeLabel}
                             </div>
                             <div class="order-meta">订单号: ${order.orderNo}</div>
@@ -609,6 +633,11 @@
                         <div class="order-actions">
                             <span class="order-status ${statusClass}">${statusText}</span>
                             ${actionButtons}
+                            ${order.status === 'pending' ? `
+                                <button class="action-btn btn-secondary" onclick="syncOrder('${order.orderNo}')">
+                                    同步支付
+                                </button>
+                            ` : ''}
                         </div>
                     </div>
                 `;
@@ -619,18 +648,19 @@
 
         // 获取操作按钮
         function getActionButtons(order, isPayable) {
-            if (order.status === 'pending') {
+            const status = normalizeStatus(order);
+            if (status === 'pending') {
                 return `
-                    <button class="action-btn btn-pay" onclick="continuePayment('${order.id}', '${order.orderNo}', '${order.courseName || '课程'}', ${order.amount}, '${order.subscribableType || 'course'}', ${order.subscribableId || order.courseId || 1})">
+                    <button class="action-btn btn-pay" onclick="continuePayment('${order.id}', '${order.orderNo}', '${order.courseName || '课程'}', ${order.amount}, '${order.subscribableType || order.type || 'course'}', ${order.subscribableId || order.courseId || 1})">
                         立即支付
                     </button>
                     <button class="action-btn btn-cancel" onclick="cancelOrder('${order.id}', '${order.courseName || '课程'}')">
                         取消订单
                     </button>
                 `;
-            } else if (order.status === 'active') {
+            } else if (status === 'paid') {
                 return `
-                    <button class="action-btn btn-learn" onclick="goToLearn(${order.subscribableId || order.courseId})">
+                    <button class="action-btn btn-learn" onclick="goToLearn('${order.type || order.subscribableType || ''}', '${order.productId || ''}', '${order.subscribableId || order.courseId || ''}')">
                         去学习
                     </button>
                 `;
@@ -638,22 +668,32 @@
             return '';
         }
 
+        function normalizeStatus(order) {
+            if (!order) return 'pending';
+            if (order.status) {
+                if (order.status === 'active') return 'paid';
+                return order.status;
+            }
+            return order.paymentStatus || 'pending';
+        }
+
         // 继续支付
         async function continuePayment(subscriptionId, orderNo, courseName, amount, subscribableType, subscribableId) {
             try {
+                const type = subscribableType || '';
+                const isBundle = type === 'bundle' || type === 'bundle_subscription';
+                const isCourseProduct = type === 'course_product';
+
                 const params = new URLSearchParams({
                     orderNo: orderNo,
-                    courseId: subscribableId,
-                    type: subscribableType === 'bundle' ? 'bundle' : 'course',
-                    courseName: courseName,
                     continuePayment: 'true'
                 });
 
-                if (subscribableType === 'bundle') {
-                    params.set('bundleId', subscribableId);
-                }
+                if (isBundle) params.set('bundleId', subscribableId);
+                if (isCourseProduct) params.set('productId', subscribableId);
+                if (!isBundle && !isCourseProduct) params.set('courseId', subscribableId);
 
-                window.location.href = `/src/pages/payment.html?${params.toString()}`;
+                window.location.href = `payment.html?${params.toString()}`;
             } catch (error) {
                 console.error('继续支付失败:', error);
                 alert('支付失败，请稍后重试');
@@ -668,12 +708,10 @@
 
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`${API_BASE}/subscriptions/${subscriptionId}/cancel`, {
+                const response = await fetch(`${API_BASE}/orders/cancel/${subscriptionId}`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`
-                    }
-                });
 
                 const data = await response.json();
 
@@ -689,9 +727,36 @@
             }
         }
 
+        async function syncOrder(orderNo) {
+            try {
+                const token = localStorage.getItem('token');
+                const res = await fetch(`${API_BASE}/orders/sync/${encodeURIComponent(orderNo)}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('同步成功');
+                    loadOrders();
+                } else {
+                    showToast(data.message || '同步失败');
+                }
+            } catch (e) {
+                showToast('同步失败，请稍后重试');
+            }
+        }
+
         // 去学习
-        function goToLearn(courseId) {
-            window.location.href = '/src/pages/my-courses.html';
+        function goToLearn(type, productId, courseId) {
+            if (type === 'course_product' && productId) {
+                window.location.href = `course-detail.html?productId=${encodeURIComponent(productId)}`;
+                return;
+            }
+            if (courseId) {
+                window.location.href = `course-detail.html?id=${encodeURIComponent(courseId)}`;
+                return;
+            }
+            window.location.href = 'my-courses.html';
         }
 
         // 工具函数
@@ -706,6 +771,7 @@
         function getStatusClass(status) {
             const classes = {
                 'active': 'status-active',
+                'paid': 'status-active',
                 'pending': 'status-pending',
                 'expired': 'status-expired',
                 'cancelled': 'status-cancelled'
@@ -716,6 +782,7 @@
         function getStatusText(status) {
             const texts = {
                 'active': '已支付',
+                'paid': '已支付',
                 'pending': '待支付',
                 'expired': '已过期',
                 'cancelled': '已取消'
@@ -754,7 +821,7 @@
             }
 
             if (typeof order === 'object' && order !== null) {
-                const possibleFields = ['amount', 'price', 'totalAmount', 'finalPrice', 'cost'];
+                const possibleFields = ['finalAmount', 'amount', 'price', 'totalAmount', 'finalPrice', 'cost'];
                 for (const field of possibleFields) {
                     const value = order[field];
                     if (value !== null && value !== undefined) {
@@ -800,9 +867,10 @@
             initTheme();
             document.getElementById('themeToggle').addEventListener('click', toggleTheme);
 
-            if (checkAuth()) {
-                initUserMenu();
-                loadOrders();
+            if (!window.AppShell || !window.AppShell.getToken || !window.AppShell.getToken()) {
+                if (window.AppShell && window.AppShell.showLoginBanner) { window.AppShell.showLoginBanner(); }
+            } else {
+                                loadOrders();
 
                 // 自动刷新待支付订单
                 setInterval(() => {
@@ -810,8 +878,8 @@
                         loadOrders();
                     }
                 }, 30000);
-            }
-        });
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

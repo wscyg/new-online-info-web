@@ -1,0 +1,301 @@
+{
+  "templateId": "gpt-course",
+  "title": "GPT-1: Transformer 开创者",
+  "subtitle": "生成式预训练的里程碑",
+  "topbar": {
+    "chip": "AI 系列",
+    "title": "GPT-1 深度解析",
+    "sub": "Chapter 1.5"
+  },
+  "pages": [
+    {
+      "type": "hero",
+      "accent": "purple",
+      "badge": {
+        "icon": "star",
+        "text": "经典论文导读"
+      },
+      "title": "GPT-1",
+      "subtitle": "Improving Language Understanding by Generative Pre-Training",
+      "subtitleTyping": true,
+      "features": [
+        { "icon": "layers", "text": "12层Transformer" },
+        { "icon": "database", "text": "117M 参数" },
+        { "icon": "book", "text": "BooksCorpus" }
+      ],
+      "cta": {
+        "primary": { "text": "开始学习", "icon": "play" },
+        "secondary": { "text": "目录", "icon": "list" }
+      },
+      "stats": [
+        { "value": "2018", "label": "发布年份" },
+        { "value": "12", "label": "Transformer 层数" },
+        { "value": "117M", "label": "模型参数" }
+      ]
+    },
+    {
+      "type": "content",
+      "title": "背景与动机",
+      "sub": "01",
+      "accent": "cyan",
+      "blocks": [
+        {
+          "type": "section-label",
+          "text": "历史背景"
+        },
+        {
+          "type": "section-title",
+          "text": "预训练革命的起点"
+        },
+        {
+          "type": "section-desc",
+          "text": "2018年,OpenAI 发布 GPT-1,开创了生成式预训练范式。这一创新彻底改变了 NLP 领域的研究方向。"
+        },
+        {
+          "type": "prose",
+          "paragraphs": [
+            "在 GPT-1 之前,NLP 模型通常需要针对每个任务从头训练。这不仅效率低下,还需要大量标注数据。",
+            "GPT-1 提出了 <hl class=\"hl-cyan\">预训练 + 微调</hl> 的两阶段范式,利用无监督学习从海量文本中提取知识,然后在下游任务上进行少量微调。"
+          ]
+        },
+        {
+          "type": "cards-grid",
+          "columns": 3,
+          "cards": [
+            {
+              "icon": "🔄",
+              "iconColor": "cyan",
+              "title": "预训练",
+              "subtitle": "Pre-training",
+              "text": "使用大规模无标注文本进行语言模型训练,学习通用语言表示"
+            },
+            {
+              "icon": "🎯",
+              "iconColor": "pink",
+              "title": "微调",
+              "subtitle": "Fine-tuning",
+              "text": "在特定任务上使用少量标注数据进行参数调整"
+            },
+            {
+              "icon": "📈",
+              "iconColor": "green",
+              "title": "迁移学习",
+              "subtitle": "Transfer Learning",
+              "text": "将预训练知识迁移到各种下游NLP任务"
+            }
+          ]
+        },
+        {
+          "type": "page-transition",
+          "icon": "→",
+          "text": "下一页我们将深入了解 GPT-1 的核心架构..."
+        }
+      ]
+    },
+    {
+      "type": "content",
+      "title": "模型架构",
+      "sub": "02",
+      "accent": "pink",
+      "blocks": [
+        {
+          "type": "section-label",
+          "text": "核心技术"
+        },
+        {
+          "type": "section-title",
+          "text": "Transformer Decoder"
+        },
+        {
+          "type": "section-desc",
+          "text": "GPT-1 采用仅解码器(Decoder-only)的 Transformer 架构,通过自回归方式生成文本。"
+        },
+        {
+          "type": "keyline",
+          "dot": "K",
+          "text": "GPT 使用 <em class=\"em-cyan\">Masked Self-Attention</em>,确保模型只能看到当前位置之前的 token,这是自回归语言模型的关键设计。"
+        },
+        {
+          "type": "think-box",
+          "icon": "💡",
+          "title": "思考题",
+          "text": "为什么 GPT 选择 Decoder-only 架构而不是 Encoder-Decoder?这与语言建模目标有什么关系?"
+        },
+        {
+          "type": "formula-box",
+          "label": "语言模型目标",
+          "formula": "<span class=\"formula-func\">L</span>(<span class=\"formula-var\">U</span>) <span class=\"formula-op\">=</span> <span class=\"formula-op\">∑</span> <span class=\"formula-func\">log</span> <span class=\"formula-var\">P</span>(<span class=\"formula-var\">u<sub>i</sub></span> | <span class=\"formula-var\">u<sub>i-k</sub></span>, ..., <span class=\"formula-var\">u<sub>i-1</sub></span>; <span class=\"formula-var\">Θ</span>)",
+          "desc": "最大化给定上下文预测下一个 token 的对数似然"
+        },
+        {
+          "type": "example-box",
+          "color": "cyan",
+          "icon": "💻",
+          "title": "代码示例: Self-Attention",
+          "code": "<span class=\"comment\"># Scaled Dot-Product Attention</span>\n<span class=\"keyword\">def</span> <span class=\"function\">attention</span>(Q, K, V):\n    d_k = Q.shape[-<span class=\"number\">1</span>]\n    scores = Q @ K.T / <span class=\"function\">sqrt</span>(d_k)\n    weights = <span class=\"function\">softmax</span>(scores)\n    <span class=\"keyword\">return</span> weights @ V",
+          "note": "注意力分数需要除以 √d_k 来稳定梯度"
+        },
+        {
+          "type": "accordion",
+          "badge": "详解",
+          "title": "为什么使用 Layer Normalization?",
+          "content": [
+            "Layer Normalization 对每个样本独立归一化,适用于变长序列。",
+            "与 Batch Normalization 不同,Layer Norm 在推理时行为一致,更适合自回归生成。"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "content",
+      "title": "预训练详解",
+      "sub": "03",
+      "accent": "green",
+      "blocks": [
+        {
+          "type": "section-label",
+          "text": "训练过程"
+        },
+        {
+          "type": "section-title",
+          "text": "无监督语言建模"
+        },
+        {
+          "type": "prose",
+          "paragraphs": [
+            "GPT-1 使用 <hl class=\"hl-green\">BooksCorpus</hl> 进行预训练,包含超过 7000 本书籍的长文本。",
+            "模型需要学习预测下一个 token,这迫使它理解语法、语义甚至常识知识。"
+          ]
+        },
+        {
+          "type": "math-block",
+          "title": "训练超参数",
+          "steps": [
+            { "step": "层数:", "eq": "12 layers" },
+            { "step": "隐藏层:", "eq": "768 dimensions" },
+            { "step": "注意力头:", "eq": "12 heads" },
+            { "step": "上下文长度:", "eq": "512 tokens" },
+            { "step": "批大小:", "eq": "64" }
+          ],
+          "result": "总参数量: 117M"
+        },
+        {
+          "type": "callout",
+          "title": "训练技巧",
+          "tag": "TIPS",
+          "items": [
+            "使用 BPE (Byte Pair Encoding) 分词",
+            "采用 GELU 激活函数替代 ReLU",
+            "学习率采用 warmup + cosine decay",
+            "使用 dropout 进行正则化"
+          ]
+        },
+        {
+          "type": "quote-box",
+          "text": "预训练语言模型能够捕获丰富的世界知识,这些知识可以迁移到各种下游任务。",
+          "author": "— OpenAI GPT 论文"
+        }
+      ]
+    },
+    {
+      "type": "content",
+      "title": "微调策略",
+      "sub": "04",
+      "accent": "amber",
+      "blocks": [
+        {
+          "type": "section-label",
+          "text": "下游任务"
+        },
+        {
+          "type": "section-title",
+          "text": "任务适配与微调"
+        },
+        {
+          "type": "section-desc",
+          "text": "GPT-1 展示了如何将预训练模型适配到分类、问答、相似度计算等多种任务。"
+        },
+        {
+          "type": "cards-grid",
+          "columns": 2,
+          "cards": [
+            {
+              "icon": "📝",
+              "iconColor": "amber",
+              "title": "文本分类",
+              "subtitle": "Classification",
+              "text": "在最后一个 token 上添加线性分类头"
+            },
+            {
+              "icon": "❓",
+              "iconColor": "purple",
+              "title": "问答任务",
+              "subtitle": "Question Answering",
+              "text": "将问题和文档拼接,预测答案位置"
+            }
+          ]
+        },
+        {
+          "type": "sticky-note",
+          "color": "yellow",
+          "title": "重要提示!",
+          "text": "微调时保留预训练的语言建模损失作为辅助目标,可以提升泛化能力和加速收敛。"
+        },
+        {
+          "type": "accordion",
+          "style": "answer",
+          "badge": "答案",
+          "title": "为什么需要辅助语言建模损失?",
+          "content": [
+            "防止灾难性遗忘:保持预训练知识",
+            "正则化效果:避免过拟合到小数据集",
+            "加速收敛:利用预训练的梯度信号"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "content",
+      "title": "总结",
+      "sub": "05",
+      "accent": "purple",
+      "blocks": [
+        {
+          "type": "section-label",
+          "text": "回顾"
+        },
+        {
+          "type": "section-title",
+          "text": "GPT-1 的历史意义"
+        },
+        {
+          "type": "prose",
+          "paragraphs": [
+            "GPT-1 虽然参数量不大,但它开创的 <hl class=\"hl-purple\">预训练+微调</hl> 范式成为后续大模型发展的基石。",
+            "从 GPT-1 到 GPT-4,这一思想不断演进,推动了 AI 能力的飞跃。"
+          ]
+        },
+        {
+          "type": "keyline",
+          "dot": "★",
+          "text": "GPT-1 证明了:通过大规模无监督预训练,模型可以学习通用的语言理解能力,并轻松迁移到各种下游任务。"
+        },
+        {
+          "type": "callout",
+          "title": "核心贡献",
+          "items": [
+            "提出生成式预训练范式",
+            "证明 Transformer 在语言建模上的强大能力",
+            "开创了从 GPT-1 到 ChatGPT 的技术路线"
+          ]
+        },
+        {
+          "type": "sticky-note",
+          "color": "purple",
+          "title": "下一步学习",
+          "text": "继续学习 GPT-2、GPT-3,了解模型规模扩展带来的涌现能力!"
+        }
+      ]
+    }
+  ]
+}

@@ -6,7 +6,8 @@
     <title>Avatar 换装系统 - AI 信息未来</title>
 
     <!-- Apple Design CSS -->
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
 
     <style>
         /* Page-specific styles */
@@ -307,6 +308,7 @@
                 <a href="pk-arena.html" class="nav-link">PK竞技</a>
             </div>
             <div class="nav-actions">
+                <div id="authArea"></div>
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
                     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <circle cx="12" cy="12" r="5"></circle>
@@ -320,9 +322,7 @@
                         <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                     </svg>
                 </button>
-                <div class="user-menu" id="userMenu">
-                    <!-- User avatar will be inserted here -->
-                </div>
+                
             </div>
         </div>
     </nav>
@@ -450,7 +450,7 @@
     </div>
 
     <!-- Avatar Renderer -->
-    <script src="../components/AvatarRenderer.js"></script>
+    <script></script>
 
     <script>
         // Constants
@@ -466,8 +466,7 @@
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', async () => {
             initTheme();
-            initAuth();
-
+            
             // Create Avatar renderer
             avatarRenderer = new AvatarRenderer('avatar-canvas', 300, 400);
 
@@ -492,15 +491,7 @@
         }
 
         // Auth Management
-        function initAuth() {
-            const token = localStorage.getItem('token');
-            const userStr = localStorage.getItem('user');
-
-            if (!token || !userStr) {
-                window.location.href = 'login.html';
-                return;
-            }
-
+        
             try {
                 const user = JSON.parse(userStr);
                 currentUserId = user.id;
@@ -519,14 +510,7 @@
                 <div class="user-avatar" onclick="toggleUserDropdown(event)">
                     ${user.avatar ? `<img src="${user.avatar}" alt="${user.username}">` : initial}
                 </div>
-                <div class="dropdown" id="userDropdown">
-                    <div class="dropdown-item" onclick="window.location.href='profile.html'">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                        个人资料
-                    </div>
+                
                     <div class="dropdown-item" onclick="window.location.href='avatar-showcase.html'" style="color: var(--accent);">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                             <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
@@ -548,23 +532,6 @@
 
         function toggleUserDropdown(event) {
             event.stopPropagation();
-            const dropdown = document.getElementById('userDropdown');
-            dropdown.classList.toggle('show');
-        }
-
-        function logout() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.href = 'login.html';
-        }
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', () => {
-            const dropdown = document.getElementById('userDropdown');
-            if (dropdown) {
-                dropdown.classList.remove('show');
-            }
-        });
 
         // Avatar Functions
         async function refreshAvatar() {
@@ -590,8 +557,6 @@
             avatarRenderer.layers.forEach(layer => {
                 if (stats[layer.partType] !== undefined) {
                     stats[layer.partType] = layer.name;
-                }
-            });
 
             document.getElementById('stat-aura').textContent = stats.AURA;
             document.getElementById('stat-body').textContent = stats.BODY;
@@ -663,8 +628,6 @@
                 const response = await fetch(`${API_BASE}/skins/inventory`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
-                    }
-                });
 
                 const result = await response.json();
                 if (!result.success) {
@@ -724,8 +687,6 @@
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`
-                    }
-                });
 
                 const result = await response.json();
                 if (result.success) {
@@ -807,5 +768,7 @@
             }, 3000);
         }
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

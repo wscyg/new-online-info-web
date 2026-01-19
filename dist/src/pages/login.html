@@ -124,7 +124,7 @@
             display: block;
         }
     </style>
-  <link rel="stylesheet" href="/assets/apple-design-3a23e109.css">
+  <link rel="stylesheet" href="/assets/apple-design-5104bdc3.css">
 </head>
 <body>
     <a href="home.html" class="back-link">
@@ -168,39 +168,27 @@
         </div>
     </div>
 
-    <div id="toast" class="toast"></div>
-
-    <script src="../utils/api.js"></script>
+    <!-- 使用统一工具模块 -->
+    <script src="/utils/utils-bundle.js"></script>
     <script>
-        const API_BASE = '/api';
-
         document.addEventListener('DOMContentLoaded', () => {
-            initTheme();
+            // 主题已由 utils-bundle 自动初始化
+            updateThemeIcon(theme.getTheme());
+
+            // 监听主题变化更新图标
+            document.getElementById('themeToggle').addEventListener('click', () => {
+                updateThemeIcon(theme.getTheme());
+            });
 
             // 检查是否已登录
-            const token = localStorage.getItem('token');
-            if (token) {
-                const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
-                window.location.href = returnUrl || 'dashboard.html';
+            if (auth.isLoggedIn()) {
+                auth.redirectAfterLogin();
                 return;
             }
         });
 
-        function initTheme() {
-            const saved = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-theme', saved);
-            updateThemeIcon(saved);
-            document.getElementById('themeToggle').addEventListener('click', () => {
-                const current = document.documentElement.getAttribute('data-theme');
-                const next = current === 'dark' ? 'light' : 'dark';
-                document.documentElement.setAttribute('data-theme', next);
-                localStorage.setItem('theme', next);
-                updateThemeIcon(next);
-            });
-        }
-
-        function updateThemeIcon(theme) {
-            document.querySelector('#themeToggle i').className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        function updateThemeIcon(currentTheme) {
+            document.querySelector('#themeToggle i').className = currentTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
         }
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
@@ -216,37 +204,28 @@
                 return;
             }
 
-            submitBtn.disabled = true;
-            submitBtn.textContent = '登录中...';
+            // 使用 loading 管理按钮状态
+            loading.setButtonLoading(submitBtn, true);
             errorMsg.classList.remove('show');
 
             try {
-                const res = await fetch(API_BASE + '/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                });
-                const data = await res.json();
+                // 使用统一 API 客户端
+                const data = await api.post('/auth/login', { username, password });
 
                 if (data.code === 200 && data.data) {
-                    // 保存登录信息
-                    localStorage.setItem('token', data.data.token);
-                    localStorage.setItem('user', JSON.stringify(data.data.user));
+                    // 使用统一认证管理
+                    auth.setToken(data.data.token);
+                    auth.setUser(data.data.user);
 
-                    showToast('登录成功');
-                    setTimeout(() => {
-                        const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
-                        window.location.href = returnUrl || 'dashboard.html';
-                    }, 500);
+                    toast.success('登录成功');
+                    setTimeout(() => auth.redirectAfterLogin(), 500);
                 } else {
                     showError(data.message || '登录失败');
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = '登录';
+                    loading.setButtonLoading(submitBtn, false, '登录');
                 }
             } catch (err) {
-                showError('网络错误，请重试');
-                submitBtn.disabled = false;
-                submitBtn.textContent = '登录';
+                showError(err.message || '网络错误，请重试');
+                loading.setButtonLoading(submitBtn, false, '登录');
             }
         });
 
@@ -254,13 +233,7 @@
             const el = document.getElementById('errorMsg');
             el.textContent = msg;
             el.classList.add('show');
-        }
-
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 3000);
+            toast.error(msg);  // 同时显示 toast 通知
         }
     </script>
 </body>

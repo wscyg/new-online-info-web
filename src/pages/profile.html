@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>个人中心 - AI 信息未来</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
+    <script></script>
     <style>
         /* Profile Header */
         .profile-hero {
@@ -139,6 +140,69 @@
             display: flex;
             gap: 12px;
             margin-top: 24px;
+        }
+
+        .user-menu {
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 12px 24px rgba(46, 213, 115, 0.25);
+        }
+
+        .dropdown {
+            position: absolute;
+            right: 0;
+            top: 48px;
+            min-width: 180px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+            padding: 8px;
+            opacity: 0;
+            transform: translateY(-6px);
+            pointer-events: none;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+
+        .dropdown.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            margin: 6px 0;
+            background: var(--border-color);
         }
 
         /* Content Section */
@@ -592,6 +656,7 @@
                 <a href="community.html" class="nav-link">社区</a>
             </div>
             <div class="nav-actions">
+                <div id="authArea"></div>
                 <button class="theme-toggle" id="themeToggle">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="themeIcon">
                         <circle cx="12" cy="12" r="5"/>
@@ -605,8 +670,10 @@
                         <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
                     </svg>
                 </button>
-                <div class="user-menu">
-                    <div class="user-avatar" id="navAvatar">U</div>
+                
+                    
+                        <a href="#" class="dropdown-item" onclick="logout(); return false;">退出登录</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -795,6 +862,28 @@
                     </div>
                 </div>
 
+                <!-- Study Trend -->
+                <div class="profile-card">
+                    <div class="profile-card-header">
+                        <h2 class="profile-card-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 3v18h18"/>
+                                <path d="M18 17l-5-5-4 4-4-4"/>
+                            </svg>
+                            学习趋势
+                        </h2>
+                    </div>
+                    <div class="profile-card-body">
+                        <div style="height: 220px;">
+                            <canvas id="studyTrendChart"></canvas>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 12px; color: var(--text-tertiary); display:flex; justify-content: space-between; gap: 10px;">
+                            <span id="trendSummary">近7天学习与签到</span>
+                            <span id="trendUpdated"></span>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Recent Activity -->
                 <div class="profile-card">
                     <div class="profile-card-header">
@@ -841,11 +930,14 @@
         const API_BASE = '/api';
         let currentUser = null;
         let skillChart = null;
+        let studyTrendChart = null;
+        let cachedInsights = null;
+        let cachedPkStats = null;
+        let cachedProfile = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             initTheme();
-            checkAuth();
-        });
+                    });
 
         // Theme
         function initTheme() {
@@ -858,6 +950,7 @@
                 document.documentElement.setAttribute('data-theme', next);
                 localStorage.setItem('theme', next);
                 updateThemeIcon(next);
+                redrawCharts();
             });
         }
 
@@ -871,19 +964,18 @@
         }
 
         // Auth
-        async function checkAuth() {
-            const token = localStorage.getItem('token');
+        async function initAuth() {
             const userStr = localStorage.getItem('user');
-
-            if (!token || !userStr) {
-                window.location.href = 'login.html?returnUrl=' + encodeURIComponent(window.location.pathname);
+            if (!userStr) {
+                window.location.href = 'login.html';
                 return;
             }
-
             currentUser = JSON.parse(userStr);
             updateBasicUI();
             await loadAllData();
         }
+
+        initAuth();
 
         function updateBasicUI() {
             const initial = (currentUser.nickname || currentUser.username || 'U').charAt(0).toUpperCase();
@@ -905,6 +997,13 @@
             }
         }
 
+        
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+
         async function loadAllData() {
             await Promise.all([
                 loadUserProfile(),
@@ -914,7 +1013,8 @@
                 loadActivity(),
                 loadCertificates()
             ]);
-            initSkillRadar();
+            await loadLearningInsights();
+            redrawCharts();
         }
 
         // Load User Profile
@@ -926,6 +1026,7 @@
                 const data = await res.json();
                 if (data.code === 200 && data.data) {
                     const profile = data.data;
+                    cachedProfile = profile;
                     document.getElementById('levelBadge').textContent = profile.level || 1;
                     document.getElementById('statStudyDays').textContent = profile.continuousStudyDays || profile.studyDays || 0;
                     document.getElementById('statCourses').textContent = profile.courseCompletedCount || 0;
@@ -940,12 +1041,13 @@
         // Load PK Stats
         async function loadPkStats() {
             try {
-                const res = await fetch(`${API_BASE}/pk/my-stats`, {
+                const res = await fetch(`${API_BASE}/pk/stats`, {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                 });
                 const data = await res.json();
                 if (data.code === 200 && data.data) {
                     const stats = data.data;
+                    cachedPkStats = stats;
                     document.getElementById('pkTotalBattles').textContent = stats.totalBattles || 0;
                     document.getElementById('pkWins').textContent = stats.wins || 0;
                     document.getElementById('pkWinRate').textContent = (stats.winRate || 0).toFixed(1) + '%';
@@ -1039,7 +1141,7 @@
         async function loadStudyProgress() {
             const container = document.getElementById('studyProgressList');
             try {
-                const res = await fetch(`${API_BASE}/user/learning-courses`, {
+                const res = await fetch(`${API_BASE}/user/courses`, {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                 });
                 const data = await res.json();
@@ -1199,6 +1301,84 @@
             }
         }
 
+        function formatLocalDateTime(date) {
+            const pad = (n) => String(n).padStart(2, '0');
+            return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+        }
+
+        async function loadLearningInsights() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            const headers = { 'Authorization': `Bearer ${token}` };
+            const now = new Date();
+
+            const studyStart = new Date(now);
+            studyStart.setDate(studyStart.getDate() - 6);
+            studyStart.setHours(0, 0, 0, 0);
+
+            try {
+                const [studyRes, checkinRes] = await Promise.all([
+                    fetch(`${API_BASE}/study-sessions/statistics?startTime=${encodeURIComponent(formatLocalDateTime(studyStart))}&endTime=${encodeURIComponent(formatLocalDateTime(now))}`, { headers }).catch(() => null),
+                    fetch(`${API_BASE}/checkin/recent?days=30`, { headers }).catch(() => null),
+                ]);
+
+                const studyJson = studyRes && studyRes.ok ? await studyRes.json() : null;
+                const checkinJson = checkinRes && checkinRes.ok ? await checkinRes.json() : null;
+
+                const dailyStudyMap = new Map();
+                const daily = studyJson?.data?.dailyStudyTime || [];
+                daily.forEach(item => {
+                    const dateKey = (item.date || item.DATE || '').toString().slice(0, 10);
+                    const seconds = Number(item.total_seconds ?? item.totalSeconds ?? 0);
+                    if (dateKey) dailyStudyMap.set(dateKey, Math.round(seconds / 60));
+                });
+
+                const checkinRecords = checkinJson?.data?.records || [];
+                const checkinByDate = new Map();
+                checkinRecords.forEach(r => {
+                    const key = (r.checkinDate || '').toString().slice(0, 10);
+                    if (!key) return;
+                    checkinByDate.set(key, Number(r.pointsEarned ?? 0));
+                });
+
+                // 近7天趋势数据
+                const labels = [];
+                const studyMinutes = [];
+                const checkinPoints = [];
+                for (let i = 6; i >= 0; i--) {
+                    const d = new Date(now);
+                    d.setDate(d.getDate() - i);
+                    const key = d.toISOString().slice(0, 10);
+                    labels.push(`${d.getMonth() + 1}/${d.getDate()}`);
+                    studyMinutes.push(Number(dailyStudyMap.get(key) ?? 0));
+                    checkinPoints.push(Number(checkinByDate.get(key) ?? 0));
+                }
+
+                const checkinDays30 = checkinRecords.length;
+                const checkinPoints30 = checkinRecords.reduce((s, r) => s + Number(r.pointsEarned ?? 0), 0);
+                const totalStudySeconds = Number(studyJson?.data?.totalStudySeconds ?? 0);
+
+                cachedInsights = {
+                    labels,
+                    studyMinutes,
+                    checkinPoints,
+                    checkinDays30,
+                    checkinPoints30,
+                    totalStudyMinutes30: Math.round(totalStudySeconds / 60),
+                };
+            } catch (e) {
+                console.error('Load learning insights error:', e);
+            }
+        }
+
+        function redrawCharts() {
+            // Skill radar
+            initSkillRadar();
+            // Study trend chart
+            initStudyTrendChart();
+        }
+
         // Skill Radar Chart
         function initSkillRadar() {
             const ctx = document.getElementById('skillRadar').getContext('2d');
@@ -1206,13 +1386,36 @@
             const textColor = theme === 'dark' ? '#fff' : '#1d1d1f';
             const gridColor = theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
 
+            if (skillChart) {
+                skillChart.destroy();
+                skillChart = null;
+            }
+
+            const profile = cachedProfile || {};
+            const pk = cachedPkStats || {};
+            const insights = cachedInsights || {};
+
+            // 简单归一化到 0~100（没有后端“技能”口径时，用学习画像替代）
+            const clamp100 = (v) => Math.max(0, Math.min(100, Math.round(Number(v) || 0)));
+            const studyDays = Number(profile.continuousStudyDays ?? profile.studyDays ?? 0);
+            const completedCourses = Number(profile.courseCompletedCount ?? 0);
+            const points = Number(profile.pointsBalance ?? 0);
+            const winRate = Number(pk.winRate ?? 0);
+
+            const studyScore = clamp100((Number(insights.totalStudyMinutes30 ?? 0) / 600) * 100); // 10小时/30天≈100
+            const streakScore = clamp100((studyDays / 30) * 100);
+            const courseScore = clamp100((completedCourses / 10) * 100);
+            const pkScore = clamp100(winRate);
+            const checkinScore = clamp100((Number(insights.checkinDays30 ?? 0) / 30) * 100);
+            const pointsScore = clamp100((points / 2000) * 100);
+
             skillChart = new Chart(ctx, {
                 type: 'radar',
                 data: {
-                    labels: ['机器学习', '深度学习', '计算机视觉', '自然语言处理', '数据分析', '算法基础'],
+                    labels: ['学习时长', '连续学习', '课程完成', 'PK胜率', '签到活跃', '积分积累'],
                     datasets: [{
-                        label: '技能水平',
-                        data: [65, 45, 55, 40, 70, 80],
+                        label: '学习画像',
+                        data: [studyScore, streakScore, courseScore, pkScore, checkinScore, pointsScore],
                         backgroundColor: 'rgba(102, 126, 234, 0.2)',
                         borderColor: '#667eea',
                         borderWidth: 2,
@@ -1251,6 +1454,88 @@
             });
         }
 
+        function initStudyTrendChart() {
+            const canvas = document.getElementById('studyTrendChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            if (studyTrendChart) {
+                studyTrendChart.destroy();
+                studyTrendChart = null;
+            }
+
+            const theme = document.documentElement.getAttribute('data-theme');
+            const textColor = theme === 'dark' ? '#9ca3af' : '#6b7280';
+            const gridColor = theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+
+            const insights = cachedInsights;
+            const labels = insights?.labels || ['-', '-', '-', '-', '-', '-', '-'];
+            const studyMinutes = insights?.studyMinutes || [0, 0, 0, 0, 0, 0, 0];
+            const checkinPoints = insights?.checkinPoints || [0, 0, 0, 0, 0, 0, 0];
+
+            const totalStudy = studyMinutes.reduce((s, v) => s + (Number(v) || 0), 0);
+            const totalCheckinPoints = checkinPoints.reduce((s, v) => s + (Number(v) || 0), 0);
+            document.getElementById('trendSummary').textContent = `近7天学习 ${totalStudy} 分钟 · 签到 ${totalCheckinPoints} 积分`;
+            document.getElementById('trendUpdated').textContent = `更新于 ${new Date().toLocaleString()}`;
+
+            studyTrendChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            type: 'bar',
+                            label: '学习时长(分钟)',
+                            data: studyMinutes,
+                            borderRadius: 8,
+                            backgroundColor: 'rgba(59, 130, 246, 0.22)',
+                            borderColor: 'rgba(59, 130, 246, 0.55)',
+                            borderWidth: 1,
+                            yAxisID: 'yMinutes'
+                        },
+                        {
+                            type: 'line',
+                            label: '签到积分',
+                            data: checkinPoints,
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.10)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 3,
+                            pointHoverRadius: 5,
+                            yAxisID: 'y'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: textColor, padding: 16, usePointStyle: true }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { color: gridColor }, ticks: { color: textColor } },
+                        yMinutes: {
+                            position: 'left',
+                            grid: { color: gridColor },
+                            ticks: { color: textColor },
+                            beginAtZero: true
+                        },
+                        y: {
+                            position: 'right',
+                            grid: { display: false },
+                            ticks: { color: textColor },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
         // Share Profile
         function shareProfile() {
             const url = window.location.href;
@@ -1264,6 +1549,9 @@
                 alert('链接已复制到剪贴板');
             }
         }
+        });
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

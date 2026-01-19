@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>学习中心 - AI 信息未来</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
+    <script></script>
     <style>
         body, html {
             margin: 0;
@@ -159,14 +161,14 @@
                 <a href="/src/pages/arena.html" class="nav-link">PK竞技</a>
             </div>
             <div class="nav-actions">
+                <div id="authArea"></div>
                 <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                         <circle cx="8" cy="8" r="3.5"/>
                         <path d="M8 1v1M8 14v1M15 8h-1M2 8H1M12.95 12.95l-.7-.7M3.75 3.75l-.7-.7M12.95 3.05l-.7.7M3.75 12.25l-.7.7"/>
                     </svg>
                 </button>
-                <div class="user-menu" id="userMenu">
-                    <div class="user-avatar" id="userAvatar">U</div>
+                
                 </div>
             </div>
         </div>
@@ -241,8 +243,6 @@
                 if (e.ctrlKey && e.keyCode === 83) {
                     e.preventDefault();
                     return false;
-                }
-            });
 
             // Detect developer tools
             let devtools = {
@@ -308,8 +308,12 @@
                 .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '') // Remove event handlers
                 .replace(/javascript:/gi, 'blocked:'); // Block javascript: protocol
 
+            const safeHtml = window.DOMPurify
+                ? window.DOMPurify.sanitize(cleanedContent)
+                : cleanedContent;
+
             // Insert content directly to DOM
-            contentInner.innerHTML = cleanedContent;
+            contentInner.innerHTML = safeHtml;
 
             // Re-execute necessary scripts (highlight.js, KaTeX, etc.)
             setTimeout(() => {
@@ -362,8 +366,6 @@
                 const response = await fetch(`/api/content/chapters/${chapterId}`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-                    }
-                });
 
                 if (!response.ok) {
                     throw new Error(`无法获取章节内容，服务器状态: ${response.status}`);
@@ -401,8 +403,6 @@
             // Clean sensitive data
             if (window.contentData) {
                 delete window.contentData;
-            }
-        });
 
         // Prevent access to content via console
         Object.defineProperty(window, 'contentData', {
@@ -411,8 +411,6 @@
             },
             set: function() {
                 return false;
-            }
-        });
     </script>
 
     <!-- Preload necessary libraries -->
@@ -421,5 +419,7 @@
     <script src="/lib/highlightjs/highlight.min.js"></script>
     <script src="/lib/katex/katex.min.js"></script>
     <script src="/lib/katex/auto-render.min.js"></script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

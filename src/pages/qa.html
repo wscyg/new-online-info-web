@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>问答社区 - AI 信息未来</title>
     <meta name="description" content="学习问答社区，互帮互助，共同成长">
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <style>
         /* Page Layout */
         body {
@@ -654,6 +655,7 @@
                 <a href="code-arena.html" class="nav-link">PK竞技</a>
             </div>
             <div class="nav-actions">
+                <div id="authArea"></div>
                 <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
                     <svg class="icon" id="themeIcon">
                         <circle cx="8" cy="8" r="4"/>
@@ -663,13 +665,8 @@
                         <line x1="13" y1="8" x2="15" y2="8"/>
                     </svg>
                 </button>
-                <div class="user-menu">
-                    <div class="user-avatar" id="userAvatar">U</div>
-                    <div class="dropdown" id="userDropdown">
-                        <a href="profile.html" class="dropdown-item">个人资料</a>
-                        <a href="dashboard.html" class="dropdown-item">学习中心</a>
-                        <a href="orders.html" class="dropdown-item">我的订单</a>
-                        <div class="dropdown-divider"></div>
+                
+                    
                         <div class="dropdown-item" onclick="logout()">退出登录</div>
                     </div>
                 </div>
@@ -850,12 +847,10 @@
         // User Menu
         document.getElementById('userAvatar').addEventListener('click', function(e) {
             e.stopPropagation();
-            document.getElementById('userDropdown').classList.toggle('show');
+            
         });
 
-        document.addEventListener('click', function() {
-            document.getElementById('userDropdown').classList.remove('show');
-        });
+                });
 
         // Load User Info
         async function loadUserInfo() {
@@ -865,6 +860,8 @@
 
                 const response = await fetch(`${API_BASE}/user/profile`, {
                     headers: { 'Authorization': `Bearer ${token}` }
+                    }
+                });
                 });
 
                 if (response.ok) {
@@ -1392,5 +1389,7 @@
         window.searchByTag = searchByTag;
         window.logout = logout;
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

@@ -5,16 +5,95 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>安全支付 - AI 信息未来</title>
     <meta name="description" content="安全便捷的支付体验，多种支付方式">
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <style>
         /* === 支付页面样式 === */
         body {
             min-height: 100vh;
             padding-top: 48px;
+            padding-bottom: 96px;
+            background: radial-gradient(circle at top, #fff6e1 0%, #fdf7ff 38%, #f0f8ff 100%);
+            color: #1f2937;
+            font-family: "Space Grotesk", "Manrope", ui-sans-serif, system-ui;
         }
 
         main {
-            padding: 48px 0 80px;
+            padding: 52px 0 96px;
+        }
+
+        .vibrant-bg {
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at 10% 12%, rgba(255, 198, 105, 0.55), transparent 55%),
+                radial-gradient(circle at 85% 22%, rgba(255, 128, 160, 0.35), transparent 52%),
+                radial-gradient(circle at 80% 85%, rgba(110, 210, 255, 0.35), transparent 55%);
+            z-index: -2;
+            filter: blur(26px);
+            pointer-events: none;
+        }
+
+        .noise-overlay {
+            position: fixed;
+            inset: 0;
+            opacity: 0.025;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Ffilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            z-index: -1;
+            pointer-events: none;
+            mix-blend-mode: overlay;
+        }
+
+        .payment-hero {
+            max-width: 1080px;
+            margin: 0 auto 28px;
+            padding: 0 22px;
+        }
+
+        .payment-hero-card {
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(36px);
+            box-shadow: 0 30px 80px -40px rgba(15, 23, 42, 0.25);
+            padding: 24px 26px;
+            display: grid;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .payment-hero-card::after {
+            content: '';
+            position: absolute;
+            inset: -40% -20% auto auto;
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle, rgba(255, 190, 92, 0.5), transparent 68%);
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        .payment-hero-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: #0f172a;
+            letter-spacing: 0.01em;
+            text-shadow: 0 6px 18px rgba(255, 217, 139, 0.5);
+        }
+
+        .payment-hero-subtitle {
+            font-size: 14px;
+            color: #334155;
+            text-shadow: none;
+            font-weight: 500;
+        }
+
+        .payment-cta {
+            display: none;
         }
 
         /* === 支付步骤 === */
@@ -37,37 +116,38 @@
             width: 48px;
             height: 48px;
             border-radius: 50%;
-            background: var(--bg-secondary);
-            border: 2px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(148, 163, 184, 0.45);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 17px;
             font-weight: 600;
-            color: var(--text-tertiary);
+            color: rgba(30, 41, 59, 0.7);
             transition: all var(--transition-normal);
         }
 
         .step.active .step-circle {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #fff;
+            background: linear-gradient(90deg, #ffb347, #ff6b6b);
+            border-color: transparent;
+            color: #1f2937;
+            box-shadow: 0 12px 30px rgba(255, 167, 38, 0.35);
         }
 
         .step-label {
             font-size: 13px;
-            color: var(--text-tertiary);
+            color: rgba(30, 41, 59, 0.7);
         }
 
         .step.active .step-label {
-            color: var(--text-primary);
+            color: #1f2937;
             font-weight: 500;
         }
 
         .step-line {
             width: 60px;
             height: 2px;
-            background: var(--border-color);
+            background: rgba(255, 255, 255, 0.12);
             margin-bottom: 28px;
         }
 
@@ -76,14 +156,24 @@
             display: grid;
             grid-template-columns: 1fr 400px;
             gap: 32px;
-            max-width: 1024px;
+            max-width: 1080px;
             margin: 0 auto;
             padding: 0 22px;
+            align-items: start;
+        }
+
+        .order-summary-mobile {
+            display: none;
         }
 
         /* === 支付方式 === */
         .payment-section {
             margin-bottom: 32px;
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 24px 60px -36px rgba(148, 163, 184, 0.35);
         }
 
         .section-header {
@@ -91,15 +181,15 @@
         }
 
         .section-title {
-            font-size: 24px;
-            font-weight: 600;
-            color: var(--text-primary);
+            font-size: 20px;
+            font-weight: 700;
+            color: #0f172a;
             margin-bottom: 4px;
         }
 
         .section-subtitle {
-            font-size: 15px;
-            color: var(--text-secondary);
+            font-size: 13px;
+            color: rgba(30, 41, 59, 0.7);
         }
 
         .payment-methods {
@@ -111,10 +201,10 @@
         .payment-method {
             display: flex;
             align-items: center;
-            padding: 20px;
-            background: var(--bg-card);
-            border: 2px solid var(--border-color);
-            border-radius: var(--radius-lg);
+            padding: 18px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            border-radius: 16px;
             cursor: pointer;
             transition: all var(--transition-fast);
         }
@@ -124,8 +214,9 @@
         }
 
         .payment-method.active {
-            border-color: var(--accent);
-            background: rgba(0, 113, 227, 0.05);
+            border-color: rgba(255, 167, 38, 0.65);
+            background: linear-gradient(135deg, rgba(255, 224, 178, 0.65), rgba(255, 204, 188, 0.65));
+            box-shadow: 0 0 0 2px rgba(255, 183, 77, 0.18);
         }
 
         .payment-method.disabled {
@@ -160,13 +251,13 @@
         .method-name {
             font-size: 17px;
             font-weight: 500;
-            color: var(--text-primary);
+            color: #0f172a;
             margin-bottom: 2px;
         }
 
         .method-desc {
             font-size: 13px;
-            color: var(--text-secondary);
+            color: rgba(30, 41, 59, 0.65);
         }
 
         .method-tag {
@@ -179,7 +270,7 @@
             width: 24px;
             height: 24px;
             border-radius: 50%;
-            border: 2px solid var(--border-color);
+            border: 2px solid rgba(148, 163, 184, 0.5);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -187,35 +278,37 @@
         }
 
         .payment-method.active .method-check {
-            border-color: var(--accent);
-            background: var(--accent);
+            border-color: rgba(255, 167, 38, 0.9);
+            background: rgba(255, 167, 38, 0.9);
         }
 
         .payment-method.active .method-check::after {
             content: '✓';
-            color: #fff;
+            color: #1f2937;
             font-size: 14px;
             font-weight: 600;
         }
 
         /* === 推荐人 === */
         .referrer-section {
-            background: var(--bg-secondary);
-            border-radius: var(--radius-lg);
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            border-radius: 20px;
             padding: 20px;
             margin-bottom: 32px;
+            box-shadow: 0 24px 60px -36px rgba(148, 163, 184, 0.35);
         }
 
         .referrer-title {
             font-size: 17px;
             font-weight: 500;
-            color: var(--text-primary);
+            color: #0f172a;
             margin-bottom: 4px;
         }
 
         .referrer-optional {
             font-size: 13px;
-            color: var(--text-tertiary);
+            color: rgba(30, 41, 59, 0.55);
             margin-left: 4px;
         }
 
@@ -223,23 +316,23 @@
             width: 100%;
             margin-top: 12px;
             padding: 14px 16px;
-            font-size: 17px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            color: var(--text-primary);
+            font-size: 16px;
+            background: #ffffff;
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            border-radius: 12px;
+            color: #0f172a;
             transition: all var(--transition-fast);
         }
 
         .referrer-input:focus {
             outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+            border-color: rgba(255, 167, 38, 0.8);
+            box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.2);
         }
 
         .referrer-hint {
             font-size: 13px;
-            color: var(--text-tertiary);
+            color: rgba(30, 41, 59, 0.7);
             margin-top: 8px;
         }
 
@@ -265,27 +358,26 @@
 
         /* === 支付按钮 === */
         .payment-action {
-            position: sticky;
-            top: 64px;
+            display: none;
         }
 
         .btn-pay {
             width: 100%;
-            padding: 18px;
-            background: var(--accent);
-            color: #fff;
+            padding: 18px 20px;
+            background: linear-gradient(90deg, #ffb347, #ff6b6b);
+            color: #1f2937;
             border: none;
-            border-radius: var(--radius-full);
-            font-size: 19px;
-            font-weight: 500;
+            border-radius: 999px;
+            font-size: 18px;
+            font-weight: 600;
             cursor: pointer;
             transition: all var(--transition-fast);
+            box-shadow: 0 16px 40px rgba(255, 167, 38, 0.35);
         }
 
         .btn-pay:hover {
-            background: var(--accent-hover);
             transform: translateY(-1px);
-            box-shadow: 0 8px 20px rgba(0, 113, 227, 0.3);
+            box-shadow: 0 20px 44px rgba(255, 167, 38, 0.45);
         }
 
         .btn-pay:active {
@@ -298,19 +390,25 @@
         }
 
         .payment-security {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 24px;
-            margin-top: 16px;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 4px;
         }
 
         .security-item {
             display: flex;
             align-items: center;
-            gap: 4px;
+            justify-content: center;
+            gap: 6px;
             font-size: 12px;
-            color: var(--text-tertiary);
+            color: #1f2937;
+            font-weight: 600;
+            padding: 9px 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            text-shadow: none;
         }
 
         .security-icon {
@@ -325,16 +423,17 @@
         }
 
         .summary-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            border-radius: 20px;
             padding: 24px;
             margin-bottom: 16px;
+            box-shadow: 0 24px 60px -36px rgba(148, 163, 184, 0.35);
         }
 
         .order-number {
             font-size: 13px;
-            color: var(--text-tertiary);
+            color: rgba(30, 41, 59, 0.6);
             margin-bottom: 20px;
         }
 
@@ -348,7 +447,7 @@
             width: 80px;
             height: 80px;
             border-radius: var(--radius-md);
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ffd180 0%, #ff9a9e 100%);
             flex-shrink: 0;
         }
 
@@ -359,18 +458,18 @@
         .item-title {
             font-size: 17px;
             font-weight: 500;
-            color: var(--text-primary);
+            color: #0f172a;
             margin-bottom: 4px;
         }
 
         .item-meta {
             font-size: 13px;
-            color: var(--text-tertiary);
+            color: rgba(30, 41, 59, 0.6);
         }
 
         .price-divider {
             height: 1px;
-            background: var(--border-color);
+            background: rgba(148, 163, 184, 0.2);
             margin: 20px 0;
         }
 
@@ -383,11 +482,11 @@
         }
 
         .price-label {
-            color: var(--text-secondary);
+            color: rgba(30, 41, 59, 0.7);
         }
 
         .price-value {
-            color: var(--text-primary);
+            color: #0f172a;
             font-weight: 500;
         }
 
@@ -397,8 +496,8 @@
         }
 
         .price-total .price-value {
-            color: var(--accent);
-            font-size: 24px;
+            color: #ff8a00;
+            font-size: 26px;
         }
 
         .security-badge {
@@ -407,18 +506,27 @@
             justify-content: center;
             gap: 8px;
             padding: 12px;
-            background: rgba(52, 199, 89, 0.1);
+            background: rgba(255, 224, 178, 0.9);
             border-radius: var(--radius-md);
-            color: #34c759;
+            color: #5c2c00;
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 600;
             margin-top: 16px;
+            text-shadow: none;
+        }
+
+        .summary-pay {
+            margin-top: 18px;
+        }
+
+        .summary-pay .btn-pay {
+            box-shadow: 0 18px 40px rgba(255, 167, 38, 0.35);
         }
 
         /* === 免费课程提示 === */
         .free-notice {
             background: linear-gradient(135deg, #34c759, #30d158);
-            color: #fff;
+            color: #1f2937;
             border-radius: var(--radius-lg);
             padding: 24px;
             text-align: center;
@@ -442,7 +550,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(15, 23, 42, 0.2);
             backdrop-filter: blur(8px);
             display: flex;
             align-items: center;
@@ -551,7 +659,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #fff;
+            color: #1f2937;
             font-size: 48px;
             animation: successPulse 0.6s ease-out;
         }
@@ -592,12 +700,25 @@
 
         /* === 响应式 === */
         @media (max-width: 768px) {
+            .payment-hero-card {
+                padding: 18px;
+            }
+
             .payment-layout {
                 grid-template-columns: 1fr;
             }
 
             .order-summary {
                 position: static;
+            }
+
+            .order-summary-desktop {
+                display: none;
+            }
+
+            .order-summary-mobile {
+                display: block;
+                margin-bottom: 20px;
             }
 
             .payment-steps {
@@ -612,21 +733,33 @@
                 width: 40px;
                 height: 40px;
             }
+
+            .payment-security {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-pay {
+                margin-top: 14px;
+            }
         }
     </style>
 </head>
 <body data-theme="light">
+    <div class="vibrant-bg"></div>
+    <div class="noise-overlay"></div>
+
     <!-- 导航栏 -->
     <nav class="nav">
         <div class="nav-inner">
-            <a href="../index.html" class="nav-logo">AI 信息未来</a>
+            <a href="home.html" class="nav-logo">AI 信息未来</a>
             <div class="nav-menu">
-                <a href="../index.html" class="nav-link">首页</a>
+                <a href="home.html" class="nav-link">首页</a>
                 <a href="courses.html" class="nav-link">课程</a>
                 <a href="community.html" class="nav-link">社区</a>
-                <a href="arena.html" class="nav-link">PK竞技</a>
+                <a href="pk-arena.html" class="nav-link">PK竞技</a>
             </div>
             <div class="nav-actions">
+                <div id="authArea"></div>
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="5"/>
@@ -640,18 +773,8 @@
                         <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
                     </svg>
                 </button>
-                <div class="user-menu" id="userMenu">
-                    <div class="user-avatar" onclick="toggleUserMenu()">
-                        <span id="userInitial">U</span>
-                    </div>
-                    <div class="dropdown" id="userDropdown">
-                        <div class="dropdown-item" onclick="goToProfile()">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                <circle cx="12" cy="7" r="4"/>
-                            </svg>
-                            <span>个人中心</span>
-                        </div>
+                
+                    
                         <div class="dropdown-divider"></div>
                         <div class="dropdown-item" onclick="logout()">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -670,23 +793,28 @@
     <!-- 主内容 -->
     <main>
         <div class="container">
-            <!-- 支付步骤 -->
-            <div class="payment-steps">
-                <div class="step active">
-                    <div class="step-circle">1</div>
-                    <div class="step-label">确认订单</div>
+            <section class="payment-hero">
+                <div class="payment-hero-card">
+                    <div class="payment-hero-title">安全支付</div>
+                    <div class="payment-hero-subtitle">订单确认后立即完成支付，支付宝全链路保障</div>
+                    <div class="payment-steps">
+                        <div class="step active">
+                            <div class="step-circle">1</div>
+                            <div class="step-label">确认订单</div>
+                        </div>
+                        <div class="step-line"></div>
+                        <div class="step active">
+                            <div class="step-circle">2</div>
+                            <div class="step-label">选择支付</div>
+                        </div>
+                        <div class="step-line"></div>
+                        <div class="step">
+                            <div class="step-circle">3</div>
+                            <div class="step-label">支付完成</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="step-line"></div>
-                <div class="step active">
-                    <div class="step-circle">2</div>
-                    <div class="step-label">选择支付</div>
-                </div>
-                <div class="step-line"></div>
-                <div class="step">
-                    <div class="step-circle">3</div>
-                    <div class="step-label">支付完成</div>
-                </div>
-            </div>
+            </section>
 
             <!-- 免费课程提示 -->
             <div id="freeNotice" class="free-notice" style="display: none;">
@@ -758,6 +886,26 @@
                         </div>
                     </div>
 
+                    <!-- 订单摘要（移动端优先放上方） -->
+                    <div class="order-summary order-summary-mobile">
+                        <div class="summary-card">
+                            <div class="order-number">订单号: <span id="orderNumberMobile">-</span></div>
+
+                            <div id="orderItemsMobile"></div>
+
+                            <div class="price-divider"></div>
+
+                            <div id="priceBreakdownMobile"></div>
+
+                            <div class="price-divider"></div>
+
+                            <div class="price-row price-total">
+                                <span class="price-label">实付金额</span>
+                                <span class="price-value" id="totalAmountMobile">¥0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- 推荐人信息 -->
                     <div class="referrer-section">
                         <div class="referrer-title">
@@ -774,39 +922,10 @@
                         <div class="referrer-hint">填写推荐人信息可获得额外优惠和积分奖励</div>
                         <div id="referrerStatus" class="referrer-status"></div>
                     </div>
-
-                    <!-- 支付按钮 -->
-                    <div class="payment-action">
-                        <button class="btn-pay" id="payButton" onclick="processPay()">
-                            <span>立即支付 </span>
-                            <span id="payAmount">¥0.00</span>
-                        </button>
-                        <div class="payment-security">
-                            <div class="security-item">
-                                <svg class="security-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="11" width="18" height="11" rx="2"/>
-                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                                </svg>
-                                <span>银行级加密</span>
-                            </div>
-                            <div class="security-item">
-                                <svg class="security-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                                </svg>
-                                <span>实时风控</span>
-                            </div>
-                            <div class="security-item">
-                                <svg class="security-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="20 6 9 17 4 12"/>
-                                </svg>
-                                <span>资金保障</span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- 右侧：订单摘要 -->
-                <div class="order-summary">
+                <div class="order-summary order-summary-desktop">
                     <div class="summary-card">
                         <div class="order-number">订单号: <span id="orderNumber">-</span></div>
 
@@ -832,6 +951,12 @@
                                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                             </svg>
                             <span>安全支付保障</span>
+                        </div>
+
+                        <div class="summary-pay">
+                            <button class="btn-pay" onclick="processPay()">
+                                <span>立即支付</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -908,9 +1033,17 @@
             // 检查认证
             const token = localStorage.getItem('token');
             if (!token) {
-                window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
+                window.location.href = 'login.html?returnUrl=' + encodeURIComponent(window.location.pathname + window.location.search);
                 return;
             }
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                if (payload.exp && payload.exp * 1000 < Date.now()) {
+                    localStorage.removeItem('token');
+                    window.location.href = 'login.html?returnUrl=' + encodeURIComponent(window.location.pathname + window.location.search);
+                    return;
+                }
+            } catch (e) {}
 
             // 加载主题
             loadTheme();
@@ -921,11 +1054,17 @@
             // 获取课程ID
             const urlParams = new URLSearchParams(window.location.search);
             const courseId = urlParams.get('courseId');
+            const productId = urlParams.get('productId');
             const orderId = urlParams.get('orderId');
+            const orderNo = urlParams.get('orderNo');
 
             if (orderId) {
                 // 从订单加载
                 await loadOrderData(orderId);
+            } else if (orderNo) {
+                await loadOrderByNo(orderNo);
+            } else if (productId) {
+                await loadProductData(productId);
             } else if (courseId) {
                 // 从课程创建订单
                 await loadCourseData(courseId);
@@ -953,13 +1092,11 @@
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
                 });
-
-                if (response.ok) {
-                    const result = await response.json();
-                    const user = result.data || result;
-                    const initial = user.username ? user.username.charAt(0).toUpperCase() : 'U';
-                    document.getElementById('userInitial').textContent = initial;
-                }
+                if (!response.ok) throw new Error('加载用户信息失败');
+                const result = await response.json();
+                const user = result?.data?.user;
+                const initial = user?.username ? user.username.charAt(0).toUpperCase() : 'U';
+                document.getElementById('userInitial').textContent = initial;
             } catch (error) {
                 console.error('加载用户信息失败:', error);
             }
@@ -972,7 +1109,8 @@
                 if (!response.ok) throw new Error('加载课程失败');
 
                 const result = await response.json();
-                courseData = result.data || result;
+                courseData = result?.data?.course;
+                if (!courseData) throw new Error(result?.message || '课程数据为空');
 
                 // 检查是否免费课程
                 if (courseData.price === 0 || courseData.isFree) {
@@ -980,14 +1118,81 @@
                     return;
                 }
 
-                // 生成订单号
-                const orderNumber = 'ORD' + Date.now();
-                document.getElementById('orderNumber').textContent = orderNumber;
+                // 订单号由后端创建订单时生成
+                document.getElementById('orderNumber').textContent = '待创建';
 
                 // 显示订单信息
                 displayOrderInfo();
             } catch (error) {
                 console.error('加载课程失败:', error);
+                showToast('加载课程信息失败');
+            }
+        }
+
+        async function createProductOrder(productId) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'login.html?returnUrl=' + encodeURIComponent(window.location.pathname + window.location.search);
+                return null;
+            }
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                if (payload.exp && payload.exp * 1000 < Date.now()) {
+                    localStorage.removeItem('token');
+                    window.location.href = 'login.html?returnUrl=' + encodeURIComponent(window.location.pathname + window.location.search);
+                    return null;
+                }
+            } catch (e) {}
+
+            const params = new URLSearchParams({
+                paymentMethod: currentPaymentMethod || 'alipay'
+            });
+
+            const res = await fetch(`${API_BASE}/orders/subscribe/course-product/${encodeURIComponent(productId)}?${params.toString()}`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) {
+                const text = await res.text().catch(() => '');
+                throw new Error(text || '创建订单失败');
+            }
+            const data = await res.json();
+            if (!data.success) throw new Error(data.message || '创建订单失败');
+            return data.data;
+        }
+
+        async function loadProductData(productId) {
+            try {
+                const isNumericId = /^\d+$/.test(String(productId));
+                const productPath = isNumericId
+                    ? `${API_BASE}/course-templates/products/${encodeURIComponent(productId)}/full`
+                    : `${API_BASE}/course-templates/products/by-product-id/${encodeURIComponent(productId)}/full`;
+                const response = await fetch(productPath);
+                if (!response.ok) throw new Error('加载课程产品失败');
+
+                const result = await response.json();
+                const product = result?.data?.product || result?.data;
+                if (!product) throw new Error(result?.message || '课程产品数据为空');
+
+                courseData = {
+                    id: product.id,
+                    productId: product.productId,
+                    title: product.title,
+                    description: product.description || product.subtitle,
+                    price: product.price,
+                    originalPrice: product.originalPrice,
+                    isFree: product.isFree
+                };
+
+                if (product.isFree || product.price === 0) {
+                    showFreeCourse();
+                    return;
+                }
+
+                document.getElementById('orderNumber').textContent = '待创建';
+                displayOrderInfo();
+            } catch (error) {
+                console.error('加载课程产品失败:', error);
                 showToast('加载课程信息失败');
             }
         }
@@ -1004,9 +1209,10 @@
                 if (!response.ok) throw new Error('加载订单失败');
 
                 const result = await response.json();
-                orderData = result.data || result;
+                orderData = result?.data;
+                if (!orderData) throw new Error(result?.message || '订单数据为空');
 
-                document.getElementById('orderNumber').textContent = orderData.orderNumber || orderId;
+                document.getElementById('orderNumber').textContent = orderData.orderNo || String(orderId);
                 displayOrderInfo();
             } catch (error) {
                 console.error('加载订单失败:', error);
@@ -1014,10 +1220,36 @@
             }
         }
 
-        // 显示订单信息
-        function displayOrderInfo() {
-            const data = orderData || courseData;
-            if (!data) return;
+        // 通过订单号加载订单
+        async function loadOrderByNo(orderNo) {
+            try {
+                const response = await fetch(`${API_BASE}/orders/by-order-no/${encodeURIComponent(orderNo)}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('加载订单失败');
+
+                const result = await response.json();
+                orderData = result?.data;
+                if (!orderData) throw new Error(result?.message || '订单数据为空');
+
+                document.getElementById('orderNumber').textContent = orderData.orderNo || orderNo;
+                displayOrderInfo();
+            } catch (error) {
+                console.error('加载订单失败:', error);
+                showToast('加载订单信息失败');
+            }
+        }
+
+	        // 显示订单信息
+	        function displayOrderInfo() {
+	            const data = orderData || courseData;
+	            if (!data) return;
+
+	            const isOrder = !!data.orderNo || data.finalAmount != null;
+	            const title = data.title || data.courseName || '课程';
 
             // 订单项
             const orderItems = document.getElementById('orderItems');
@@ -1025,20 +1257,27 @@
                 <div class="order-item">
                     <div class="item-cover"></div>
                     <div class="item-info">
-                        <div class="item-title">${data.title || data.courseName || '课程'}</div>
+                        <div class="item-title">${title}</div>
                         <div class="item-meta">${data.instructor || data.teacher || '在线学习'}</div>
                     </div>
                 </div>
             `;
 
-            // 价格明细
-            const price = parseFloat(data.price || data.amount || 0);
-            const discount = parseFloat(data.discount || 0);
-            const finalPrice = price - discount;
+	            // 价格明细
+	            const price = isOrder
+	                ? parseFloat(data.originalAmount ?? data.finalAmount ?? 0)
+	                : parseFloat(data.price ?? data.amount ?? 0);
+            const discount = isOrder
+                ? parseFloat(data.discountAmount ?? 0)
+                : parseFloat(data.discount ?? 0);
+            const finalPrice = isOrder
+                ? parseFloat(data.finalAmount ?? (price - discount))
+                : (price - discount);
 
-            const priceBreakdown = document.getElementById('priceBreakdown');
+	            const priceBreakdown = document.getElementById('priceBreakdown');
+            const priceLabel = (isOrder && data.orderType === 'vip_subscription') ? '会员价格' : '课程价格';
             let html = `<div class="price-row">
-                <span class="price-label">课程价格</span>
+                <span class="price-label">${priceLabel}</span>
                 <span class="price-value">¥${price.toFixed(2)}</span>
             </div>`;
 
@@ -1053,18 +1292,31 @@
 
             // 总价
             document.getElementById('totalAmount').textContent = `¥${finalPrice.toFixed(2)}`;
-            document.getElementById('payAmount').textContent = `¥${finalPrice.toFixed(2)}`;
             document.getElementById('confirmAmount').textContent = `¥${finalPrice.toFixed(2)}`;
-            document.getElementById('confirmCourse').textContent = data.title || data.courseName || '课程';
+            document.getElementById('confirmCourse').textContent = title;
+
+            const orderNumberMobile = document.getElementById('orderNumberMobile');
+            if (orderNumberMobile) orderNumberMobile.textContent = data.orderNo || '-';
+            const orderItemsMobile = document.getElementById('orderItemsMobile');
+            if (orderItemsMobile) orderItemsMobile.innerHTML = orderItems.innerHTML;
+            const priceBreakdownMobile = document.getElementById('priceBreakdownMobile');
+            if (priceBreakdownMobile) priceBreakdownMobile.innerHTML = priceBreakdown.innerHTML;
+            const totalAmountMobile = document.getElementById('totalAmountMobile');
+            if (totalAmountMobile) totalAmountMobile.textContent = `¥${finalPrice.toFixed(2)}`;
+
         }
 
         // 显示免费课程
         function showFreeCourse() {
             document.getElementById('freeNotice').style.display = 'block';
             document.querySelector('.payment-layout').style.display = 'none';
+            const productId = courseData?.productId;
+            const targetUrl = productId
+                ? `course-detail.html?productId=${encodeURIComponent(productId)}`
+                : `course-detail.html?id=${courseData?.id}`;
 
             setTimeout(() => {
-                window.location.href = `course-detail.html?id=${courseData.id}`;
+                window.location.href = targetUrl;
             }, 2000);
         }
 
@@ -1077,8 +1329,6 @@
                     currentPaymentMethod = method;
                 } else {
                     m.classList.remove('active');
-                }
-            });
 
             // 更新确认框
             const methodNames = {
@@ -1137,11 +1387,15 @@
 
         // 处理支付
         function processPay() {
-            const payButton = document.getElementById('payButton');
-            if (payButton.disabled) return;
+            const payButtons = document.querySelectorAll('.btn-pay');
+            if ([...payButtons].some(button => button.disabled)) return;
 
             // 显示确认框
             showPaymentModal();
+        }
+
+        function scrollToPay() {
+            return;
         }
 
         // 显示支付确认框
@@ -1169,53 +1423,85 @@
         async function confirmPayment() {
             hidePaymentModal();
 
-            const payButton = document.getElementById('payButton');
-            payButton.disabled = true;
-            payButton.innerHTML = '<span>处理中...</span>';
+            const payButtons = document.querySelectorAll('.btn-pay');
+            payButtons.forEach((button) => {
+                button.disabled = true;
+                button.textContent = '处理中...';
+            });
 
             try {
                 const urlParams = new URLSearchParams(window.location.search);
                 const courseId = urlParams.get('courseId');
+                const productId = urlParams.get('productId');
                 const referrerCode = document.getElementById('referrerCode').value.trim();
 
-                // 创建订单
-                const params = new URLSearchParams({
-                    paymentMethod: currentPaymentMethod
-                });
-                if (referrerCode) {
-                    params.append('referrerCode', referrerCode);
-                }
+                // 1) 获取/创建订单
+                let order = orderData;
+                let needPayment = true;
 
-                const response = await fetch(`${API_BASE}/orders/subscribe/course/${courseId}?${params}`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                if (!order) {
+                    if (productId) {
+                        const productOrder = await createProductOrder(productId);
+                        order = productOrder?.order || productOrder?.subscription || productOrder;
+                        needPayment = !!productOrder?.needPayment;
+                        if (!order) throw new Error(productOrder?.message || '订单创建失败');
+                    } else {
+                        if (!courseId) throw new Error('缺少courseId');
+
+                        const params = new URLSearchParams({ paymentMethod: currentPaymentMethod });
+                        if (referrerCode) params.append('referrerCode', referrerCode);
+
+                        const response = await fetch(`${API_BASE}/orders/subscribe/course/${courseId}?${params}`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                            }
+                        });
+                        if (!response.ok) throw new Error('创建订单失败');
+
+                        const result = await response.json();
+                        order = result?.data?.order;
+                        needPayment = !!result?.data?.needPayment;
+                        if (!order) throw new Error(result?.message || '订单创建失败');
                     }
-                });
 
-                if (!response.ok) throw new Error('创建订单失败');
-
-                const result = await response.json();
-                const order = result.data || result;
-
-                // 创建支付
-                if (currentPaymentMethod === 'alipay') {
-                    await createAlipayPayment(order.id || order.orderId);
+                    orderData = order;
+                    document.getElementById('orderNumber').textContent = order.orderNo || '已创建';
+                    displayOrderInfo();
                 } else {
-                    showToast('该支付方式暂未开通');
-                    payButton.disabled = false;
-                    payButton.innerHTML = '<span>立即支付 </span><span id="payAmount">¥0.00</span>';
+                    needPayment = (order.finalAmount ?? 0) > 0;
                 }
+
+                // 2) 免费订单直接成功
+                if (!needPayment) {
+                    showSuccessModal();
+                    return;
+                }
+
+                // 3) 仅先支持支付宝
+                if (currentPaymentMethod !== 'alipay') {
+                    showToast('该支付方式暂未开通');
+                    payButtons.forEach((button) => {
+                        button.disabled = false;
+                        button.textContent = '立即支付';
+                    });
+                    return;
+                }
+
+                await createAlipayPayment(order);
             } catch (error) {
                 console.error('支付失败:', error);
                 showToast('支付失败，请重试');
-                payButton.disabled = false;
-                payButton.innerHTML = '<span>立即支付 </span><span id="payAmount">¥0.00</span>';
+                showPaymentErrorActions('支付失败，可先查看订单或尝试同步');
+                payButtons.forEach((button) => {
+                    button.disabled = false;
+                    button.textContent = '立即支付';
+                });
             }
         }
 
         // 创建支付宝支付
-        async function createAlipayPayment(orderId) {
+        async function createAlipayPayment(order) {
             try {
                 const response = await fetch(`${API_BASE}/payment/alipay/create`, {
                     method: 'POST',
@@ -1224,19 +1510,26 @@
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },
                     body: JSON.stringify({
-                        orderId: orderId,
-                        returnUrl: window.location.origin + '/payment-success.html'
+                        orderNo: order.orderNo
                     })
                 });
 
-                if (!response.ok) throw new Error('创建支付失败');
+                if (!response.ok) {
+                    const text = await response.text().catch(() => '');
+                    throw new Error(text || '创建支付失败');
+                }
 
                 const result = await response.json();
 
-                if (result.data && result.data.formHtml) {
-                    // 提交支付表单
-                    document.body.innerHTML += result.data.formHtml;
-                    document.forms[0].submit();
+                const formHtml = result?.data?.formHtml || result?.data?.form;
+                if (formHtml) {
+                    const container = document.createElement('div');
+                    container.style.display = 'none';
+                    container.innerHTML = formHtml;
+                    document.body.appendChild(container);
+                    const form = container.querySelector('form');
+                    if (!form) throw new Error('支付表单为空');
+                    form.submit();
                 } else {
                     showToast('支付创建失败');
                 }
@@ -1251,12 +1544,25 @@
             document.getElementById('successModal').classList.add('show');
         }
 
-        // 开始学习
+	        // 开始学习
         function startLearning() {
             const urlParams = new URLSearchParams(window.location.search);
             const courseId = urlParams.get('courseId');
-            window.location.href = `course-detail.html?id=${courseId}`;
-        }
+            const productId = urlParams.get('productId');
+            if (courseId) {
+                window.location.href = `course-detail.html?id=${courseId}`;
+                return;
+            }
+            if (productId) {
+                window.location.href = `course-detail.html?productId=${productId}`;
+                return;
+            }
+            if (orderData && orderData.orderType === 'vip_subscription') {
+                window.location.href = 'vip.html';
+                return;
+            }
+	            window.location.href = 'courses.html';
+	        }
 
         // 查看订单
         function viewOrder() {
@@ -1278,10 +1584,7 @@
         }
 
         // 用户菜单
-        function toggleUserMenu() {
-            document.getElementById('userDropdown').classList.toggle('show');
-        }
-
+        
         function goToProfile() {
             window.location.href = 'profile.html';
         }
@@ -1305,12 +1608,46 @@
             }, 3000);
         }
 
-        // 点击外部关闭下拉菜单
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.user-menu')) {
-                document.getElementById('userDropdown').classList.remove('show');
+        function showPaymentErrorActions(message) {
+            const container = document.createElement('div');
+            container.className = 'auth-banner sync-banner';
+            container.innerHTML = `
+                <div class="auth-banner-title">${message || '支付失败，可先查看订单或尝试同步'}</div>
+                <div class="auth-banner-actions">
+                    <button class="btn" onclick="syncLatestOrder()">重新同步</button>
+                    <a class="btn secondary" href="orders.html">查看订单</a>
+                </div>
+            `;
+            document.body.insertBefore(container, document.body.firstChild);
+        }
+
+        async function syncLatestOrder() {
+            const lastPaymentRaw = localStorage.getItem('lastPaymentSuccess');
+            const lastPayment = lastPaymentRaw ? JSON.parse(lastPaymentRaw) : null;
+            const orderNo = lastPayment?.orderNo || new URLSearchParams(window.location.search).get('orderNo');
+            if (!orderNo) {
+                showToast('没有找到可同步的订单');
+                return;
             }
-        });
+            try {
+                const res = await fetch(`${API_BASE}/orders/sync/${encodeURIComponent(orderNo)}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const data = await res.json();
+                if (data.code === 200) {
+                    showToast('同步成功，请返回课程查看');
+                } else {
+                    showToast(data.message || '同步失败');
+                }
+            } catch (e) {
+                showToast('同步失败，请稍后重试');
+            }
+        }
+
+        // 点击外部关闭下拉菜单
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

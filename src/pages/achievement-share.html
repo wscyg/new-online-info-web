@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>成就分享 - AI 信息未来</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <!-- html2canvas库 -->
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-    <!-- API配置 -->
-    <script src="../config/api-config.js"></script>
+    <script></script>
+    <!-- 统一工具模块 -->
+    <script src="/utils/utils-bundle.js"></script>
     <style>
         body {
             padding-top: 48px;
@@ -292,6 +293,7 @@
                 <a href="./code-arena.html" class="nav-link">PK竞技</a>
             </div>
             <div class="nav-actions">
+                <div id="authArea"></div>
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
                     <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="5"/>
@@ -305,7 +307,7 @@
                         <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
                     </svg>
                 </button>
-                <div class="user-menu" id="userMenu"></div>
+                
             </div>
         </div>
     </nav>
@@ -554,11 +556,10 @@
 
             if (token && user.username) {
                 userMenu.innerHTML = `
-                    <div class="user-avatar" onclick="toggleDropdown()">
+                    <div class="user-avatar" >
                         ${user.username.charAt(0).toUpperCase()}
                     </div>
-                    <div class="dropdown" id="userDropdown">
-                        <div class="dropdown-item" onclick="window.location.href='./profile.html'">个人中心</div>
+                    
                         <div class="dropdown-item" onclick="window.location.href='./my-courses.html'">我的课程</div>
                         <div class="dropdown-divider"></div>
                         <div class="dropdown-item" onclick="logout()">退出登录</div>
@@ -571,12 +572,7 @@
             }
         }
 
-        function toggleDropdown() {
-            const dropdown = document.getElementById('userDropdown');
-            if (dropdown) {
-                dropdown.classList.toggle('show');
-            }
-        }
+                }
 
         function logout() {
             localStorage.removeItem('token');
@@ -585,13 +581,6 @@
         }
 
         // Close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            const userMenu = document.getElementById('userMenu');
-            const dropdown = document.getElementById('userDropdown');
-            if (dropdown && !userMenu.contains(event.target)) {
-                dropdown.classList.remove('show');
-            }
-        });
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
@@ -600,5 +589,7 @@
             initCard();
         });
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

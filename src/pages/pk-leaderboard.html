@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PK排行榜 - AI 信息未来</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <style>
         body {
             padding-top: 48px;
@@ -402,6 +403,7 @@
                 <a href="pk-leaderboard.html" class="nav-link active">PK竞技</a>
             </div>
             <div class="nav-actions">
+                <div id="authArea"></div>
                 <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="5"></circle>
@@ -557,6 +559,8 @@
                 const token = localStorage.getItem('token');
                 const response = await fetch(`${API_BASE}/pk/leaderboard?timeRange=${currentTimeRange}&limit=50`, {
                     headers: { 'Authorization': `Bearer ${token}` }
+                    }
+                });
                 });
 
                 if (response.ok) {
@@ -697,6 +701,8 @@
                 const token = localStorage.getItem('token');
                 const response = await fetch(`${API_BASE}/pk/statistics`, {
                     headers: { 'Authorization': `Bearer ${token}` }
+                    }
+                });
                 });
 
                 if (response.ok) {
@@ -720,6 +726,9 @@
             if (total === 0) return 0;
             return Math.round((wins / total) * 100);
         }
+        });
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

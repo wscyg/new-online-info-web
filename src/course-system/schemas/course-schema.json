@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://infofuture.online/course.schema.v2.json",
+  "title": "CourseConfig v2.0",
+  "type": "object",
+  "required": ["version", "id", "title", "subtitle", "templateId", "accent", "pages"],
+  "properties": {
+    "version": { "const": "2.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "subtitle": { "type": "string" },
+    "templateId": { "type": "string", "minLength": 1 },
+    "accent": { "$ref": "#/$defs/accent" },
+    "metadata": { "type": "object" },
+    "pages": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/page" }
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "accent": {
+      "anyOf": [
+        { "enum": ["cyan", "purple", "pink", "green", "amber", "red"] },
+        { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" }
+      ]
+    },
+    "page": {
+      "type": "object",
+      "required": ["id", "kind", "accent"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "page": { "type": "number" },
+        "kind": { "enum": ["hero", "section"] },
+        "accent": { "$ref": "#/$defs/accent" },
+        "className": { "type": "string" },
+        "classes": { "type": "array", "items": { "type": "string" } },
+        "dataTitle": { "type": "string" },
+        "dataSub": { "type": "string" },
+        "title": { "type": "string" },
+        "sub": { "type": "string" },
+        "rawHtml": { "type": "string" },
+        "header": { "type": "object" },
+        "blocks": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/block" }
+        },
+        "html": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "kind": { "const": "hero" } } },
+          "then": { "properties": { "header": { "$ref": "#/$defs/heroHeader" } }, "required": ["header"] }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "section" } } },
+          "then": { "properties": { "header": { "$ref": "#/$defs/sectionHeader" } }, "required": ["header"] }
+        }
+      ],
+      "additionalProperties": true
+    },
+    "heroHeader": {
+      "type": "object",
+      "properties": {
+        "badgeHtml": { "type": "string" },
+        "badge": {
+          "anyOf": [
+            { "type": "string" },
+            {
+              "type": "object",
+              "properties": {
+                "text": { "type": "string" },
+                "icon": { "type": "string" },
+                "iconHtml": { "type": "string" }
+              },
+              "additionalProperties": true
+            }
+          ]
+        },
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "extraHtml": { "type": "string" },
+        "stats": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": { "value": { "type": "string" }, "label": { "type": "string" } },
+            "additionalProperties": true
+          }
+        },
+        "delay": { "type": "number" },
+        "subtitleDelay": { "type": "number" },
+        "speed": { "type": "number" }
+      },
+      "additionalProperties": true
+    },
+    "sectionHeader": {
+      "type": "object",
+      "properties": {
+        "label": { "type": "string" },
+        "title": { "type": "string" },
+        "descHtml": { "type": "string" },
+        "delay": { "type": "number" },
+        "speed": { "type": "number" }
+      },
+      "additionalProperties": true
+    },
+    "block": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "enum": [
+            "html",
+            "bridgeRow",
+            "microLead",
+            "keyline",
+            "accordion",
+            "thinkBox",
+            "prose",
+            "callout",
+            "codeBlock",
+            "living",
+            "cardsGrid",
+            "diagram",
+            "timeline",
+            "table",
+            "formulaBox",
+            "exampleBox",
+            "mathBlock",
+            "quoteBox",
+            "stickyNote",
+            "labCard",
+            "codeDiagramSplit",
+            "pageTransition"
+          ]
+        },
+        "delay": { "type": "number" }
+      },
+      "allOf": [
+        { "if": { "properties": { "type": { "const": "html" } } }, "then": { "required": ["html"], "properties": { "html": { "type": "string" } } } },
+        { "if": { "properties": { "type": { "const": "bridgeRow" } } }, "then": { "properties": { "prevLabel": { "type": "string" }, "prev": { "type": "string" }, "currentLabel": { "type": "string" }, "current": { "type": "string" }, "nextLabel": { "type": "string" }, "next": { "type": "string" } } } },
+        { "if": { "properties": { "type": { "const": "microLead" } } }, "then": { "required": ["text"], "properties": { "text": { "type": "string" }, "speed": { "type": "number" } } } },
+        { "if": { "properties": { "type": { "const": "keyline" } } }, "then": { "required": ["html"], "properties": { "dot": { "type": "string" }, "html": { "type": "string" } } } },
+        { "if": { "properties": { "type": { "const": "accordion" } } }, "then": { "properties": { "summary": { "type": "string" }, "badge": { "type": "string" }, "variant": { "type": "string" }, "open": { "type": "boolean" }, "contentHtml": { "type": "string" }, "html": { "type": "string" } } } },
+        { "if": { "properties": { "type": { "const": "thinkBox" } } }, "then": { "required": ["text"], "properties": { "qid": { "type": "string" }, "title": { "type": "string" }, "text": { "type": "string" } } } },
+        { "if": { "properties": { "type": { "const": "prose" } } }, "then": { "properties": { "paragraphs": { "type": "array", "items": { "type": "string" } }, "html": { "type": "string" } } } },
+        { "if": { "properties": { "type": { "const": "callout" } } }, "then": { "properties": { "id": { "type": "string" }, "title": { "type": "string" }, "tag": { "type": "string" }, "bodyHtml": { "type": "string" }, "html": { "type": "string" } } } },
+        { "if": { "properties": { "type": { "const": "codeBlock" } } }, "then": { "required": ["code"], "properties": { "file": { "type": "string" }, "filename": { "type": "string" }, "title": { "type": "string" }, "code": { "type": "string" } } } },
+        { "if": { "properties": { "type": { "const": "cardsGrid" } } }, "then": { "required": ["cards"], "properties": { "columns": { "type": "number" }, "cards": { "type": "array", "items": { "type": "object", "properties": { "accent": { "type": "string" }, "icon": { "type": "string" }, "iconHtml": { "type": "string" }, "title": { "type": "string" }, "subtitle": { "type": "string" }, "text": { "type": "string" }, "bullets": { "type": "array", "items": { "type": "string" } } }, "additionalProperties": true } } } } },
+        { "if": { "properties": { "type": { "const": "diagram" } } }, "then": { "required": ["svg"], "properties": { "svg": { "type": "string" }, "caption": { "type": "string" } } } },
+        { "if": { "properties": { "type": { "const": "timeline" } } }, "then": { "required": ["items"], "properties": { "items": { "type": "array", "items": { "type": "object", "properties": { "title": { "type": "string" }, "text": { "type": "string" } }, "additionalProperties": true } } } } },
+        { "if": { "properties": { "type": { "const": "table" } } }, "then": { "required": ["rows"], "properties": { "caption": { "type": "string" }, "headers": { "type": "array", "items": { "type": "string" } }, "rows": { "type": "array", "items": { "type": "array", "items": { "type": "string" } } }, "columns": { "type": "array", "items": { "type": "object", "properties": { "key": { "type": "string" }, "label": { "type": "string" } }, "additionalProperties": true } } } } },
+        { "if": { "properties": { "type": { "const": "formulaBox" } } }, "then": { "required": ["math"], "properties": { "label": { "type": "string" }, "math": { "type": "string" }, "desc": { "type": "string" } } } },
+        { "if": { "properties": { "type": { "const": "exampleBox" } } }, "then": { "properties": { "variant": { "type": "string" }, "icon": { "type": "string" }, "title": { "type": "string" }, "code": { "type": "string" }, "note": { "type": "string" } } } },
+        { "if": { "properties": { "type": { "const": "mathBlock" } } }, "then": { "required": ["math"], "properties": { "label": { "type": "string" }, "math": { "type": "string" }, "note": { "type": "string" } } } },
+        { "if": { "properties": { "type": { "const": "quoteBox" } } }, "then": { "required": ["quote"], "properties": { "quote": { "type": "string" }, "author": { "type": "string" }, "source": { "type": "string" } } } },
+        { "if": { "properties": { "type": { "const": "stickyNote" } } }, "then": { "required": ["text"], "properties": { "color": { "enum": ["yellow", "pink", "blue", "green", "purple", "orange"] }, "title": { "type": "string" }, "text": { "type": "string" }, "rotate": { "type": "number" } } } },
+        { "if": { "properties": { "type": { "const": "labCard" } } }, "then": { "required": ["title"], "properties": { "icon": { "type": "string" }, "title": { "type": "string" }, "description": { "type": "string" }, "tags": { "type": "array", "items": { "type": "string" } }, "link": { "type": "string" } } } },
+        { "if": { "properties": { "type": { "const": "codeDiagramSplit" } } }, "then": { "required": ["code"], "properties": { "codeTitle": { "type": "string" }, "code": { "type": "string" }, "diagramTitle": { "type": "string" }, "diagramSvg": { "type": "string" }, "diagramCaption": { "type": "string" } } } },
+        { "if": { "properties": { "type": { "const": "pageTransition" } } }, "then": { "properties": { "from": { "type": "string" }, "to": { "type": "string" }, "text": { "type": "string" } } } },
+        {
+          "if": { "properties": { "type": { "const": "living" } } },
+          "then": {
+            "required": ["steps"],
+            "properties": {
+              "title": { "type": "string" },
+              "vizTitle": { "type": "string" },
+              "hint": { "type": "string" },
+              "steps": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string" },
+                    "label": { "type": "string" },
+                    "hint": { "type": "string" },
+                    "active": { "type": "boolean" },
+                    "code": { "type": "string" },
+                    "codeHtml": { "type": "string" },
+                    "vizHtml": { "type": "string" },
+                    "viz": { "type": "object" }
+                  },
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      ],
+      "additionalProperties": true
+    }
+  }
+}

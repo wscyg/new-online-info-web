@@ -10,9 +10,7 @@
     
     // API配置
     const API_CONFIG = {
-        BASE_URL: isDevelopment
-            ? 'http://localhost:8080/api'
-            : 'http://42.194.245.66/api',
+        BASE_URL: '/api',
         TIMEOUT: 30000,
         RETRY_COUNT: 3,
         // API端点配置

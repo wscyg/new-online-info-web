@@ -6,12 +6,13 @@
     <title>卡片学习播放器 - Transformer课程</title>
 
     <!-- Apple Design CSS -->
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
 
     <!-- Highlight.js -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css" media="(prefers-color-scheme: dark)">
-    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+    <script></script>
 
     <!-- Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -538,6 +539,7 @@
                 <a href="pk-arena.html" class="nav-link">PK竞技</a>
             </div>
             <div class="nav-actions">
+                <div id="authArea"></div>
                 <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="5"/>
@@ -817,17 +819,7 @@
         }
 
         // Auth check
-        function checkAuth() {
-            const token = localStorage.getItem('token');
-            const user = localStorage.getItem('user');
-            if (token && user) {
-                try {
-                    const userData = JSON.parse(user);
-                    // You can use userData here if needed
-                } catch (e) {
-                    console.error('Failed to parse user data:', e);
-                }
-            }
+                    }
         }
 
         // Render card
@@ -969,15 +961,11 @@
                 showCard(currentIndex);
             } else {
                 showCompletion();
-            }
-        });
 
         document.getElementById('prevBtn').addEventListener('click', () => {
             if (currentIndex > 0) {
                 currentIndex--;
                 showCard(currentIndex);
-            }
-        });
 
         document.getElementById('templateSelect').addEventListener('change', (e) => {
             currentTemplate = e.target.value;
@@ -994,8 +982,6 @@
             } else if (e.key === 'ArrowLeft') {
                 e.preventDefault();
                 document.getElementById('prevBtn').click();
-            }
-        });
 
         // Timer
         setInterval(() => {
@@ -1007,9 +993,11 @@
 
         // Initialize
         initTheme();
-        checkAuth();
-        document.getElementById('totalPoints').textContent = totalPoints;
+                document.getElementById('totalPoints').textContent = totalPoints;
         showCard(0);
+        });
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

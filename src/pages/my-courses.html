@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的课程 - AI 信息未来</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <style>
         /* Hero Section */
         .my-courses-hero {
@@ -663,12 +664,13 @@
         const API_BASE = '/api';
         let currentUser = null;
         let myCourses = [];
+        let learningStatistics = null;
         let currentFilter = 'all';
 
         document.addEventListener('DOMContentLoaded', () => {
             initTheme();
-            checkAuth();
-            setupFilters();
+                        setupFilters();
+            loadMyCourses();
         });
 
         function initTheme() {
@@ -682,103 +684,145 @@
             });
         }
 
-        function checkAuth() {
-            const token = localStorage.getItem('token');
-            const userStr = localStorage.getItem('user');
-            const authArea = document.getElementById('authArea');
-
-            if (!token || !userStr) {
-                window.location.href = 'login.html?returnUrl=' + encodeURIComponent(window.location.href);
-                return;
-            }
-
-            currentUser = JSON.parse(userStr);
-            const initial = (currentUser.nickname || currentUser.username || 'U').charAt(0).toUpperCase();
-
-            authArea.innerHTML = `
-                <div class="user-menu">
-                    <div class="user-avatar" onclick="toggleDropdown()">${initial}</div>
-                    <div class="dropdown" id="userDropdown">
-                        <a href="dashboard.html" class="dropdown-item">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                            学习中心
-                        </a>
-                        <a href="profile.html" class="dropdown-item">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                            个人主页
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item" onclick="logout(); return false;">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                            退出登录
-                        </a>
-                    </div>
-                </div>`;
-
-            loadMyCourses();
-        }
-
-        function toggleDropdown() {
-            document.getElementById('userDropdown').classList.toggle('show');
-        }
-
+        
         function logout() {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             location.reload();
         }
 
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.user-menu')) {
-                const d = document.getElementById('userDropdown');
-                if (d) d.classList.remove('show');
-            }
-        });
-
         async function loadMyCourses() {
+            setLoadingState(true);
+            const token = localStorage.getItem('token');
+
             try {
-                const response = await fetch(`${API_BASE}/user/learning-courses`, {
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                });
+                const [coursesRes, statsRes] = await Promise.all([
+                    fetch(`${API_BASE}/user/courses`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    }),
+                    fetch(`${API_BASE}/learning/statistics`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    }).catch(() => null)
+                ]);
 
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.code === 200 && data.data && data.data.length > 0) {
-                        myCourses = data.data;
-                    } else {
-                        myCourses = getMockCourses();
-                    }
-                } else {
-                    myCourses = getMockCourses();
+                if (coursesRes.status === 401) {
+                    window.location.href = 'login.html?returnUrl=' + encodeURIComponent(window.location.href);
+                    return;
                 }
-            } catch (e) {
-                myCourses = getMockCourses();
-            }
 
-            updateStats();
-            renderContinueLearning();
-            renderCourses();
+                if (!coursesRes.ok) {
+                    throw new Error(`课程列表加载失败（HTTP ${coursesRes.status}）`);
+                }
+
+                const coursesJson = await coursesRes.json();
+                const courses = Array.isArray(coursesJson?.data) ? coursesJson.data : [];
+                myCourses = courses.map(normalizeCourseProgress);
+
+                learningStatistics = null;
+                if (statsRes && statsRes.ok) {
+                    const statsJson = await statsRes.json();
+                    learningStatistics = statsJson?.data || null;
+                }
+
+                updateStats();
+                renderContinueLearning();
+                renderCourses();
+            } catch (e) {
+                console.error(e);
+                myCourses = [];
+                learningStatistics = null;
+                renderErrorState(e?.message || '加载失败，请稍后重试');
+            } finally {
+                setLoadingState(false);
+            }
         }
 
-        function getMockCourses() {
-            return [
-                { id: 1, courseId: 1, title: '深度学习入门与实践', progress: 65, completedChapters: 8, totalChapters: 12, lastStudyTime: new Date(Date.now() - 3600000).toISOString(), coverImage: null },
-                { id: 2, courseId: 2, title: 'PyTorch框架详解', progress: 100, completedChapters: 10, totalChapters: 10, lastStudyTime: new Date(Date.now() - 86400000 * 3).toISOString(), coverImage: null },
-                { id: 3, courseId: 3, title: '计算机视觉实战', progress: 30, completedChapters: 3, totalChapters: 10, lastStudyTime: new Date(Date.now() - 86400000).toISOString(), coverImage: null },
-                { id: 4, courseId: 4, title: '自然语言处理基础', progress: 0, completedChapters: 0, totalChapters: 8, lastStudyTime: null, coverImage: null }
-            ];
+        function normalizeCourseProgress(raw) {
+            const courseId = raw?.courseId ?? raw?.id;
+            const totalChapters = Number(raw?.totalChapters ?? 0) || 0;
+            const completedChapters = Math.min(
+                Math.max(Number(raw?.completedChapters ?? 0) || 0, 0),
+                totalChapters || Number.MAX_SAFE_INTEGER
+            );
+            const progress = Math.min(Math.max(Number(raw?.progress ?? raw?.progressPercent ?? 0) || 0, 0), 100);
+            const lastStudyTime = raw?.lastStudyTime || raw?.lastAccessedAt || null;
+
+            return {
+                courseId,
+                isProduct: !!(raw?.isProduct || raw?.type === 'course_product' || raw?.productId),
+                productId: raw?.productId || null,
+                title: raw?.title || raw?.courseTitle || raw?.courseName || `课程 ${courseId ?? ''}`.trim(),
+                progress,
+                completedChapters,
+                totalChapters,
+                lastStudyTime,
+                estimatedDays: raw?.estimatedDays ?? null,
+                coverImage: raw?.coverImage || null
+            };
+        }
+
+        function setLoadingState(isLoading) {
+            const grid = document.getElementById('coursesGrid');
+            if (!grid) return;
+
+            if (isLoading) {
+                document.getElementById('continueSection').style.display = 'none';
+                grid.innerHTML = Array.from({ length: 6 }).map(() => `
+                    <div class="course-card" style="pointer-events:none;">
+                        <div class="course-cover">
+                            <div style="width:100%;height:100%;background:linear-gradient(90deg,var(--bg-secondary) 25%,var(--bg-tertiary) 50%,var(--bg-secondary) 75%);background-size:200% 100%;animation: shimmer 1.5s infinite;"></div>
+                        </div>
+                        <div class="course-content">
+                            <div style="height:16px;width:70%;border-radius:10px;margin-bottom:12px;background:linear-gradient(90deg,var(--bg-secondary) 25%,var(--bg-tertiary) 50%,var(--bg-secondary) 75%);background-size:200% 100%;animation: shimmer 1.5s infinite;"></div>
+                            <div style="height:12px;width:45%;border-radius:10px;margin-bottom:18px;background:linear-gradient(90deg,var(--bg-secondary) 25%,var(--bg-tertiary) 50%,var(--bg-secondary) 75%);background-size:200% 100%;animation: shimmer 1.5s infinite;"></div>
+                            <div style="height:6px;border-radius:999px;background:var(--bg-secondary);overflow:hidden;margin-bottom:12px;">
+                                <div style="height:100%;width:40%;background:linear-gradient(90deg,#6366f1,#8b5cf6);opacity:0.35;"></div>
+                            </div>
+                            <div style="display:flex;justify-content:space-between;gap:12px;">
+                                <div style="height:12px;width:30%;border-radius:10px;background:linear-gradient(90deg,var(--bg-secondary) 25%,var(--bg-tertiary) 50%,var(--bg-secondary) 75%);background-size:200% 100%;animation: shimmer 1.5s infinite;"></div>
+                                <div style="height:28px;width:64px;border-radius:10px;background:linear-gradient(90deg,var(--bg-secondary) 25%,var(--bg-tertiary) 50%,var(--bg-secondary) 75%);background-size:200% 100%;animation: shimmer 1.5s infinite;"></div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                if (!document.getElementById('skeletonKeyframes')) {
+                    const style = document.createElement('style');
+                    style.id = 'skeletonKeyframes';
+                    style.textContent = `@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}`;
+                    document.head.appendChild(style);
+                }
+            }
+        }
+
+        function renderErrorState(message) {
+            const grid = document.getElementById('coursesGrid');
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 8v5"/>
+                            <path d="M12 16h.01"/>
+                        </svg>
+                    </div>
+                    <h3 class="empty-title">加载失败</h3>
+                    <p class="empty-desc">${escapeHtml(message || '请稍后重试')}</p>
+                    <button class="empty-btn" onclick="loadMyCourses()">重试</button>
+                </div>
+            `;
         }
 
         function updateStats() {
             const completed = myCourses.filter(c => c.progress === 100).length;
             const totalProgress = myCourses.reduce((sum, c) => sum + (c.progress || 0), 0);
             const avgProgress = myCourses.length > 0 ? Math.round(totalProgress / myCourses.length) : 0;
-            const totalTime = Math.round(totalProgress / 100 * 4 * myCourses.length);
+            const totalTimeHours = Number(learningStatistics?.totalStudyTimeHours ?? 0) || 0;
 
             animateNumber('totalCourses', myCourses.length);
             animateNumber('completedCourses', completed);
             document.getElementById('avgProgress').textContent = avgProgress + '%';
-            animateNumber('totalStudyTime', totalTime);
+            document.getElementById('totalStudyTime').textContent = totalTimeHours > 0 ? totalTimeHours.toFixed(1) : '0';
         }
 
         function animateNumber(elementId, target) {
@@ -903,6 +947,7 @@
 
             grid.innerHTML = filtered.map(course => {
                 const isCompleted = course.progress === 100;
+                const remainingChapters = Math.max((course.totalChapters || 0) - (course.completedChapters || 0), 0);
                 return `
                     <div class="course-card" onclick="goToCourse(${course.courseId || course.id})">
                         <div class="course-cover">
@@ -934,7 +979,7 @@
                                 </div>
                                 <div class="course-progress-text">
                                     <span>${course.progress}% 完成</span>
-                                    <span>${course.totalChapters - course.completedChapters} 章剩余</span>
+                                    <span>${remainingChapters} 章剩余</span>
                                 </div>
                             </div>
                             <div class="course-footer">
@@ -947,6 +992,16 @@
                     </div>
                 `;
             }).join('');
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, (s) => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            })[s]);
         }
 
         function formatLastStudy(dateStr) {
@@ -966,6 +1021,11 @@
         }
 
         function goToCourse(courseId) {
+            const target = myCourses.find(c => String(c.courseId) === String(courseId));
+            if (target?.isProduct && target?.productId) {
+                window.location.href = `course-detail.html?productId=${encodeURIComponent(target.productId)}`;
+                return;
+            }
             window.location.href = `course-detail.html?id=${courseId}`;
         }
 
@@ -976,5 +1036,7 @@
             setTimeout(() => t.classList.remove('show'), 3000);
         }
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

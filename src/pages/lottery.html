@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>幸运抽奖 - AI 信息未来</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <style>
         /* Hero Section */
         .lottery-hero {
@@ -782,8 +783,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             initTheme();
-            checkAuth();
-            renderLottery();
+                        renderLottery();
             loadChances();
             loadHistory();
         });
@@ -799,53 +799,15 @@
             });
         }
 
-        function checkAuth() {
-            const token = localStorage.getItem('token');
-            const userStr = localStorage.getItem('user');
-            const authArea = document.getElementById('authArea');
-            if (token && userStr) {
-                const user = JSON.parse(userStr);
-                const initial = (user.nickname || user.username || 'U').charAt(0).toUpperCase();
-                authArea.innerHTML = `
-                    <div class="user-menu">
-                        <div class="user-avatar" onclick="toggleDropdown()">${initial}</div>
-                        <div class="dropdown" id="userDropdown">
-                            <a href="dashboard.html" class="dropdown-item">
-                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                                学习中心
-                            </a>
-                            <a href="profile.html" class="dropdown-item">
-                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                                个人主页
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item" onclick="logout(); return false;">
-                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                                退出登录
-                            </a>
-                        </div>
-                    </div>`;
-            } else {
-                window.location.href = 'login.html?returnUrl=' + encodeURIComponent(window.location.href);
-            }
-        }
+                }
 
-        function toggleDropdown() {
-            document.getElementById('userDropdown').classList.toggle('show');
-        }
-
+        
         function logout() {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             location.reload();
         }
 
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.user-menu')) {
-                const d = document.getElementById('userDropdown');
-                if (d) d.classList.remove('show');
-            }
-        });
 
         function getIcon(type) {
             const icons = {
@@ -880,7 +842,7 @@
                     chances = data.data || 0;
                 }
             } catch (e) {
-                chances = 3;
+                chances = 0;
             }
             document.getElementById('chancesCount').textContent = chances;
         }
@@ -916,25 +878,61 @@
                 return;
             }
 
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'login.html?returnUrl=' + encodeURIComponent(window.location.href);
+                return;
+            }
+
             isSpinning = true;
-            chances--;
-            document.getElementById('chancesCount').textContent = chances;
 
             const centerItem = document.querySelector('.lottery-item.center');
-            centerItem.classList.add('spinning');
+            centerItem?.classList.add('spinning');
 
-            const items = document.querySelectorAll('.lottery-item:not(.center)');
+            // 先向后端请求抽奖结果（防止前端可控、确保记录一致）
+            let prizeName = '';
+            let prizeData = null;
+            try {
+                const res = await fetch(`${API_BASE}/lottery/draw`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ poolId: 1 })
+                });
+                const data = await res.json();
+
+                if (data.code !== 200) {
+                    throw new Error(data.message || '抽奖失败');
+                }
+
+                const payload = data.data || {};
+                prizeData = payload.prize || payload.record || null;
+                prizeName = (prizeData && (prizeData.prizeName || prizeData.name)) || '';
+            } catch (e) {
+                centerItem?.classList.remove('spinning');
+                isSpinning = false;
+                showToast(e?.message || '抽奖失败，请稍后重试');
+                await loadChances();
+                return;
+            }
+
+            const items = document.querySelectorAll('.lottery-item');
             const sequence = [0, 1, 2, 5, 8, 7, 6, 3];
+            const targetIndex = resolvePrizeIndex(prizeData, prizeName, sequence);
+            const targetPos = sequence.indexOf(targetIndex);
+
             let current = 0;
             let speed = 80;
-            let rounds = 3;
-            let totalSteps = rounds * 8 + Math.floor(Math.random() * 8);
+            const rounds = 3 + Math.floor(Math.random() * 2); // 3~4圈
+            const totalSteps = rounds * sequence.length + (targetPos >= 0 ? targetPos : Math.floor(Math.random() * sequence.length)) + 1;
             let step = 0;
 
             const animate = () => {
                 items.forEach(item => item.classList.remove('active'));
-                const realIndex = sequence[current % 8];
-                items[realIndex].classList.add('active');
+                const realIndex = sequence[current % sequence.length];
+                items[realIndex]?.classList.add('active');
                 current++;
                 step++;
 
@@ -946,36 +944,58 @@
                     }
                     setTimeout(animate, speed);
                 } else {
-                    const winIndex = sequence[(current - 1) % 8];
-                    items[winIndex].classList.add('won');
-                    const prize = prizes.filter(p => !p.isCenter)[winIndex];
+                    const winIndex = sequence[(current - 1) % sequence.length];
+                    items[winIndex]?.classList.add('won');
+                    const prize = prizes[winIndex] || { name: prizeName || '奖励' };
 
                     setTimeout(() => {
-                        document.getElementById('modalPrize').textContent = prize.name;
+                        document.getElementById('modalPrize').textContent = prizeName || prize.name;
                         document.getElementById('resultModal').classList.add('show');
                         createConfetti();
                     }, 600);
 
                     isSpinning = false;
-                    centerItem.classList.remove('spinning');
-                    saveLotteryResult(prize);
+                    centerItem?.classList.remove('spinning');
+                    loadChances();
+                    loadHistory();
                 }
             };
 
             animate();
         }
 
-        async function saveLotteryResult(prize) {
-            try {
-                await fetch(`${API_BASE}/lottery/draw`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ prizeId: prize.id })
-                });
-            } catch (e) {}
+        function resolvePrizeIndex(prizeData, prizeName, sequence) {
+            const normalized = (prizeName || '').replace(/\s+/g, '');
+            if (normalized) {
+                const byName = prizes.findIndex(p => !p.isCenter && (p.name || '').replace(/\s+/g, '') === normalized);
+                if (byName !== -1) return byName;
+            }
+
+            const type = prizeData?.prizeType || prizeData?.type;
+            const valueRaw = prizeData?.prizeValue ?? prizeData?.value;
+            const value = valueRaw != null ? parseInt(String(valueRaw), 10) : NaN;
+
+            if (type === 'points' && !Number.isNaN(value)) {
+                const idx = prizes.findIndex(p => !p.isCenter && p.name.includes(`${value}积分`));
+                if (idx !== -1) return idx;
+                if (value <= 0) {
+                    const thanks = prizes.findIndex(p => !p.isCenter && p.name.includes('谢谢'));
+                    if (thanks !== -1) return thanks;
+                }
+            }
+
+            if (type === 'vip' && !Number.isNaN(value)) {
+                const idx = prizes.findIndex(p => !p.isCenter && p.name.includes('VIP') && p.name.includes(String(value)));
+                if (idx !== -1) return idx;
+            }
+
+            if (type && type.includes('coupon') && !Number.isNaN(value)) {
+                const idx = prizes.findIndex(p => !p.isCenter && p.name.includes('优惠券') && p.name.includes(String(value)));
+                if (idx !== -1) return idx;
+            }
+
+            // 兜底：随机停在某个格子
+            return sequence[Math.floor(Math.random() * sequence.length)];
         }
 
         function closeModal() {
@@ -1027,6 +1047,9 @@
             t.classList.add('show');
             setTimeout(() => t.classList.remove('show'), 3000);
         }
+        });
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

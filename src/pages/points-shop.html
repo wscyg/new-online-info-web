@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>积分商城 - AI 信息未来</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <style>
         /* Hero Section */
         .shop-hero {
@@ -897,14 +898,14 @@
         const API_BASE = '/api';
         let userPoints = 0;
         let allProducts = [];
+        let productsLoadError = false;
         let currentCategory = 'all';
         let currentSort = 'default';
         let pendingExchange = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             initTheme();
-            checkAuth();
-            loadUserPoints();
+                        loadUserPoints();
             loadProducts();
             loadExchangeHistory();
             setupFilters();
@@ -921,104 +922,87 @@
             });
         }
 
-        function checkAuth() {
-            const token = localStorage.getItem('token');
-            const userStr = localStorage.getItem('user');
-            const authArea = document.getElementById('authArea');
-            if (token && userStr) {
-                const user = JSON.parse(userStr);
-                const initial = (user.nickname || user.username || 'U').charAt(0).toUpperCase();
-                authArea.innerHTML = `
-                    <div class="user-menu">
-                        <div class="user-avatar" onclick="toggleDropdown()">${initial}</div>
-                        <div class="dropdown" id="userDropdown">
-                            <a href="dashboard.html" class="dropdown-item">
-                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                                学习中心
-                            </a>
-                            <a href="profile.html" class="dropdown-item">
-                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                                个人主页
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item" onclick="logout(); return false;">
-                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                                退出登录
-                            </a>
-                        </div>
-                    </div>`;
-            } else {
-                window.location.href = 'login.html?returnUrl=' + encodeURIComponent(window.location.href);
-            }
-        }
+                }
 
-        function toggleDropdown() {
-            document.getElementById('userDropdown').classList.toggle('show');
-        }
-
+        
         function logout() {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             location.reload();
         }
 
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.user-menu')) {
-                const d = document.getElementById('userDropdown');
-                if (d) d.classList.remove('show');
-            }
-        });
 
-        async function loadUserPoints() {
-            try {
-                const res = await fetch(`${API_BASE}/user/profile`, {
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                });
-                const data = await res.json();
-                if (data.code === 200 && data.data) {
-                    userPoints = data.data.points || 0;
-                    animateNumber('userPoints', userPoints);
-                }
-            } catch (e) {
-                userPoints = 1250;
-                animateNumber('userPoints', userPoints);
-            }
-        }
+	        async function loadUserPoints() {
+	            try {
+	                const res = await fetch(`${API_BASE}/user/profile`, {
+	                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+	                });
+	                const data = await res.json();
+	                if (data.code === 200 && data.data) {
+	                    userPoints = data.data.points || 0;
+	                    animateNumber('userPoints', userPoints);
+	                }
+	            } catch (e) {
+	                userPoints = 0;
+	                animateNumber('userPoints', userPoints);
+	            }
+	        }
 
-        async function loadProducts() {
-            try {
-                const res = await fetch(`${API_BASE}/points-shop/items`);
-                const data = await res.json();
-                if (data.code === 200 && data.data) {
-                    allProducts = data.data;
-                } else {
-                    allProducts = getDefaultProducts();
-                }
-            } catch (e) {
-                allProducts = getDefaultProducts();
-            }
+	        function mapItemTypeToCategory(itemType) {
+	            const type = (itemType || '').toLowerCase();
+	            if (type === 'vip') return 'vip';
+	            if (type === 'physical') return 'gift';
+	            if (type === 'course') return 'course';
+	            if (type === 'coupon') return 'course';
+	            return 'virtual';
+	        }
+
+	        function normalizeShopItem(raw) {
+	            const category = raw.category || mapItemTypeToCategory(raw.itemType);
+	            return {
+	                id: raw.id,
+	                name: raw.name,
+	                description: raw.description,
+	                points: raw.points ?? raw.pointsCost ?? 0,
+	                category,
+	                stock: raw.stock ?? raw.stockAvailable ?? 0,
+	                exchanges: raw.exchanges ?? raw.exchangeCount ?? 0,
+	                badge: raw.badge
+	            };
+	        }
+
+	        async function loadProducts() {
+                productsLoadError = false;
+	            try {
+	                const res = await fetch(`${API_BASE}/points-shop/items`);
+	                const data = await res.json();
+	                if (data.code === 200 && data.data) {
+	                    const rawItems = Array.isArray(data.data)
+	                        ? data.data
+	                        : (data.data.items || data.data.list || []);
+	                    allProducts = Array.isArray(rawItems) && rawItems.length > 0
+	                        ? rawItems.map(normalizeShopItem)
+	                        : [];
+	                } else {
+                        productsLoadError = true;
+	                    allProducts = [];
+	                }
+	            } catch (e) {
+                    productsLoadError = true;
+	                allProducts = [];
+	            }
             updateStats();
             renderProducts();
         }
 
-        function getDefaultProducts() {
-            return [
-                { id: 1, name: '课程优惠券 10元', description: '可用于任意付费课程，有效期30天', points: 100, category: 'course', stock: 99, badge: 'hot', exchanges: 1250 },
-                { id: 2, name: '课程优惠券 50元', description: '可用于任意付费课程，有效期30天', points: 450, category: 'course', stock: 50, exchanges: 680 },
-                { id: 3, name: '课程优惠券 100元', description: '可用于任意付费课程，有效期60天', points: 850, category: 'course', stock: 30, badge: 'new', exchanges: 320 },
-                { id: 4, name: 'VIP会员 7天', description: '解锁全部VIP课程和专属特权', points: 500, category: 'vip', stock: 99, exchanges: 890 },
-                { id: 5, name: 'VIP会员 30天', description: '解锁全部VIP课程和专属特权', points: 1800, category: 'vip', stock: 50, badge: 'hot', exchanges: 560 },
-                { id: 6, name: 'VIP会员 90天', description: '解锁全部VIP课程和专属特权，超值优惠', points: 4500, category: 'vip', stock: 20, badge: 'limited', exchanges: 180 },
-                { id: 7, name: 'AI学习手册', description: '精美实体书籍，包含AI核心算法详解', points: 2000, category: 'gift', stock: 20, exchanges: 95 },
-                { id: 8, name: '定制T恤', description: 'AI信息未来限量周边，纯棉材质', points: 3000, category: 'gift', stock: 10, badge: 'limited', exchanges: 45 },
-                { id: 9, name: '机械键盘', description: '高品质机械键盘，Cherry轴体', points: 8000, category: 'gift', stock: 5, badge: 'limited', exchanges: 12 },
-                { id: 10, name: '专属头像框', description: '限定头像边框，彰显尊贵身份', points: 200, category: 'virtual', stock: 999, badge: 'new', exchanges: 2100 },
-                { id: 11, name: '经验双倍卡(7天)', description: '学习获得双倍经验值', points: 300, category: 'virtual', stock: 99, exchanges: 750 },
-                { id: 12, name: '积分加速卡(7天)', description: '签到和学习获得1.5倍积分', points: 400, category: 'virtual', stock: 99, badge: 'hot', exchanges: 620 }
-            ];
-        }
-
         function updateStats() {
+            if (productsLoadError && allProducts.length === 0) {
+                document.getElementById('totalItems').textContent = '--';
+                document.getElementById('totalExchanges').textContent = '--';
+                document.getElementById('totalSaved').textContent = '--';
+                return;
+            }
+
             animateNumber('totalItems', allProducts.length);
             const totalExchanges = allProducts.reduce((sum, p) => sum + (p.exchanges || 0), 0);
             animateNumber('totalExchanges', totalExchanges);
@@ -1075,6 +1059,23 @@
                 case 'popular':
                     filtered.sort((a, b) => (b.exchanges || 0) - (a.exchanges || 0));
                     break;
+            }
+
+            if (!filtered.length && productsLoadError && allProducts.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                <path d="M2 17l10 5 10-5"/>
+                                <path d="M2 12l10 5 10-5"/>
+                            </svg>
+                        </div>
+                        <h3 class="empty-title">商品加载失败</h3>
+                        <p class="empty-desc">请检查网络或稍后刷新重试</p>
+                        <button class="btn btn-primary" style="padding:10px 18px;font-size:14px;" onclick="loadProducts()">刷新重试</button>
+                    </div>`;
+                return;
             }
 
             if (!filtered.length) {
@@ -1154,39 +1155,41 @@
             return names[category] || '其他';
         }
 
-        async function loadExchangeHistory() {
-            try {
-                const res = await fetch(`${API_BASE}/points-shop/exchange-history?limit=3`, {
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                });
-                const data = await res.json();
-                if (data.code === 200 && data.data && data.data.length > 0) {
-                    renderHistory(data.data);
-                    document.getElementById('historySection').style.display = 'block';
-                }
-            } catch (e) {
-                // No history to show
-            }
-        }
+	        async function loadExchangeHistory() {
+	            try {
+	                const res = await fetch(`${API_BASE}/points-shop/exchange-history?limit=3`, {
+	                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+	                });
+	                const data = await res.json();
+	                const raw = data?.data;
+	                const list = Array.isArray(raw) ? raw : (raw?.redemptions || raw?.list || []);
+	                if (data.code === 200 && Array.isArray(list) && list.length > 0) {
+	                    renderHistory(list);
+	                    document.getElementById('historySection').style.display = 'block';
+	                }
+	            } catch (e) {
+	                // No history to show
+	            }
+	        }
 
-        function renderHistory(history) {
-            const list = document.getElementById('historyList');
-            list.innerHTML = history.map(item => `
-                <div class="history-item">
-                    <div class="history-info">
-                        <div class="history-icon ${item.category || 'course'}">
-                            ${getCategoryIcon(item.category || 'course')}
-                        </div>
-                        <div class="history-details">
-                            <h4>${item.itemName || item.name}</h4>
-                            <p>${formatDate(item.exchangeTime || item.createdAt)}</p>
-                        </div>
-                    </div>
-                    <div class="history-points">-${item.points}</div>
-                    <div class="history-status ${item.status || 'completed'}">${getStatusText(item.status)}</div>
-                </div>
-            `).join('');
-        }
+	        function renderHistory(history) {
+	            const list = document.getElementById('historyList');
+	            list.innerHTML = history.map(item => `
+	                <div class="history-item">
+	                    <div class="history-info">
+	                        <div class="history-icon ${mapItemTypeToCategory(item.itemType) || item.category || 'course'}">
+	                            ${getCategoryIcon(mapItemTypeToCategory(item.itemType) || item.category || 'course')}
+	                        </div>
+	                        <div class="history-details">
+	                            <h4>${item.itemName || item.name}</h4>
+	                            <p>${formatDate(item.redeemedAt || item.exchangeTime || item.createdAt)}</p>
+	                        </div>
+	                    </div>
+	                    <div class="history-points">-${item.pointsSpent ?? item.points ?? 0}</div>
+	                    <div class="history-status ${item.status || 'completed'}">${getStatusText(item.status)}</div>
+	                </div>
+	            `).join('');
+	        }
 
         function formatDate(dateStr) {
             if (!dateStr) return '';
@@ -1194,10 +1197,17 @@
             return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
         }
 
-        function getStatusText(status) {
-            const texts = { completed: '已完成', pending: '处理中', shipped: '已发货' };
-            return texts[status] || '已完成';
-        }
+	        function getStatusText(status) {
+	            const texts = {
+	                completed: '已完成',
+	                pending: '处理中',
+	                processing: '处理中',
+	                shipped: '已发货',
+	                cancelled: '已取消',
+	                failed: '失败'
+	            };
+	            return texts[status] || '已完成';
+	        }
 
         function showConfirmModal(productId) {
             const product = allProducts.find(p => p.id === productId);
@@ -1215,56 +1225,63 @@
             pendingExchange = null;
         }
 
-        async function confirmExchange() {
-            if (!pendingExchange) return;
+	        async function confirmExchange() {
+	            if (!pendingExchange) return;
 
-            const product = pendingExchange;
-            const btn = document.getElementById('confirmBtn');
+	            const product = pendingExchange;
+	            const btn = document.getElementById('confirmBtn');
             btn.disabled = true;
-            btn.textContent = '兑换中...';
+	            btn.textContent = '兑换中...';
 
-            try {
-                const res = await fetch(`${API_BASE}/points-shop/exchange`, {
-                    method: 'POST',
+	            try {
+	                const res = await fetch(`${API_BASE}/points-shop/exchange`, {
+	                    method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ itemId: product.id })
-                });
-                const data = await res.json();
+	                });
+	                const data = await res.json();
 
-                if (data.code === 200) {
-                    handleExchangeSuccess(product);
-                } else {
-                    showToast(data.message || '兑换失败');
-                }
-            } catch (e) {
-                // Simulate success for demo
-                handleExchangeSuccess(product);
-            }
+	                if (data.code === 200) {
+	                    const remaining = data?.data?.remainingPoints;
+	                    handleExchangeSuccess(product, typeof remaining === 'number' ? remaining : null);
+	                } else {
+	                    showToast(data.message || '兑换失败');
+	                    btn.disabled = false;
+	                    btn.textContent = '确认兑换';
+	                    return;
+	                }
+	            } catch (e) {
+	                showToast('网络错误，请稍后重试');
+	                btn.disabled = false;
+	                btn.textContent = '确认兑换';
+	                return;
+	            }
 
-            btn.disabled = false;
-            btn.textContent = '确认兑换';
-            closeConfirmModal();
-        }
+	            btn.disabled = false;
+	            btn.textContent = '确认兑换';
+	            closeConfirmModal();
+	        }
 
-        function handleExchangeSuccess(product) {
-            userPoints -= product.points;
-            document.getElementById('userPoints').textContent = userPoints.toLocaleString();
+	        function handleExchangeSuccess(product, remainingPoints = null) {
+	            userPoints = typeof remainingPoints === 'number' ? remainingPoints : (userPoints - product.points);
+	            document.getElementById('userPoints').textContent = Math.max(0, userPoints).toLocaleString();
 
-            // Update product stock
-            const idx = allProducts.findIndex(p => p.id === product.id);
-            if (idx !== -1) {
-                allProducts[idx].stock--;
-                allProducts[idx].exchanges = (allProducts[idx].exchanges || 0) + 1;
-            }
-            renderProducts();
+	            // Update product stock
+	            const idx = allProducts.findIndex(p => p.id === product.id);
+	            if (idx !== -1) {
+	                allProducts[idx].stock--;
+	                allProducts[idx].exchanges = (allProducts[idx].exchanges || 0) + 1;
+	            }
+	            renderProducts();
+	            loadExchangeHistory();
 
-            // Show success modal
-            document.getElementById('successDesc').innerHTML = `
-                恭喜您成功兑换「${product.name}」！<br>
-                <span style="color: var(--text-tertiary); font-size: 14px;">剩余积分：${userPoints.toLocaleString()}</span>
+	            // Show success modal
+	            document.getElementById('successDesc').innerHTML = `
+	                恭喜您成功兑换「${product.name}」！<br>
+	                <span style="color: var(--text-tertiary); font-size: 14px;">剩余积分：${userPoints.toLocaleString()}</span>
             `;
             document.getElementById('successModal').classList.add('show');
 
@@ -1302,6 +1319,9 @@
             t.classList.add('show');
             setTimeout(() => t.classList.remove('show'), 3000);
         }
+        });
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

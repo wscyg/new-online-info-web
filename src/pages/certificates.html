@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的证书 - AI 信息未来</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <style>
         body {
             padding-top: 48px;
@@ -566,25 +567,15 @@
                 <a href="pk-arena.html" class="nav-link">PK竞技</a>
             </div>
             <div class="nav-actions">
+                <div id="authArea"></div>
                 <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
                         <path class="sun-icon" d="M10 3a1 1 0 011 1v1a1 1 0 11-2 0V4a1 1 0 011-1zm0 10a3 3 0 100-6 3 3 0 000 6zm0 2a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM3 10a1 1 0 011-1h1a1 1 0 110 2H4a1 1 0 01-1-1zm12 0a1 1 0 011-1h1a1 1 0 110 2h-1a1 1 0 01-1-1zM5.05 5.05a1 1 0 011.414 0l.707.707a1 1 0 11-1.414 1.414l-.707-.707a1 1 0 010-1.414zm9.9 9.9a1 1 0 011.414 0l.707.707a1 1 0 11-1.414 1.414l-.707-.707a1 1 0 010-1.414zm-9.9 0a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zm9.9-9.9a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0z"/>
                         <path class="moon-icon" style="display:none;" d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
                     </svg>
                 </button>
-                <div class="user-menu">
-                    <div class="user-avatar" id="userAvatar">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                            <path d="M8 8a3 3 0 100-6 3 3 0 000 6zm0 1a6 6 0 00-6 6 1 1 0 001 1h10a1 1 0 001-1 6 6 0 00-6-6z"/>
-                        </svg>
-                    </div>
-                    <div class="dropdown" id="userDropdown">
-                        <div class="dropdown-item" onclick="location.href='profile.html'">
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                                <path d="M8 8a3 3 0 100-6 3 3 0 000 6zm0 1a6 6 0 00-6 6 1 1 0 001 1h10a1 1 0 001-1 6 6 0 00-6-6z"/>
-                            </svg>
-                            个人中心
-                        </div>
+                
+                    
                         <div class="dropdown-item" onclick="location.href='certificates.html'">
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                                 <path d="M5 2a1 1 0 00-1 1v10a1 1 0 001 1h6a1 1 0 001-1V5.414a1 1 0 00-.293-.707l-2.414-2.414A1 1 0 008.586 2H5zm2 3a1 1 0 011-1h2a1 1 0 110 2H8a1 1 0 01-1-1zm0 3a1 1 0 011-1h2a1 1 0 110 2H8a1 1 0 01-1-1z"/>
@@ -757,8 +748,7 @@
         // 页面初始化
         document.addEventListener('DOMContentLoaded', () => {
             initTheme();
-            initAuth();
-            bindEvents();
+                        bindEvents();
             loadCertificates();
         });
 
@@ -783,13 +773,7 @@
         }
 
         // 初始化认证
-        function initAuth() {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                showEmptyState('请先登录', '登录后查看您的证书', 'lock');
-                return;
-            }
-
+        
             // 获取用户信息
             fetch(`${API_BASE}/user/profile`, {
                 headers: {
@@ -819,12 +803,10 @@
             // 用户菜单
             document.getElementById('userAvatar').addEventListener('click', (e) => {
                 e.stopPropagation();
-                document.getElementById('userDropdown').classList.toggle('show');
+                
             });
 
-            document.addEventListener('click', () => {
-                document.getElementById('userDropdown').classList.remove('show');
-            });
+                        });
 
             // 退出登录
             document.getElementById('logoutBtn').addEventListener('click', () => {
@@ -863,8 +845,6 @@
                 const response = await fetch(`${API_BASE}/certificates/my`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
-                    }
-                });
 
                 const data = await response.json();
 
@@ -1040,6 +1020,9 @@
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
+        });
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

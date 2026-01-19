@@ -664,7 +664,7 @@
             100% { background-position: -200% 0; }
         }
     </style>
-  <link rel="stylesheet" href="/assets/apple-design-3a23e109.css">
+  <link rel="stylesheet" href="/assets/apple-design-5104bdc3.css">
 </head>
 <body>
     <nav class="nav">
@@ -970,34 +970,62 @@
             }
         });
 
-        async function loadUserPoints() {
-            try {
-                const res = await fetch(`${API_BASE}/user/profile`, {
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                });
-                const data = await res.json();
-                if (data.code === 200 && data.data) {
-                    userPoints = data.data.points || 0;
-                    animateNumber('userPoints', userPoints);
-                }
-            } catch (e) {
-                userPoints = 1250;
-                animateNumber('userPoints', userPoints);
-            }
-        }
+	        async function loadUserPoints() {
+	            try {
+	                const res = await fetch(`${API_BASE}/user/profile`, {
+	                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+	                });
+	                const data = await res.json();
+	                if (data.code === 200 && data.data) {
+	                    userPoints = data.data.points || 0;
+	                    animateNumber('userPoints', userPoints);
+	                }
+	            } catch (e) {
+	                userPoints = 0;
+	                animateNumber('userPoints', userPoints);
+	            }
+	        }
 
-        async function loadProducts() {
-            try {
-                const res = await fetch(`${API_BASE}/points-shop/items`);
-                const data = await res.json();
-                if (data.code === 200 && data.data) {
-                    allProducts = data.data;
-                } else {
-                    allProducts = getDefaultProducts();
-                }
-            } catch (e) {
-                allProducts = getDefaultProducts();
-            }
+	        function mapItemTypeToCategory(itemType) {
+	            const type = (itemType || '').toLowerCase();
+	            if (type === 'vip') return 'vip';
+	            if (type === 'physical') return 'gift';
+	            if (type === 'course') return 'course';
+	            if (type === 'coupon') return 'course';
+	            return 'virtual';
+	        }
+
+	        function normalizeShopItem(raw) {
+	            const category = raw.category || mapItemTypeToCategory(raw.itemType);
+	            return {
+	                id: raw.id,
+	                name: raw.name,
+	                description: raw.description,
+	                points: raw.points ?? raw.pointsCost ?? 0,
+	                category,
+	                stock: raw.stock ?? raw.stockAvailable ?? 0,
+	                exchanges: raw.exchanges ?? raw.exchangeCount ?? 0,
+	                badge: raw.badge
+	            };
+	        }
+
+	        async function loadProducts() {
+	            try {
+	                const res = await fetch(`${API_BASE}/points-shop/items`);
+	                const data = await res.json();
+	                if (data.code === 200 && data.data) {
+	                    const rawItems = Array.isArray(data.data)
+	                        ? data.data
+	                        : (data.data.items || data.data.list || []);
+	                    allProducts = Array.isArray(rawItems) && rawItems.length > 0
+	                        ? rawItems.map(normalizeShopItem)
+	                        : getDefaultProducts();
+	                } else {
+	                    allProducts = getDefaultProducts();
+	                }
+	            } catch (e) {
+	                allProducts = getDefaultProducts();
+	            }
             updateStats();
             renderProducts();
         }
@@ -1155,39 +1183,41 @@
             return names[category] || '其他';
         }
 
-        async function loadExchangeHistory() {
-            try {
-                const res = await fetch(`${API_BASE}/points-shop/exchange-history?limit=3`, {
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                });
-                const data = await res.json();
-                if (data.code === 200 && data.data && data.data.length > 0) {
-                    renderHistory(data.data);
-                    document.getElementById('historySection').style.display = 'block';
-                }
-            } catch (e) {
-                // No history to show
-            }
-        }
+	        async function loadExchangeHistory() {
+	            try {
+	                const res = await fetch(`${API_BASE}/points-shop/exchange-history?limit=3`, {
+	                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+	                });
+	                const data = await res.json();
+	                const raw = data?.data;
+	                const list = Array.isArray(raw) ? raw : (raw?.redemptions || raw?.list || []);
+	                if (data.code === 200 && Array.isArray(list) && list.length > 0) {
+	                    renderHistory(list);
+	                    document.getElementById('historySection').style.display = 'block';
+	                }
+	            } catch (e) {
+	                // No history to show
+	            }
+	        }
 
-        function renderHistory(history) {
-            const list = document.getElementById('historyList');
-            list.innerHTML = history.map(item => `
-                <div class="history-item">
-                    <div class="history-info">
-                        <div class="history-icon ${item.category || 'course'}">
-                            ${getCategoryIcon(item.category || 'course')}
-                        </div>
-                        <div class="history-details">
-                            <h4>${item.itemName || item.name}</h4>
-                            <p>${formatDate(item.exchangeTime || item.createdAt)}</p>
-                        </div>
-                    </div>
-                    <div class="history-points">-${item.points}</div>
-                    <div class="history-status ${item.status || 'completed'}">${getStatusText(item.status)}</div>
-                </div>
-            `).join('');
-        }
+	        function renderHistory(history) {
+	            const list = document.getElementById('historyList');
+	            list.innerHTML = history.map(item => `
+	                <div class="history-item">
+	                    <div class="history-info">
+	                        <div class="history-icon ${mapItemTypeToCategory(item.itemType) || item.category || 'course'}">
+	                            ${getCategoryIcon(mapItemTypeToCategory(item.itemType) || item.category || 'course')}
+	                        </div>
+	                        <div class="history-details">
+	                            <h4>${item.itemName || item.name}</h4>
+	                            <p>${formatDate(item.redeemedAt || item.exchangeTime || item.createdAt)}</p>
+	                        </div>
+	                    </div>
+	                    <div class="history-points">-${item.pointsSpent ?? item.points ?? 0}</div>
+	                    <div class="history-status ${item.status || 'completed'}">${getStatusText(item.status)}</div>
+	                </div>
+	            `).join('');
+	        }
 
         function formatDate(dateStr) {
             if (!dateStr) return '';
@@ -1195,10 +1225,17 @@
             return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
         }
 
-        function getStatusText(status) {
-            const texts = { completed: '已完成', pending: '处理中', shipped: '已发货' };
-            return texts[status] || '已完成';
-        }
+	        function getStatusText(status) {
+	            const texts = {
+	                completed: '已完成',
+	                pending: '处理中',
+	                processing: '处理中',
+	                shipped: '已发货',
+	                cancelled: '已取消',
+	                failed: '失败'
+	            };
+	            return texts[status] || '已完成';
+	        }
 
         function showConfirmModal(productId) {
             const product = allProducts.find(p => p.id === productId);
@@ -1216,56 +1253,63 @@
             pendingExchange = null;
         }
 
-        async function confirmExchange() {
-            if (!pendingExchange) return;
+	        async function confirmExchange() {
+	            if (!pendingExchange) return;
 
-            const product = pendingExchange;
-            const btn = document.getElementById('confirmBtn');
+	            const product = pendingExchange;
+	            const btn = document.getElementById('confirmBtn');
             btn.disabled = true;
-            btn.textContent = '兑换中...';
+	            btn.textContent = '兑换中...';
 
-            try {
-                const res = await fetch(`${API_BASE}/points-shop/exchange`, {
-                    method: 'POST',
+	            try {
+	                const res = await fetch(`${API_BASE}/points-shop/exchange`, {
+	                    method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ itemId: product.id })
-                });
-                const data = await res.json();
+	                });
+	                const data = await res.json();
 
-                if (data.code === 200) {
-                    handleExchangeSuccess(product);
-                } else {
-                    showToast(data.message || '兑换失败');
-                }
-            } catch (e) {
-                // Simulate success for demo
-                handleExchangeSuccess(product);
-            }
+	                if (data.code === 200) {
+	                    const remaining = data?.data?.remainingPoints;
+	                    handleExchangeSuccess(product, typeof remaining === 'number' ? remaining : null);
+	                } else {
+	                    showToast(data.message || '兑换失败');
+	                    btn.disabled = false;
+	                    btn.textContent = '确认兑换';
+	                    return;
+	                }
+	            } catch (e) {
+	                showToast('网络错误，请稍后重试');
+	                btn.disabled = false;
+	                btn.textContent = '确认兑换';
+	                return;
+	            }
 
-            btn.disabled = false;
-            btn.textContent = '确认兑换';
-            closeConfirmModal();
-        }
+	            btn.disabled = false;
+	            btn.textContent = '确认兑换';
+	            closeConfirmModal();
+	        }
 
-        function handleExchangeSuccess(product) {
-            userPoints -= product.points;
-            document.getElementById('userPoints').textContent = userPoints.toLocaleString();
+	        function handleExchangeSuccess(product, remainingPoints = null) {
+	            userPoints = typeof remainingPoints === 'number' ? remainingPoints : (userPoints - product.points);
+	            document.getElementById('userPoints').textContent = Math.max(0, userPoints).toLocaleString();
 
-            // Update product stock
-            const idx = allProducts.findIndex(p => p.id === product.id);
-            if (idx !== -1) {
-                allProducts[idx].stock--;
-                allProducts[idx].exchanges = (allProducts[idx].exchanges || 0) + 1;
-            }
-            renderProducts();
+	            // Update product stock
+	            const idx = allProducts.findIndex(p => p.id === product.id);
+	            if (idx !== -1) {
+	                allProducts[idx].stock--;
+	                allProducts[idx].exchanges = (allProducts[idx].exchanges || 0) + 1;
+	            }
+	            renderProducts();
+	            loadExchangeHistory();
 
-            // Show success modal
-            document.getElementById('successDesc').innerHTML = `
-                恭喜您成功兑换「${product.name}」！<br>
-                <span style="color: var(--text-tertiary); font-size: 14px;">剩余积分：${userPoints.toLocaleString()}</span>
+	            // Show success modal
+	            document.getElementById('successDesc').innerHTML = `
+	                恭喜您成功兑换「${product.name}」！<br>
+	                <span style="color: var(--text-tertiary); font-size: 14px;">剩余积分：${userPoints.toLocaleString()}</span>
             `;
             document.getElementById('successModal').classList.add('show');
 

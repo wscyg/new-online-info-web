@@ -15,9 +15,7 @@ class CardPlayer {
         this.isLoading = false;
 
         // API配置
-        this.apiBaseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? 'http://localhost:8070/api'
-            : 'http://42.194.245.66:8070/api';
+        this.apiBaseUrl = '/api';
 
         // DOM元素
         this.cardTitle = document.getElementById('cardTitle');

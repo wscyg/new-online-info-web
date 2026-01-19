@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注意力机制深度解析 - 免费课程</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/course-system/styles/star-purple/style.css">
+    <style>
+        /* 页面加载动画 */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(139, 92, 246, 0.2);
+            border-top-color: #8b5cf6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+
+        /* 课程信息头部 */
+        .course-header {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 8px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
+        }
+
+        .course-header-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .course-header-badge {
+            padding: 4px 10px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .course-header-back {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .course-header-back:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .course-header {
+                width: calc(100% - 40px);
+                justify-content: space-between;
+            }
+
+            .course-header-title {
+                display: none;
+            }
+        }
+
+        /* 课程容器全屏 */
+        #courseContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- 加载动画 -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">正在加载课程...</div>
+    </div>
+
+    <!-- 课程头部 -->
+    <div class="course-header">
+        <a href="courses.html" class="course-header-back">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            返回
+        </a>
+        <span class="course-header-title">注意力机制深度解析</span>
+        <span class="course-header-badge">免费</span>
+    </div>
+
+    <!-- 课程容器 -->
+    <div id="courseContainer"></div>
+
+    <!-- 脚本 -->
+    <script src="/course-system/renderer/course-renderer.js"></script>
+    <script>
+        // 加载课程
+        async function loadCourse() {
+            try {
+                // 加载课程JSON
+                const response = await fetch('/course-system/courses/attention-mechanism.json');
+                if (!response.ok) throw new Error('Failed to load course');
+                const courseData = await response.json();
+
+                // 初始化课程渲染器
+                const renderer = new CourseRenderer({
+                    enableAnimations: true,
+                    enableNavigation: true,
+                    onPageChange: (data) => {
+                        console.log('Page changed:', data.page + 1, '/', data.total);
+                        // 保存进度
+                        saveProgress(courseData.id, data.page);
+                    },
+                    onProgress: (data) => {
+                        // 更新页面标题显示进度
+                        document.title = `[${Math.round(data.percentage)}%] ${courseData.title}`;
+                    }
+                });
+
+                // 渲染课程
+                await renderer.render(courseData, document.getElementById('courseContainer'));
+
+                // 恢复进度
+                const savedProgress = loadProgress(courseData.id);
+                if (savedProgress > 0) {
+                    renderer.goToPage(savedProgress);
+                }
+
+                // 隐藏加载动画
+                document.getElementById('loadingScreen').classList.add('hidden');
+
+            } catch (error) {
+                console.error('Error loading course:', error);
+                document.getElementById('loadingScreen').innerHTML = `
+                    <div style="color: #ef4444; text-align: center;">
+                        <p style="font-size: 1.2rem; margin-bottom: 10px;">加载失败</p>
+                        <p style="color: rgba(255,255,255,0.5);">${error.message}</p>
+                        <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #8b5cf6; border: none; border-radius: 8px; color: white; cursor: pointer;">
+                            重试
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // 保存进度到 localStorage
+        function saveProgress(courseId, page) {
+            try {
+                const progress = JSON.parse(localStorage.getItem('courseProgress') || '{}');
+                progress[courseId] = {
+                    page,
+                    updatedAt: Date.now()
+                };
+                localStorage.setItem('courseProgress', JSON.stringify(progress));
+            } catch (e) {
+                console.warn('Failed to save progress:', e);
+            }
+        }
+
+        // 加载进度
+        function loadProgress(courseId) {
+            try {
+                const progress = JSON.parse(localStorage.getItem('courseProgress') || '{}');
+                return progress[courseId]?.page || 0;
+            } catch (e) {
+                return 0;
+            }
+        }
+
+        // 初始化
+        loadCourse();
+    </script>
+</body>
+</html>

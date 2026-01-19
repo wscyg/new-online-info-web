@@ -28,67 +28,10 @@
 
     
     <style>
-        /* Hero */
-        .courses-hero {
-            padding: 120px 0 80px;
-            background: linear-gradient(135deg, #1e3a5f 0%, #0f2744 50%, #0a1929 100%);
-            position: relative;
-            overflow: hidden;
-        }
-        .courses-hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        }
-        .hero-content {
-            position: relative;
-            z-index: 1;
-            text-align: center;
-            color: white;
-        }
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 30px;
-            font-size: 13px;
-            margin-bottom: 20px;
-        }
-        .hero-title {
-            font-size: 52px;
-            font-weight: 800;
-            margin-bottom: 16px;
-            letter-spacing: -0.02em;
-        }
-        .hero-subtitle {
-            font-size: 20px;
-            color: rgba(255,255,255,0.8);
-            max-width: 600px;
-            margin: 0 auto 32px;
-        }
-        .hero-stats {
-            display: flex;
-            justify-content: center;
-            gap: 48px;
-        }
-        .hero-stat {
-            text-align: center;
-        }
-        .hero-stat-value {
-            font-size: 32px;
-            font-weight: 700;
-        }
-        .hero-stat-label {
-            font-size: 14px;
-            color: rgba(255,255,255,0.6);
-            margin-top: 4px;
+        /* Page Header - 紧凑型 */
+        .page-header {
+            padding-top: 80px; /* nav height */
+            background: var(--bg-primary);
         }
 
         /* Filter Bar */
@@ -98,7 +41,33 @@
             position: sticky;
             top: 64px;
             z-index: 100;
-            padding: 16px 0;
+            padding: 20px 0;
+        }
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .filter-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .filter-stats {
+            display: flex;
+            gap: 24px;
+        }
+        .filter-stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .filter-stat-value {
+            font-weight: 600;
+            color: var(--accent);
         }
         .filter-inner {
             display: flex;
@@ -159,6 +128,12 @@
         }
         .filter-tab:hover:not(.active) {
             color: var(--text-primary);
+        }
+        .scope-tabs {
+            display: flex;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 4px;
         }
         .search-box {
             display: flex;
@@ -259,8 +234,11 @@
         }
         .courses-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        @media (max-width: 1400px) {
+            .courses-grid { grid-template-columns: repeat(3, 1fr); }
         }
         @media (max-width: 1024px) {
             .courses-grid { grid-template-columns: repeat(2, 1fr); }
@@ -282,6 +260,9 @@
             text-decoration: none;
             display: flex;
             flex-direction: column;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
         }
         .course-card:hover {
             transform: translateY(-8px);
@@ -342,6 +323,10 @@
             background: rgba(99, 102, 241, 0.9);
             color: white;
         }
+        .course-badge.enrolled {
+            background: rgba(0, 113, 227, 0.9);
+            color: white;
+        }
         .course-difficulty {
             position: absolute;
             top: 12px;
@@ -359,6 +344,32 @@
             flex: 1;
             display: flex;
             flex-direction: column;
+        }
+        .course-progress {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border-color);
+        }
+        .course-progress-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        .course-progress-track {
+            height: 6px;
+            background: var(--bg-secondary);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+        .course-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent), #6366f1);
+            border-radius: 999px;
+            transition: width 0.5s ease;
         }
         .course-category {
             font-size: 12px;
@@ -496,13 +507,15 @@
             z-index: 1000;
             opacity: 0;
             transition: all 0.3s;
+            pointer-events: none; /* 隐藏时不阻挡点击 */
         }
         .toast.show {
             transform: translateX(-50%) translateY(0);
             opacity: 1;
+            pointer-events: auto; /* 显示时允许交互 */
         }
     </style>
-  <link rel="stylesheet" href="/assets/apple-design-3a23e109.css">
+  <link rel="stylesheet" href="/assets/apple-design-5104bdc3.css">
 </head>
 <body>
     <nav class="nav">
@@ -536,38 +549,28 @@
         </div>
     </nav>
 
-    <!-- Hero -->
-    <section class="courses-hero">
-        <div class="container hero-content">
-            <div class="hero-badge">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                </svg>
-                系统化 AI 课程体系
-            </div>
-            <h1 class="hero-title">课程中心</h1>
-            <p class="hero-subtitle">从入门到精通，全面掌握 AI 算法工程师必备技能</p>
-            <div class="hero-stats">
-                <div class="hero-stat">
-                    <div class="hero-stat-value" id="totalCourses">0</div>
-                    <div class="hero-stat-label">精品课程</div>
+    <!-- Page Header + Filter Bar -->
+    <div class="page-header">
+        <div class="filter-bar">
+            <div class="container-wide">
+                <div class="filter-header">
+                    <h1 class="filter-title">课程中心</h1>
+                    <div class="filter-stats">
+                        <div class="filter-stat">
+                            <span class="filter-stat-value" id="totalCourses">0</span>
+                            <span>门课程</span>
+                        </div>
+                        <div class="filter-stat">
+                            <span class="filter-stat-value" id="totalStudents">0</span>
+                            <span>学习人次</span>
+                        </div>
+                        <div class="filter-stat">
+                            <span class="filter-stat-value" id="totalHours">0</span>
+                            <span>节课</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="hero-stat">
-                    <div class="hero-stat-value" id="totalStudents">0</div>
-                    <div class="hero-stat-label">学习人次</div>
-                </div>
-                <div class="hero-stat">
-                    <div class="hero-stat-value" id="totalHours">0</div>
-                    <div class="hero-stat-label">课时总数</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Filter Bar -->
-    <div class="filter-bar">
-        <div class="container-wide">
-            <div class="filter-inner">
+                <div class="filter-inner">
                 <div class="filter-left">
                     <div class="filter-group">
                         <span class="filter-label">难度</span>
@@ -588,6 +591,13 @@
                         </div>
                     </div>
                     <div class="filter-group">
+                        <span class="filter-label">范围</span>
+                        <div class="scope-tabs" id="scopeTabs">
+                            <button class="filter-tab active" data-scope="all">全部</button>
+                            <button class="filter-tab" data-scope="enrolled">已报名</button>
+                        </div>
+                    </div>
+                    <div class="filter-group">
                         <span class="filter-label">排序</span>
                         <select class="filter-select" id="sortFilter">
                             <option value="newest">最新发布</option>
@@ -604,6 +614,7 @@
                         <path d="M21 21l-4.35-4.35"/>
                     </svg>
                     <input type="text" id="searchInput" placeholder="搜索课程...">
+                </div>
                 </div>
             </div>
         </div>
@@ -648,10 +659,12 @@
         const API_BASE = '/api';
         let allCourses = [];
         let categories = [];
+        let myCourseProgress = new Map(); // key: courseId(string) -> { progress, completedChapters, totalChapters }
         let filters = {
             category: 'all',
             difficulty: '',
             price: 'all',
+            scope: 'all',
             sort: 'newest',
             search: ''
         };
@@ -660,6 +673,7 @@
             initTheme();
             checkAuth();
             loadCategories();
+            loadMyCoursesProgress();
             loadCourses();
             setupFilters();
         });
@@ -701,6 +715,34 @@
             }
         }
 
+        async function loadMyCoursesProgress() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const res = await fetch(`${API_BASE}/user/courses`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (res.ok && data.code === 200 && Array.isArray(data.data)) {
+                    myCourseProgress = new Map();
+                    data.data.forEach(item => {
+                        const id = item.courseId || item.id;
+                        if (!id) return;
+                        myCourseProgress.set(String(id), {
+                            progress: Number(item.progress || 0),
+                            completedChapters: Number(item.completedChapters || 0),
+                            totalChapters: Number(item.totalChapters || 0)
+                        });
+                    });
+
+                    if (allCourses.length) applyFilters();
+                }
+            } catch (e) {
+                // ignore
+            }
+        }
+
         async function loadCategories() {
             try {
                 const res = await fetch(`${API_BASE}/categories`);
@@ -731,20 +773,84 @@
             });
         }
 
+        // 模板课程（使用模板渲染系统的交互式课程）
+        // 注意：这些课程会跳转到课程详情页，详情页会显示章节列表
+        const staticFreeCourses = [
+            {
+                id: 'template-transformer-fundamentals',
+                templateCourseId: 'transformer-fundamentals',  // 模板课程ID
+                title: 'Transformer架构深度解析',
+                description: '从注意力机制到GPT的完整旅程，深入理解现代AI大模型的核心原理。苏格拉底式教学，沉浸式交互体验。',
+                coverImage: null,
+                category: { name: 'AI/深度学习' },
+                difficulty: '中级',
+                isFree: false,
+                price: 0.01,
+                originalPrice: 99,
+                rating: 5.0,
+                enrollmentCount: 2580,
+                lessonCount: 10,
+                isStatic: true,  // 标记为模板课程
+                isTemplateCourse: true,  // 标记为使用模板系统
+                staticUrl: 'course-detail.html?templateId=transformer-fundamentals',  // 跳转到详情页
+                createdAt: '2025-01-01',
+                tags: ['Transformer', 'GPT', '注意力机制', '深度学习'],
+                isNew: true,
+                isFeatured: true
+            }
+        ];
+
         async function loadCourses() {
             try {
-                const res = await fetch(`${API_BASE}/courses`);
-                const data = await res.json();
-                if (data.code === 200 && data.data) {
-                    allCourses = Array.isArray(data.data) ? data.data : (data.data.items || []);
-                    updateStats();
-                    applyFilters();
-                } else {
-                    showEmpty();
+                // 同时加载普通课程和课程产品
+                const [coursesRes, productsRes] = await Promise.all([
+                    fetch(`${API_BASE}/courses`).catch(() => null),
+                    fetch(`${API_BASE}/course-templates/products/by-status/published`).catch(() => null)
+                ]);
+
+                let courses = [];
+                let products = [];
+
+                // 解析普通课程
+                if (coursesRes && coursesRes.ok) {
+                    const data = await coursesRes.json();
+                    if (data.code === 200 && data.data) {
+                        courses = Array.isArray(data.data) ? data.data : (data.data.items || []);
+                    }
                 }
+
+                // 解析课程产品并转换格式
+                if (productsRes && productsRes.ok) {
+                    const data = await productsRes.json();
+                    if ((data.code === 0 || data.code === 200) && data.data) {
+                        products = data.data.map(p => ({
+                            id: p.id,
+                            productId: p.productId,
+                            title: p.title,
+                            description: p.description || p.subtitle,
+                            price: p.price,
+                            originalPrice: p.originalPrice,
+                            isFree: p.isFree || p.price === 0,
+                            difficulty: p.difficulty,
+                            enrollmentCount: p.enrollmentCount || 0,
+                            lessonCount: p.chapterCount || 0,
+                            rating: 5.0,
+                            coverImage: p.coverImage,
+                            isProduct: true,  // 标记为课程产品
+                            category: { name: 'AI技术' }
+                        }));
+                    }
+                }
+
+                allCourses = [...courses, ...products];
             } catch (e) {
-                showEmpty();
+                console.error('加载课程失败:', e);
+                allCourses = [];
             }
+            // 添加静态免费课程到列表开头
+            allCourses = [...staticFreeCourses, ...allCourses];
+            updateStats();
+            applyFilters();
         }
 
         function updateStats() {
@@ -753,8 +859,8 @@
             document.getElementById('totalStudents').textContent = totalStudents > 1000
                 ? (totalStudents / 1000).toFixed(1) + 'k'
                 : totalStudents;
-            const totalHours = allCourses.reduce((sum, c) => sum + Math.ceil((c.totalMinutes || 60) / 60), 0);
-            document.getElementById('totalHours').textContent = totalHours;
+            const totalLessons = allCourses.reduce((sum, c) => sum + Number(c.lessonCount || c.chapterCount || 0), 0);
+            document.getElementById('totalHours').textContent = totalLessons;
         }
 
         function setupFilters() {
@@ -764,6 +870,16 @@
                     document.querySelectorAll('.filter-tab[data-price]').forEach(t => t.classList.remove('active'));
                     tab.classList.add('active');
                     filters.price = tab.dataset.price;
+                    applyFilters();
+                });
+            });
+
+            // Scope tabs
+            document.querySelectorAll('.filter-tab[data-scope]').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-tab[data-scope]').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    filters.scope = tab.dataset.scope;
                     applyFilters();
                 });
             });
@@ -796,12 +912,20 @@
 
             // Category filter
             if (filters.category !== 'all') {
-                filtered = filtered.filter(c => c.categoryId == filters.category);
+                filtered = filtered.filter(c => {
+                    const catId = c.categoryId ?? c.category?.id ?? c.category?.categoryId;
+                    return String(catId ?? '') === String(filters.category);
+                });
             }
 
             // Difficulty filter
             if (filters.difficulty) {
                 filtered = filtered.filter(c => c.difficulty === filters.difficulty);
+            }
+
+            // Scope filter
+            if (filters.scope === 'enrolled') {
+                filtered = filtered.filter(c => c.id != null && myCourseProgress.has(String(c.id)));
             }
 
             // Price filter
@@ -853,9 +977,27 @@
                 const isHot = (c.enrollmentCount || 0) > 100;
                 const isNew = c.createdAt && (Date.now() - new Date(c.createdAt)) < 30 * 24 * 60 * 60 * 1000;
                 const isFree = c.isFree || c.price === 0;
+                const courseIdKey = c.id != null ? String(c.id) : '';
+                const mine = courseIdKey ? myCourseProgress.get(courseIdKey) : null;
+                const enrolled = !!mine;
+                const progressPercent = Math.max(0, Math.min(100, Math.round(mine?.progress ?? 0)));
+
+                // 确保所有课程都有有效的链接
+                let courseUrl;
+                if (c.isStatic && c.staticUrl) {
+                    courseUrl = c.staticUrl;
+                } else if (c.isProduct && c.productId) {
+                    // 课程产品使用 productId
+                    courseUrl = `course-detail.html?productId=${c.productId}`;
+                } else if (c.id) {
+                    courseUrl = `course-detail.html?id=${c.id}`;
+                } else {
+                    console.warn('课程缺少ID:', c.title);
+                    courseUrl = '#'; // 防止无效链接
+                }
 
                 return `
-                    <a href="course-detail.html?id=${c.id}" class="course-card">
+                    <a href="${courseUrl}" class="course-card">
                         <div class="course-cover">
                             ${c.coverImage
                                 ? `<img src="${c.coverImage}" alt="${c.title}">`
@@ -867,6 +1009,7 @@
                             }
                             <div class="course-badges">
                                 ${isFree ? '<span class="course-badge free">免费</span>' : ''}
+                                ${enrolled ? '<span class="course-badge enrolled">已报名</span>' : ''}
                                 ${isHot ? '<span class="course-badge hot">热门</span>' : ''}
                                 ${isNew && !isHot ? '<span class="course-badge new">新课</span>' : ''}
                             </div>
@@ -899,6 +1042,17 @@
                                     </span>
                                 </div>
                             </div>
+                            ${enrolled ? `
+                                <div class="course-progress">
+                                    <div class="course-progress-row">
+                                        <span>学习进度</span>
+                                        <span><strong>${progressPercent}%</strong></span>
+                                    </div>
+                                    <div class="course-progress-track">
+                                        <div class="course-progress-fill" style="width:${progressPercent}%"></div>
+                                    </div>
+                                </div>
+                            ` : ''}
                         </div>
                         <div class="course-footer">
                             <div class="course-price ${isFree ? 'free' : ''}">
@@ -907,7 +1061,7 @@
                                     ? `<span class="original">¥${c.originalPrice}</span>`
                                     : ''}
                             </div>
-                            <span class="course-btn">查看详情</span>
+                            <span class="course-btn">${enrolled ? '继续学习' : '查看详情'}</span>
                         </div>
                     </a>
                 `;
@@ -927,12 +1081,14 @@
         }
 
         function resetFilters() {
-            filters = { category: 'all', difficulty: '', price: 'all', sort: 'newest', search: '' };
+            filters = { category: 'all', difficulty: '', price: 'all', scope: 'all', sort: 'newest', search: '' };
             document.getElementById('searchInput').value = '';
             document.getElementById('difficultyFilter').value = '';
             document.getElementById('sortFilter').value = 'newest';
             document.querySelectorAll('.filter-tab[data-price]').forEach(t => t.classList.remove('active'));
             document.querySelector('.filter-tab[data-price="all"]').classList.add('active');
+            document.querySelectorAll('.filter-tab[data-scope]').forEach(t => t.classList.remove('active'));
+            document.querySelector('.filter-tab[data-scope="all"]').classList.add('active');
             document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
             document.querySelector('.category-pill[data-category="all"]').classList.add('active');
             applyFilters();

@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>组队学习 - AI 信息未来</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <style>
         body {
             padding-top: 48px;
@@ -355,6 +356,7 @@
                 <a href="leaderboard.html" class="nav-link">PK竞技</a>
             </div>
             <div class="nav-actions">
+                <div id="authArea"></div>
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换主题">
                     <svg class="icon-sun" width="16" height="16" fill="currentColor" style="display: none;">
                         <circle cx="8" cy="8" r="4"/>
@@ -364,15 +366,8 @@
                         <path d="M8 0c.9 0 1.8.2 2.6.5-2.3.7-4 2.9-4 5.5s1.7 4.8 4 5.5c-.8.3-1.7.5-2.6.5-4.4 0-8-3.6-8-8s3.6-8 8-8z"/>
                     </svg>
                 </button>
-                <div class="user-menu">
-                    <div class="user-avatar" onclick="toggleUserMenu()" id="userAvatar"></div>
-                    <div class="dropdown" id="userDropdown">
-                        <div class="dropdown-item" onclick="window.location.href='dashboard.html'">
-                            <svg width="16" height="16" fill="currentColor">
-                                <rect x="2" y="2" width="12" height="12" rx="2"/>
-                            </svg>
-                            <span>个人中心</span>
-                        </div>
+                
+                    
                         <div class="dropdown-divider"></div>
                         <div class="dropdown-item" onclick="handleLogout()">
                             <svg width="16" height="16" fill="currentColor">
@@ -531,19 +526,8 @@
         }
 
         // 切换用户菜单
-        function toggleUserMenu() {
-            const dropdown = document.getElementById('userDropdown');
-            dropdown.classList.toggle('show');
-        }
-
+        
         // 点击外部关闭用户菜单
-        document.addEventListener('click', (e) => {
-            const userMenu = document.querySelector('.user-menu');
-            const dropdown = document.getElementById('userDropdown');
-            if (!userMenu.contains(e.target)) {
-                dropdown.classList.remove('show');
-            }
-        });
 
         // 退出登录
         function handleLogout() {
@@ -720,6 +704,8 @@
                 const token = localStorage.getItem('token');
                 const response = await fetch(`${API_BASE}/courses?page=1&size=20`, {
                     headers: { 'Authorization': `Bearer ${token}` }
+                    }
+                });
                 });
 
                 if (response.ok) {
@@ -750,6 +736,8 @@
                 const token = localStorage.getItem('token');
                 const response = await fetch(`${API_BASE}/courses/${courseId}/chapters`, {
                     headers: { 'Authorization': `Bearer ${token}` }
+                    }
+                });
                 });
 
                 if (response.ok) {
@@ -891,5 +879,7 @@
             }
         }
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

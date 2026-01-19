@@ -6,12 +6,13 @@
     <title>PK对战中 - AI 信息未来</title>
 
     <!-- Apple Design CSS -->
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
 
     <!-- 代码高亮 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-light">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" id="hljs-dark" disabled>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script></script>
 
     <!-- 外部依赖 -->
     <script src="https://cdn.jsdelivr.net/npm/zustand@4.4.1/index.umd.js"></script>
@@ -528,9 +529,10 @@
                 <a href="/" class="nav-link">首页</a>
                 <a href="/src/pages/courses.html" class="nav-link">课程</a>
                 <a href="/src/pages/community.html" class="nav-link">社区</a>
-                <a href="/src/pages/pk-arena-new.html" class="nav-link active">PK竞技</a>
+                <a href="/src/pages/pk-arena.html" class="nav-link active">PK竞技</a>
             </div>
             <div class="nav-actions">
+                <div id="authArea"></div>
                 <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
                     <svg class="icon sun-icon" viewBox="0 0 24 24" width="20" height="20">
                         <circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
@@ -547,8 +549,7 @@
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="currentColor"/>
                     </svg>
                 </button>
-                <div class="user-menu">
-                    <div class="user-avatar" id="userAvatar"></div>
+                
                 </div>
             </div>
         </div>
@@ -717,7 +718,7 @@
     </div>
 
     <!-- 引入Avatar渲染器 -->
-    <script src="../components/AvatarRenderer.js"></script>
+    <script type="module" src="../components/AvatarRenderer.js"></script>
 
     <!-- JavaScript模块 -->
     <script type="module">
@@ -767,11 +768,11 @@
 
         // 获取battleId参数
         const urlParams = new URLSearchParams(window.location.search);
-        const battleId = urlParams.get('battleId');
+        const battleId = urlParams.get('battleId') || urlParams.get('id');
 
         if (!battleId) {
             alert('无效的对战ID');
-            window.location.href = 'pk-arena-new.html';
+            window.location.href = 'pk-arena.html';
         } else {
             // 初始化PK对战
             const battle = new PKBattle(battleId);
@@ -813,21 +814,16 @@
             forfeitModal.classList.remove('show');
             if (window.pkBattle) {
                 window.pkBattle.forfeit();
-            }
-        });
 
         // 点击模态框背景关闭
         forfeitModal?.addEventListener('click', (e) => {
             if (e.target === forfeitModal) {
                 forfeitModal.classList.remove('show');
-            }
-        });
     </script>
 
     <script>
         // API基础配置
         window.API_BASE = '/api';
-        window.API_BASE_URL = 'http://localhost:8070';
 
         // API方法（与battle.js交互）
         window.API = {
@@ -836,8 +832,6 @@
                     const response = await fetch(`${window.API_BASE}/pk/battles/${battleId}`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
-                        }
-                    });
                     return response.json();
                 },
                 submitAnswer: async (battleId, questionId, answer, answerTime) => {
@@ -856,8 +850,6 @@
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
-                        }
-                    });
                     return response.json();
                 },
                 forfeitBattle: async (battleId) => {
@@ -865,12 +857,12 @@
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
-                        }
-                    });
                     return response.json();
                 }
             }
         };
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

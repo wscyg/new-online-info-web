@@ -54,7 +54,7 @@ async function onMatchFound(matchData) {
     // 5. 启动倒计时
     startCountdown(5, () => {
         // 倒计时结束，跳转到对战页面
-        window.location.href = `pk-battle-new.html?battleId=${battleId}`;
+        window.location.href = `pk-battle.html?battleId=${battleId}`;
     });
 }
 
@@ -214,7 +214,7 @@ function bindEventListeners() {
     // 立即开始按钮
     document.getElementById('startBattleBtn').addEventListener('click', () => {
         const battleId = getCurrentBattleId(); // 需要从匹配结果中获取
-        window.location.href = `pk-battle-new.html?battleId=${battleId}`;
+        window.location.href = `pk-battle.html?battleId=${battleId}`;
     });
 
     // 模式选择卡片

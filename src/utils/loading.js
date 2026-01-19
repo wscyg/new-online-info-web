@@ -1,177 +1,90 @@
 /**
- * Loading State Management Utility
- * Provides consistent loading states across all pages
- * Last updated: 2025-09-30
+ * 统一加载状态管理
  */
 
 class LoadingManager {
     constructor() {
-        this.activeLoaders = new Set();
-        this.addStyles();
+        this.overlay = null;
+        this.count = 0;
+        this.init();
     }
 
-    addStyles() {
+    init() {
+        // 创建全局加载遮罩
+        this.overlay = document.createElement('div');
+        this.overlay.id = 'global-loading-overlay';
+        this.overlay.innerHTML = \`
+            <div class="loading-spinner">
+                <svg viewBox="0 0 50 50">
+                    <circle cx="25" cy="25" r="20" fill="none" stroke-width="4"/>
+                </svg>
+                <span class="loading-text">加载中...</span>
+            </div>
+        \`;
+        this.overlay.style.cssText = \`
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(4px);
+        \`;
+        document.body.appendChild(this.overlay);
+
+        // 添加样式
         if (!document.getElementById('loading-styles')) {
             const style = document.createElement('style');
             style.id = 'loading-styles';
-            style.textContent = `
-                .loading-overlay {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background: rgba(255, 255, 255, 0.9);
-                    backdrop-filter: blur(4px);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    z-index: 1000;
-                    border-radius: inherit;
-                }
-
-                .loading-overlay.dark {
-                    background: rgba(17, 24, 39, 0.9);
-                }
-
+            style.textContent = \`
                 .loading-spinner {
-                    display: inline-block;
-                    width: 48px;
-                    height: 48px;
-                    position: relative;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 16px;
                 }
-
-                .loading-spinner::after {
-                    content: '';
-                    display: block;
-                    width: 40px;
-                    height: 40px;
-                    margin: 4px;
-                    border-radius: 50%;
-                    border: 4px solid;
-                    border-color: #6366f1 transparent #6366f1 transparent;
-                    animation: loading-spin 1.2s linear infinite;
+                .loading-spinner svg {
+                    width: 50px;
+                    height: 50px;
+                    animation: rotate 1s linear infinite;
                 }
-
-                .loading-spinner-small {
-                    width: 24px;
-                    height: 24px;
+                .loading-spinner circle {
+                    stroke: #3b82f6;
+                    stroke-linecap: round;
+                    animation: dash 1.5s ease-in-out infinite;
                 }
-
-                .loading-spinner-small::after {
-                    width: 16px;
-                    height: 16px;
-                    margin: 4px;
-                    border-width: 2px;
-                }
-
-                .loading-skeleton {
-                    background: linear-gradient(
-                        90deg,
-                        #f0f0f0 25%,
-                        #e0e0e0 50%,
-                        #f0f0f0 75%
-                    );
-                    background-size: 200% 100%;
-                    animation: loading-skeleton 1.5s ease-in-out infinite;
-                    border-radius: 4px;
-                }
-
-                .loading-skeleton.dark {
-                    background: linear-gradient(
-                        90deg,
-                        #1f2937 25%,
-                        #374151 50%,
-                        #1f2937 75%
-                    );
-                }
-
                 .loading-text {
-                    margin-top: 12px;
-                    color: #6b7280;
+                    color: white;
                     font-size: 14px;
-                    font-weight: 500;
                 }
-
-                .loading-text.dark {
-                    color: #9ca3af;
-                }
-
-                .loading-dots::after {
-                    content: '';
-                    animation: loading-dots 1.5s steps(4, end) infinite;
-                }
-
-                @keyframes loading-spin {
-                    0% { transform: rotate(0deg); }
+                @keyframes rotate {
                     100% { transform: rotate(360deg); }
                 }
-
-                @keyframes loading-skeleton {
-                    0% { background-position: 200% 0; }
-                    100% { background-position: -200% 0; }
+                @keyframes dash {
+                    0% {
+                        stroke-dasharray: 1, 150;
+                        stroke-dashoffset: 0;
+                    }
+                    50% {
+                        stroke-dasharray: 90, 150;
+                        stroke-dashoffset: -35;
+                    }
+                    100% {
+                        stroke-dasharray: 90, 150;
+                        stroke-dashoffset: -124;
+                    }
                 }
 
-                @keyframes loading-dots {
-                    0%, 20% { content: ''; }
-                    40% { content: '.'; }
-                    60% { content: '..'; }
-                    80%, 100% { content: '...'; }
-                }
-
-                /* Card skeleton */
-                .skeleton-card {
-                    padding: 1.5rem;
-                    border-radius: 0.5rem;
-                    background: white;
-                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-                }
-
-                .skeleton-card.dark {
-                    background: #1f2937;
-                }
-
-                .skeleton-line {
-                    height: 1rem;
-                    margin-bottom: 0.75rem;
-                }
-
-                .skeleton-line:last-child {
-                    width: 60%;
-                    margin-bottom: 0;
-                }
-
-                .skeleton-circle {
-                    width: 48px;
-                    height: 48px;
-                    border-radius: 50%;
-                }
-
-                .skeleton-rect {
-                    width: 100%;
-                    height: 100%;
-                }
-
-                /* List skeleton */
-                .skeleton-list-item {
-                    display: flex;
-                    align-items: center;
-                    gap: 1rem;
-                    padding: 1rem;
-                    border-bottom: 1px solid #e5e7eb;
-                }
-
-                .skeleton-list-item.dark {
-                    border-color: #374151;
-                }
-
-                /* Button loading state */
+                /* 按钮加载状态 */
                 .btn-loading {
                     position: relative;
-                    color: transparent !important;
                     pointer-events: none;
+                    opacity: 0.7;
                 }
-
                 .btn-loading::after {
                     content: '';
                     position: absolute;
@@ -181,268 +94,200 @@ class LoadingManager {
                     left: 50%;
                     margin-left: -8px;
                     margin-top: -8px;
-                    border: 2px solid;
+                    border: 2px solid transparent;
+                    border-top-color: currentColor;
                     border-radius: 50%;
-                    border-color: currentColor transparent currentColor transparent;
-                    animation: loading-spin 1s linear infinite;
+                    animation: rotate 0.8s linear infinite;
                 }
 
-                /* Fade in animation for loaded content */
-                .fade-in {
-                    animation: fade-in 0.3s ease-in;
+                /* 骨架屏 */
+                .skeleton {
+                    background: linear-gradient(90deg, #2a2a3e 25%, #3a3a4e 50%, #2a2a3e 75%);
+                    background-size: 200% 100%;
+                    animation: skeleton-loading 1.5s infinite;
+                    border-radius: 4px;
+                }
+                .skeleton-text {
+                    height: 16px;
+                    margin-bottom: 8px;
+                }
+                .skeleton-title {
+                    height: 24px;
+                    width: 60%;
+                    margin-bottom: 12px;
+                }
+                .skeleton-avatar {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                }
+                .skeleton-card {
+                    height: 200px;
+                    border-radius: 12px;
+                }
+                @keyframes skeleton-loading {
+                    0% { background-position: 200% 0; }
+                    100% { background-position: -200% 0; }
                 }
 
-                @keyframes fade-in {
-                    from { opacity: 0; transform: translateY(10px); }
-                    to { opacity: 1; transform: translateY(0); }
+                /* 空状态 */
+                .empty-state {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 60px 20px;
+                    text-align: center;
+                    color: #888;
+                }
+                .empty-state svg {
+                    width: 80px;
+                    height: 80px;
+                    margin-bottom: 16px;
+                    opacity: 0.5;
+                }
+                .empty-state h3 {
+                    font-size: 18px;
+                    margin-bottom: 8px;
+                    color: #aaa;
+                }
+                .empty-state p {
+                    font-size: 14px;
                 }
 
-                /* Hide scrollbar during loading */
-                body.loading {
-                    overflow: hidden;
+                /* 错误状态 */
+                .error-state {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 60px 20px;
+                    text-align: center;
                 }
-            `;
+                .error-state svg {
+                    width: 60px;
+                    height: 60px;
+                    margin-bottom: 16px;
+                    color: #ef4444;
+                }
+                .error-state h3 {
+                    font-size: 18px;
+                    margin-bottom: 8px;
+                    color: #ef4444;
+                }
+                .error-state p {
+                    font-size: 14px;
+                    color: #888;
+                    margin-bottom: 16px;
+                }
+                .error-state button {
+                    padding: 8px 24px;
+                    background: #3b82f6;
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-size: 14px;
+                }
+                .error-state button:hover {
+                    background: #2563eb;
+                }
+            \`;
             document.head.appendChild(style);
         }
     }
 
-    /**
-     * Show loading overlay on an element
-     * @param {HTMLElement|string} target - Element or selector
-     * @param {Object} options - Options {text: string, size: 'small'|'default', dark: boolean}
-     */
-    show(target, options = {}) {
-        const element = typeof target === 'string' ? document.querySelector(target) : target;
-        if (!element) {
-            console.warn('Loading target element not found:', target);
-            return null;
-        }
-
-        const loaderId = `loader-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
-        const overlay = document.createElement('div');
-        overlay.className = 'loading-overlay' + (options.dark ? ' dark' : '');
-        overlay.dataset.loaderId = loaderId;
-
-        const content = document.createElement('div');
-        content.className = 'loading-content';
-        content.style.textAlign = 'center';
-
-        const spinner = document.createElement('div');
-        spinner.className = 'loading-spinner' + (options.size === 'small' ? ' loading-spinner-small' : '');
-
-        content.appendChild(spinner);
-
-        if (options.text) {
-            const text = document.createElement('div');
-            text.className = 'loading-text loading-dots' + (options.dark ? ' dark' : '');
-            text.textContent = options.text;
-            content.appendChild(text);
-        }
-
-        overlay.appendChild(content);
-
-        // Make element position relative if needed
-        const position = window.getComputedStyle(element).position;
-        if (position === 'static') {
-            element.style.position = 'relative';
-        }
-
-        element.appendChild(overlay);
-        this.activeLoaders.add(loaderId);
-
-        return loaderId;
+    show(text = '加载中...') {
+        this.count++;
+        const textEl = this.overlay.querySelector('.loading-text');
+        if (textEl) textEl.textContent = text;
+        this.overlay.style.display = 'flex';
     }
 
-    /**
-     * Hide loading overlay
-     * @param {string|HTMLElement} targetOrId - Loader ID or element
-     */
-    hide(targetOrId) {
-        if (typeof targetOrId === 'string' && targetOrId.startsWith('loader-')) {
-            // It's a loader ID
-            const overlay = document.querySelector(`[data-loader-id="${targetOrId}"]`);
-            if (overlay) {
-                overlay.remove();
-                this.activeLoaders.delete(targetOrId);
-            }
+    hide() {
+        this.count = Math.max(0, this.count - 1);
+        if (this.count === 0) {
+            this.overlay.style.display = 'none';
+        }
+    }
+
+    forceHide() {
+        this.count = 0;
+        this.overlay.style.display = 'none';
+    }
+
+    setButtonLoading(button, isLoading, originalText = null) {
+        if (isLoading) {
+            button.dataset.originalText = button.textContent;
+            button.classList.add('btn-loading');
+            button.disabled = true;
+            button.textContent = '';
         } else {
-            // It's an element
-            const element = typeof targetOrId === 'string' ? document.querySelector(targetOrId) : targetOrId;
-            if (element) {
-                const overlays = element.querySelectorAll('.loading-overlay');
-                overlays.forEach(overlay => {
-                    const loaderId = overlay.dataset.loaderId;
-                    overlay.remove();
-                    if (loaderId) this.activeLoaders.delete(loaderId);
-                });
-            }
+            button.classList.remove('btn-loading');
+            button.disabled = false;
+            button.textContent = originalText || button.dataset.originalText || '提交';
         }
     }
 
-    /**
-     * Show button loading state
-     * @param {HTMLElement|string} button
-     */
-    showButton(button) {
-        const btn = typeof button === 'string' ? document.querySelector(button) : button;
-        if (btn) {
-            btn.disabled = true;
-            btn.classList.add('btn-loading');
-            btn.dataset.originalText = btn.textContent;
-        }
-    }
-
-    /**
-     * Hide button loading state
-     * @param {HTMLElement|string} button
-     */
-    hideButton(button) {
-        const btn = typeof button === 'string' ? document.querySelector(button) : button;
-        if (btn) {
-            btn.disabled = false;
-            btn.classList.remove('btn-loading');
-            if (btn.dataset.originalText) {
-                btn.textContent = btn.dataset.originalText;
-                delete btn.dataset.originalText;
-            }
-        }
-    }
-
-    /**
-     * Create skeleton loading for a container
-     * @param {HTMLElement|string} target
-     * @param {Object} options - {type: 'card'|'list'|'custom', count: number, dark: boolean}
-     */
-    showSkeleton(target, options = {}) {
-        const element = typeof target === 'string' ? document.querySelector(target) : target;
-        if (!element) return;
-
-        const { type = 'card', count = 3, dark = false } = options;
-        const darkClass = dark ? ' dark' : '';
-
-        element.innerHTML = '';
-        element.classList.add('loading-skeleton-container');
-
-        for (let i = 0; i < count; i++) {
-            let skeleton;
-
-            if (type === 'card') {
-                skeleton = document.createElement('div');
-                skeleton.className = `skeleton-card${darkClass}`;
-                skeleton.innerHTML = `
-                    <div class="loading-skeleton${darkClass} skeleton-rect" style="height: 160px; margin-bottom: 1rem;"></div>
-                    <div class="loading-skeleton${darkClass} skeleton-line"></div>
-                    <div class="loading-skeleton${darkClass} skeleton-line"></div>
-                    <div class="loading-skeleton${darkClass} skeleton-line" style="width: 60%;"></div>
-                `;
-            } else if (type === 'list') {
-                skeleton = document.createElement('div');
-                skeleton.className = `skeleton-list-item${darkClass}`;
-                skeleton.innerHTML = `
-                    <div class="loading-skeleton${darkClass} skeleton-circle"></div>
+    createSkeleton(type = 'card', count = 1) {
+        const skeletons = {
+            card: '<div class="skeleton skeleton-card"></div>',
+            text: '<div class="skeleton skeleton-text"></div>',
+            title: '<div class="skeleton skeleton-title"></div>',
+            avatar: '<div class="skeleton skeleton-avatar"></div>',
+            list: \`
+                <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 16px;">
+                    <div class="skeleton skeleton-avatar"></div>
                     <div style="flex: 1;">
-                        <div class="loading-skeleton${darkClass} skeleton-line"></div>
-                        <div class="loading-skeleton${darkClass} skeleton-line" style="width: 70%;"></div>
+                        <div class="skeleton skeleton-title" style="width: 40%;"></div>
+                        <div class="skeleton skeleton-text" style="width: 80%;"></div>
                     </div>
-                `;
-            }
-
-            if (skeleton) {
-                element.appendChild(skeleton);
-            }
-        }
+                </div>
+            \`
+        };
+        return Array(count).fill(skeletons[type] || skeletons.card).join('');
     }
 
-    /**
-     * Hide skeleton loading
-     * @param {HTMLElement|string} target
-     */
-    hideSkeleton(target) {
-        const element = typeof target === 'string' ? document.querySelector(target) : target;
-        if (element) {
-            element.classList.remove('loading-skeleton-container');
-            element.classList.add('fade-in');
-        }
+    createEmptyState(message = '暂无数据', subMessage = '') {
+        return \`
+            <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+                <h3>\${message}</h3>
+                \${subMessage ? \`<p>\${subMessage}</p>\` : ''}
+            </div>
+        \`;
     }
 
-    /**
-     * Show full page loading
-     * @param {Object} options
-     */
-    showPage(options = {}) {
-        if (document.getElementById('page-loader')) return;
-
-        const overlay = document.createElement('div');
-        overlay.id = 'page-loader';
-        overlay.className = 'loading-overlay' + (options.dark ? ' dark' : '');
-        overlay.style.position = 'fixed';
-        overlay.style.zIndex = '9999';
-
-        const content = document.createElement('div');
-        content.className = 'loading-content';
-        content.style.textAlign = 'center';
-
-        const spinner = document.createElement('div');
-        spinner.className = 'loading-spinner';
-
-        content.appendChild(spinner);
-
-        if (options.text) {
-            const text = document.createElement('div');
-            text.className = 'loading-text loading-dots' + (options.dark ? ' dark' : '');
-            text.textContent = options.text;
-            content.appendChild(text);
+    createErrorState(message = '加载失败', retryCallback = null) {
+        const retryId = 'retry-' + Date.now();
+        if (retryCallback) {
+            setTimeout(() => {
+                const btn = document.getElementById(retryId);
+                if (btn) btn.onclick = retryCallback;
+            }, 0);
         }
-
-        overlay.appendChild(content);
-        document.body.appendChild(overlay);
-        document.body.classList.add('loading');
-    }
-
-    /**
-     * Hide full page loading
-     */
-    hidePage() {
-        const loader = document.getElementById('page-loader');
-        if (loader) {
-            loader.remove();
-            document.body.classList.remove('loading');
-        }
-    }
-
-    /**
-     * Clear all active loaders
-     */
-    clearAll() {
-        this.activeLoaders.forEach(loaderId => {
-            this.hide(loaderId);
-        });
-        this.activeLoaders.clear();
-        this.hidePage();
-    }
-
-    /**
-     * Wrap an async function with loading state
-     * @param {Function} fn - Async function
-     * @param {HTMLElement|string} target - Loading target
-     * @param {Object} options - Loading options
-     */
-    async wrap(fn, target, options = {}) {
-        const loaderId = this.show(target, options);
-        try {
-            const result = await fn();
-            return result;
-        } finally {
-            this.hide(loaderId);
-        }
+        return \`
+            <div class="error-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="15" y1="9" x2="9" y2="15"/>
+                    <line x1="9" y1="9" x2="15" y2="15"/>
+                </svg>
+                <h3>\${message}</h3>
+                <p>请检查网络连接后重试</p>
+                \${retryCallback ? \`<button id="\${retryId}">重新加载</button>\` : ''}
+            </div>
+        \`;
     }
 }
 
-// Create singleton instance
 const loading = new LoadingManager();
 
-// Export for use
-window.loading = loading;
-
-export default loading;
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { LoadingManager, loading };
+} else {
+    window.LoadingManager = LoadingManager;
+    window.loading = loading;
+}

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>课程查看器</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; background: #0b0b12; color: #fff; min-height: 100vh; }
+    .loading { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; background: radial-gradient(1200px 600px at 30% 20%, rgba(99,102,241,.18), transparent 60%), radial-gradient(900px 500px at 80% 70%, rgba(168,85,247,.14), transparent 60%), #0b0b12; z-index: 9999; }
+    .brand { width: 64px; height: 64px; border-radius: 18px; background: linear-gradient(135deg, rgba(99,102,241,.95), rgba(168,85,247,.85)); box-shadow: 0 18px 60px rgba(99,102,241,.18); display: grid; place-items: center; font-weight: 800; letter-spacing: .04em; }
+    .brand span { font-size: 18px; color: rgba(255,255,255,.92); }
+    .spinner { width: 52px; height: 52px; border-radius: 50%; border: 3px solid rgba(255,255,255,.12); border-top-color: rgba(255,255,255,.78); animation: spin .9s linear infinite; margin-top: 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { margin-top: 14px; font-size: 13px; color: rgba(255,255,255,.72); }
+    .loading-sub { margin-top: 6px; font-size: 12px; color: rgba(255,255,255,.45); }
+    .loading.hidden { opacity: 0; pointer-events: none; transition: opacity .25s ease; }
+
+    .error { min-height: 100vh; display: none; align-items: center; justify-content: center; padding: 40px; text-align: center; }
+    .error.show { display: flex; }
+    .error-card { width: min(680px, 100%); background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); border-radius: 16px; padding: 22px; }
+    .error-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .error-msg { font-size: 13px; line-height: 1.6; white-space: pre-wrap; color: rgba(255,255,255,.72); }
+    .error-actions { margin-top: 16px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .btn { appearance: none; border: 0; cursor: pointer; border-radius: 10px; padding: 10px 14px; font-size: 13px; color: #fff; background: rgba(99,102,241,.9); }
+    .btn.secondary { background: rgba(255,255,255,.10); }
+
+    #courseFrame { position: fixed; inset: 0; width: 100vw; height: 100vh; border: 0; display: none; background: #0b0b12; }
+    #courseFrame.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="loading" id="loading">
+    <div class="brand" aria-hidden="true"><span>IF</span></div>
+    <div class="spinner" aria-hidden="true"></div>
+    <div class="loading-text" id="loadingText">正在加载课程内容…</div>
+    <div class="loading-sub">请稍候</div>
+  </div>
+
+  <div class="error" id="error">
+    <div class="error-card">
+      <div class="error-title" id="errorTitle">加载失败</div>
+      <div class="error-msg" id="errorMsg"></div>
+      <div class="error-actions">
+        <button class="btn" id="retryBtn">重试</button>
+        <a class="btn secondary" href="../../template-course-manage.html">返回管理</a>
+      </div>
+    </div>
+  </div>
+
+  <iframe id="courseFrame"></iframe>
+
+  <!-- 统一：只走 JSON + 模板引擎（不再兼容后端直出 HTML） -->
+  <script src="/js/chapter-template-engine.js"></script>
+  <script src="/js/format-migrator.js"></script>
+  <script src="/js/unified-course-renderer.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const CONFIG = {
+        apiBase: localStorage.getItem('ADMIN_TEMPLATE_API_BASE') || 'http://localhost:8070/api/course-templates',
+        defaultTemplate: 'chapter2',
+      };
+
+      const loading = document.getElementById('loading');
+      const loadingText = document.getElementById('loadingText');
+      const errorBox = document.getElementById('error');
+      const errorTitle = document.getElementById('errorTitle');
+      const errorMsg = document.getElementById('errorMsg');
+      const retryBtn = document.getElementById('retryBtn');
+      const courseFrame = document.getElementById('courseFrame');
+
+      retryBtn.addEventListener('click', () => location.reload());
+
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = String(text ?? '');
+        return div.innerHTML;
+      }
+
+      function showError(title, message) {
+        loading.classList.add('hidden');
+        errorBox.classList.add('show');
+        courseFrame.classList.remove('active');
+        errorTitle.textContent = title || '加载失败';
+        errorMsg.innerHTML = escapeHtml(message || '');
+      }
+
+      function getToken() {
+        return localStorage.getItem('token') || sessionStorage.getItem('token');
+      }
+
+      function getParams() {
+        const params = new URLSearchParams(location.search);
+        return {
+          courseId: params.get('id') || params.get('courseId') || params.get('course'),
+          templateId: params.get('template') || params.get('templateId') || null,
+          jsonData: params.get('json') || null,
+          page: params.get('page') ?? params.get('chapter'),
+        };
+      }
+
+      function parseCourseFromBase64(jsonData) {
+        try {
+          const decoded = atob(jsonData);
+          return JSON.parse(decoded);
+        } catch (e) {
+          throw new Error('JSON数据解析失败');
+        }
+      }
+
+      async function fetchCourseJson(courseId) {
+        const token = getToken();
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        const isNumericId = /^\d+$/.test(courseId);
+        const apiPathJson = isNumericId
+          ? `${CONFIG.apiBase}/courses/${courseId}/content`
+          : `${CONFIG.apiBase}/courses/by-course-id/${encodeURIComponent(courseId)}/content`;
+
+        const res = await fetch(apiPathJson, { headers });
+        if (!res.ok) {
+          if (res.status === 401) throw new Error('未登录或登录已过期（401），请先登录后重试。');
+          if (res.status === 403) throw new Error('无权限访问该课程（403）。');
+          if (res.status === 404) throw new Error('课程不存在（404）。');
+          throw new Error(`API错误: ${res.status} ${res.statusText}`);
+        }
+        return res.json();
+      }
+
+      async function renderCourse(courseJson, templateId, page) {
+        if (!window.UnifiedCourseRenderer) throw new Error('UnifiedCourseRenderer 未加载');
+        window.UnifiedCourseRenderer.init({ templateBasePath: '' });
+
+        const config = (courseJson && courseJson.contentJson)
+          ? (typeof courseJson.contentJson === 'string' ? JSON.parse(courseJson.contentJson) : courseJson.contentJson)
+          : courseJson;
+
+        if (!config || typeof config !== 'object') throw new Error('课程 JSON 格式错误');
+        if (!config.pages || !Array.isArray(config.pages) || config.pages.length === 0) throw new Error('课程内容为空（pages 为空）');
+
+        const effectiveTemplateId = templateId || config.templateId || CONFIG.defaultTemplate;
+          // 上线用户：不暴露 templateId / json 等内部信息
+          loadingText.textContent = '正在准备课程…';
+
+        // 为了“像原 HTML 一样稳定”，统一使用 iframe srcdoc 渲染完整 HTML。
+        // 这样模板里的脚本（翻页/动画/公式渲染）能按 DOMContentLoaded 正常初始化。
+        let html = await window.UnifiedCourseRenderer.renderCourse(config, null, { templateId: effectiveTemplateId });
+
+        const targetPage = page !== undefined && page !== null && page !== '' ? Number(page) : null;
+        if (Number.isFinite(targetPage)) {
+          const boot = `<script>(function(){try{if(typeof window.goToPage==='function'){window.goToPage(${targetPage});}}catch(e){}})();<\/script>`;
+          html = html.replace(/<\/body>/i, `${boot}\n</body>`);
+        }
+
+        courseFrame.classList.add('active');
+        courseFrame.srcdoc = html;
+        await new Promise(resolve => { courseFrame.onload = resolve; });
+
+        loading.classList.add('hidden');
+        if (config.title) document.title = config.title;
+      }
+
+      async function main() {
+        try {
+          const params = getParams();
+          if (!params.courseId && !params.jsonData) {
+            throw new Error('请提供课程ID，例如：?id=CHAP-xxxx 或草稿：?json=<base64>');
+          }
+
+          // 上线用户：不暴露内部字段（courseId/templateId/json 等）
+          loadingText.textContent = '正在加载课程内容…';
+          const courseJson = params.jsonData
+            ? parseCourseFromBase64(params.jsonData)
+            : await fetchCourseJson(params.courseId);
+
+          loadingText.textContent = '正在渲染页面…';
+          await renderCourse(courseJson, params.templateId, params.page);
+        } catch (e) {
+          console.error(e);
+          showError('加载失败', e && e.message ? e.message : String(e));
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', main);
+      } else {
+        main();
+      }
+    })();
+  </script>
+</body>
+</html>

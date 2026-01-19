@@ -1,6 +1,4 @@
-const API_BASE = window.location.hostname === 'localhost'
-    ? 'http://localhost:8070/api'
-    : 'http://42.194.245.66:8070/api';
+const API_BASE = '/api';
 
 class DailyChallengeManager {
     constructor() {

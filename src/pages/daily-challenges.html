@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>每日挑战 - AI 信息未来</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <style>
         /* Page-specific styles */
         body {
@@ -547,6 +548,7 @@
             </div>
 
             <div class="nav-actions">
+                <div id="authArea"></div>
                 <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
                     <svg class="icon icon-sun" style="display: none;">
                         <circle cx="10" cy="10" r="4"></circle>
@@ -612,7 +614,7 @@
         <span id="refreshCountdown">30秒后刷新</span>
     </div>
 
-    <script type="module">
+    <script>
         // Theme management
         const themeToggle = document.getElementById('themeToggle');
         const iconSun = document.querySelector('.icon-sun');
@@ -650,5 +652,7 @@
     </script>
 
     <script type="module" src="../scripts/daily-challenges.js"></script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

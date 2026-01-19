@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>学习小组 - AI 信息未来</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <style>
         body {
             margin: 0;
@@ -794,6 +795,7 @@
                 <a href="code-arena.html" class="nav-link">PK竞技</a>
             </div>
             <div class="nav-actions">
+                <div id="authArea"></div>
                 <button class="theme-toggle" onclick="toggleTheme()">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="5"/>
@@ -807,10 +809,7 @@
                         <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
                     </svg>
                 </button>
-                <div class="user-menu">
-                    <div class="user-avatar" onclick="toggleUserMenu()">
-                        <span id="userInitial">U</span>
-                    </div>
+                
                 </div>
             </div>
         </div>
@@ -1361,8 +1360,6 @@
                         </div>
                     `;
                     container.appendChild(roomEl);
-                }
-            });
         }
 
         // 选择学习室
@@ -1490,8 +1487,6 @@
                 } else {
                     const roomType = item.dataset.type || 'study';
                     item.style.display = (roomType === type) ? 'flex' : 'none';
-                }
-            });
         }
 
         // 发送消息
@@ -1513,8 +1508,6 @@
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${token}`
-                        }
-                    });
 
                     const result = await response.json();
 
@@ -1610,9 +1603,9 @@
                 const response = await fetch(`${API_BASE}/studyrooms/create?${params}`, {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${token}`
                     }
                 });
+                        'Authorization': `Bearer ${token}`
 
                 const result = await response.json();
 
@@ -1718,9 +1711,8 @@
         });
 
         // 用户菜单
-        function toggleUserMenu() {
-            console.log('切换用户菜单');
-        }
-    </script>
+            </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>

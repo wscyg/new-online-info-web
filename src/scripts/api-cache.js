@@ -290,38 +290,23 @@ window.apiCache = {
 // 提供预配置的API调用函数
 window.cachedApi = {
     getAchievements: async (forceRefresh = false) => {
-        const baseUrl = window.location.hostname === 'localhost'
-            ? 'http://localhost:8070/api'
-            : 'http://42.194.245.66:8070/api';
-        return apiCache.fetch(`${baseUrl}/achievements/my`, { forceRefresh }, 'achievements');
+        return apiCache.fetch(`/api/achievements/my`, { forceRefresh }, 'achievements');
     },
 
     getTalentProfile: async (userId, forceRefresh = false) => {
-        const baseUrl = window.location.hostname === 'localhost'
-            ? 'http://localhost:8070/api'
-            : 'http://42.194.245.66:8070/api';
-        return apiCache.fetch(`${baseUrl}/talent/profile/${userId}`, { forceRefresh }, 'talentProfile');
+        return apiCache.fetch(`/api/talent/profile/${userId}`, { forceRefresh }, 'talentProfile');
     },
 
     getLeaderboard: async (type = 'overall', forceRefresh = false) => {
-        const baseUrl = window.location.hostname === 'localhost'
-            ? 'http://localhost:8070/api'
-            : 'http://42.194.245.66:8070/api';
-        return apiCache.fetch(`${baseUrl}/talent/leaderboard/${type}`, { forceRefresh }, 'leaderboard');
+        return apiCache.fetch(`/api/talent/leaderboard/${type}`, { forceRefresh }, 'leaderboard');
     },
 
     getDailyChallenges: async (forceRefresh = false) => {
-        const baseUrl = window.location.hostname === 'localhost'
-            ? 'http://localhost:8070/api'
-            : 'http://42.194.245.66:8070/api';
-        return apiCache.fetch(`${baseUrl}/daily-challenges/today`, { forceRefresh }, 'dailyChallenges');
+        return apiCache.fetch(`/api/daily-challenges/today`, { forceRefresh }, 'dailyChallenges');
     },
 
     getMentorship: async (forceRefresh = false) => {
-        const baseUrl = window.location.hostname === 'localhost'
-            ? 'http://localhost:8070/api'
-            : 'http://42.194.245.66:8070/api';
-        return apiCache.fetch(`${baseUrl}/mentorship/my`, { forceRefresh }, 'mentorship');
+        return apiCache.fetch(`/api/mentorship/my`, { forceRefresh }, 'mentorship');
     }
 };
 

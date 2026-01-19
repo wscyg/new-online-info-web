@@ -1,7 +1,5 @@
 // 人才雷达系统前端逻辑
-const API_BASE_URL = window.location.hostname === 'localhost'
-    ? 'http://localhost:8070/api'
-    : 'http://42.194.245.66:8070/api';
+const API_BASE_URL = '/api';
 
 class TalentRadarManager {
     constructor() {

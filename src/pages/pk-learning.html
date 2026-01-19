@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PK学习 - AI 信息未来</title>
-    <link rel="stylesheet" href="../styles/apple-design.css">
+    <script></script>
+    <link rel="stylesheet" href="/assets/skins/app-shell.css">
+<link rel="stylesheet" href="../styles/apple-design.css">
     <style>
         /* PK学习页面特定样式 */
         body {
@@ -415,6 +417,7 @@
                 <a href="/src/pages/pk-arena.html" class="nav-link active">PK竞技</a>
             </div>
             <div class="nav-actions">
+                <div id="authArea"></div>
                 <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">
                     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="5"></circle>
@@ -428,18 +431,8 @@
                         <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                     </svg>
                 </button>
-                <div class="user-menu">
-                    <div class="user-avatar" onclick="toggleUserMenu()" id="userAvatar">
-                        <span id="userInitial">U</span>
-                    </div>
-                    <div class="dropdown" id="userDropdown">
-                        <div class="dropdown-item" onclick="goToProfile()">
-                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="12" cy="7" r="4"></circle>
-                            </svg>
-                            个人中心
-                        </div>
+                
+                    
                         <div class="dropdown-divider"></div>
                         <div class="dropdown-item" onclick="logout()">
                             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -588,11 +581,7 @@
         }
 
         // 用户菜单
-        function toggleUserMenu() {
-            const dropdown = document.getElementById('userDropdown');
-            dropdown.classList.toggle('show');
-        }
-
+        
         function goToProfile() {
             window.location.href = '/src/pages/profile.html';
         }
@@ -604,13 +593,9 @@
         }
 
         // 关闭下拉菜单
-        document.addEventListener('click', (e) => {
-            const dropdown = document.getElementById('userDropdown');
-            const avatar = document.getElementById('userAvatar');
+                    const avatar = document.getElementById('userAvatar');
             if (!avatar.contains(e.target) && !dropdown.contains(e.target)) {
                 dropdown.classList.remove('show');
-            }
-        });
 
         // 页面加载
         document.addEventListener('DOMContentLoaded', () => {
@@ -641,6 +626,8 @@
                 const token = localStorage.getItem('token');
                 const response = await fetch(`${API_BASE}/pk/${battleId}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
+                    }
+                });
                 });
 
                 if (response.ok) {
@@ -713,7 +700,7 @@
         async function loadChapters(courseId) {
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`/content/courses/${courseId}/chapters`, {
+                const response = await fetch(`${API_BASE}/content/courses/${courseId}/chapters`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
@@ -741,7 +728,8 @@
 
             container.innerHTML = chapters.map((chapter, index) => `
                 <div class="chapter-item ${completedChapters.has(chapter.id) ? 'completed' : ''}"
-                     onclick="loadChapter(${chapter.id})">
+                     data-chapter-id="${chapter.id}"
+                     onclick="loadChapter(${chapter.id}, this)">
                     <div class="chapter-num">第 ${index + 1} 章</div>
                     <div class="chapter-name">${chapter.title}</div>
                 </div>
@@ -749,11 +737,13 @@
         }
 
         // 加载章节内容
-        async function loadChapter(chapterId) {
+        async function loadChapter(chapterId, element) {
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`/content/chapters/${chapterId}`, {
+                const response = await fetch(`${API_BASE}/content/chapters/${chapterId}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
+                    }
+                });
                 });
 
                 if (response.ok) {
@@ -766,7 +756,13 @@
                     document.getElementById('learningCard').style.display = 'block';
                     document.getElementById('chapterTitle').textContent = chapterData.chapter.title;
                     document.getElementById('chapterMeta').textContent = `${chapterData.chapter.duration || 15}分钟`;
-                    document.getElementById('chapterContent').innerHTML = chapterData.content.content_html || `<p>${chapterData.content.content_text || '暂无内容'}</p>`;
+                    const rawHtml = chapterData.content.content_html;
+                    const safeText = (chapterData.content.content_text || '暂无内容')
+                        .replace(/[&<>"']/g, (ch) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+                    const safeHtml = (window.DOMPurify && rawHtml)
+                        ? window.DOMPurify.sanitize(String(rawHtml))
+                        : (rawHtml ? String(rawHtml).replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '') : `<p>${safeText}</p>`);
+                    document.getElementById('chapterContent').innerHTML = safeHtml;
 
                     // 滚动到内容区
                     document.getElementById('learningCard').scrollIntoView({ behavior: 'smooth' });
@@ -775,7 +771,11 @@
                     document.querySelectorAll('.chapter-item').forEach(item => {
                         item.classList.remove('active');
                     });
-                    event.currentTarget.classList.add('active');
+                    if (element && element.classList) {
+                        element.classList.add('active');
+                    } else {
+                        document.querySelector(`.chapter-item[data-chapter-id="${chapterId}"]`)?.classList.add('active');
+                    }
                 } else {
                     alert('加载章节内容失败');
                 }
@@ -795,12 +795,8 @@
             completedChapters.add(currentChapterId);
 
             // 更新UI
+            document.querySelector(`.chapter-item[data-chapter-id="${currentChapterId}"]`)?.classList.add('completed');
             const chapterItems = document.querySelectorAll('.chapter-item');
-            chapterItems.forEach(item => {
-                if (item.onclick.toString().includes(currentChapterId)) {
-                    item.classList.add('completed');
-                }
-            });
 
             // 更新统计
             document.getElementById('myChapters').textContent = `${completedChapters.size} 章节`;
@@ -867,6 +863,8 @@
                 const response = await fetch(`${API_BASE}/pk/${battleId}/settle`, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}` }
+                    }
+                });
                 });
 
                 if (response.ok) {
@@ -897,5 +895,7 @@
             }
         }
     </script>
+    <script src="/js/app-shell.js"></script>
+    
 </body>
 </html>
